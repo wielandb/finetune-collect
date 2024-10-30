@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://b12aodmwwwaju"]
+
+[ext_resource type="Script" path="res://scenes/analysis_container.gd" id="1_v7xgf"]
+
+[node name="AnalysisContainer" type="ScrollContainer"]
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_v7xgf")

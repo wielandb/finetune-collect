@@ -47,4 +47,4 @@ layout_mode = 2
 metadata/_tab_index = 3
 
 [node name="AnalysisContainer" parent="Analysis" instance=ExtResource("4_s3l4r")]
-layout_mode = 0
+layout_mode = 1

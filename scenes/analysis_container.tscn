@@ -3,21 +3,36 @@
 [ext_resource type="Script" path="res://scenes/analysis_container.gd" id="1_v7xgf"]
 
 [node name="AnalysisContainer" type="ScrollContainer"]
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_v7xgf")
 
 [node name="ElementsListContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="RunAnalysiButton" type="Button" parent="ElementsListContainer"]
+[node name="RunAnalysisButton" type="Button" parent="ElementsListContainer"]
 layout_mode = 2
+text = "Run analysis"
 
 [node name="CommonStatsticsLabel" type="Label" parent="ElementsListContainer"]
 layout_mode = 2
+text = "Statistics"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="WarningsLabel" type="Label" parent="ElementsListContainer"]
 layout_mode = 2
+text = "Warnings"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="ErrorsLabel" type="Label" parent="ElementsListContainer"]
 layout_mode = 2
+text = "Errors"
+horizontal_alignment = 1
+vertical_alignment = 1

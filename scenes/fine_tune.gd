@@ -5,7 +5,7 @@ var FUNCTIONS = []
 var CONVERSATIONS = {}
 var SETTINGS = []
 
-var CURRENT_EDITED_CONVO_IX = 0
+var CURRENT_EDITED_CONVO_IX = "FtC1"
 # FINETUNEDATA = 
 # { functions: [],
 #   settings: {
@@ -17,6 +17,20 @@ var CURRENT_EDITED_CONVO_IX = 0
 
 # CONVERSATION1 = { 
 
+func getRandomConvoID(length: int) -> String:
+	var ascii_letters_and_digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var result = ""
+	for i in range(length):
+		result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
+	return result
+
+func selectionStringToIndex(node, string):
+	# takes a node (OptionButton) and a String that is one of the options and returns its index
+	# TODO: Check if OptionButton
+	for i in range(node.item_count):
+		if node.get_item_text(i) == string:
+			return i
+	return -1
 
 func getallnodes(node):
 	var nodeCollection = []
@@ -31,7 +45,9 @@ func getallnodes(node):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	$VBoxContainer/ConversationsList.select(CURRENT_EDITED_CONVO_IX)
+	#_on_button_pressed() # Thats not a good name
+	refresh_conversations_list()
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if Input.is_action_pressed("save"):
@@ -95,13 +111,11 @@ func _on_item_list_item_selected(index: int) -> void:
 		if message.is_in_group("message"):
 			message.queue_free()	
 	# Und die neuen aus der Convo laden
-	CURRENT_EDITED_CONVO_IX = index
+	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_text(index)
 	# Create conversation if it does not exist
-	if CURRENT_EDITED_CONVO_IX > len(CONVERSATIONS) - 1:
-		CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = []
 	print("IX:")
 	print(CURRENT_EDITED_CONVO_IX)
-	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
 	
 
 
@@ -136,8 +150,8 @@ func _on_file_dialog_file_selected(path: String) -> void:
 
 func refresh_conversations_list():
 	$VBoxContainer/ConversationsList.clear()
-	for i in range(len(CONVERSATIONS)):
-		$VBoxContainer/ConversationsList.add_item("Conversation " + str(i))
+	for i in CONVERSATIONS.keys():
+		$VBoxContainer/ConversationsList.add_item(str(i))
 
 
 func _on_conversation_tab_changed(tab: int) -> void:
@@ -147,10 +161,12 @@ func _on_conversation_tab_changed(tab: int) -> void:
 
 
 func _on_button_pressed() -> void:
-	CURRENT_EDITED_CONVO_IX = len(CONVERSATIONS)
+	# Generate a new ConvoID
+	var newID = getRandomConvoID(4)
 	# Create conversation if it does not exist
-	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = []
+	CONVERSATIONS[newID] = []
 	refresh_conversations_list()
+	print(CONVERSATIONS)
 
 func save_to_binary(filename):
 	FINETUNEDATA = {}
@@ -183,6 +199,10 @@ func load_from_binary(filename):
 		print("file not found")
 	
 func save_to_json(filename):
+	FINETUNEDATA = {}
+	FINETUNEDATA["functions"] = FUNCTIONS
+	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["settings"] = SETTINGS
 	var jsonstr = JSON.stringify(FINETUNEDATA, "\t")
 	var file = FileAccess.open("user://" + filename, FileAccess.WRITE)
 	file.store_string(jsonstr)
@@ -191,13 +211,15 @@ func save_to_json(filename):
 func load_from_json(filename):
 	var json_as_text = FileAccess.get_file_as_string("user://" + filename)
 	var json_as_dict = JSON.parse_string(json_as_text)
+	print(json_as_dict)
 	FINETUNEDATA = json_as_dict
 	FUNCTIONS = FINETUNEDATA["functions"]
 	CONVERSATIONS = FINETUNEDATA["conversations"]
 	SETTINGS = FINETUNEDATA["settings"]
-	CURRENT_EDITED_CONVO_IX = len(CONVERSATIONS) - 1
+	for i in CONVERSATIONS.keys():
+		CURRENT_EDITED_CONVO_IX = str(i)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
-	$VBoxContainer/ConversationsList.select(CURRENT_EDITED_CONVO_IX)
+	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))

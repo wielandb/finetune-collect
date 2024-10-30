@@ -19,7 +19,7 @@ script = ExtResource("2_4tk5v")
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Button" type="Button" parent="VBoxContainer"]
+[node name="NewConversationButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "New conversation"
 
@@ -47,7 +47,7 @@ text = "Save fine tune file"
 layout_mode = 2
 size_flags_stretch_ratio = 4.0
 
-[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/NewConversationButton" to="." method="_on_button_pressed"]
 [connection signal="item_selected" from="VBoxContainer/ConversationsList" to="." method="_on_item_list_item_selected"]
 [connection signal="pressed" from="VBoxContainer/LoadBtn" to="." method="_on_load_btn_pressed"]
 [connection signal="file_selected" from="VBoxContainer/LoadBtn/FileDialog" to="." method="_on_file_dialog_file_selected"]

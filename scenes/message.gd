@@ -126,15 +126,20 @@ func _on_add_result_button_pressed() -> void:
 
 
 func _on_role_item_selected(index: int) -> void:
+	$MessageSettingsContainer/MessageType.set_item_disabled(0, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
 	match index:
 		0:
-			pass
+			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
 		1:
 			$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
+			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
 		2:
-			$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
+			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+			# Only make functions available if there are any
+			if len(get_node("/root/FineTune").get_available_function_names()) > 0:
+				$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
 
 
 func _on_function_name_choice_button_item_selected(index: int) -> void:

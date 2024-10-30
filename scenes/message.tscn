@@ -1,0 +1,149 @@
+[gd_scene load_steps=7 format=3 uid="uid://clmrayf2uklte"]
+
+[ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
+[ext_resource type="Script" path="res://scenes/message.gd" id="1_lafvt"]
+[ext_resource type="Texture2D" uid="uid://dgxn3yonojrbk" path="res://icons/figurine.png" id="2_qmf1n"]
+[ext_resource type="Texture2D" uid="uid://bptbksdfpn3qo" path="res://icons/userRobot.png" id="3_52cv2"]
+[ext_resource type="Texture2D" uid="uid://d0dc8gybqt1la" path="res://icon.svg" id="4_txusn"]
+[ext_resource type="Texture2D" uid="uid://cqpr5rwcgug2k" path="res://icons/trashcanOpen.png" id="5_g5buw"]
+
+[node name="Message" type="HBoxContainer" groups=["message"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+script = ExtResource("1_lafvt")
+
+[node name="MessageSettingsContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Role" type="OptionButton" parent="MessageSettingsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+selected = 1
+item_count = 3
+popup/item_0/text = "system"
+popup/item_0/icon = ExtResource("1_1kcao")
+popup/item_1/text = "user"
+popup/item_1/icon = ExtResource("2_qmf1n")
+popup/item_1/id = 1
+popup/item_2/text = "assistant"
+popup/item_2/icon = ExtResource("3_52cv2")
+popup/item_2/id = 2
+
+[node name="MessageType" type="OptionButton" parent="MessageSettingsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+selected = 0
+item_count = 3
+popup/item_0/text = "Text"
+popup/item_1/text = "Image"
+popup/item_1/id = 1
+popup/item_2/text = "Function Call"
+popup/item_2/id = 2
+
+[node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
+layout_mode = 2
+text = "Löschen"
+icon = ExtResource("5_g5buw")
+
+[node name="TextMessageContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextnachrichtLabel" type="Label" parent="TextMessageContainer"]
+layout_mode = 2
+text = "Textnachricht"
+horizontal_alignment = 1
+
+[node name="Message" type="TextEdit" parent="TextMessageContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+wrap_mode = 1
+scroll_fit_content_height = true
+
+[node name="ImageMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BildNachrichtLabel" type="Label" parent="ImageMessageContainer"]
+layout_mode = 2
+text = "Bild"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="ImageMessageContainer"]
+custom_minimum_size = Vector2(0, 800)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("4_txusn")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="Base64ImageEdit" type="LineEdit" parent="ImageMessageContainer"]
+layout_mode = 2
+
+[node name="LoadImageButton" type="Button" parent="ImageMessageContainer"]
+layout_mode = 2
+text = "Load Image"
+
+[node name="FileDialog" type="FileDialog" parent="ImageMessageContainer"]
+title = "Open a File"
+position = Vector2i(325, 50)
+size = Vector2i(637, 560)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "Funktion nutzen"
+horizontal_alignment = 1
+
+[node name="function" type="HBoxContainer" parent="FunctionMessageContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="FunctionMessageContainer/function"]
+layout_mode = 2
+text = "Welche?"
+
+[node name="FunctionNameChoiceButton" type="OptionButton" parent="FunctionMessageContainer/function"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ParamterSectionLabel" type="Label" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "Parameters"
+horizontal_alignment = 1
+
+[node name="ParamterSectionLabel2" type="Label" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "Ergebnis"
+horizontal_alignment = 1
+
+[node name="AddResultButton" type="Button" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "Add result"
+
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
+[connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
+[connection signal="pressed" from="ImageMessageContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
+[connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]

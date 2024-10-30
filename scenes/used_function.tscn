@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://dtlpp8ima771s"]
+
+[ext_resource type="Script" path="res://scenes/used_function.gd" id="1_5pk76"]
+[ext_resource type="PackedScene" uid="uid://qyfqi7d0l7ed" path="res://scenes/function_use_parameter.tscn" id="1_ixcli"]
+[ext_resource type="PackedScene" uid="uid://dvlnjw6n55r3v" path="res://scenes/function_name_choice_button.tscn" id="2_67khi"]
+[ext_resource type="PackedScene" uid="uid://dvv3gj718m2b4" path="res://scenes/function_call_results_parameter.tscn" id="3_7pf7k"]
+
+[node name="used_function" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_5pk76")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Funktion nutzen"
+horizontal_alignment = 1
+
+[node name="function" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="function"]
+layout_mode = 2
+text = "Welche?"
+
+[node name="FunctionNameChoiceButton" parent="function" instance=ExtResource("2_67khi")]
+layout_mode = 2
+
+[node name="ParamterSectionLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Parameters"
+horizontal_alignment = 1
+
+[node name="FunctionUseParameter" parent="." instance=ExtResource("1_ixcli")]
+layout_mode = 2
+
+[node name="ParamterSectionLabel2" type="Label" parent="."]
+layout_mode = 2
+text = "Ergebnis"
+horizontal_alignment = 1
+
+[node name="Results" parent="." instance=ExtResource("3_7pf7k")]
+layout_mode = 2
+
+[node name="AddResultButton" type="Button" parent="."]
+layout_mode = 2
+text = "Add result"
+
+[connection signal="pressed" from="AddResultButton" to="." method="_on_add_result_button_pressed"]

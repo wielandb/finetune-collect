@@ -1,0 +1,10 @@
+[gd_resource type="StyleBoxTexture" load_steps=2 format=3 uid="uid://b80x3v61vxfhd"]
+
+[sub_resource type="CompressedTexture2D" id="1"]
+
+[resource]
+content_margin_left = 5.0
+texture = SubResource("1")
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+region_rect = Rect2(0, 0, 21, 21)

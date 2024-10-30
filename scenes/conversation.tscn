@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=3 uid="uid://cd35p8jv7axv5"]
+
+[ext_resource type="PackedScene" uid="uid://biup68nmj50l8" path="res://scenes/messages_list.tscn" id="1_lyn02"]
+[ext_resource type="PackedScene" uid="uid://ducbmcevyftgv" path="res://scenes/functions_list.tscn" id="2_ii783"]
+[ext_resource type="PackedScene" uid="uid://d3c68j8erdmn8" path="res://scenes/conversation_settings.tscn" id="3_wqhly"]
+
+[node name="Conversation" type="TabContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+current_tab = 2
+
+[node name="Messages" type="TabBar" parent="."]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="MessagesList" parent="Messages" instance=ExtResource("1_lyn02")]
+clip_contents = false
+layout_mode = 1
+offset_right = 0.0
+offset_bottom = 0.0
+
+[node name="Functions" type="TabBar" parent="."]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="FunctionsList" parent="Functions" instance=ExtResource("2_ii783")]
+layout_mode = 1
+
+[node name="Settings" type="TabBar" parent="."]
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="ConversationSettings" parent="Settings" instance=ExtResource("3_wqhly")]
+layout_mode = 1
+
+[node name="Analysis" type="TabBar" parent="."]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3

@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://ducbmcevyftgv"]
+
+[ext_resource type="Script" path="res://scenes/functions_list.gd" id="1_i2118"]
+
+[node name="FunctionsList" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_i2118")
+
+[node name="FunctionsListContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 39
+
+[node name="AddFunctionButton" type="Button" parent="FunctionsListContainer"]
+layout_mode = 2
+text = "Neue Funktion hinzufügen"
+
+[connection signal="pressed" from="FunctionsListContainer/AddFunctionButton" to="." method="_on_add_function_button_pressed"]

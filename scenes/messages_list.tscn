@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://biup68nmj50l8"]
+
+[ext_resource type="Script" path="res://scenes/messages_list.gd" id="1_j7pgd"]
+
+[node name="MessagesList" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1144.0
+offset_bottom = -640.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_j7pgd")
+
+[node name="MessagesListContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+
+[node name="AddMessageButton" type="Button" parent="MessagesListContainer"]
+layout_mode = 2
+text = "Nachricht hinzufügen"
+
+[connection signal="pressed" from="MessagesListContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]

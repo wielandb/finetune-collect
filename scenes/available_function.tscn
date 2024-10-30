@@ -1,0 +1,64 @@
+[gd_scene load_steps=3 format=3 uid="uid://di6careg20i2n"]
+
+[ext_resource type="Script" path="res://scenes/available_function.gd" id="1_gq8tp"]
+[ext_resource type="PackedScene" uid="uid://bbx4xuy48vfcf" path="res://parameter.tscn" id="1_k8c6c"]
+
+[node name="AvailableFunction" type="VBoxContainer" groups=["available_function"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_gq8tp")
+
+[node name="functionlabel" type="Label" parent="."]
+layout_mode = 2
+text = "Function"
+horizontal_alignment = 1
+
+[node name="FunctionNameContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="FunctionNameLabel" type="Label" parent="FunctionNameContainer"]
+layout_mode = 2
+text = "Function Name"
+
+[node name="FunctionNameEdit" type="LineEdit" parent="FunctionNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FunctionDescriptionContainer2" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="FunctionDescriptionLabel" type="Label" parent="FunctionDescriptionContainer2"]
+layout_mode = 2
+text = "Function Description"
+
+[node name="FunctionDescriptionEdit" type="LineEdit" parent="FunctionDescriptionContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="parameterslabel" type="Label" parent="."]
+layout_mode = 2
+text = "Parameters"
+horizontal_alignment = 1
+
+[node name="ParameterContainer" parent="." groups=["available_parameter"] instance=ExtResource("1_k8c6c")]
+layout_mode = 2
+
+[node name="AddParameterButton" type="Button" parent="."]
+layout_mode = 2
+text = "+"
+
+[node name="DeleteFunctionButton" type="Button" parent="."]
+layout_mode = 2
+text = "Delete Function"
+
+[connection signal="text_changed" from="FunctionNameContainer/FunctionNameEdit" to="." method="_on_function_name_edit_text_changed"]
+[connection signal="text_changed" from="FunctionDescriptionContainer2/FunctionDescriptionEdit" to="." method="_on_function_name_edit_text_changed"]
+[connection signal="pressed" from="AddParameterButton" to="." method="_on_add_parameter_button_pressed"]
+[connection signal="pressed" from="AddParameterButton" to="." method="update_available_functions_global"]
+[connection signal="pressed" from="DeleteFunctionButton" to="." method="_on_delete_function_button_pressed"]
+[connection signal="pressed" from="DeleteFunctionButton" to="." method="update_available_functions_global"]

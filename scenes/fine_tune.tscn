@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=3 uid="uid://bjjksasvd2r5u"]
+
+[ext_resource type="PackedScene" uid="uid://cd35p8jv7axv5" path="res://scenes/conversation.tscn" id="1_o1j2m"]
+[ext_resource type="Theme" uid="uid://cebssi3strko3" path="res://themes/theme.res" id="1_v4ety"]
+[ext_resource type="Script" path="res://scenes/fine_tune.gd" id="2_4tk5v"]
+
+[node name="FineTune" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("1_v4ety")
+script = ExtResource("2_4tk5v")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "New conversation"
+
+[node name="ConversationsList" type="ItemList" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LoadBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Load fine tune file"
+
+[node name="FileDialog" type="FileDialog" parent="VBoxContainer/LoadBtn"]
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="SaveBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Save fine tune file"
+
+[node name="Conversation" parent="." instance=ExtResource("1_o1j2m")]
+layout_mode = 2
+size_flags_stretch_ratio = 4.0
+
+[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="item_selected" from="VBoxContainer/ConversationsList" to="." method="_on_item_list_item_selected"]
+[connection signal="pressed" from="VBoxContainer/LoadBtn" to="." method="_on_load_btn_pressed"]
+[connection signal="file_selected" from="VBoxContainer/LoadBtn/FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="pressed" from="VBoxContainer/SaveBtn" to="." method="_on_save_btn_pressed"]
+[connection signal="tab_changed" from="Conversation" to="." method="_on_conversation_tab_changed"]

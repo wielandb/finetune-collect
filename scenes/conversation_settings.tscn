@@ -1,0 +1,85 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3c68j8erdmn8"]
+
+[ext_resource type="Script" path="res://scenes/conversation_settings.gd" id="1_efb5c"]
+
+[node name="ConversationSettings" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_efb5c")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GlobalSystemMessageCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Use one System Message for the whole conversation"
+
+[node name="GlobalSystemMessageContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GlobalSystemMessageTextLabel" type="Label" parent="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 29
+text = "Global System Message"
+horizontal_alignment = 1
+
+[node name="GlobalSystemMessageTextEdit" type="TextEdit" parent="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "jdks adas
+sddasdasd
+asdasdasdasd"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Minimal height of images"
+
+[node name="MinimalImageHeightSlider" type="HSlider" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 5.0
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "??? px"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Project File Format"
+
+[node name="OptionButton" type="OptionButton" parent="VBoxContainer/HBoxContainer3"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 5.0
+item_count = 2
+popup/item_0/text = "binary"
+popup/item_1/text = "json"
+popup/item_1/id = 1
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
+[connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]

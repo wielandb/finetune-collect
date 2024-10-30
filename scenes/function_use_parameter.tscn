@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://qyfqi7d0l7ed"]
+
+[ext_resource type="Script" path="res://scenes/function_use_parameter.gd" id="1_yrmbv"]
+
+[node name="FunctionUseParameter" type="HBoxContainer" groups=["function_use_parameter"]]
+alignment = 1
+script = ExtResource("1_yrmbv")
+
+[node name="FunctionUseParameterIsUsedCheckbox" type="CheckBox" parent="."]
+layout_mode = 2
+text = "Use parameter"
+
+[node name="ParameterName" type="Label" parent="."]
+layout_mode = 2
+text = "[Parameter Name]
+"
+
+[node name="FunctionUseParameterEdit" type="LineEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FunctionUseParameterChoice" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3

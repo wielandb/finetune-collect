@@ -37,6 +37,7 @@ func to_var():
 
 func from_var(data):
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data["role"]))
+	_on_role_item_selected($MessageSettingsContainer/Role.selected)
 	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data["type"]))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
 	$TextMessageContainer/Message.text = data["textContent"]

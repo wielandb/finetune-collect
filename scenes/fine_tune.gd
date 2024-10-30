@@ -39,33 +39,10 @@ func _process(delta: float) -> void:
 		save_current_conversation()
 		update_functions_internal()
 		update_settings_internal()
-		FINETUNEDATA = {}
-		FINETUNEDATA["functions"] = FUNCTIONS
-		FINETUNEDATA["conversations"] = CONVERSATIONS
-		FINETUNEDATA["settings"] = SETTINGS
-		var file = FileAccess.open("line.json", FileAccess.WRITE)
-		if file:
-			file.store_var(FINETUNEDATA)
-			file.close()
-		else:
-			print("file open failed")
+		save_to_json("test3.json")
 	if Input.is_action_just_released("load"):
-		if FileAccess.file_exists("line.json"):
-			print("save file found")
-			var file = FileAccess.open("line.json", FileAccess.READ)
-			FINETUNEDATA = file.get_var()
-			file.close()
-			FUNCTIONS = FINETUNEDATA["functions"]
-			CONVERSATIONS = FINETUNEDATA["conversations"]
-			SETTINGS = FINETUNEDATA["settings"]
-			CURRENT_EDITED_CONVO_IX = len(CONVERSATIONS) - 1
-			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
-			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-			refresh_conversations_list()
-			$VBoxContainer/ConversationsList.select(CURRENT_EDITED_CONVO_IX)
-		else:
-			print("file not found")
+		load_from_json("test3.json")
+		
 
 
 
@@ -174,3 +151,53 @@ func _on_button_pressed() -> void:
 	# Create conversation if it does not exist
 	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = []
 	refresh_conversations_list()
+
+func save_to_binary(filename):
+	FINETUNEDATA = {}
+	FINETUNEDATA["functions"] = FUNCTIONS
+	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["settings"] = SETTINGS
+	var file = FileAccess.open(filename, FileAccess.WRITE)
+	if file:
+		file.store_var(FINETUNEDATA)
+		file.close()
+	else:
+		print("file open failed")
+	
+func load_from_binary(filename):
+	if FileAccess.file_exists(filename):
+		print("save file found")
+		var file = FileAccess.open(filename, FileAccess.READ)
+		FINETUNEDATA = file.get_var()
+		file.close()
+		FUNCTIONS = FINETUNEDATA["functions"]
+		CONVERSATIONS = FINETUNEDATA["conversations"]
+		SETTINGS = FINETUNEDATA["settings"]
+		CURRENT_EDITED_CONVO_IX = len(CONVERSATIONS) - 1
+		$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
+		$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+		$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+		refresh_conversations_list()
+		$VBoxContainer/ConversationsList.select(CURRENT_EDITED_CONVO_IX)
+	else:
+		print("file not found")
+	
+func save_to_json(filename):
+	var jsonstr = JSON.stringify(FINETUNEDATA, "\t")
+	var file = FileAccess.open("user://" + filename, FileAccess.WRITE)
+	file.store_string(jsonstr)
+	file.close()
+	
+func load_from_json(filename):
+	var json_as_text = FileAccess.get_file_as_string("user://" + filename)
+	var json_as_dict = JSON.parse_string(json_as_text)
+	FINETUNEDATA = json_as_dict
+	FUNCTIONS = FINETUNEDATA["functions"]
+	CONVERSATIONS = FINETUNEDATA["conversations"]
+	SETTINGS = FINETUNEDATA["settings"]
+	CURRENT_EDITED_CONVO_IX = len(CONVERSATIONS) - 1
+	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+	refresh_conversations_list()
+	$VBoxContainer/ConversationsList.select(CURRENT_EDITED_CONVO_IX)

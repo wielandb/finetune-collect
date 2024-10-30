@@ -6,3 +6,18 @@
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_v7xgf")
+
+[node name="ElementsListContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RunAnalysiButton" type="Button" parent="ElementsListContainer"]
+layout_mode = 2
+
+[node name="CommonStatsticsLabel" type="Label" parent="ElementsListContainer"]
+layout_mode = 2
+
+[node name="WarningsLabel" type="Label" parent="ElementsListContainer"]
+layout_mode = 2
+
+[node name="ErrorsLabel" type="Label" parent="ElementsListContainer"]
+layout_mode = 2

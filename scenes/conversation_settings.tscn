@@ -40,9 +40,7 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "jdks adas
-sddasdasd
-asdasdasdasd"
+text = "You are a helpful assistant!"
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2

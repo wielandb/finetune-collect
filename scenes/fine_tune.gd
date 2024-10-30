@@ -223,3 +223,34 @@ func load_from_json(filename):
 func _on_save_file_dialog_file_selected(path: String) -> void:
 	save_to_json(path)
 	
+
+func delete_conversation(ixStr: String):
+	CONVERSATIONS.erase(ixStr)
+	# If we were currently editing this conversation, unload it
+	if CURRENT_EDITED_CONVO_IX == ixStr:
+		for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
+			if message.is_in_group("message"):
+				message.queue_free()
+		# Select a random conversation that we will now be editing
+		for c in CONVERSATIONS.keys():
+			CURRENT_EDITED_CONVO_IX = c
+			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+			refresh_conversations_list()
+			$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+			break
+	refresh_conversations_list()
+	print(CONVERSATIONS)
+
+func get_ItemList_selected_Item_index(node: ItemList) -> int:
+	for i in range(node.item_count):
+		if node.is_selected(i):
+			return i
+	return -1
+
+func _on_conversations_list_gui_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if event.pressed and event.keycode == 4194312:
+			# Go through every entry and check if it is selected
+			for i in range($VBoxContainer/ConversationsList.item_count):
+				if $VBoxContainer/ConversationsList.is_selected(i):
+					delete_conversation($VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)))	

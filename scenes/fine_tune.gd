@@ -63,9 +63,7 @@ func _process(delta: float) -> void:
 
 
 func _on_save_btn_pressed() -> void:
-	var packed_scene = PackedScene.new()
-	packed_scene.pack(get_tree().root.get_child(0))
-	ResourceSaver.save(packed_scene, "res://savegame.tscn")
+	$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 
 func update_functions_internal():
 	FUNCTIONS = $Conversation/Functions/FunctionsList.to_var()
@@ -142,10 +140,7 @@ func is_function_parameter_required(function_name, parameter_name):
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	$VBoxContainer/ItemList.clear()
-	var filetext = FileAccess.get_file_as_string(path)
-	var data = JSON.parse_string(filetext)
-	FINETUNEDATA = data
+	load_from_json(path)
 		
 
 func refresh_conversations_list():
@@ -204,12 +199,12 @@ func save_to_json(filename):
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
 	var jsonstr = JSON.stringify(FINETUNEDATA, "\t")
-	var file = FileAccess.open("user://" + filename, FileAccess.WRITE)
+	var file = FileAccess.open(filename, FileAccess.WRITE)
 	file.store_string(jsonstr)
 	file.close()
 	
 func load_from_json(filename):
-	var json_as_text = FileAccess.get_file_as_string("user://" + filename)
+	var json_as_text = FileAccess.get_file_as_string(filename)
 	var json_as_dict = JSON.parse_string(json_as_text)
 	print(json_as_dict)
 	FINETUNEDATA = json_as_dict
@@ -223,3 +218,8 @@ func load_from_json(filename):
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+
+
+func _on_save_file_dialog_file_selected(path: String) -> void:
+	save_to_json(path)
+	

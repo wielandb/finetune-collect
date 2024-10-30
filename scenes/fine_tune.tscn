@@ -43,6 +43,11 @@ use_native_dialog = true
 layout_mode = 2
 text = "Save fine tune file"
 
+[node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveBtn"]
+access = 2
+filters = PackedStringArray("*.json", "*.ftproj")
+use_native_dialog = true
+
 [node name="Conversation" parent="." instance=ExtResource("1_o1j2m")]
 layout_mode = 2
 size_flags_stretch_ratio = 4.0
@@ -52,4 +57,5 @@ size_flags_stretch_ratio = 4.0
 [connection signal="pressed" from="VBoxContainer/LoadBtn" to="." method="_on_load_btn_pressed"]
 [connection signal="file_selected" from="VBoxContainer/LoadBtn/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="VBoxContainer/SaveBtn" to="." method="_on_save_btn_pressed"]
+[connection signal="file_selected" from="VBoxContainer/SaveBtn/SaveFileDialog" to="." method="_on_save_file_dialog_file_selected"]
 [connection signal="tab_changed" from="Conversation" to="." method="_on_conversation_tab_changed"]

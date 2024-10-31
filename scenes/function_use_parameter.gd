@@ -8,6 +8,10 @@ func selectionStringToIndex(node, string):
 			return i
 	return -1
 
+func myParentFunction() -> String:
+	var functionChooseBox = get_node("../function/FunctionNameChoiceButton")
+	return functionChooseBox.get_item_text(functionChooseBox.selected)
+
 func to_var():
 	var me = {}
 	me["name"] = $ParameterName.text
@@ -23,7 +27,7 @@ func from_var(me):
 	print(me)
 	$ParameterName.text = me["name"]
 	var my_parameter_name = me["name"]
-	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var my_function_name = myParentFunction()
 	# Falls der Paramter required ist, checkbox auf ja setzen und disablen
 	var isUsedFunctionEnum = get_node("/root/FineTune").is_function_parameter_enum(my_function_name, my_parameter_name)
 	var usedParameterEnumOptions = get_node("/root/FineTune").get_function_parameter_enums(my_function_name, my_parameter_name)

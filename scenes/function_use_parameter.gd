@@ -19,8 +19,24 @@ func to_var():
 	return me	
 
 func from_var(me):
+	print("Use_Parameter from var:")
+	print(me)
 	$ParameterName.text = me["name"]
+	var my_parameter_name = me["name"]
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	# Falls der Paramter required ist, checkbox auf ja setzen und disablen
+	var isUsedFunctionEnum = get_node("/root/FineTune").is_function_parameter_enum(my_function_name, my_parameter_name)
+	var usedParameterEnumOptions = get_node("/root/FineTune").get_function_parameter_enums(my_function_name, my_parameter_name)
 	$FunctionUseParameterIsUsedCheckbox.button_pressed = me["isUsed"]
+	if isUsedFunctionEnum:
+		$FunctionUseParameterEdit.visible = false
+		$FunctionUseParameterChoice.visible = true
+		$FunctionUseParameterChoice.clear()
+		for pv in str(usedParameterEnumOptions).split(",", false):
+			$FunctionUseParameterChoice.add_item(pv)
+	else:
+		$FunctionUseParameterEdit.visible = true
+		$FunctionUseParameterChoice.visible = false
 	$FunctionUseParameterEdit.text = me["parameterValueText"]
 	$FunctionUseParameterChoice.select(selectionStringToIndex($FunctionUseParameterChoice, me["parameterValueChoice"]))
 	

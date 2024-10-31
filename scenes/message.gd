@@ -159,12 +159,23 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 		$FunctionMessageContainer.add_child(newScene)
 		newScene.get_node("ParameterName").text = p
 		$FunctionMessageContainer.move_child(newScene, pix + 1)
+		var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
 		# Falls der Paramter required ist, checkbox auf ja setzen und disablen
 		if get_node("/root/FineTune").is_function_parameter_required($FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected), p):
 			print("Parameter required, disabling....")
 			newScene.get_node("FunctionUseParameterIsUsedCheckbox").button_pressed = true
 			newScene.get_node("FunctionUseParameterIsUsedCheckbox").disabled = true
-
+		# Falls der Paramter eine Enumeration ist, die auswahlbox füllen und aktivieren, wenn nicht, die TextEdit aktivieren
+		## Zuerst beide deaktivieren
+		newScene.get_node("FunctionUseParameterEdit").visible = false
+		newScene.get_node("FunctionUseParameterChoice").visible = false
+		if get_node("/root/FineTune").is_function_parameter_enum(my_function_name, p):
+			newScene.get_node("FunctionUseParameterChoice").visible = true
+			newScene.get_node("FunctionUseParameterChoice").clear()
+			for pv in get_node("/root/FineTune").get_function_parameter_enums(my_function_name, p):
+				newScene.get_node("FunctionUseParameterChoice").add_item(pv)
+		else:
+			newScene.get_node("FunctionUseParameterEdit").visible = true
 	print("-------------------")
 
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert

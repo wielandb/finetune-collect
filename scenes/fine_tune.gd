@@ -139,6 +139,24 @@ func is_function_parameter_required(function_name, parameter_name):
 	print("is_function_parameter_required could not find parameter " + str(parameter_name) + " for function " + function_name + ". I mean, I will be returning false, but are you sure everythings alright?")
 	return false
 
+func is_function_parameter_enum(function_name, parameter_name):
+	for function in FUNCTIONS:
+		if function["name"] == function_name:
+			for parameter in function["parameters"]:
+				if parameter["name"] == parameter_name:
+					if parameter["isEnum"]:
+						return true
+	return false
+	
+func get_function_parameter_enums(function_name, parameter_name):
+	for function in FUNCTIONS:
+		if function["name"] == function_name:
+			for parameter in function["parameters"]:
+				if parameter["name"] == parameter_name:
+					if parameter["isEnum"]:
+						return str(parameter["enumOptions"]).split(",", false)
+	return []
+
 func _on_file_dialog_file_selected(path: String) -> void:
 	load_from_json(path)
 		

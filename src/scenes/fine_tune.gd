@@ -219,7 +219,7 @@ func save_to_json(filename):
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
-	var jsonstr = JSON.stringify(FINETUNEDATA, "\t")
+	var jsonstr = JSON.stringify(FINETUNEDATA, "\t", false)
 	var file = FileAccess.open(filename, FileAccess.WRITE)
 	file.store_string(jsonstr)
 	file.close()

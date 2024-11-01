@@ -158,8 +158,10 @@ func get_function_parameter_enums(function_name, parameter_name):
 	return []
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	load_from_json(path)
-		
+	if path.ends_with(".json"):
+		load_from_json(path)
+	elif path.ends_with(".ftproj"):
+		load_from_binary(path)
 
 func refresh_conversations_list():
 	$VBoxContainer/ConversationsList.clear()
@@ -202,12 +204,13 @@ func load_from_binary(filename):
 		FUNCTIONS = FINETUNEDATA["functions"]
 		CONVERSATIONS = FINETUNEDATA["conversations"]
 		SETTINGS = FINETUNEDATA["settings"]
-		CURRENT_EDITED_CONVO_IX = len(CONVERSATIONS) - 1
+		for i in CONVERSATIONS.keys():
+			CURRENT_EDITED_CONVO_IX = str(i)
 		$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 		$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 		$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 		refresh_conversations_list()
-		$VBoxContainer/ConversationsList.select(CURRENT_EDITED_CONVO_IX)
+		$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
 	else:
 		print("file not found")
 	
@@ -239,8 +242,10 @@ func load_from_json(filename):
 
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
-	save_to_json(path)
-	
+	if path.ends_with(".json"):
+		save_to_json(path)
+	elif path.ends_with(".ftproj"):
+		save_to_binary(path)
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)

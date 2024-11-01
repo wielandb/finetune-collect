@@ -22,6 +22,7 @@ func from_var(data):
 		var parameter_instance = PARAMETER_SCENE.instantiate()
 		var parametersLabelIx = $parameterslabel.get_index()
 		add_child(parameter_instance)
+		parameter_instance.add_to_group("available_parameter")
 		parameter_instance.from_var(parameter)
 		move_child(parameter_instance, parametersLabelIx + 1)
 	

@@ -36,6 +36,8 @@ func to_var():
 	return me
 
 func from_var(data):
+	print("Building from var")
+	print(data)
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data["role"]))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
 	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data["type"]))
@@ -145,7 +147,9 @@ func _on_role_item_selected(index: int) -> void:
 
 func _on_function_name_choice_button_item_selected(index: int) -> void:
 	# Die parameter abrufen, die es für diese Funktion gibt
-	var pn = get_node("/root/FineTune").get_available_parameter_names_for_function($FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected))
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var pn = get_node("/root/FineTune").get_available_parameter_names_for_function(my_function_name)
+	print("Parameter names for that selected function:")
 	print(pn)
 	# Alle Parameter Dinger löschen
 	for parameter in $FunctionMessageContainer.get_children():
@@ -159,7 +163,6 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 		$FunctionMessageContainer.add_child(newScene)
 		newScene.get_node("ParameterName").text = p
 		$FunctionMessageContainer.move_child(newScene, pix + 1)
-		var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
 		# Falls der Paramter required ist, checkbox auf ja setzen und disablen
 		if get_node("/root/FineTune").is_function_parameter_required($FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected), p):
 			print("Parameter required, disabling....")

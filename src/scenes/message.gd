@@ -189,3 +189,12 @@ func _on_something_int_changed(index: int) -> void:
 	
 func _on_something_string_changed(new_text: String) -> void:
 	update_messages_global()
+
+
+func _on_texture_rect_gui_input(event: InputEvent) -> void:
+	if Input.is_key_pressed(KEY_CTRL):
+		if event is InputEventMouseButton:
+			if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+				$ImageMessageContainer/TextureRect.custom_minimum_size.y += 10
+			if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+				$ImageMessageContainer/TextureRect.custom_minimum_size.y -= 10

@@ -55,6 +55,7 @@ size_flags_horizontal = 3
 
 [node name="TextnachrichtLabel" type="Label" parent="TextMessageContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 36
 text = "Textnachricht"
 horizontal_alignment = 1
 
@@ -72,6 +73,7 @@ size_flags_horizontal = 3
 
 [node name="BildNachrichtLabel" type="Label" parent="ImageMessageContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 36
 text = "Bild"
 horizontal_alignment = 1
 
@@ -106,6 +108,7 @@ size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="FunctionMessageContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 36
 text = "Funktion nutzen"
 horizontal_alignment = 1
 

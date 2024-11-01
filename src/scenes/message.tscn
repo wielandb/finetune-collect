@@ -76,7 +76,7 @@ text = "Bild"
 horizontal_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="ImageMessageContainer"]
-custom_minimum_size = Vector2(0, 800)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
 texture = ExtResource("4_txusn")

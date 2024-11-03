@@ -47,7 +47,10 @@ func from_var(data):
 	# If not empty, create the image from the base64
 	if $ImageMessageContainer/Base64ImageEdit.text != "":
 		base64_to_image(imageTexture, $ImageMessageContainer/Base64ImageEdit.text)
+	# Now everything regarding functions
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
+	#if data["functionName"] != "":
+	#	_on_function_name_choice_button_item_selected(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
 	for d in data["functionParameters"]:
 		var parameterInstance = function_use_parameters_scene.instantiate()
 		$FunctionMessageContainer.add_child(parameterInstance)
@@ -55,8 +58,6 @@ func from_var(data):
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
 		parameterInstance.from_var(d)
 	# Act as if the function select was pressed if its not empty
-	if data["functionName"] != "":
-		_on_function_name_choice_button_item_selected(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
 	for d in data["functionResults"]:
 		var resultInstance = result_parameters_scene.instantiate()
 		$FunctionMessageContainer.add_child(resultInstance)

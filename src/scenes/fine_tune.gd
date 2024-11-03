@@ -128,14 +128,14 @@ func _on_load_btn_pressed() -> void:
 	$VBoxContainer/LoadBtn/FileDialog.visible = true
 
 func is_function_parameter_required(function_name, parameter_name):
+	print("Performing parameter required check!")
 	for function in FUNCTIONS:
 		if function["name"] == function_name:
 			for parameter in function["parameters"]:
 				if parameter["name"] == parameter_name:
-					if parameter["isRequired"]:
-						return true
-					else:
-						return false
+					print("Paramter required check:")
+					print(parameter)
+					return parameter["isRequired"]
 	print("is_function_parameter_required could not find parameter " + str(parameter_name) + " for function " + function_name + ". I mean, I will be returning false, but are you sure everythings alright?")
 	return false
 

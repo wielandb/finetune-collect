@@ -17,9 +17,13 @@ func to_var():
 	me["name"] = $ParameterName.text
 	me["isUsed"] = $FunctionUseParameterIsUsedCheckbox.button_pressed
 	me["parameterValueText"] = $FunctionUseParameterEdit.text
+	print("Functionuseparameter Text")
+	print($FunctionUseParameterEdit.text)
 	me["parameterValueChoice"] = ""
 	if $FunctionUseParameterChoice.selected != -1:
 		me["parameterValueChoice"] = 	$FunctionUseParameterChoice.get_item_text($FunctionUseParameterChoice.selected)
+	print("Parameter to var result")
+	print(me)
 	return me	
 
 func from_var(me):
@@ -31,18 +35,25 @@ func from_var(me):
 	# Falls der Paramter required ist, checkbox auf ja setzen und disablen
 	var isUsedFunctionEnum = get_node("/root/FineTune").is_function_parameter_enum(my_function_name, my_parameter_name)
 	var usedParameterEnumOptions = get_node("/root/FineTune").get_function_parameter_enums(my_function_name, my_parameter_name)
+	var isUsedParameterRequired = get_node("/root/FineTune").is_function_parameter_required(my_function_name, my_parameter_name)
 	$FunctionUseParameterIsUsedCheckbox.button_pressed = me["isUsed"]
+	print("Is used parameter required?")
+	print(isUsedParameterRequired)
+	if isUsedParameterRequired:
+		$FunctionUseParameterIsUsedCheckbox.button_pressed = true
+		$FunctionUseParameterIsUsedCheckbox.disabled = true
 	if isUsedFunctionEnum:
 		$FunctionUseParameterEdit.visible = false
 		$FunctionUseParameterChoice.visible = true
 		$FunctionUseParameterChoice.clear()
 		for pv in str(usedParameterEnumOptions).split(",", false):
 			$FunctionUseParameterChoice.add_item(pv)
+		$FunctionUseParameterChoice.select(selectionStringToIndex($FunctionUseParameterChoice, me["parameterValueChoice"]))
 	else:
 		$FunctionUseParameterEdit.visible = true
 		$FunctionUseParameterChoice.visible = false
-	$FunctionUseParameterEdit.text = me["parameterValueText"]
-	$FunctionUseParameterChoice.select(selectionStringToIndex($FunctionUseParameterChoice, me["parameterValueChoice"]))
+		$FunctionUseParameterEdit.text = me["parameterValueText"]
+
 	
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

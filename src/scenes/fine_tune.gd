@@ -228,6 +228,9 @@ func load_from_json(filename):
 	var json_as_text = FileAccess.get_file_as_string(filename)
 	var json_as_dict = JSON.parse_string(json_as_text)
 	print(json_as_dict)
+	# Unload all UI
+	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
 	FINETUNEDATA = json_as_dict
 	FUNCTIONS = FINETUNEDATA["functions"]
 	CONVERSATIONS = FINETUNEDATA["conversations"]

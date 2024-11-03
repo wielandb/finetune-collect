@@ -33,3 +33,8 @@ func _on_add_function_button_pressed() -> void:
 	var newBtn = $FunctionsListContainer/AddFunctionButton
 	$FunctionsListContainer.move_child(newBtn, -1)
 	print(self.to_var())
+
+func delete_all_functions_from_UI():
+	for functionContainer in $FunctionsListContainer.get_children():
+		if functionContainer.is_in_group("available_function"):
+			functionContainer.queue_free()

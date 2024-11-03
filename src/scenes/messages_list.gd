@@ -38,3 +38,7 @@ func _on_add_message_button_pressed() -> void:
 	#
 	print(self.to_var())
 	
+func delete_all_messages_from_UI():
+	for message in $MessagesListContainer.get_children():
+		if message.is_in_group("message"):
+			message.queue_free()

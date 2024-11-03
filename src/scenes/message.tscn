@@ -43,6 +43,7 @@ popup/item_1/text = "Image"
 popup/item_1/id = 1
 popup/item_2/text = "Function Call"
 popup/item_2/id = 2
+popup/item_2/disabled = true
 
 [node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
 layout_mode = 2

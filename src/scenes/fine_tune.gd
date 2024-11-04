@@ -157,6 +157,28 @@ func get_function_parameter_enums(function_name, parameter_name):
 						return str(parameter["enumOptions"]).split(",", false)
 	return []
 
+func get_function_parameter_type(function_name, parameter_name):
+	for function in FUNCTIONS:
+		if function["name"] == function_name:
+			for parameter in function["parameters"]:
+				if parameter["name"] == parameter_name:
+					return parameter["type"]
+	return "None"
+
+func get_function_definition(function_name):
+	for function in FUNCTIONS:
+		if function["name"] == function_name:
+			return function
+	return {}
+
+func get_parameter_def(function_name, parameter_name):
+	for function in FUNCTIONS:
+		if function["name"] == function_name:
+			for parameter in function["parameters"]:
+				if parameter["name"] == parameter_name:
+					return parameter
+	return {}
+
 func _on_file_dialog_file_selected(path: String) -> void:
 	if path.ends_with(".json"):
 		load_from_json(path)

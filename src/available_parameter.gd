@@ -16,14 +16,38 @@ func to_var():
 	me["minimum"] = $ParameterMinimumEdit.value
 	me["maximum"] = $ParameterMaximumEdit.value
 	me["isEnum"] = $ParameterIsEnumCheckBox.button_pressed
+	me["hasLimits"] = $ParameterHasMinMaxCheckbox.button_pressed
 	me["enumOptions"] = $ParameterEnumEdit.text # TODO: Maybe split into options already?, if so change from_var too!
 	me["isRequired"] = $ParameterIsRequiredCheckBox.button_pressed
 	return me	
 
 func from_var(me):
-	$ParameterTypeBox.select(selectionStringToIndex($ParameterTypeBox, me["type"]))
+	var myType = me["type"]
+	$ParameterTypeBox.select(selectionStringToIndex($ParameterTypeBox, myType))
+	# Activate and deactivate things based on if its a String or a number
+	## Deactivate all
+	$ParameterHasMinMaxCheckbox.visible = false
+	$ParameterMinimumLabel.visible = false
+	$ParameterMinimumEdit.visible = false
+	$ParameterMaximumLabel.visible = false
+	$ParameterMaximumEdit.visible = false
+	$ParameterIsEnumCheckBox.visible = false
+	$ParameterEnumEdit.visible = false
+	## Activate based on Type
+	if myType == "String":
+		$ParameterIsEnumCheckBox.visible = true
+		$ParameterEnumEdit.visible = true
+	if myType == "Number":
+		$ParameterHasMinMaxCheckbox.visible = true
+		$ParameterHasMinMaxCheckbox.button_pressed = me["hasLimits"]
+		if me["hasLimits"]:
+			$ParameterMinimumLabel.visible = true
+			$ParameterMinimumEdit.visible = true
+			$ParameterMaximumLabel.visible = true
+			$ParameterMaximumEdit.visible = true
 	$ParameterNameEdit.text = me["name"]
 	$ParameterDescriptionEdit.text = me["description"]
+	$ParameterHasMinMaxCheckbox.button_pressed = me["hasLimits"]
 	$ParameterMinimumEdit.value = me["minimum"]
 	$ParameterMaximumEdit.value = me["maximum"]
 	$ParameterIsEnumCheckBox.button_pressed = me["isEnum"]

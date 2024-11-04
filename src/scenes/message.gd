@@ -159,6 +159,7 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 	# den Index des Parameter-Labels finden
 	var pix = $FunctionMessageContainer/ParamterSectionLabel.get_index()
 	for p in pn:
+		var my_parameter_def = get_node("/root/FineTune").get_parameter_def(my_function_name, p)
 		print("Adding " + p)
 		var newScene = function_use_parameters_scene.instantiate()
 		$FunctionMessageContainer.add_child(newScene)
@@ -169,17 +170,35 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 			print("Parameter required, disabling....")
 			newScene.get_node("FunctionUseParameterIsUsedCheckbox").button_pressed = true
 			newScene.get_node("FunctionUseParameterIsUsedCheckbox").disabled = true
-		# Falls der Paramter eine Enumeration ist, die auswahlbox füllen und aktivieren, wenn nicht, die TextEdit aktivieren
-		## Zuerst beide deaktivieren
-		newScene.get_node("FunctionUseParameterEdit").visible = false
-		newScene.get_node("FunctionUseParameterChoice").visible = false
-		if get_node("/root/FineTune").is_function_parameter_enum(my_function_name, p):
-			newScene.get_node("FunctionUseParameterChoice").visible = true
-			newScene.get_node("FunctionUseParameterChoice").clear()
-			for pv in get_node("/root/FineTune").get_function_parameter_enums(my_function_name, p):
-				newScene.get_node("FunctionUseParameterChoice").add_item(pv)
-		else:
+		# Dinge die wir tun müssen je nachdem ob es ein String oder eine Number ist
+		print("Parameter Typ:")
+		print(my_parameter_def["type"])
+		if my_parameter_def["type"] == "Number":
+			newScene.get_node("FunctionUseParameterEdit").visible = false
+			newScene.get_node("FunctionUseParameterChoice").visible = false
+			newScene.get_node("FunctionUseParameterNumberEdit").visible = true
+			if my_parameter_def["hasLimits"]:
+				newScene.get_node("FunctionUseParameterNumberEdit").min_value = my_parameter_def["minimum"]
+				newScene.get_node("FunctionUseParameterNumberEdit").max_value = my_parameter_def["maximum"]
+			else:
+				newScene.get_node("FunctionUseParameterNumberEdit").min_value = -99999
+				newScene.get_node("FunctionUseParameterNumberEdit").max_value = 99999
+		if my_parameter_def["type"] == "String":
 			newScene.get_node("FunctionUseParameterEdit").visible = true
+			newScene.get_node("FunctionUseParameterChoice").visible = true
+			newScene.get_node("FunctionUseParameterNumberEdit").visible = false
+			# Falls der Paramter eine Enumeration ist, die auswahlbox füllen und aktivieren, wenn nicht, die TextEdit aktivieren
+			## Zuerst beide deaktivieren
+			newScene.get_node("FunctionUseParameterEdit").visible = false
+			newScene.get_node("FunctionUseParameterChoice").visible = false
+			if get_node("/root/FineTune").is_function_parameter_enum(my_function_name, p):
+				newScene.get_node("FunctionUseParameterChoice").visible = true
+				newScene.get_node("FunctionUseParameterChoice").clear()
+				for pv in get_node("/root/FineTune").get_function_parameter_enums(my_function_name, p):
+					newScene.get_node("FunctionUseParameterChoice").add_item(pv)
+			else:
+				newScene.get_node("FunctionUseParameterEdit").visible = true
+
 	print("-------------------")
 
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert

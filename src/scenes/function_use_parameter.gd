@@ -22,6 +22,7 @@ func to_var():
 	me["parameterValueChoice"] = ""
 	if $FunctionUseParameterChoice.selected != -1:
 		me["parameterValueChoice"] = 	$FunctionUseParameterChoice.get_item_text($FunctionUseParameterChoice.selected)
+	me["parameterValueNumber"] = $FunctionUseParameterNumberEdit.value
 	print("Parameter to var result")
 	print(me)
 	return me	
@@ -31,14 +32,19 @@ func from_var(me):
 	print(me)
 	$ParameterName.text = me["name"]
 	var my_parameter_name = me["name"]
+	$FunctionUseParameterNumberEdit.value = me["parameterValueNumber"]
 	var my_function_name = myParentFunction()
+	var my_function_def = get_node("/root/FineTune").get_function_def(my_function_name)
+	var my_parameter_def = get_node("/root/FineTune").get_function_def(my_function_name, my_parameter_name)	
 	# Falls der Paramter required ist, checkbox auf ja setzen und disablen
 	var isUsedFunctionEnum = get_node("/root/FineTune").is_function_parameter_enum(my_function_name, my_parameter_name)
 	var usedParameterEnumOptions = get_node("/root/FineTune").get_function_parameter_enums(my_function_name, my_parameter_name)
 	var isUsedParameterRequired = get_node("/root/FineTune").is_function_parameter_required(my_function_name, my_parameter_name)
+	var usedParameterType = get_node("/root/FineTune").get_function_parameter_type(my_function_name, my_parameter_name)
 	$FunctionUseParameterIsUsedCheckbox.button_pressed = me["isUsed"]
 	print("Is used parameter required?")
 	print(isUsedParameterRequired)
+	# Activate/deactivate based on Type
 	if isUsedParameterRequired:
 		$FunctionUseParameterIsUsedCheckbox.button_pressed = true
 		$FunctionUseParameterIsUsedCheckbox.disabled = true
@@ -53,6 +59,24 @@ func from_var(me):
 		$FunctionUseParameterEdit.visible = true
 		$FunctionUseParameterChoice.visible = false
 		$FunctionUseParameterEdit.text = me["parameterValueText"]
+	if usedParameterType == "Number":
+		$FunctionUseParameterEdit.visible = false
+		$FunctionUseParameterChoice.visible = false
+		$FunctionUseParameterNumberEdit.visible = true
+		if my_parameter_def["hasLimits"]:
+			$FunctionUseParameterNumberEdit.min_value = my_parameter_def["minimum"]
+			$FunctionUseParameterNumberEdit.max_value = my_parameter_def["maximum"]
+		else:
+			$FunctionUseParameterNumberEdit.min_value = -99999
+			$FunctionUseParameterNumberEdit.max_value = 99999
+	if usedParameterType == "String":
+		$FunctionUseParameterEdit.visible = true
+		$FunctionUseParameterChoice.visible = true
+		$FunctionUseParameterNumberEdit.visible = false
+
+		
+
+
 
 	
 # Called when the node enters the scene tree for the first time.

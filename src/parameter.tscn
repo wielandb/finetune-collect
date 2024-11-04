@@ -14,7 +14,7 @@ layout_mode = 2
 selected = 0
 item_count = 2
 popup/item_0/text = "String"
-popup/item_1/text = "Integer"
+popup/item_1/text = "Number"
 popup/item_1/id = 1
 
 [node name="ParameterNameLabel" type="Label" parent="."]
@@ -82,12 +82,12 @@ text = "X"
 [connection signal="item_selected" from="ParameterTypeBox" to="." method="_on_parameter_type_box_item_selected"]
 [connection signal="text_changed" from="ParameterNameEdit" to="." method="_on_parameter_name_edit_text_changed"]
 [connection signal="text_changed" from="ParameterDescriptionEdit" to="." method="_on_parameter_name_edit_text_changed"]
-[connection signal="pressed" from="ParameterHasMinMaxCheckbox" to="." method="_on_parameter_has_min_max_checkbox_pressed"]
 [connection signal="pressed" from="ParameterHasMinMaxCheckbox" to="." method="update_functions_global"]
+[connection signal="pressed" from="ParameterHasMinMaxCheckbox" to="." method="_on_parameter_has_min_max_checkbox_pressed"]
 [connection signal="changed" from="ParameterMinimumEdit" to="." method="update_functions_global"]
 [connection signal="changed" from="ParameterMaximumEdit" to="." method="update_functions_global"]
 [connection signal="pressed" from="ParameterIsEnumCheckBox" to="." method="_on_parameter_is_enum_check_box_pressed"]
 [connection signal="text_changed" from="ParameterEnumEdit" to="." method="_on_parameter_name_edit_text_changed"]
 [connection signal="pressed" from="ParameterIsRequiredCheckBox" to="." method="update_functions_global"]
-[connection signal="pressed" from="DeleteButton" to="." method="update_functions_global"]
 [connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="DeleteButton" to="." method="update_functions_global"]

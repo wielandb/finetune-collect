@@ -228,6 +228,8 @@ func load_from_binary(filename):
 		SETTINGS = FINETUNEDATA["settings"]
 		for i in CONVERSATIONS.keys():
 			CURRENT_EDITED_CONVO_IX = str(i)
+		$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+		$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
 		$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 		$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 		$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])

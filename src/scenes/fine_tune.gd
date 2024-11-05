@@ -5,6 +5,8 @@ var FUNCTIONS = []
 var CONVERSATIONS = {}
 var SETTINGS = []
 
+var RUNTIME = {"filepath": ""}
+
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 # FINETUNEDATA = 
 # { functions: [],
@@ -55,11 +57,16 @@ func _process(delta: float) -> void:
 		save_current_conversation()
 		update_functions_internal()
 		update_settings_internal()
-		save_to_json("test3.json")
+		if RUNTIME["filepath"] == "":
+			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+		else:
+			save_as_appropriate_from_path(RUNTIME["filepath"])
 	if Input.is_action_just_released("load"):
-		load_from_json("test3.json")
-		
-
+		$VBoxContainer/LoadBtn/FileDialog.visible = true
+	#	if RUNTIME["filepath"] == "":
+	#		$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+	#	else:
+	#		save_as_appropriate_from_path(RUNTIME["filepath"])
 
 
 func _on_save_btn_pressed() -> void:
@@ -184,6 +191,7 @@ func _on_file_dialog_file_selected(path: String) -> void:
 		load_from_json(path)
 	elif path.ends_with(".ftproj"):
 		load_from_binary(path)
+	RUNTIME["filepath"] = path
 
 func refresh_conversations_list():
 	$VBoxContainer/ConversationsList.clear()
@@ -267,12 +275,29 @@ func load_from_json(filename):
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
 
+func save_as_appropriate_from_path(path):
+	if path.ends_with(".json"):
+		save_to_json(path)
+	elif path.ends_with(".ftproj"):
+		save_to_binary(path)
+	else:
+		print("Konnte nicht speichern, da unbekanntes format")
+
+func load_from_appropriate_from_path(path):
+	if path.ends_with(".json"):
+		load_from_json(path)
+	elif path.ends_with(".ftproj"):
+		load_from_binary(path)
+	else:
+		print("Konnte nicht laden, da unbekanntes format")
+
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
 	if path.ends_with(".json"):
 		save_to_json(path)
 	elif path.ends_with(".ftproj"):
 		save_to_binary(path)
+	RUNTIME["filepath"] = path
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)

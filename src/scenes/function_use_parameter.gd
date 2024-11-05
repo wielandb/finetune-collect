@@ -34,8 +34,8 @@ func from_var(me):
 	var my_parameter_name = me["name"]
 	$FunctionUseParameterNumberEdit.value = me["parameterValueNumber"]
 	var my_function_name = myParentFunction()
-	var my_function_def = get_node("/root/FineTune").get_function_def(my_function_name)
-	var my_parameter_def = get_node("/root/FineTune").get_function_def(my_function_name, my_parameter_name)	
+	var my_function_def = get_node("/root/FineTune").get_function_definition(my_function_name)
+	var my_parameter_def = get_node("/root/FineTune").get_parameter_def(my_function_name, my_parameter_name)	
 	# Falls der Paramter required ist, checkbox auf ja setzen und disablen
 	var isUsedFunctionEnum = get_node("/root/FineTune").is_function_parameter_enum(my_function_name, my_parameter_name)
 	var usedParameterEnumOptions = get_node("/root/FineTune").get_function_parameter_enums(my_function_name, my_parameter_name)
@@ -44,6 +44,8 @@ func from_var(me):
 	$FunctionUseParameterIsUsedCheckbox.button_pressed = me["isUsed"]
 	print("Is used parameter required?")
 	print(isUsedParameterRequired)
+	print("Is function parameter enum?")
+	print(isUsedFunctionEnum)
 	# Activate/deactivate based on Type
 	if isUsedParameterRequired:
 		$FunctionUseParameterIsUsedCheckbox.button_pressed = true
@@ -52,7 +54,7 @@ func from_var(me):
 		$FunctionUseParameterEdit.visible = false
 		$FunctionUseParameterChoice.visible = true
 		$FunctionUseParameterChoice.clear()
-		for pv in str(usedParameterEnumOptions).split(",", false):
+		for pv in usedParameterEnumOptions:
 			$FunctionUseParameterChoice.add_item(pv)
 		$FunctionUseParameterChoice.select(selectionStringToIndex($FunctionUseParameterChoice, me["parameterValueChoice"]))
 	else:
@@ -73,7 +75,13 @@ func from_var(me):
 		$FunctionUseParameterEdit.visible = true
 		$FunctionUseParameterChoice.visible = true
 		$FunctionUseParameterNumberEdit.visible = false
-
+		# This is terrible. We need to check twice, das kann doch nicht sein!
+		if isUsedFunctionEnum:
+			$FunctionUseParameterEdit.visible = false
+			$FunctionUseParameterChoice.visible = true
+		else:
+			$FunctionUseParameterEdit.visible = true
+			$FunctionUseParameterChoice.visible = false
 		
 
 

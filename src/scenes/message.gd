@@ -26,13 +26,13 @@ func to_var():
 		if parameter.is_in_group("function_use_parameter"):
 			tmpFunctionParameters.append(parameter.to_var())
 	me["functionParameters"] = tmpFunctionParameters
-	var tmpFunctionResults = []
-	for result in $FunctionMessageContainer.get_children():
-		print("Inspecting Function Message Container")
-		if result.is_in_group("function_use_result"):
-			print("It was a function use result")
-			tmpFunctionResults.append(result.to_var())
-	me["functionResults"] = tmpFunctionResults
+	#var tmpFunctionResults = []
+	#for result in $FunctionMessageContainer.get_children():
+	#	print("Inspecting Function Message Container")
+	#	if result.is_in_group("function_use_result"):
+	#		print("It was a function use result")
+	#		tmpFunctionResults.append(result.to_var())
+	me["functionResults"] = $FunctionMessageContainer/FunctionUseResultText.text
 	return me
 
 func from_var(data):
@@ -57,13 +57,13 @@ func from_var(data):
 		var parameterSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel.get_index()
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
 		parameterInstance.from_var(d)
-	# Act as if the function select was pressed if its not empty
-	for d in data["functionResults"]:
-		var resultInstance = result_parameters_scene.instantiate()
-		$FunctionMessageContainer.add_child(resultInstance)
-		var resultsSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel2.get_index()
-		$FunctionMessageContainer.move_child(resultInstance, resultsSectionLabelIx)
-		resultInstance.from_var(d)
+	$FunctionMessageContainer/FunctionUseResultText.text = str(data["functionResults"])
+	#for d in data["functionResults"]:
+	#	var resultInstance = result_parameters_scene.instantiate()
+	#	$FunctionMessageContainer.add_child(resultInstance)
+	#	var resultsSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel2.get_index()
+	#	$FunctionMessageContainer.move_child(resultInstance, resultsSectionLabelIx)
+	#	resultInstance.from_var(d)
 		
 	
 # Called when the node enters the scene tree for the first time.

@@ -1,9 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://dtlpp8ima771s"]
+[gd_scene load_steps=4 format=3 uid="uid://dtlpp8ima771s"]
 
 [ext_resource type="Script" path="res://scenes/used_function.gd" id="1_5pk76"]
 [ext_resource type="PackedScene" uid="uid://qyfqi7d0l7ed" path="res://scenes/function_use_parameter.tscn" id="1_ixcli"]
 [ext_resource type="PackedScene" uid="uid://dvlnjw6n55r3v" path="res://scenes/function_name_choice_button.tscn" id="2_67khi"]
-[ext_resource type="PackedScene" uid="uid://dvv3gj718m2b4" path="res://scenes/function_call_results_parameter.tscn" id="3_7pf7k"]
 
 [node name="used_function" type="VBoxContainer"]
 anchors_preset = 15
@@ -41,10 +40,12 @@ layout_mode = 2
 text = "Ergebnis"
 horizontal_alignment = 1
 
-[node name="Results" parent="." instance=ExtResource("3_7pf7k")]
+[node name="FunctionUseResultText" type="TextEdit" parent="."]
+custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 
 [node name="AddResultButton" type="Button" parent="."]
+visible = false
 layout_mode = 2
 text = "Add result"
 

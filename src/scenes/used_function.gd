@@ -15,11 +15,12 @@ func to_var():
 		if parameter.is_in_group("function_use_parameter"):
 			tmpParameters.append(parameter.to_var())
 	me["parameters"] = tmpParameters
-	var tmpResults = []
-	for result in get_children():
-		if result.is_in_group("function_use_result"):
-			tmpResults.append(result.to_var())
-	me["results"] = tmpResults
+	#var tmpResults = []
+	#for result in get_children():
+	#	if result.is_in_group("function_use_result"):
+	#		tmpResults.append(result.to_var())
+	#me["results"] = tmpResults
+	me["results"] = $FunctionUseResultText.text
 	return me
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

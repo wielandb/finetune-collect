@@ -38,3 +38,5 @@ layout_mode = 2
 text = "Errors"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[connection signal="pressed" from="ElementsListContainer/RunAnalysisButton" to="." method="_on_run_analysis_button_pressed"]

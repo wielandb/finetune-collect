@@ -1,58 +1,101 @@
 class_name Message extends Node
 
 ## The Message class is used to represent a message in the conversation system.
-## 
-## This class includes properties for the role and content of a message, along with
-## methods to set and retrieve these properties.
-##
-# @tutorial:            https://the/tutorial1/url.com
-# @tutorial(Tutorial2): https://the/tutorial2/url.com
-# @experimental
+## This class includes properties for the role, content, and tool calls of a message.
 
 ## The role of the sender in the conversation (e.g., "user" or "system").
-## This variable holds the role of the message sender.
 var role: String = "user"
 
-## The text content of the message.
-## This variable contains the actual message text.
-var content: String = "say 'template text'"
+## The content can be either a string or an array of content items
+var content = "say 'template text'"
+
+## Tool calls made by the assistant (for function calling)
+var tool_calls: Array = []
+
+## The tool_call_id for tool responses
+var tool_call_id: String = ""
 
 ## Sets the role of the message sender.
-##
-## This function updates the `role` variable with a new role.
 func set_role(new_role: String) -> void:
 	role = new_role
-	
-## Sets the content of the message.
-##
-## This function updates the `content` variable with new content.
-func set_content(new_content: String) -> void:
+
+## Sets the content of the message. Can be either a string or an array of content items.
+func set_content(new_content) -> void:
 	content = new_content
-	
-## Retrieves the role of the message sender.
-##
-## This function returns the current value of the `role` variable.
-func get_role() -> String:
-	return role
-	
-## Retrieves the content of the message.
-##
-## This function returns the current value of the `content` variable.
-func get_content() -> String:
-	return content
 
-## Retrieves the role and the content of the message.
-##
-## This function returns the current value of the `role` and `content` as a Dictionary variable.
+## Sets a text content
+func set_text_content(text: String) -> void:
+	content = text
+
+## Adds an image to the content
+func add_image_content(image_base64: String) -> void:
+	if typeof(content) != TYPE_ARRAY:
+		content = []
+	content.append({
+		"type": "image_url",
+		"image_url": {
+			"url": "data:image/jpeg;base64," + image_base64
+		}
+	})
+
+## Adds a text part to the content
+func add_text_content(text: String) -> void:
+	if typeof(content) != TYPE_ARRAY:
+		content = []
+	content.append({
+		"type": "text",
+		"text": text
+	})
+
+## Sets tool calls for the message (used by assistant)
+func set_tool_calls(calls: Array) -> void:
+	tool_calls = calls
+
+## Adds a function call
+func add_function_call(id: String, function_name: String, arguments: Dictionary) -> void:
+	tool_calls.append({
+		"id": id,
+		"type": "function",
+		"function": {
+			"name": function_name,
+			"arguments": JSON.stringify(arguments)
+		}
+	})
+
+## Gets the message as a dictionary for API calls
 func get_as_dict() -> Dictionary:
-	return {"role":role,"content":content}
+	var dict = {"role": role}
+	
+	if content:
+		dict["content"] = content
+		
+	if !tool_calls.is_empty():
+		dict["tool_calls"] = tool_calls
+		
+	if role == "tool" && !tool_call_id.is_empty():
+		dict["tool_call_id"] = tool_call_id
+		
+	return dict
 
-## Sets the content of the message.
-##
-## This function updates the current value of the `role` and `content` as a Dictionary variable.
-func set_as_dict(dictionary:Dictionary) -> void:
-	if !dictionary.has("role") or !dictionary.has("content"):
-		push_error("Dictionary for \"set_as_dict\" do not containt the needed keys!")
+## Sets the message from a dictionary
+func set_as_dict(dictionary: Dictionary) -> void:
+	if !dictionary.has("role"):
+		push_error("Dictionary for \"set_as_dict\" does not contain 'role' key!")
 		return
+		
 	set_role(dictionary["role"])
-	set_content(dictionary["content"])
+	
+	if dictionary.has("content"):
+		set_content(dictionary["content"])
+		
+	if dictionary.has("tool_calls"):
+		set_tool_calls(dictionary["tool_calls"])
+		
+	if dictionary.has("tool_call_id"):
+		tool_call_id = dictionary["tool_call_id"]
+
+## Creates a tool response message
+func create_tool_response(call_id: String, response_content: String) -> void:
+	role = "tool"
+	tool_call_id = call_id
+	content = response_content

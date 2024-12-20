@@ -11,7 +11,7 @@ func _ready():
 	http_request.request_completed.connect(self._http_request_completed)
 	
 ##Sends an api request to chat gpt, will return a signal with a `Message` class.
-func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4o", url:String="https://api.openai.com/v1/chat/completions"):
+func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4-vision-preview", url:String="https://api.openai.com/v1/chat/completions", tools: Array = []):
 	var openai_api_key = parent.get_api()
 	if !openai_api_key:
 		return
@@ -29,6 +29,10 @@ func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4o", url:Str
 	"model": model,
 	"messages": messages
 	}
+	
+	if !tools.is_empty():
+		body["tools"] = tools
+		
 	var json = JSON.new()
 	
 	var body_json = json.stringify(body)
@@ -50,8 +54,15 @@ func _http_request_completed(result, response_code, headers, body):
 	var response = json.get_data()
 	var message = Message.new()
 	
-	print(response)
 	##TODO: Add error handeling in case of bad response
-	message.set_role(response["choices"][0]["message"]["role"])
-	message.set_content(response["choices"][0]["message"]["content"])
-	parent.emit_signal("gpt_response_completed",message,response)
+	var response_message = response["choices"][0]["message"]
+	message.set_role(response_message["role"])
+	
+	if response_message.has("content"):
+		message.set_content(response_message["content"])
+	if response_message.has("tool_calls"):
+		message.set_tool_calls(response_message["tool_calls"])
+	if response_message.has("tool_call_id"):
+		message.tool_call_id = response_message["tool_call_id"]
+		
+	parent.emit_signal("gpt_response_completed", message, response)

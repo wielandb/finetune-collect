@@ -61,5 +61,32 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "??? px"
 
+[node name="APIKeySettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="APIKeyLabel" type="Label" parent="VBoxContainer/APIKeySettingContainer"]
+layout_mode = 2
+text = "API Key:"
+
+[node name="APIKeyEdit" type="LineEdit" parent="VBoxContainer/APIKeySettingContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ModelChoiceContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ModelChoiceLabel" type="Label" parent="VBoxContainer/ModelChoiceContainer"]
+layout_mode = 2
+text = "Model to use for completions:
+"
+
+[node name="ModelChoiceOptionButton" type="OptionButton" parent="VBoxContainer/ModelChoiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ModelChoiceRefreshButton" type="Button" parent="VBoxContainer/ModelChoiceContainer"]
+layout_mode = 2
+text = "Refresh"
+
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]

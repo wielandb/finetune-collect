@@ -23,8 +23,9 @@ func from_var(data):
 
 func _ready() -> void:
 	openai.connect("gpt_response_completed", gpt_response_completed)
+	openai.connect("models_received", models_received)
 	openai.set_api("")
-	
+	openai.get_models()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -49,6 +50,9 @@ func delete_all_messages_from_UI():
 	for message in $MessagesListContainer.get_children():
 		if message.is_in_group("message"):
 			message.queue_free()
+
+func models_received(models: Array[String]):
+	print(models)
 
 func gpt_response_completed(message:Message, response:Dictionary):
 	printt(message.get_as_dict())

@@ -89,5 +89,5 @@ text = "X"
 [connection signal="pressed" from="ParameterIsEnumCheckBox" to="." method="_on_parameter_is_enum_check_box_pressed"]
 [connection signal="text_changed" from="ParameterEnumEdit" to="." method="_on_parameter_name_edit_text_changed"]
 [connection signal="pressed" from="ParameterIsRequiredCheckBox" to="." method="update_functions_global"]
-[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="pressed" from="DeleteButton" to="." method="update_functions_global"]
+[connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]

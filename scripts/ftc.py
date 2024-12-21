@@ -192,8 +192,11 @@ def convert_fine_tuning_data(input_file, output_file):
             out_f.write(json.dumps(output_entry) + '\n')
 
 def main():
-    # Example usage
-    convert_fine_tuning_data('data.json', 'output_finetune.jsonl')
+    if sys.argv[0]:
+        filename = sys.argv[0]
+    else:
+        filename = "data.json"
+    convert_fine_tuning_data(filename, 'output_finetune.jsonl')
 
 if __name__ == '__main__':
     main()

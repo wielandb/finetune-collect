@@ -172,8 +172,16 @@ func _on_add_message_completion_button_pressed() -> void:
 	var toolsforopenAI = get_tree().get_root().get_node("FineTune/Conversation/Functions/FunctionsList").functions_list_to_gpt_available_tools_list()
 	openai.prompt_gpt(openai_messages, model, "https://api.openai.com/v1/chat/completions", toolsforopenAI)
 
-func _on_add_message_completion_button_mouse_entered() -> void:
+func check_autocomplete_disabled_status():
 	if get_tree().get_root().get_node("FineTune").SETTINGS["apikey"] == "":
+		return true
+	if len(self.to_var()) < 1:
+		return true
+	return false
+
+
+func _on_add_message_completion_button_mouse_entered() -> void:
+	if check_autocomplete_disabled_status():
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = true
 	else:
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = false

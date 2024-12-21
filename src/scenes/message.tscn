@@ -139,6 +139,7 @@ custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 
 [node name="AddResultButton" type="Button" parent="FunctionMessageContainer"]
+visible = false
 layout_mode = 2
 text = "Add result"
 

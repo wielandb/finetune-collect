@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://biup68nmj50l8"]
+[gd_scene load_steps=4 format=3 uid="uid://biup68nmj50l8"]
 
 [ext_resource type="Script" path="res://scenes/messages_list.gd" id="1_j7pgd"]
+[ext_resource type="Texture2D" uid="uid://ghs38a5r2f3f" path="res://icons/notepad_write.png" id="2_blnfe"]
+[ext_resource type="Texture2D" uid="uid://como82i770sbs" path="res://icons/robot-confused-custom.png" id="3_0iovp"]
 
 [node name="MessagesList" type="ScrollContainer"]
 anchors_preset = 15
@@ -20,13 +22,22 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="AddMessageButton" type="Button" parent="MessagesListContainer"]
+[node name="AddButtonsContainer" type="HBoxContainer" parent="MessagesListContainer"]
 layout_mode = 2
+
+[node name="AddMessageButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
 text = "Nachricht hinzufügen"
+icon = ExtResource("2_blnfe")
 
-[node name="AddMessageCompletionButton" type="Button" parent="MessagesListContainer"]
+[node name="AddMessageCompletionButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Neue Nachricht vervollständigen"
+icon = ExtResource("3_0iovp")
 
-[connection signal="pressed" from="MessagesListContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]
-[connection signal="pressed" from="MessagesListContainer/AddMessageCompletionButton" to="." method="_on_add_message_completion_button_pressed"]
+[connection signal="mouse_entered" from="." to="." method="_on_add_message_completion_button_mouse_entered"]
+[connection signal="pressed" from="MessagesListContainer/AddButtonsContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]
+[connection signal="mouse_entered" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton" to="." method="_on_add_message_completion_button_mouse_entered"]
+[connection signal="pressed" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton" to="." method="_on_add_message_completion_button_pressed"]

@@ -16,10 +16,12 @@ func from_var(data):
 	# data -> CONVERSATIONS[ix] ([] von messages
 	for m in data:
 		var MessageInstance = MESSAGE_SCENE.instantiate()
-		var addButton = $MessagesListContainer/AddMessageButton
+		#var addButton = $MessagesListContainer/AddMessageButton
+		var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 		$MessagesListContainer.add_child(MessageInstance)
 		MessageInstance.from_var(m)
-		$MessagesListContainer.move_child(addButton, -1)
+		#$MessagesListContainer.move_child(addButton, -1)
+		$MessagesListContainer.move_child(buttonsContainer, -1)	
 
 func _ready() -> void:
 	openai.connect("gpt_response_completed", gpt_response_completed)
@@ -35,12 +37,13 @@ func _process(delta: float) -> void:
 func _on_add_message_button_pressed() -> void:
 	# Add a new message to the MessagesListContainer
 	var MessageInstance = MESSAGE_SCENE.instantiate()
-	var addButton = $MessagesListContainer/AddMessageButton
-	var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+	#var addButton = $MessagesListContainer/AddMessageButton
+	#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
-	$MessagesListContainer.move_child(addAIButton, -1)
-	$MessagesListContainer.move_child(addButton, -1)
-	#
+	#$MessagesListContainer.move_child(addAIButton, -1)
+	#$MessagesListContainer.move_child(addButton, -1)
+	$MessagesListContainer.move_child(buttonsContainer, -1)	
 	print(self.to_var())
 	
 
@@ -57,11 +60,11 @@ func gpt_response_completed(message:Message, response:Dictionary):
 	printt(message.get_as_dict())
 	# Add a new message to the MessagesListContainer
 	var MessageInstance = MESSAGE_SCENE.instantiate()
-	var addButton = $MessagesListContainer/AddMessageButton
-	var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+	#var addButton = $MessagesListContainer/AddMessageButton
+	#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
-	$MessagesListContainer.move_child(addAIButton, -1)
-	$MessagesListContainer.move_child(addButton, -1)	
+	$MessagesListContainer.move_child(buttonsContainer, -1)	
 	# Populate the message with the received data
 	var RecvMsgVar = {
 		"role": "assistant",
@@ -95,3 +98,10 @@ func _on_add_message_completion_button_pressed() -> void:
 		nm.set_content(m["textContent"])
 		openai_messages.append(nm)
 	openai.prompt_gpt(openai_messages, "gpt-4o")
+
+
+func _on_add_message_completion_button_mouse_entered() -> void:
+	if get_tree().get_root().get_node("FineTune").SETTINGS["apikey"] == "":
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = true
+	else:
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = false

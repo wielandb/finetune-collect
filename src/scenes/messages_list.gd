@@ -90,15 +90,26 @@ func messages_to_openai_format():
 func _on_add_message_completion_button_pressed() -> void:
 	#var messages:Array[Message] = [Message.new()]
 	#messages[0].set_content("say hi!")
+	var settings = get_tree().get_root().get_node("FineTune").SETTINGS
 	var ftc_messages = self.to_var()
 	var openai_messages:Array[Message] = []
+	# Check if a global system message needs to be used, and if so, add it before working with the message list
+	if settings["useGlobalSystemMessage"]:
+		var gsm = Message.new()
+		gsm.set_role("system")
+		gsm.set_content(settings["globalSystemMessage"])
+		openai_messages.append(gsm)
 	for m in ftc_messages:
 		var nm = Message.new()
 		nm.set_role(m["role"])
-		nm.set_content(m["textContent"])
+		match m["type"]:
+			"Text":
+				nm.set_content(m["textContent"])
+			"Image":
+				nm.add_image_content(m["imageContent"])
 		openai_messages.append(nm)
-	openai.prompt_gpt(openai_messages, "gpt-4o")
-
+	var model = settings["modelChoice"]
+	openai.prompt_gpt(openai_messages, model)
 
 func _on_add_message_completion_button_mouse_entered() -> void:
 	if get_tree().get_root().get_node("FineTune").SETTINGS["apikey"] == "":

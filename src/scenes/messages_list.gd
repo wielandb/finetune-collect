@@ -177,6 +177,14 @@ func check_autocomplete_disabled_status():
 		return true
 	if len(self.to_var()) < 1:
 		return true
+	if get_tree().get_root().get_node("FineTune").exists_function_without_name():
+		return true
+	if get_tree().get_root().get_node("FineTune").exists_function_without_description():
+		return true
+	if get_tree().get_root().get_node("FineTune").exists_parameter_without_name():
+		return true
+	if get_tree().get_root().get_node("FineTune").exists_parameter_without_description():
+		return true
 	return false
 
 

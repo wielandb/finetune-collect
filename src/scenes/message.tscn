@@ -1,11 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=10 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" path="res://scenes/message.gd" id="1_lafvt"]
 [ext_resource type="Texture2D" uid="uid://dgxn3yonojrbk" path="res://icons/figurine.png" id="2_qmf1n"]
 [ext_resource type="Texture2D" uid="uid://bptbksdfpn3qo" path="res://icons/userRobot.png" id="3_52cv2"]
 [ext_resource type="Texture2D" uid="uid://d0dc8gybqt1la" path="res://icon.svg" id="4_txusn"]
-[ext_resource type="Texture2D" uid="uid://cqpr5rwcgug2k" path="res://icons/trashcanOpen.png" id="5_g5buw"]
+[ext_resource type="Texture2D" uid="uid://bcua86jbbuxjy" path="res://icons/notepad.png" id="5_j80gg"]
+[ext_resource type="Texture2D" uid="uid://b5c5odgp0j7f6" path="res://icons/image-custom (1).png" id="6_nm785"]
+[ext_resource type="Texture2D" uid="uid://b7le047xxergp" path="res://icons/trashcan.png" id="6_trxu4"]
+[ext_resource type="Texture2D" uid="uid://da741wh2jb07o" path="res://icons/function-variant-custom (1).png" id="7_mo45f"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -39,16 +42,19 @@ size_flags_vertical = 0
 selected = 0
 item_count = 3
 popup/item_0/text = "Text"
+popup/item_0/icon = ExtResource("5_j80gg")
 popup/item_1/text = "Image"
+popup/item_1/icon = ExtResource("6_nm785")
 popup/item_1/id = 1
 popup/item_2/text = "Function Call"
+popup/item_2/icon = ExtResource("7_mo45f")
 popup/item_2/id = 2
 popup/item_2/disabled = true
 
 [node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
 layout_mode = 2
 text = "Löschen"
-icon = ExtResource("5_g5buw")
+icon = ExtResource("6_trxu4")
 
 [node name="TextMessageContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -147,6 +153,8 @@ text = "Add result"
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
+[connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
+[connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]

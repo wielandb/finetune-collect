@@ -221,3 +221,11 @@ func _on_texture_rect_gui_input(event: InputEvent) -> void:
 				$ImageMessageContainer/TextureRect.custom_minimum_size.y = 900
 			if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 				$ImageMessageContainer/TextureRect.custom_minimum_size.y = 0
+
+
+func _on_delete_button_mouse_entered() -> void:
+	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcanOpen.png")
+
+
+func _on_delete_button_mouse_exited() -> void:
+	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcan.png")

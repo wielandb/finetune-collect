@@ -1,9 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://bjjksasvd2r5u"]
+[gd_scene load_steps=10 format=3 uid="uid://bjjksasvd2r5u"]
 
 [ext_resource type="PackedScene" uid="uid://cd35p8jv7axv5" path="res://scenes/conversation.tscn" id="1_o1j2m"]
 [ext_resource type="Theme" uid="uid://cebssi3strko3" path="res://themes/theme.res" id="1_v4ety"]
 [ext_resource type="Script" path="res://scenes/fine_tune.gd" id="2_4tk5v"]
+[ext_resource type="Texture2D" uid="uid://ddb46t7k4hk58" path="res://icons/menu-close-custom.png" id="3_3ahka"]
+[ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="4_cc3ny"]
+[ext_resource type="Texture2D" uid="uid://2ppgecolcgnr" path="res://icons/menu-open-custom.png" id="4_qom7o"]
 [ext_resource type="Script" path="res://addons/openai_api/Scripts/OpenAiApi.gd" id="4_slp0e"]
+[ext_resource type="Texture2D" uid="uid://c3mvjnlcxln7r" path="res://icons/save.png" id="5_6c4wb"]
+[ext_resource type="Texture2D" uid="uid://dclev2i1xdu5c" path="res://icons/forum-plus-custom.png" id="5_ks358"]
 
 [node name="FineTune" type="HBoxContainer"]
 anchors_preset = 15
@@ -16,13 +21,31 @@ size_flags_vertical = 3
 theme = ExtResource("1_v4ety")
 script = ExtResource("2_4tk5v")
 
+[node name="CollapsedMenu" type="VBoxContainer" parent="."]
+visible = false
+custom_minimum_size = Vector2(36.62, 0)
+layout_mode = 2
+
+[node name="ExpandBurgerBtn" type="Button" parent="CollapsedMenu"]
+custom_minimum_size = Vector2(0, 30.09)
+layout_mode = 2
+size_flags_vertical = 3
+icon = ExtResource("3_3ahka")
+icon_alignment = 1
+
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="CollapseBurgerBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+icon = ExtResource("4_qom7o")
+icon_alignment = 1
+
 [node name="NewConversationButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "New conversation"
+icon = ExtResource("5_ks358")
 
 [node name="ConversationsList" type="ItemList" parent="VBoxContainer"]
 layout_mode = 2
@@ -32,6 +55,7 @@ size_flags_vertical = 3
 [node name="LoadBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Load fine tune file"
+icon = ExtResource("4_cc3ny")
 
 [node name="FileDialog" type="FileDialog" parent="VBoxContainer/LoadBtn"]
 title = "Open a File"
@@ -43,6 +67,7 @@ use_native_dialog = true
 [node name="SaveBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
 text = "Save fine tune file"
+icon = ExtResource("5_6c4wb")
 
 [node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveBtn"]
 access = 2
@@ -56,6 +81,8 @@ size_flags_stretch_ratio = 4.0
 [node name="OpenAi" type="Node" parent="."]
 script = ExtResource("4_slp0e")
 
+[connection signal="pressed" from="CollapsedMenu/ExpandBurgerBtn" to="." method="_on_expand_burger_btn_pressed"]
+[connection signal="pressed" from="VBoxContainer/CollapseBurgerBtn" to="." method="_on_collapse_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewConversationButton" to="." method="_on_button_pressed"]
 [connection signal="gui_input" from="VBoxContainer/ConversationsList" to="." method="_on_conversations_list_gui_input"]
 [connection signal="item_selected" from="VBoxContainer/ConversationsList" to="." method="_on_item_list_item_selected"]

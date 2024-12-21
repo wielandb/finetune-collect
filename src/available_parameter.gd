@@ -114,3 +114,11 @@ func _on_parameter_has_min_max_checkbox_pressed() -> void:
 # Funktionsrepräsentationne updaten, wenn irgendetwas geändert wird
 func _on_parameter_name_edit_text_changed(new_text: String) -> void:
 	update_functions_global()
+
+
+func _on_delete_button_mouse_entered() -> void:
+	$DeleteButton.icon = load("res://icons/trashcanOpen_small.png")
+
+
+func _on_delete_button_mouse_exited() -> void:
+	$DeleteButton.icon = load("res://icons/trashcan_small.png")

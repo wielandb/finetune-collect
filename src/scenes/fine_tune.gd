@@ -186,6 +186,53 @@ func get_parameter_def(function_name, parameter_name):
 					return parameter
 	return {}
 
+## Functions to check if invalid definitions exist
+
+func exists_function_without_name():
+	for function in FUNCTIONS:
+		if function["name"] == "":
+			return true
+	return false
+
+func exists_function_without_description():
+	for function in FUNCTIONS:
+		if function["description"] == "":
+			return true
+	return false
+
+func exists_parameter_without_name():
+	for function in FUNCTIONS:
+			for parameter in function["parameters"]:
+				if parameter["name"] == "":
+					return true
+
+func exists_parameter_without_description():
+	for function in FUNCTIONS:
+			for parameter in function["parameters"]:
+				if parameter["description"] == "":
+					return true
+
+## -- End of functions to check if invalid definitions exist
+
+func check_is_conversation_problematic(idx: String):
+	var thisconvo = CONVERSATIONS[idx]
+	# Check if at least two messages exist
+	if len(thisconvo) < 2:
+		return true
+	# Check if all text messages contain non-empty text content
+	for m in thisconvo:
+		if m["type"] == "Text" and m["textContent"] == "":
+			return true
+	# Check if all image messages contain non-empty image content
+	for m in thisconvo:
+		if m["type"] == "Image" and m["imageContent"] == "":
+			return true
+	# Check if all function call messages contain non-empty functionNames
+	for m in thisconvo:
+		if m["type"] == "Function Call" and m["functionName"] == "":
+			return true
+	return false
+
 func _on_file_dialog_file_selected(path: String) -> void:
 	if path.ends_with(".json"):
 		load_from_json(path)
@@ -196,8 +243,10 @@ func _on_file_dialog_file_selected(path: String) -> void:
 func refresh_conversations_list():
 	$VBoxContainer/ConversationsList.clear()
 	for i in CONVERSATIONS.keys():
-		$VBoxContainer/ConversationsList.add_item(str(i))
-
+		if check_is_conversation_problematic(i):
+			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-remove-custom.png"))
+		else:
+			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-custom.png"))
 
 func _on_conversation_tab_changed(tab: int) -> void:
 	save_current_conversation()
@@ -329,3 +378,12 @@ func _on_conversations_list_gui_input(event: InputEvent) -> void:
 			for i in range($VBoxContainer/ConversationsList.item_count):
 				if $VBoxContainer/ConversationsList.is_selected(i):
 					delete_conversation($VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)))	
+
+
+func _on_collapse_burger_btn_pressed() -> void:
+	$VBoxContainer.visible = false
+	$CollapsedMenu.visible = true
+
+func _on_expand_burger_btn_pressed() -> void:
+	$VBoxContainer.visible = true
+	$CollapsedMenu.visible = false

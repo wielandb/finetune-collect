@@ -53,7 +53,7 @@ func _http_request_completed(result, response_code, headers, body):
 	
 	var response = json.get_data()
 	var message = Message.new()
-	
+	print(response)
 	##TODO: Add error handeling in case of bad response
 	var response_message = response["choices"][0]["message"]
 	message.set_role(response_message["role"])

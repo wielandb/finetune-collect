@@ -6,7 +6,7 @@ func to_var():
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
 	me["globalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text
 	me["apikey"] = $VBoxContainer/APIKeySettingContainer/APIKeyEdit.text
-	me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected
+	me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected)
 	var availableModels = []
 	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
 		availableModels.append($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i))
@@ -22,7 +22,9 @@ func from_var(me):
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
 	for m in me["availableModels"]:
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)
-	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_index(me["modelChoice"]))
+	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
+		if ($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i) == me["modelChoice"]):
+			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
 	
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

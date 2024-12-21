@@ -7,7 +7,7 @@ class_name Message extends Node
 var role: String = "user"
 
 ## The content can be either a string or an array of content items
-var content = "say 'template text'"
+var content = ""
 
 ## Tool calls made by the assistant (for function calling)
 var tool_calls: Array = []
@@ -98,4 +98,4 @@ func set_as_dict(dictionary: Dictionary) -> void:
 func create_tool_response(call_id: String, response_content: String) -> void:
 	role = "tool"
 	tool_call_id = call_id
-	content = response_content
+	content = [{"type":"text", "text":response_content}]

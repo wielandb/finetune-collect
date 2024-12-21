@@ -71,7 +71,6 @@ text = "API Key:"
 [node name="APIKeyEdit" type="LineEdit" parent="VBoxContainer/APIKeySettingContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-secret = true
 
 [node name="ModelChoiceContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -92,4 +91,3 @@ text = "Refresh"
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]
-[connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]

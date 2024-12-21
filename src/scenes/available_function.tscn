@@ -58,5 +58,5 @@ text = "Delete Function"
 [connection signal="text_changed" from="FunctionDescriptionContainer2/FunctionDescriptionEdit" to="." method="_on_function_name_edit_text_changed"]
 [connection signal="pressed" from="AddParameterButton" to="." method="_on_add_parameter_button_pressed"]
 [connection signal="pressed" from="AddParameterButton" to="." method="update_available_functions_global"]
-[connection signal="pressed" from="DeleteFunctionButton" to="." method="_on_delete_function_button_pressed"]
 [connection signal="pressed" from="DeleteFunctionButton" to="." method="update_available_functions_global"]
+[connection signal="pressed" from="DeleteFunctionButton" to="." method="_on_delete_function_button_pressed"]

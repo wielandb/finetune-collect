@@ -2,7 +2,7 @@ extends ScrollContainer
 
 @onready var MESSAGE_SCENE = preload("res://scenes/message.tscn")
 # Called when the node enters the scene tree for the first time.
-@onready var openai = $OpenAi
+@onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
 func to_var():
 	var me = []
@@ -24,7 +24,6 @@ func from_var(data):
 func _ready() -> void:
 	openai.connect("gpt_response_completed", gpt_response_completed)
 	openai.connect("models_received", models_received)
-	openai.set_api("")
 	openai.get_models()
 
 
@@ -74,8 +73,25 @@ func gpt_response_completed(message:Message, response:Dictionary):
 		"functionResults": []
 	}
 	MessageInstance.from_var(RecvMsgVar)
-
+	
+func messages_to_openai_format():
+	var ftc_messages = self.to_var()
+	var openai_messages = []
+	for m in ftc_messages:
+		var nm = Message.new()
+		nm.set_role(m["role"])
+		nm.set_content(m["textContent"])
+		openai_messages.append(nm)
+	return openai_messages
+		
 func _on_add_message_completion_button_pressed() -> void:
-	var messages:Array[Message] = [Message.new()]
-	messages[0].set_content("say hi!")
-	openai.prompt_gpt(messages, "gpt-4o")
+	#var messages:Array[Message] = [Message.new()]
+	#messages[0].set_content("say hi!")
+	var ftc_messages = self.to_var()
+	var openai_messages:Array[Message] = []
+	for m in ftc_messages:
+		var nm = Message.new()
+		nm.set_role(m["role"])
+		nm.set_content(m["textContent"])
+		openai_messages.append(nm)
+	openai.prompt_gpt(openai_messages, "gpt-4o")

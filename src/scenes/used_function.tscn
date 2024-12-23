@@ -14,7 +14,7 @@ script = ExtResource("1_5pk76")
 
 [node name="Label" type="Label" parent="."]
 layout_mode = 2
-text = "Funktion nutzen"
+text = "MESSAGE_USE_FUNCTION"
 horizontal_alignment = 1
 
 [node name="function" type="HBoxContainer" parent="."]
@@ -22,14 +22,14 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="function"]
 layout_mode = 2
-text = "Welche?"
+text = "MESSAGE_USE_WHICH_MESSAGE"
 
 [node name="FunctionNameChoiceButton" parent="function" instance=ExtResource("2_67khi")]
 layout_mode = 2
 
 [node name="ParamterSectionLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Parameters"
+text = "MESSAGE_PARAMETERS_TITLE"
 horizontal_alignment = 1
 
 [node name="FunctionUseParameter" parent="." instance=ExtResource("1_ixcli")]
@@ -37,7 +37,7 @@ layout_mode = 2
 
 [node name="ParamterSectionLabel2" type="Label" parent="."]
 layout_mode = 2
-text = "Ergebnis"
+text = "MESSAGE_FUNCTION_RESULT_TITLE"
 horizontal_alignment = 1
 
 [node name="FunctionUseResultText" type="TextEdit" parent="."]
@@ -47,6 +47,6 @@ layout_mode = 2
 [node name="AddResultButton" type="Button" parent="."]
 visible = false
 layout_mode = 2
-text = "Add result"
+text = "MESSAGE_FUNCTION_ADD_RESULT"
 
 [connection signal="pressed" from="AddResultButton" to="." method="_on_add_result_button_pressed"]

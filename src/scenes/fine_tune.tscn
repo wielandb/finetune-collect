@@ -44,7 +44,7 @@ icon_alignment = 1
 
 [node name="NewConversationButton" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "New conversation"
+text = "FINETUNE_CONVERSATION_NEW"
 icon = ExtResource("5_ks358")
 
 [node name="ConversationsList" type="ItemList" parent="VBoxContainer"]
@@ -54,7 +54,7 @@ size_flags_vertical = 3
 
 [node name="LoadBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Load fine tune file"
+text = "FINETUNE_LOAD"
 icon = ExtResource("4_cc3ny")
 
 [node name="FileDialog" type="FileDialog" parent="VBoxContainer/LoadBtn"]
@@ -66,7 +66,7 @@ use_native_dialog = true
 
 [node name="SaveBtn" type="Button" parent="VBoxContainer"]
 layout_mode = 2
-text = "Save fine tune file"
+text = "FINETUNE_SAVE"
 icon = ExtResource("5_6c4wb")
 
 [node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveBtn"]

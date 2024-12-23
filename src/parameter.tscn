@@ -8,19 +8,19 @@ script = ExtResource("1_bbgrc")
 
 [node name="ParameterTypeLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Type"
+text = "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 
 [node name="ParameterTypeBox" type="OptionButton" parent="."]
 layout_mode = 2
 selected = 0
 item_count = 2
-popup/item_0/text = "String"
-popup/item_1/text = "Number"
+popup/item_0/text = "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
+popup/item_1/text = "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
 popup/item_1/id = 1
 
 [node name="ParameterNameLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Name"
+text = "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
 
 [node name="ParameterNameEdit" type="LineEdit" parent="."]
 layout_mode = 2
@@ -29,7 +29,7 @@ expand_to_text_length = true
 
 [node name="ParameterDescriptionLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Parameter Description"
+text = "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
 
 [node name="ParameterDescriptionEdit" type="LineEdit" parent="."]
 layout_mode = 2
@@ -64,7 +64,7 @@ max_value = 999999.0
 
 [node name="ParameterIsEnumCheckBox" type="CheckBox" parent="."]
 layout_mode = 2
-text = "Enumeration"
+text = "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
 
 [node name="ParameterEnumEdit" type="LineEdit" parent="."]
 visible = false
@@ -74,7 +74,7 @@ size_flags_horizontal = 3
 [node name="ParameterIsRequiredCheckBox" type="CheckBox" parent="."]
 layout_mode = 2
 button_pressed = true
-text = "Required?"
+text = "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
 
 [node name="DeleteButton" type="Button" parent="."]
 layout_mode = 2
@@ -83,8 +83,8 @@ icon = ExtResource("2_trlep")
 [connection signal="item_selected" from="ParameterTypeBox" to="." method="_on_parameter_type_box_item_selected"]
 [connection signal="text_changed" from="ParameterNameEdit" to="." method="_on_parameter_name_edit_text_changed"]
 [connection signal="text_changed" from="ParameterDescriptionEdit" to="." method="_on_parameter_name_edit_text_changed"]
-[connection signal="pressed" from="ParameterHasMinMaxCheckbox" to="." method="update_functions_global"]
 [connection signal="pressed" from="ParameterHasMinMaxCheckbox" to="." method="_on_parameter_has_min_max_checkbox_pressed"]
+[connection signal="pressed" from="ParameterHasMinMaxCheckbox" to="." method="update_functions_global"]
 [connection signal="changed" from="ParameterMinimumEdit" to="." method="update_functions_global"]
 [connection signal="changed" from="ParameterMaximumEdit" to="." method="update_functions_global"]
 [connection signal="pressed" from="ParameterIsEnumCheckBox" to="." method="_on_parameter_is_enum_check_box_pressed"]
@@ -92,5 +92,5 @@ icon = ExtResource("2_trlep")
 [connection signal="pressed" from="ParameterIsRequiredCheckBox" to="." method="update_functions_global"]
 [connection signal="mouse_entered" from="DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="DeleteButton" to="." method="update_functions_global"]
 [connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="DeleteButton" to="." method="update_functions_global"]

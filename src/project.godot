@@ -45,3 +45,7 @@ delete={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194312,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+
+[internationalization]
+
+locale/translations_pot_files=PackedStringArray("res://available_parameter.gd", "res://parameter.tscn", "res://scenes/analysis_container.gd", "res://scenes/analysis_container.tscn", "res://scenes/available_function.gd", "res://scenes/available_function.tscn", "res://scenes/conversation.tscn", "res://scenes/conversation_settings.gd", "res://scenes/conversation_settings.tscn", "res://scenes/fine_tune.gd", "res://scenes/fine_tune.tscn", "res://scenes/functions_list.gd", "res://scenes/functions_list.tscn", "res://scenes/function_call_results_parameter.gd", "res://scenes/function_call_results_parameter.tscn", "res://scenes/function_name_choice_button.gd", "res://scenes/function_name_choice_button.tscn", "res://scenes/function_use_parameter.gd", "res://scenes/function_use_parameter.tscn", "res://scenes/message.gd", "res://scenes/message.tscn", "res://scenes/messages_list.gd", "res://scenes/messages_list.tscn", "res://scenes/popup.tscn", "res://scenes/used_function.gd", "res://scenes/used_function.tscn")

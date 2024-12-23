@@ -8,7 +8,7 @@ script = ExtResource("1_yrmbv")
 
 [node name="FunctionUseParameterIsUsedCheckbox" type="CheckBox" parent="."]
 layout_mode = 2
-text = "Use parameter"
+text = "MESSAGE_USE_PARAMETER_CHECKBOX_TITLE"
 
 [node name="ParameterName" type="Label" parent="."]
 layout_mode = 2

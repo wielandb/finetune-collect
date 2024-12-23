@@ -1,0 +1,314 @@
+# LANGUAGE translation for finetune-collector for the following files:
+# res://available_parameter.gd
+# res://parameter.tscn
+# res://scenes/analysis_container.gd
+# res://scenes/analysis_container.tscn
+# res://scenes/available_function.gd
+# res://scenes/available_function.tscn
+# res://scenes/conversation.tscn
+# res://scenes/conversation_settings.gd
+# res://scenes/conversation_settings.tscn
+# res://scenes/fine_tune.gd
+# res://scenes/fine_tune.tscn
+# res://scenes/functions_list.gd
+# res://scenes/functions_list.tscn
+# res://scenes/function_call_results_parameter.gd
+# res://scenes/function_call_results_parameter.tscn
+# res://scenes/function_name_choice_button.gd
+# res://scenes/function_name_choice_button.tscn
+# res://scenes/function_use_parameter.gd
+# res://scenes/function_use_parameter.tscn
+# res://scenes/message.gd
+# res://scenes/message.tscn
+# res://scenes/messages_list.gd
+# res://scenes/messages_list.tscn
+# res://scenes/popup.tscn
+# res://scenes/used_function.gd
+# res://scenes/used_function.tscn
+#
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: finetune-collector\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
+msgstr ""
+
+#: parameter.tscn
+msgid "Has limits"
+msgstr ""
+
+#: parameter.tscn
+msgid "Min."
+msgstr ""
+
+#: parameter.tscn
+msgid "Max."
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
+msgstr ""
+
+#: scenes/analysis_container.tscn
+msgid "Run analysis"
+msgstr ""
+
+#: scenes/analysis_container.tscn
+msgid "Statistics"
+msgstr ""
+
+#: scenes/analysis_container.tscn
+msgid "Warnings"
+msgstr ""
+
+#: scenes/analysis_container.tscn
+msgid "Errors"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_TITLE"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_NAME"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_DESCRIPTION"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_PARAMETERS_TITLE"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "GENERIC_PLUS"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_DELETE_FUNCTION"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Messages"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Functions"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Settings"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Analysis"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_MINIMAL_HEIGHT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "??? px"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Always include all functions in all conversations"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Only include functions that were used in that conversation in a conversation"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Include all functions in every conversation that have been used at least once anywhere"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_KEY"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_REFRESH"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_CONVERSATION_NEW"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_LOAD"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open a File"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "*.json"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "*.ftproj"
+msgstr ""
+
+#: scenes/functions_list.tscn
+msgid "FUNCTIONS_ADD_NEW_FUNCTION"
+msgstr ""
+
+#: scenes/function_call_results_parameter.tscn
+msgid "Parameter Key"
+msgstr ""
+
+#: scenes/function_call_results_parameter.tscn
+msgid "Parameter Value"
+msgstr ""
+
+#: scenes/function_call_results_parameter.tscn
+msgid "X"
+msgstr ""
+
+#: scenes/function_use_parameter.tscn
+msgid "MESSAGE_USE_PARAMETER_CHECKBOX_TITLE"
+msgstr ""
+
+#: scenes/function_use_parameter.tscn
+msgid "[Parameter Name]\n"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "system"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "user"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "assistant"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Text"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Image"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Function Call"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "GENERIC_DELETE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_TEXT_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_FUNCTION_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+#: scenes/used_function.tscn
+msgid "MESSAGE_USE_WHICH_MESSAGE"
+msgstr ""
+
+#: scenes/message.tscn
+#: scenes/used_function.tscn
+msgid "MESSAGE_PARAMETERS_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+#: scenes/used_function.tscn
+msgid "MESSAGE_FUNCTION_RESULT_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Add result"
+msgstr ""
+
+#: scenes/messages_list.tscn
+msgid "MESSAGES_ADD_MESSAGE"
+msgstr ""
+
+#: scenes/messages_list.tscn
+msgid "MESSAGES_ADD_CHATGPT_COMPLETION"
+msgstr ""
+
+#: scenes/popup.tscn
+msgid "Arbeitet..."
+msgstr ""
+
+#: scenes/used_function.tscn
+msgid "MESSAGE_USE_FUNCTION"
+msgstr ""
+
+#: scenes/used_function.tscn
+msgid "MESSAGE_FUNCTION_ADD_RESULT"
+msgstr ""

@@ -28,13 +28,13 @@ layout_mode = 2
 [node name="AddMessageButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Nachricht hinzufügen"
+text = "MESSAGES_ADD_MESSAGE"
 icon = ExtResource("2_blnfe")
 
 [node name="AddMessageCompletionButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Neue Nachricht vervollständigen"
+text = "MESSAGES_ADD_CHATGPT_COMPLETION"
 icon = ExtResource("3_0iovp")
 
 [connection signal="mouse_entered" from="." to="." method="_on_add_message_completion_button_mouse_entered"]

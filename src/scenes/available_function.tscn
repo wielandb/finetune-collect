@@ -15,7 +15,7 @@ script = ExtResource("1_gq8tp")
 [node name="functionlabel" type="Label" parent="."]
 layout_mode = 2
 theme_override_font_sizes/font_size = 46
-text = "Function"
+text = "FUNCTIONS_FUNCTION_TITLE"
 horizontal_alignment = 1
 
 [node name="FunctionNameContainer" type="HBoxContainer" parent="."]
@@ -23,7 +23,7 @@ layout_mode = 2
 
 [node name="FunctionNameLabel" type="Label" parent="FunctionNameContainer"]
 layout_mode = 2
-text = "Function Name"
+text = "FUNCTIONS_FUNCTION_NAME"
 
 [node name="FunctionNameEdit" type="LineEdit" parent="FunctionNameContainer"]
 layout_mode = 2
@@ -34,7 +34,7 @@ layout_mode = 2
 
 [node name="FunctionDescriptionLabel" type="Label" parent="FunctionDescriptionContainer2"]
 layout_mode = 2
-text = "Function Description"
+text = "FUNCTIONS_FUNCTION_DESCRIPTION"
 
 [node name="FunctionDescriptionEdit" type="LineEdit" parent="FunctionDescriptionContainer2"]
 layout_mode = 2
@@ -43,20 +43,20 @@ size_flags_horizontal = 3
 [node name="parameterslabel" type="Label" parent="."]
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-text = "Parameters"
+text = "FUNCTIONS_FUNCTION_PARAMETERS_TITLE"
 horizontal_alignment = 1
 
 [node name="AddParameterButton" type="Button" parent="."]
 layout_mode = 2
-text = "+"
+text = "GENERIC_PLUS"
 
 [node name="DeleteFunctionButton" type="Button" parent="."]
 layout_mode = 2
-text = "Delete Function"
+text = "FUNCTIONS_DELETE_FUNCTION"
 
 [connection signal="text_changed" from="FunctionNameContainer/FunctionNameEdit" to="." method="_on_function_name_edit_text_changed"]
 [connection signal="text_changed" from="FunctionDescriptionContainer2/FunctionDescriptionEdit" to="." method="_on_function_name_edit_text_changed"]
-[connection signal="pressed" from="AddParameterButton" to="." method="_on_add_parameter_button_pressed"]
 [connection signal="pressed" from="AddParameterButton" to="." method="update_available_functions_global"]
+[connection signal="pressed" from="AddParameterButton" to="." method="_on_add_parameter_button_pressed"]
 [connection signal="pressed" from="DeleteFunctionButton" to="." method="update_available_functions_global"]
 [connection signal="pressed" from="DeleteFunctionButton" to="." method="_on_delete_function_button_pressed"]

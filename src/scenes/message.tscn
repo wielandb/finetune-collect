@@ -53,17 +53,18 @@ popup/item_2/disabled = true
 
 [node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
 layout_mode = 2
-text = "Löschen"
+text = "GENERIC_DELETE"
 icon = ExtResource("6_trxu4")
 
 [node name="TextMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="TextnachrichtLabel" type="Label" parent="TextMessageContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "Textnachricht"
+text = "MESSAGES_TEXT_MESSAGE_TITLE"
 horizontal_alignment = 1
 
 [node name="Message" type="TextEdit" parent="TextMessageContainer"]
@@ -81,7 +82,7 @@ size_flags_horizontal = 3
 [node name="BildNachrichtLabel" type="Label" parent="ImageMessageContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "Bild"
+text = "MESSAGES_IMAGE_MESSAGE_TITLE"
 horizontal_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="ImageMessageContainer"]
@@ -97,7 +98,7 @@ layout_mode = 2
 
 [node name="LoadImageButton" type="Button" parent="ImageMessageContainer"]
 layout_mode = 2
-text = "Load Image"
+text = "MESSAGES_LOAD_IMAGE"
 
 [node name="FileDialog" type="FileDialog" parent="ImageMessageContainer"]
 title = "Open a File"
@@ -109,14 +110,13 @@ access = 2
 use_native_dialog = true
 
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="Label" type="Label" parent="FunctionMessageContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 36
-text = "Funktion nutzen"
+text = "MESSAGE_USE_FUNCTION_TITLE"
 horizontal_alignment = 1
 
 [node name="function" type="HBoxContainer" parent="FunctionMessageContainer"]
@@ -124,7 +124,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="FunctionMessageContainer/function"]
 layout_mode = 2
-text = "Welche?"
+text = "MESSAGE_USE_WHICH_MESSAGE"
 
 [node name="FunctionNameChoiceButton" type="OptionButton" parent="FunctionMessageContainer/function"]
 layout_mode = 2
@@ -132,12 +132,12 @@ size_flags_horizontal = 3
 
 [node name="ParamterSectionLabel" type="Label" parent="FunctionMessageContainer"]
 layout_mode = 2
-text = "Parameters"
+text = "MESSAGE_PARAMETERS_TITLE"
 horizontal_alignment = 1
 
 [node name="ParamterSectionLabel2" type="Label" parent="FunctionMessageContainer"]
 layout_mode = 2
-text = "Ergebnis"
+text = "MESSAGE_FUNCTION_RESULT_TITLE"
 horizontal_alignment = 1
 
 [node name="FunctionUseResultText" type="TextEdit" parent="FunctionMessageContainer"]

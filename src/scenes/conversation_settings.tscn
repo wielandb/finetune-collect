@@ -27,7 +27,7 @@ alignment = 1
 [node name="GlobalSystemMessageCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 4
-text = "Use one System Message for the whole conversation"
+text = "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
 icon = ExtResource("2_fd7a4")
 
 [node name="GlobalSystemMessageContainer" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
@@ -37,14 +37,14 @@ size_flags_horizontal = 3
 [node name="GlobalSystemMessageTextLabel" type="Label" parent="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 29
-text = "Global System Message"
+text = "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
 horizontal_alignment = 1
 
 [node name="GlobalSystemMessageTextEdit" type="TextEdit" parent="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-text = "You are a helpful assistant!"
+text = "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 
 [node name="MinimalImageHeightContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -53,7 +53,7 @@ size_flags_vertical = 2
 [node name="Label" type="Label" parent="VBoxContainer/MinimalImageHeightContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Minimal height of images"
+text = "SETTINGS_IMAGE_MINIMAL_HEIGHT"
 
 [node name="MinimalImageHeightSlider" type="HSlider" parent="VBoxContainer/MinimalImageHeightContainer"]
 layout_mode = 2
@@ -70,7 +70,7 @@ layout_mode = 2
 
 [node name="AlwaysIncludeFunctionsSettingLabel" type="Label" parent="VBoxContainer/AlwaysIncludeFunctionsSettingContainer"]
 layout_mode = 2
-text = "Include what functions on export?"
+text = "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
 
 [node name="AlwaysIncludeFunctionsSettingOptionButton" type="OptionButton" parent="VBoxContainer/AlwaysIncludeFunctionsSettingContainer"]
 layout_mode = 2
@@ -87,7 +87,7 @@ layout_mode = 2
 
 [node name="APIKeyLabel" type="Label" parent="VBoxContainer/APIKeySettingContainer"]
 layout_mode = 2
-text = "API Key:"
+text = "SETTINGS_API_KEY"
 
 [node name="APIKeyEdit" type="LineEdit" parent="VBoxContainer/APIKeySettingContainer"]
 layout_mode = 2
@@ -99,7 +99,7 @@ layout_mode = 2
 
 [node name="ModelChoiceLabel" type="Label" parent="VBoxContainer/ModelChoiceContainer"]
 layout_mode = 2
-text = "Model to use for completions:
+text = "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS
 "
 
 [node name="ModelChoiceOptionButton" type="OptionButton" parent="VBoxContainer/ModelChoiceContainer"]
@@ -108,7 +108,7 @@ size_flags_horizontal = 3
 
 [node name="ModelChoiceRefreshButton" type="Button" parent="VBoxContainer/ModelChoiceContainer"]
 layout_mode = 2
-text = "Refresh"
+text = "GENERIC_REFRESH"
 icon = ExtResource("3_swtgl")
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]

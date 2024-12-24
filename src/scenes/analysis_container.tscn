@@ -19,23 +19,23 @@ size_flags_vertical = 3
 
 [node name="RunAnalysisButton" type="Button" parent="ElementsListContainer"]
 layout_mode = 2
-text = "Run analysis"
+text = "ANALYSIS_RUN_ANALYSIS"
 
 [node name="CommonStatsticsLabel" type="Label" parent="ElementsListContainer"]
 layout_mode = 2
-text = "Statistics"
+text = "ANALYSIS_STATISTICS_TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="WarningsLabel" type="Label" parent="ElementsListContainer"]
 layout_mode = 2
-text = "Warnings"
+text = "ANALYSIS_WARNINGS_TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ErrorsLabel" type="Label" parent="ElementsListContainer"]
 layout_mode = 2
-text = "Errors"
+text = "ANALYSIS_ERROS_TITLE"
 horizontal_alignment = 1
 vertical_alignment = 1
 

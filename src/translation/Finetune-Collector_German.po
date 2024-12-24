@@ -1,148 +1,103 @@
-# LANGUAGE translation for finetune-collector for the following files:
-# res://available_parameter.gd
-# res://parameter.tscn
-# res://scenes/analysis_container.gd
-# res://scenes/analysis_container.tscn
-# res://scenes/available_function.gd
-# res://scenes/available_function.tscn
-# res://scenes/conversation.tscn
-# res://scenes/conversation_settings.gd
-# res://scenes/conversation_settings.tscn
-# res://scenes/fine_tune.gd
-# res://scenes/fine_tune.tscn
-# res://scenes/functions_list.gd
-# res://scenes/functions_list.tscn
-# res://scenes/function_call_results_parameter.gd
-# res://scenes/function_call_results_parameter.tscn
-# res://scenes/function_name_choice_button.gd
-# res://scenes/function_name_choice_button.tscn
-# res://scenes/function_use_parameter.gd
-# res://scenes/function_use_parameter.tscn
-# res://scenes/message.gd
-# res://scenes/message.tscn
-# res://scenes/messages_list.gd
-# res://scenes/messages_list.tscn
-# res://scenes/popup.tscn
-# res://scenes/used_function.gd
-# res://scenes/used_function.tscn
-#
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: finetune-collector\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8-bit\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Finetune-Collector\n"
+"Language: de\n"
 
 #: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
-msgstr ""
+msgstr "Parametertyp"
 
 #: parameter.tscn
-msgid "String"
-msgstr ""
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
+msgstr "String"
 
 #: parameter.tscn
-msgid "Number"
-msgstr ""
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
+msgstr "Nummer"
 
 #: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
-msgstr ""
+msgstr "Name"
 
 #: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
-msgstr ""
+msgstr "Beschreibung"
 
 #: parameter.tscn
 msgid "Has limits"
-msgstr ""
+msgstr "Begrenzt"
 
 #: parameter.tscn
 msgid "Min."
-msgstr ""
+msgstr "Min."
 
 #: parameter.tscn
 msgid "Max."
-msgstr ""
+msgstr "Max."
 
 #: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
-msgstr ""
+msgstr "Enumeration?"
 
 #: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
-msgstr ""
-
-#: scenes/analysis_container.tscn
-msgid "ANALYSIS_RUN_ANALYSIS"
-msgstr ""
-
-#: scenes/analysis_container.tscn
-msgid "ANALYSIS_STATISTICS_TITLE"
-msgstr ""
-
-#: scenes/analysis_container.tscn
-msgid "ANALYSIS_WARNINGS_TITLE"
-msgstr ""
-
-#: scenes/analysis_container.tscn
-msgid "ANALYSIS_ERROS_TITLE"
-msgstr ""
+msgstr "benötigt?"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_FUNCTION_TITLE"
-msgstr ""
+msgstr "Funktion"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_FUNCTION_NAME"
-msgstr ""
+msgstr "Name:"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_FUNCTION_DESCRIPTION"
-msgstr ""
+msgstr "Beschreibung:"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_FUNCTION_PARAMETERS_TITLE"
-msgstr ""
+msgstr "Parameter"
 
 #: scenes/available_function.tscn
 msgid "GENERIC_PLUS"
-msgstr ""
+msgstr "+"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_DELETE_FUNCTION"
-msgstr ""
+msgstr "Funktion löschen"
 
 #: scenes/conversation.tscn
 msgid "Messages"
-msgstr ""
+msgstr "Messages"
 
 #: scenes/conversation.tscn
 msgid "Functions"
-msgstr ""
+msgstr "Functions"
 
 #: scenes/conversation.tscn
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: scenes/conversation.tscn
 msgid "Analysis"
-msgstr ""
+msgstr "Analysis"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
-msgstr ""
+msgstr "Nutze eine Systemnachricht für alle Chats"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
-msgstr ""
+msgstr "Globale System-Nachricht"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_MINIMAL_HEIGHT"
-msgstr ""
+msgstr "Minimale Bildgröße"
 
 #: scenes/conversation_settings.tscn
 msgid "??? px"
@@ -150,39 +105,40 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
+msgstr "Welche Funktionen in Export einschließen?"
+
+#: scenes/conversation_settings.tscn
+msgid "Always include all functions in all conversations"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
-msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
+msgid "Only include functions that were used in that conversation in a conversation"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
-msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ONLY_IN_USED_CONVERSATIONS"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
+msgid "Include all functions in every conversation that have been used at least once anywhere"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_API_KEY"
-msgstr ""
+msgstr "API-Schlüssel"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
-msgstr ""
+""
+msgstr "Modell für Vervollständigungen"
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_REFRESH"
-msgstr ""
+msgstr "Neu laden"
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_CONVERSATION_NEW"
-msgstr ""
+msgstr "Neue Unterhaltung"
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
-msgstr ""
+msgstr "Lade Fine-Tune"
 
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
@@ -196,7 +152,7 @@ msgstr ""
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_SAVE"
-msgstr ""
+msgstr "Speichere Fine-Tune"
 
 #: scenes/fine_tune.tscn
 msgid "*.json"
@@ -208,7 +164,7 @@ msgstr ""
 
 #: scenes/functions_list.tscn
 msgid "FUNCTIONS_ADD_NEW_FUNCTION"
-msgstr ""
+msgstr "Neue Funktion"
 
 #: scenes/function_call_results_parameter.tscn
 msgid "Parameter Key"
@@ -224,10 +180,11 @@ msgstr ""
 
 #: scenes/function_use_parameter.tscn
 msgid "MESSAGE_USE_PARAMETER_CHECKBOX_TITLE"
-msgstr ""
+msgstr "Benutze Parameter"
 
 #: scenes/function_use_parameter.tscn
 msgid "[Parameter Name]\n"
+""
 msgstr ""
 
 #: scenes/message.tscn
@@ -256,38 +213,38 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "GENERIC_DELETE"
-msgstr ""
+msgstr "Löschen"
 
 #: scenes/message.tscn
 msgid "MESSAGES_TEXT_MESSAGE_TITLE"
-msgstr ""
+msgstr "Textnachricht"
 
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_MESSAGE_TITLE"
-msgstr ""
+msgstr "Bildnachricht"
 
 #: scenes/message.tscn
 msgid "MESSAGES_LOAD_IMAGE"
-msgstr ""
+msgstr "Bild laden"
 
 #: scenes/message.tscn
 msgid "MESSAGE_USE_FUNCTION_TITLE"
-msgstr ""
+msgstr "Benutze Funktion"
 
 #: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
-msgstr ""
+msgstr "Welche?"
 
 #: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_PARAMETERS_TITLE"
-msgstr ""
+msgstr "Parameter"
 
 #: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_FUNCTION_RESULT_TITLE"
-msgstr ""
+msgstr "Ergebnis"
 
 #: scenes/message.tscn
 msgid "Add result"
@@ -295,11 +252,11 @@ msgstr ""
 
 #: scenes/messages_list.tscn
 msgid "MESSAGES_ADD_MESSAGE"
-msgstr ""
+msgstr "Nachricht hinzufügen"
 
 #: scenes/messages_list.tscn
 msgid "MESSAGES_ADD_CHATGPT_COMPLETION"
-msgstr ""
+msgstr "Nachricht vervollständigen lassen"
 
 #: scenes/popup.tscn
 msgid "Arbeitet..."
@@ -307,8 +264,45 @@ msgstr ""
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_FUNCTION"
-msgstr ""
+msgstr "Benutze Funktion"
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_FUNCTION_ADD_RESULT"
-msgstr ""
+msgstr "Ergebnis hinzufügen"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_RUN_ANALYSIS"
+msgstr "Analyse durchführen"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_STATISTICS_TITLE"
+msgstr "Statistiken"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_WARNINGS_TITLE"
+msgstr "Warnungen"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_ERROS_TITLE"
+msgstr "Fehler"
+
+#: parameter.tscn
+msgid "String"
+msgstr "String"
+
+#: parameter.tscn
+msgid "Number"
+msgstr "Number"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
+msgstr "Immer alle Funktionen einschließen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ONLY_IN_USED_CONVERSATIONS"
+msgstr "Nur in der jeweiligen Unterhaltung genutzte einschließen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
+msgstr "Alle immer einschließen, die mindestens ein mal genutzt wurden"
+

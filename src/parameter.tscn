@@ -14,8 +14,8 @@ text = "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 layout_mode = 2
 selected = 0
 item_count = 2
-popup/item_0/text = "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
-popup/item_1/text = "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
+popup/item_0/text = "String"
+popup/item_1/text = "Number"
 popup/item_1/id = 1
 
 [node name="ParameterNameLabel" type="Label" parent="."]

@@ -77,19 +77,19 @@ msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
 msgstr ""
 
 #: scenes/analysis_container.tscn
-msgid "Run analysis"
+msgid "ANALYSIS_RUN_ANALYSIS"
 msgstr ""
 
 #: scenes/analysis_container.tscn
-msgid "Statistics"
+msgid "ANALYSIS_STATISTICS_TITLE"
 msgstr ""
 
 #: scenes/analysis_container.tscn
-msgid "Warnings"
+msgid "ANALYSIS_WARNINGS_TITLE"
 msgstr ""
 
 #: scenes/analysis_container.tscn
-msgid "Errors"
+msgid "ANALYSIS_ERROS_TITLE"
 msgstr ""
 
 #: scenes/available_function.tscn

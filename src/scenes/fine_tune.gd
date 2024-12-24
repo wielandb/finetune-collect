@@ -3,7 +3,13 @@ extends HBoxContainer
 var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
-var SETTINGS = []
+var SETTINGS = {
+	"apikey": "",
+	"useGlobalSystemMessage": false,
+	"globalSystemMessage": "",
+	"modelChoice": "gpt-4o",
+	"availableModels": []
+	}
 
 var RUNTIME = {"filepath": ""}
 

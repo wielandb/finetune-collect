@@ -76,10 +76,10 @@ text = "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
 layout_mode = 2
 size_flags_horizontal = 3
 item_count = 3
-popup/item_0/text = "Always include all functions in all conversations"
-popup/item_1/text = "Only include functions that were used in that conversation in a conversation"
+popup/item_0/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
+popup/item_1/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ONLY_IN_USED_CONVERSATIONS"
 popup/item_1/id = 1
-popup/item_2/text = "Include all functions in every conversation that have been used at least once anywhere"
+popup/item_2/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
 popup/item_2/id = 2
 
 [node name="APIKeySettingContainer" type="HBoxContainer" parent="VBoxContainer"]

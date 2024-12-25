@@ -57,7 +57,6 @@ text = "GENERIC_DELETE"
 icon = ExtResource("6_trxu4")
 
 [node name="TextMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -110,6 +109,7 @@ access = 2
 use_native_dialog = true
 
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 

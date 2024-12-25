@@ -306,3 +306,19 @@ msgstr "Nur in der jeweiligen Unterhaltung genutzte einschließen"
 msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
 msgstr "Alle immer einschließen, die mindestens ein mal genutzt wurden"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT_TOOLTIP"
+msgstr "Für jede Unterhaltung muss dem Modell die Menge an verfügbaren Funktionen mitgeteilt werden. Um Tokens im Training zu sparen bietet es sich an, nur die Funktionen als Verfügbar mitzugeben, die auch in der  jeweiligen Konversation verwendet wurden. Das kann allerdings zu falschen Trainingsergebnissen führen, insbesondere wenn das Ziel ist dem Modell beizubringen, wann keine Funktion genutzt werden sollte."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_KEY_TOOLTIP"
+msgstr "Dein OpenAI API Schlüssel. Wird benutzt um vervollständigungen zu erhalten und um die Liste der verfügbaren Modelle abzurufen."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
+msgstr "Modell für Vervollständigungen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
+msgstr "Das Modell das für Vervollständigungen genutzt werden soll. Beachte dass obwohl alle Modelle auf die du Zugriff hast hier aufgelistet sind, nur die wenigsten für diese Funktion genutzt werden können."
+

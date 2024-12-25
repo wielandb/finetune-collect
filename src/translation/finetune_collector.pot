@@ -153,6 +153,10 @@ msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
 msgstr ""
 
@@ -169,7 +173,15 @@ msgid "SETTINGS_API_KEY"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
-msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
+msgid "SETTINGS_API_KEY_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
 msgstr ""
 
 #: scenes/conversation_settings.tscn

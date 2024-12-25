@@ -1,0 +1,324 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: POEditor.com\n"
+"Project-Id-Version: Finetune-Collector\n"
+"Language: en\n"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
+msgstr "Typ"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
+msgstr "String"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
+msgstr "Number"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
+msgstr "Name"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
+msgstr "Description"
+
+#: parameter.tscn
+msgid "Has limits"
+msgstr ""
+
+#: parameter.tscn
+msgid "Min."
+msgstr ""
+
+#: parameter.tscn
+msgid "Max."
+msgstr ""
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
+msgstr "Enumeration?"
+
+#: parameter.tscn
+msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
+msgstr "Required?"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_TITLE"
+msgstr "Function"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_NAME"
+msgstr "Name:"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_DESCRIPTION"
+msgstr "Description:"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_FUNCTION_PARAMETERS_TITLE"
+msgstr "Function Parameters"
+
+#: scenes/available_function.tscn
+msgid "GENERIC_PLUS"
+msgstr "+"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_DELETE_FUNCTION"
+msgstr "Delete Function"
+
+#: scenes/conversation.tscn
+msgid "Messages"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Functions"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Settings"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Analysis"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
+msgstr "Use global system message"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
+msgstr "Global system message"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_MINIMAL_HEIGHT"
+msgstr "Minimal image height"
+
+#: scenes/conversation_settings.tscn
+msgid "??? px"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
+msgstr "Include which functions on export?"
+
+#: scenes/conversation_settings.tscn
+msgid "Always include all functions in all conversations"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Only include functions that were used in that conversation in a conversation"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Include all functions in every conversation that have been used at least once anywhere"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_KEY"
+msgstr "API key:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
+""
+msgstr "Model to use for completions"
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_REFRESH"
+msgstr "Refresh"
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_CONVERSATION_NEW"
+msgstr "New conversation"
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_LOAD"
+msgstr "Load fine-tune file"
+
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open a File"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_SAVE"
+msgstr "Save fine-tune file"
+
+#: scenes/fine_tune.tscn
+msgid "*.json"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "*.ftproj"
+msgstr ""
+
+#: scenes/functions_list.tscn
+msgid "FUNCTIONS_ADD_NEW_FUNCTION"
+msgstr "Add new function"
+
+#: scenes/function_call_results_parameter.tscn
+msgid "Parameter Key"
+msgstr ""
+
+#: scenes/function_call_results_parameter.tscn
+msgid "Parameter Value"
+msgstr ""
+
+#: scenes/function_call_results_parameter.tscn
+msgid "X"
+msgstr ""
+
+#: scenes/function_use_parameter.tscn
+msgid "MESSAGE_USE_PARAMETER_CHECKBOX_TITLE"
+msgstr "Use parameter"
+
+#: scenes/function_use_parameter.tscn
+msgid "[Parameter Name]\n"
+""
+msgstr ""
+
+#: scenes/message.tscn
+msgid "system"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "user"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "assistant"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Text"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Image"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Function Call"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "GENERIC_DELETE"
+msgstr "Delete"
+
+#: scenes/message.tscn
+msgid "MESSAGES_TEXT_MESSAGE_TITLE"
+msgstr "Text message"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_MESSAGE_TITLE"
+msgstr "Image message"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE"
+msgstr "Load image"
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_FUNCTION_TITLE"
+msgstr "Use function"
+
+#: scenes/message.tscn
+#: scenes/used_function.tscn
+msgid "MESSAGE_USE_WHICH_MESSAGE"
+msgstr "Which?"
+
+#: scenes/message.tscn
+#: scenes/used_function.tscn
+msgid "MESSAGE_PARAMETERS_TITLE"
+msgstr "Function Parameters"
+
+#: scenes/message.tscn
+#: scenes/used_function.tscn
+msgid "MESSAGE_FUNCTION_RESULT_TITLE"
+msgstr "Result"
+
+#: scenes/message.tscn
+msgid "Add result"
+msgstr ""
+
+#: scenes/messages_list.tscn
+msgid "MESSAGES_ADD_MESSAGE"
+msgstr "Add message"
+
+#: scenes/messages_list.tscn
+msgid "MESSAGES_ADD_CHATGPT_COMPLETION"
+msgstr "Add ChatGPT completion"
+
+#: scenes/popup.tscn
+msgid "Arbeitet..."
+msgstr ""
+
+#: scenes/used_function.tscn
+msgid "MESSAGE_USE_FUNCTION"
+msgstr "Use function"
+
+#: scenes/used_function.tscn
+msgid "MESSAGE_FUNCTION_ADD_RESULT"
+msgstr "Add result"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_RUN_ANALYSIS"
+msgstr "Run analysis"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_STATISTICS_TITLE"
+msgstr "Statistics"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_WARNINGS_TITLE"
+msgstr "Warnings"
+
+#: scenes/analysis_container.tscn
+msgid "ANALYSIS_ERROS_TITLE"
+msgstr "Errors"
+
+#: parameter.tscn
+msgid "String"
+msgstr "String"
+
+#: parameter.tscn
+msgid "Number"
+msgstr "Number"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
+msgstr "Always include all functions"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ONLY_IN_USED_CONVERSATIONS"
+msgstr "Only include functions used in that conversation"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
+msgstr "Always include all function that were used at least once anywhere"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT_TOOLTIP"
+msgstr "For every conversation, every function that the model can (or could) use needs to be provided. To save tokens in training, it can be useful to only provide the functions as available that are actually used in this conversation. But this could also lead to false training, especially when the goal is to teach the model when not to use a function."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_KEY_TOOLTIP"
+msgstr "Your OpenAI API key. Used to poll for completions and to fetch the list of available models."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
+msgstr "Model to use for completions"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
+msgstr "The model that should be used for completions. Note that although all models you have access to are listed here, only a small subset would be able to be used for this feature."
+

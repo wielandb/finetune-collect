@@ -237,6 +237,13 @@ func check_is_conversation_problematic(idx: String):
 	for m in thisconvo:
 		if m["type"] == "Function Call" and m["functionName"] == "":
 			return true
+	# Check if at least one message is from the assistant
+	var hasAssistantMessage = false
+	for m in thisconvo:
+		if m["role"] == "assistant":
+			hasAssistantMessage = true
+	if not hasAssistantMessage:
+		return true
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -393,3 +400,24 @@ func _on_collapse_burger_btn_pressed() -> void:
 func _on_expand_burger_btn_pressed() -> void:
 	$VBoxContainer.visible = true
 	$CollapsedMenu.visible = false
+
+
+func _on_export_btn_pressed() -> void:
+	$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
+
+func _on_export_file_dialog_file_selected(path: String) -> void:
+	var FINETUNEDATA = {}
+	FINETUNEDATA["functions"] = FUNCTIONS
+	# TODO: Only export unproblematic conversations
+	var allconversations = CONVERSATIONS
+	var unproblematicconversations = {}
+	# Check all conversations and only add unproblematic ones
+	for convokey in allconversations:
+		if not check_is_conversation_problematic(convokey):
+			unproblematicconversations[convokey] = CONVERSATIONS[convokey]
+	FINETUNEDATA["conversations"] = unproblematicconversations
+	FINETUNEDATA["settings"] = SETTINGS
+	var complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	file.store_string(complete_jsonl_string)
+	file.close()

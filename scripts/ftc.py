@@ -49,7 +49,6 @@ def convert_function_to_openai_format(func):
         # Add to required parameters if isRequired is True
         if param.get('isRequired', False):
             converted_function['function']['parameters']['required'].append(param_name)
-    
     return converted_function
 
 def convert_message_to_openai_format(message, function_map=None):

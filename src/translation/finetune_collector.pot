@@ -25,6 +25,7 @@
 # res://scenes/popup.tscn
 # res://scenes/used_function.gd
 # res://scenes/used_function.tscn
+# res://scenes/exporter.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -137,7 +138,15 @@ msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -216,6 +225,22 @@ msgstr ""
 
 #: scenes/fine_tune.tscn
 msgid "*.ftproj"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_EXPORT"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "GENERIC_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "GENERIC_CANCEL"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_FILE_DESCRIPTION"
 msgstr ""
 
 #: scenes/functions_list.tscn

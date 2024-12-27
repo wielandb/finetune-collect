@@ -123,7 +123,7 @@ func convert_conversation_to_openai_format(conversation, function_map=null):
 		
 		# Handle cases where a single function message might return multiple messages
 		if converted is Array:
-			converted_messages.extend(converted)
+			converted_messages += converted
 		elif converted:
 			converted_messages.append(converted)
 	return converted_messages
@@ -136,6 +136,38 @@ func convert_functions_to_openai_format(functions):
 	return tmp
 	
 func convert_fine_tuning_data(ftdata):
+	var jsonl_file_string = ""
 	# ftdata -> the project file structure
 	### Needs to be converted from scripts
-	
+	## function_map = {func['name']: func for func in data.get('functions', [])}
+	var function_map = {}
+	for funcDef in ftdata.get('functions', []):
+		function_map[funcDef["name"]] = funcDef
+	var tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+	var system_message = null
+	if ftdata['settings'].get('useGlobalSystemMessage', false):
+		system_message = ftdata['settings'].get('globalSystemMessage', '')
+	for conversation_key in ftdata['conversations']:
+		var conversation = ftdata['conversations'][conversation_key]
+		var processed_conversation = []
+		if system_message:
+				processed_conversation.append({
+					'role': 'system', 
+					'content': system_message
+				})
+		# Convert conversation
+		processed_conversation += convert_conversation_to_openai_format(conversation, function_map)
+		# Write to JSONL, optionally including tools
+		var output_entry = {
+			'messages': processed_conversation
+		}
+		# Only add tools if there are function calls in the conversation
+		# TODO: Do as the settings say
+		#if any(msg.get('tool_calls') for msg in processed_conversation):
+		#	output_entry['tools'] = tools
+		for msg in processed_conversation:
+			if msg.get('tool_calls', false):
+				output_entry['tools'] = tools
+		
+		jsonl_file_string += JSON.stringify(output_entry) + "\n"
+	return jsonl_file_string

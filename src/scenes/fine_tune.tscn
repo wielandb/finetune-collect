@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://bjjksasvd2r5u"]
+[gd_scene load_steps=12 format=3 uid="uid://bjjksasvd2r5u"]
 
 [ext_resource type="PackedScene" uid="uid://cd35p8jv7axv5" path="res://scenes/conversation.tscn" id="1_o1j2m"]
 [ext_resource type="Theme" uid="uid://cebssi3strko3" path="res://themes/theme.res" id="1_v4ety"]
@@ -9,6 +9,7 @@
 [ext_resource type="Script" path="res://addons/openai_api/Scripts/OpenAiApi.gd" id="4_slp0e"]
 [ext_resource type="Texture2D" uid="uid://c3mvjnlcxln7r" path="res://icons/save.png" id="5_6c4wb"]
 [ext_resource type="Texture2D" uid="uid://dclev2i1xdu5c" path="res://icons/forum-plus-custom.png" id="5_ks358"]
+[ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="8_wwmoc"]
 [ext_resource type="Script" path="res://scenes/exporter.gd" id="10_ido41"]
 
 [node name="FineTune" type="HBoxContainer"]
@@ -75,6 +76,18 @@ access = 2
 filters = PackedStringArray("*.json", "*.ftproj")
 use_native_dialog = true
 
+[node name="ExportBtn" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "FINETUNE_EXPORT"
+icon = ExtResource("8_wwmoc")
+
+[node name="ExportFileDialog" type="FileDialog" parent="VBoxContainer/ExportBtn"]
+ok_button_text = "GENERIC_SAVE"
+cancel_button_text = "GENERIC_CANCEL"
+access = 2
+filters = PackedStringArray("*.jsonl;FINETUNE_FILE_DESCRIPTION")
+use_native_dialog = true
+
 [node name="Conversation" parent="." instance=ExtResource("1_o1j2m")]
 layout_mode = 2
 size_flags_stretch_ratio = 4.0
@@ -94,4 +107,6 @@ script = ExtResource("10_ido41")
 [connection signal="file_selected" from="VBoxContainer/LoadBtn/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="VBoxContainer/SaveBtn" to="." method="_on_save_btn_pressed"]
 [connection signal="file_selected" from="VBoxContainer/SaveBtn/SaveFileDialog" to="." method="_on_save_file_dialog_file_selected"]
+[connection signal="pressed" from="VBoxContainer/ExportBtn" to="." method="_on_export_btn_pressed"]
+[connection signal="file_selected" from="VBoxContainer/ExportBtn/ExportFileDialog" to="." method="_on_export_file_dialog_file_selected"]
 [connection signal="tab_changed" from="Conversation" to="." method="_on_conversation_tab_changed"]

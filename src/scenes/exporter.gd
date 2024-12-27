@@ -88,7 +88,7 @@ func convert_message_to_openai_format(message, function_map=null):
 				# Use choice if available, otherwise text
 				var value = param['parameterValueChoice'] or param['parameterValueText']
 				function_parameters[param['name']] = value
-		
+		# Todo: Generate a unique tool call id
 		# Prepare tool call
 		tool_call = {
 			'role': 'assistant',
@@ -106,7 +106,7 @@ func convert_message_to_openai_format(message, function_map=null):
 			var tool_response = {
 					'role': 'tool',
 					'tool_call_id': 'call_id',
-					'content': message['functionResults'][0]['value']
+					'content': message['functionResults']
 			}
 			return [tool_call, tool_response]
 		return tool_call

@@ -10,6 +10,12 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func getRandomID(length: int) -> String:
+	var ascii_letters_and_digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var result = ""
+	for i in range(length):
+		result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
+	return result
 
 func convert_parameter_to_openai_format(param):
 	#Convert a parameter from the source format to OpenAI function parameter format.
@@ -88,12 +94,12 @@ func convert_message_to_openai_format(message, function_map=null):
 				# Use choice if available, otherwise text
 				var value = param['parameterValueChoice'] or param['parameterValueText']
 				function_parameters[param['name']] = value
-		# Todo: Generate a unique tool call id
+		var tool_call_id = getRandomID(3)
 		# Prepare tool call
 		tool_call = {
 			'role': 'assistant',
 			'tool_calls': [{
-				'id': 'call_id',  # You might want to generate a unique ID
+				'id': str(tool_call_id),
 				'type': 'function',
 				'function': {
 					'name': function_name,
@@ -105,7 +111,7 @@ func convert_message_to_openai_format(message, function_map=null):
 		if message['functionResults']:
 			var tool_response = {
 					'role': 'tool',
-					'tool_call_id': 'call_id',
+					'tool_call_id': str(tool_call_id),
 					'content': message['functionResults']
 			}
 			return [tool_call, tool_response]

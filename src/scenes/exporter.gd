@@ -63,6 +63,11 @@ func convert_message_to_openai_format(message, function_map=null):
 	# Convert a message from the source format to OpenAI message format.
 	# Handles text, image, and function call messages.
 	var tool_call = {}
+	var image_detail_map = {
+		0: "high",
+		1: "low",
+		2: "auto"
+	}
 	# Text message
 	if message['type'] == 'Text':
 		return {
@@ -77,7 +82,8 @@ func convert_message_to_openai_format(message, function_map=null):
 				{
 					'type': 'image_url',
 					'image_url': {
-						'url': "data:image/jpeg;base64," + message['imageContent']
+						'url': "data:image/jpeg;base64," + message['imageContent'],
+						'detail': image_detail_map[message.get("imageDetail", 0)]
 					}
 				}
 			]

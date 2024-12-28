@@ -18,6 +18,7 @@ func to_var():
 	me["type"] = $MessageSettingsContainer/MessageType.get_item_text($MessageSettingsContainer/MessageType.selected)
 	me["textContent"] = $TextMessageContainer/Message.text
 	me["imageContent"] = $ImageMessageContainer/Base64ImageEdit.text
+	me["imageDetail"] = $ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.selected
 	me["functionName"] = ""
 	if $FunctionMessageContainer/function/FunctionNameChoiceButton.selected != -1:
 		me["functionName"] = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
@@ -47,6 +48,10 @@ func from_var(data):
 	# If not empty, create the image from the base64
 	if $ImageMessageContainer/Base64ImageEdit.text != "":
 		base64_to_image(imageTexture, $ImageMessageContainer/Base64ImageEdit.text)
+	if data.has("imageDetail"):
+		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(data["imageDetail"])
+	else: # TODO: Add option what the standard quality should be
+		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(0)
 	# Now everything regarding functions
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
 	#if data["functionName"] != "":

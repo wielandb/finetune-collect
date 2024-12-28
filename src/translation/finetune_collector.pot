@@ -304,6 +304,26 @@ msgid "MESSAGES_IMAGE_MESSAGE_TITLE"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_TOOLTIP"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_OPTION_LOW"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
+msgstr ""
+
+#: scenes/message.tscn
 msgid "MESSAGES_LOAD_IMAGE"
 msgstr ""
 

@@ -108,18 +108,6 @@ msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
 msgstr "Include which functions on export?"
 
 #: scenes/conversation_settings.tscn
-msgid "Always include all functions in all conversations"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "Only include functions that were used in that conversation in a conversation"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "Include all functions in every conversation that have been used at least once anywhere"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
 msgid "SETTINGS_API_KEY"
 msgstr "API key:"
 
@@ -322,14 +310,6 @@ msgstr "Model to use for completions"
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
 msgstr "The model that should be used for completions. Note that although all models you have access to are listed here, only a small subset would be able to be used for this feature."
 
-#: scenes/conversation_settings.tscn
-msgid "If activated, this message will be prepended\n"
-"as a system message to all conversations in\n"
-"export and on auto completion. Useful if\n"
-"you want to use one system message for \n"
-"your whole fine tune."
-msgstr ""
-
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_EXPORT"
 msgstr "Export Fine-Tune"
@@ -341,10 +321,6 @@ msgstr "Save"
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Cancel"
-
-#: scenes/fine_tune.tscn
-msgid "OpenAI fine-tuning file"
-msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TOOLTIP"
@@ -362,315 +338,23 @@ msgstr "You are a helpful assistant!"
 msgid "FINETUNE_FILE_DESCRIPTION"
 msgstr "OpenAI fine-tuning file"
 
-#: 
-msgid "New Code Region"
-msgstr ""
-
-#: 
-msgid "Pick a color from the screen."
-msgstr ""
-
-#: 
-msgid "Pick a color from the application window."
-msgstr ""
-
-#: 
-msgid "Color: #%s\n"
-"LMB: Apply color\n"
-"RMB: Remove preset"
-msgstr ""
-
-#: 
-msgid "Color: #%s\n"
-"LMB: Apply color"
-msgstr ""
-
-#: 
-msgid "Enter a hex code (\"#ff0000\") or named color (\"red\")."
-msgstr ""
-
-#: 
-msgid "Select a picker shape."
-msgstr ""
-
-#: 
-msgid "Select a picker mode."
-msgstr ""
-
-#: 
-msgid "Hex code or named color"
-msgstr ""
-
-#: 
-msgid "Add current color as a preset."
-msgstr ""
-
-#: 
-msgid "Cancel"
-msgstr ""
-
-#: 
-msgid "OK"
-msgstr ""
-
-#: 
-msgid "Alert!"
-msgstr ""
-
-#: 
-msgid "Please Confirm..."
-msgstr ""
-
-#: 
-msgid "Network"
-msgstr ""
-
-#: 
-msgid "File \"%s\" already exists.\n"
-"Do you want to overwrite it?"
-msgstr ""
-
-#: 
-msgid "Select Current Folder"
-msgstr ""
-
-#: 
-msgid "Select This Folder"
-msgstr ""
-
-#: 
-msgid "You don't have permission to access contents of this folder."
-msgstr ""
-
-#: 
-msgid "All Recognized"
-msgstr ""
-
-#: 
-msgid "All Files"
-msgstr ""
-
-#: 
-msgid "Open File(s)"
-msgstr ""
-
-#: 
-msgid "Open a Directory"
-msgstr ""
-
-#: 
-msgid "Open a File or Directory"
-msgstr ""
-
-#: 
-msgid "Save"
-msgstr ""
-
-#: 
-msgid "Save a File"
-msgstr ""
-
-#: 
-msgid "Go to previous folder."
-msgstr ""
-
-#: 
-msgid "Go to next folder."
-msgstr ""
-
-#: 
-msgid "Go to parent folder."
-msgstr ""
-
-#: 
-msgid "Path:"
-msgstr ""
-
-#: 
-msgid "Refresh files."
-msgstr ""
-
-#: 
-msgid "Toggle the visibility of hidden files."
-msgstr ""
-
-#: 
-msgid "Create a new folder."
-msgstr ""
-
-#: 
-msgid "Directories & Files:"
-msgstr ""
-
-#: 
-msgid "File:"
-msgstr ""
-
-#: 
-msgid "Create Folder"
-msgstr ""
-
-#: 
-msgid "Name:"
-msgstr ""
-
-#: 
-msgid "Could not create folder."
-msgstr ""
-
-#: 
-msgid "Invalid extension, or empty filename."
-msgstr ""
-
-#: 
-msgid "Zoom Out"
-msgstr ""
-
-#: 
-msgid "Zoom Reset"
-msgstr ""
-
-#: 
-msgid "Zoom In"
-msgstr ""
-
-#: 
-msgid "Toggle the visual grid."
-msgstr ""
-
-#: 
-msgid "Toggle snapping to the grid."
-msgstr ""
-
-#: 
-msgid "Change the snapping distance."
-msgstr ""
-
-#: 
-msgid "Toggle the graph minimap."
-msgstr ""
-
-#: 
-msgid "Automatically arrange selected nodes."
-msgstr ""
-
-#: 
-msgid "Same as Layout Direction"
-msgstr ""
-
-#: 
-msgid "Auto-Detect Direction"
-msgstr ""
-
-#: 
-msgid "Left-to-Right"
-msgstr ""
-
-#: 
-msgid "Right-to-Left"
-msgstr ""
-
-#: 
-msgid "Left-to-Right Mark (LRM)"
-msgstr ""
-
-#: 
-msgid "Right-to-Left Mark (RLM)"
-msgstr ""
-
-#: 
-msgid "Start of Left-to-Right Embedding (LRE)"
-msgstr ""
-
-#: 
-msgid "Start of Right-to-Left Embedding (RLE)"
-msgstr ""
-
-#: 
-msgid "Start of Left-to-Right Override (LRO)"
-msgstr ""
-
-#: 
-msgid "Start of Right-to-Left Override (RLO)"
-msgstr ""
-
-#: 
-msgid "Pop Direction Formatting (PDF)"
-msgstr ""
-
-#: 
-msgid "Arabic Letter Mark (ALM)"
-msgstr ""
-
-#: 
-msgid "Left-to-Right Isolate (LRI)"
-msgstr ""
-
-#: 
-msgid "Right-to-Left Isolate (RLI)"
-msgstr ""
-
-#: 
-msgid "First Strong Isolate (FSI)"
-msgstr ""
-
-#: 
-msgid "Pop Direction Isolate (PDI)"
-msgstr ""
-
-#: 
-msgid "Zero-Width Joiner (ZWJ)"
-msgstr ""
-
-#: 
-msgid "Zero-Width Non-Joiner (ZWNJ)"
-msgstr ""
-
-#: 
-msgid "Word Joiner (WJ)"
-msgstr ""
-
-#: 
-msgid "Soft Hyphen (SHY)"
-msgstr ""
-
-#: 
-msgid "Cut"
-msgstr ""
-
-#: 
-msgid "Copy"
-msgstr ""
-
-#: 
-msgid "Paste"
-msgstr ""
-
-#: 
-msgid "Select All"
-msgstr ""
-
-#: 
-msgid "Clear"
-msgstr ""
-
-#: 
-msgid "Undo"
-msgstr ""
-
-#: 
-msgid "Redo"
-msgstr ""
-
-#: 
-msgid "Text Writing Direction"
-msgstr ""
-
-#: 
-msgid "Display Control Characters"
-msgstr ""
-
-#: 
-msgid "Insert Control Character"
-msgstr ""
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL"
+msgstr "Image detail"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_TOOLTIP"
+msgstr "Determines how high the quality of the image that is shown to the model will be. Low detail uses less tokens, but the model may not be able to see important details."
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
+msgstr "High"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_OPTION_LOW"
+msgstr "Low"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
+msgstr "Auto"
 

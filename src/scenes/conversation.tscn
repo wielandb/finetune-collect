@@ -44,6 +44,10 @@ layout_mode = 1
 [node name="Analysis" type="TabBar" parent="."]
 visible = false
 layout_mode = 2
+current_tab = 0
+tab_count = 2
+tab_0/title = "asdsadasdas"
+tab_1/title = "asdasdasdasd"
 metadata/_tab_index = 3
 
 [node name="AnalysisContainer" parent="Analysis" instance=ExtResource("4_s3l4r")]

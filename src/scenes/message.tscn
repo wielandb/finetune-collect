@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=11 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" path="res://scenes/message.gd" id="1_lafvt"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://b5c5odgp0j7f6" path="res://icons/image-custom (1).png" id="6_nm785"]
 [ext_resource type="Texture2D" uid="uid://b7le047xxergp" path="res://icons/trashcan.png" id="6_trxu4"]
 [ext_resource type="Texture2D" uid="uid://da741wh2jb07o" path="res://icons/function-variant-custom (1).png" id="7_mo45f"]
+[ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -94,6 +95,30 @@ stretch_mode = 5
 
 [node name="Base64ImageEdit" type="LineEdit" parent="ImageMessageContainer"]
 layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ImageMessageContainer"]
+layout_mode = 2
+
+[node name="ImageDetailLabel" type="Label" parent="ImageMessageContainer/HBoxContainer"]
+layout_mode = 2
+text = "MESSAGES_IMAGE_DETAIL"
+
+[node name="TextureRect" type="TextureRect" parent="ImageMessageContainer/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "MESSAGES_IMAGE_DETAIL_TOOLTIP"
+texture = ExtResource("10_b60dq")
+expand_mode = 2
+
+[node name="ImageDetailOptionButton" type="OptionButton" parent="ImageMessageContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
+popup/item_1/text = "MESSAGES_IMAGE_DETAIL_OPTION_LOW"
+popup/item_1/id = 1
+popup/item_2/text = "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
+popup/item_2/id = 2
 
 [node name="LoadImageButton" type="Button" parent="ImageMessageContainer"]
 layout_mode = 2

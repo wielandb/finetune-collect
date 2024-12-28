@@ -13,6 +13,9 @@ You can also provide the program with your OpenAI API key and it can generate re
 
 ![function_example](presentation/function_example_vertical.png)
 
-## How to export your training data to OpenAIs fine-tuning schema
+## Usage
 
-For now, this functionality is not available in the program itself but only by a python-script located in `scripts/`. Call it by giving the project jsonl-File as an argument like `python3 scripts/ftc.py my-finetune-project.json`, which will create the file `output_finetune.jsonl`
+- `Ctrl` + `S`- Save fine tune project file without re-opening save dialog
+- `Del` - Delete a conversation (when selected in the conversation overview)
+- `Ctrl` + `Left Click` - Enlarge Image (when hovering image)
+- `Crtl` + `Right Click` - Smallen Image (when hovering image)

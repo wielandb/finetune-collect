@@ -85,7 +85,7 @@ icon = ExtResource("8_wwmoc")
 ok_button_text = "GENERIC_SAVE"
 cancel_button_text = "GENERIC_CANCEL"
 access = 2
-filters = PackedStringArray("*.jsonl;FINETUNE_FILE_DESCRIPTION")
+filters = PackedStringArray("*.jsonl;OpenAI fine-tuning file")
 use_native_dialog = true
 
 [node name="Conversation" parent="." instance=ExtResource("1_o1j2m")]

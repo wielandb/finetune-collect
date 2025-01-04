@@ -53,8 +53,13 @@ func getallnodes(node):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	#_on_button_pressed() # Thats not a good name
+	_on_button_pressed()
 	refresh_conversations_list()
+	_on_item_list_item_selected(0)
+	delete_conversation("FtC1") # A janky workaround for the startup sequence
+	refresh_conversations_list()
+	_on_item_list_item_selected(0)
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -126,6 +131,7 @@ func _on_item_list_item_selected(index: int) -> void:
 	# Create conversation if it does not exist
 	print("IX:")
 	print(CURRENT_EDITED_CONVO_IX)
+	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
 	
 

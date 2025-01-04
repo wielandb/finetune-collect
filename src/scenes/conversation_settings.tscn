@@ -55,6 +55,7 @@ size_flags_vertical = 3
 placeholder_text = "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 
 [node name="MinimalImageHeightContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 size_flags_vertical = 6
 

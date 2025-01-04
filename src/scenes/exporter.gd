@@ -122,6 +122,10 @@ func convert_message_to_openai_format(message, function_map=null):
 		var function_name = message['functionName']
 		var function_parameters = {}
 		
+		# If there is a function pre-execution message, set it as content
+		var preFunctionText = null
+		if message["functionUsePreText"] != "":
+			preFunctionText = message["functionUsePreText"]
 		# Convert parameters
 		for param in message['functionParameters']:
 			if param['isUsed']:
@@ -132,6 +136,7 @@ func convert_message_to_openai_format(message, function_map=null):
 		# Prepare tool call
 		tool_call = {
 			'role': 'assistant',
+			'content': preFunctionText,
 			'tool_calls': [{
 				'id': str(tool_call_id),
 				'type': 'function',

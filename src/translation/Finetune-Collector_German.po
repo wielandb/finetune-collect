@@ -352,9 +352,13 @@ msgstr "Automatisch"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
-msgstr "Alle einschließen, wenn in einer Konversation Funktionen genutzt werden"
+msgstr "Alle einschließen, wenn in einer Unterhaltung Funktionen genutzt werden"
 
 #: scenes/fine_tune.tscn
 msgid "OpenAI fine-tuning file"
 msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
+msgstr "Nachricht vor Funktionsausführung (optional)"
 

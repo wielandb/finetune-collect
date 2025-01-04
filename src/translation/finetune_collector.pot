@@ -332,6 +332,10 @@ msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
+msgstr ""
+
+#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr ""

@@ -70,6 +70,10 @@ func gpt_response_completed(message:Message, response:Dictionary):
 	var RecvMsgVar
 	if len(message["tool_calls"]) > 0:
 		# This is a tool call message from the assistant
+		## Get the preFunctionMessage
+		var preFunctionText = ""
+		if message["content"]:
+			preFunctionText = message["content"]
 		## Unpack the parameters
 		var parametersFromAssistantDict = JSON.parse_string(message["tool_calls"][0]["function"]["arguments"])
 		var parametersForFTC = []
@@ -93,7 +97,8 @@ func gpt_response_completed(message:Message, response:Dictionary):
 			"imageContent": "",
 			"functionName": message["tool_calls"][0]["function"]["name"],
 			"functionParameters": parametersForFTC,
-			"functionResults": ""
+			"functionResults": "",
+			"functionUsePreText": preFunctionText
 		}	
 	else:
 		RecvMsgVar = {
@@ -103,7 +108,8 @@ func gpt_response_completed(message:Message, response:Dictionary):
 			"imageContent": "",
 			"functionName": "",
 			"functionParameters": [],
-			"functionResults": ""
+			"functionResults": "",
+			"functionUsePreText": ""
 		}
 	MessageInstance.from_var(RecvMsgVar)
 	
@@ -162,6 +168,8 @@ func _on_add_message_completion_button_pressed() -> void:
 							paramValue = param["parameterValueNumber"]
 						thisFunctionCallParameters[param["name"]] = paramValue
 				tool_call_message.add_function_call(call_id, m["functionName"], thisFunctionCallParameters)
+				if m["functionUsePreText"] != "":
+					tool_call_message.add_text_content(m["functionUsePreText"])
 				var tool_response_message = Message.new()
 				tool_response_message.create_tool_response(call_id, m["functionResults"])
 				openai_messages.append(tool_call_message)

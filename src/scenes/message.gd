@@ -34,6 +34,7 @@ func to_var():
 	#		print("It was a function use result")
 	#		tmpFunctionResults.append(result.to_var())
 	me["functionResults"] = $FunctionMessageContainer/FunctionUseResultText.text
+	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	return me
 
 func from_var(data):
@@ -63,6 +64,7 @@ func from_var(data):
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
 		parameterInstance.from_var(d)
 	$FunctionMessageContainer/FunctionUseResultText.text = str(data["functionResults"])
+	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)

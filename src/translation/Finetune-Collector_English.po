@@ -358,3 +358,7 @@ msgstr "Include all if functions are used in the conversation"
 msgid "OpenAI fine-tuning file"
 msgstr ""
 
+#: scenes/message.tscn
+msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
+msgstr "Message before executing function (optional)"
+

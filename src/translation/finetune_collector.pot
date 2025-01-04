@@ -129,10 +129,6 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: scenes/conversation.tscn
-msgid "Analysis"
-msgstr ""
-
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
 msgstr ""
@@ -175,6 +171,10 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -240,7 +240,7 @@ msgid "GENERIC_CANCEL"
 msgstr ""
 
 #: scenes/fine_tune.tscn
-msgid "FINETUNE_FILE_DESCRIPTION"
+msgid "OpenAI fine-tuning file"
 msgstr ""
 
 #: scenes/functions_list.tscn

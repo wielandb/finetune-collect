@@ -90,12 +90,15 @@ expand_mode = 2
 [node name="AlwaysIncludeFunctionsSettingOptionButton" type="OptionButton" parent="VBoxContainer/AlwaysIncludeFunctionsSettingContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 3
+selected = 0
+item_count = 4
 popup/item_0/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
 popup/item_1/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ONLY_IN_USED_CONVERSATIONS"
 popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
 popup/item_2/id = 2
+popup/item_3/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
+popup/item_3/id = 3
 
 [node name="APIKeySettingContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -139,5 +142,6 @@ icon = ExtResource("3_swtgl")
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
+[connection signal="item_selected" from="VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]

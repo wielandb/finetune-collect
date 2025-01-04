@@ -11,6 +11,7 @@ func to_var():
 	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
 		availableModels.append($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i))
 	me["availableModels"] = availableModels
+	me["includeFunctions"] = $VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.selected
 	return me
 	
 func from_var(me):
@@ -19,6 +20,7 @@ func from_var(me):
 	$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text = me["globalSystemMessage"]
 	$VBoxContainer/APIKeySettingContainer/APIKeyEdit.text = me["apikey"]
 	openai.set_api($VBoxContainer/APIKeySettingContainer/APIKeyEdit.text)
+	$VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.select(me.get("includeFunctions", 0))
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
 	for m in me["availableModels"]:
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)

@@ -83,10 +83,6 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#: scenes/conversation.tscn
-msgid "Analysis"
-msgstr ""
-
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
 msgstr "Use global system message"
@@ -334,10 +330,6 @@ msgstr "If activated, this message will be prepended\n"
 msgid "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 msgstr "You are a helpful assistant!"
 
-#: scenes/fine_tune.tscn
-msgid "FINETUNE_FILE_DESCRIPTION"
-msgstr "OpenAI fine-tuning file"
-
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_DETAIL"
 msgstr "Image detail"
@@ -357,4 +349,12 @@ msgstr "Low"
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
 msgstr "Auto"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
+msgstr "Include all if functions are used in the conversation"
+
+#: scenes/fine_tune.tscn
+msgid "OpenAI fine-tuning file"
+msgstr ""
 

@@ -10,12 +10,40 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func filter_function_map_only_keep_array(function_map, keep_functions_name_array):
+	var function_map_tmp = function_map
+	for key in function_map_tmp:
+		if key not in keep_functions_name_array:
+			function_map_tmp.erase(key)
+	return function_map_tmp
+	
+func get_all_functions_used_in_conversation(convoIx):
+	var conversations = get_node("/root/FineTune").CONVERSATIONS
+	var listOfFunctionNamesUsedInThisConvo = []
+	for message in conversations[convoIx]:
+		if message['type'] == 'Function Call':
+			listOfFunctionNamesUsedInThisConvo.append(message['functionName'])
+	return listOfFunctionNamesUsedInThisConvo
+
+func get_all_functions_used_globally():
+	var conversations = get_node("/root/FineTune").CONVERSATIONS
+	var listOfFunctionNamesUsed = []
+	for convoIx in conversations: 
+		for message in conversations[convoIx]:
+			if message['type'] == 'Function Call':
+				listOfFunctionNamesUsed.append(message['functionName'])
+	return listOfFunctionNamesUsed
+
 func getRandomID(length: int) -> String:
 	var ascii_letters_and_digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	var result = ""
 	for i in range(length):
 		result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
 	return result
+
+func getSettings():
+	get_node("/root/FineTune").update_settings_internal()
+	return get_node("/root/FineTune").SETTINGS
 
 func convert_parameter_to_openai_format(param):
 	#Convert a parameter from the source format to OpenAI function parameter format.
@@ -140,11 +168,12 @@ func convert_conversation_to_openai_format(conversation, function_map=null):
 			converted_messages.append(converted)
 	return converted_messages
 
-func convert_functions_to_openai_format(functions):
+func convert_functions_to_openai_format(functions, onlykeep=null):
 	# Convert list of functions to OpenAI tools format.
 	var tmp = []
 	for funcDef in functions:
-		tmp.append(convert_function_to_openai_format(funcDef))
+		if not onlykeep or funcDef["name"] in onlykeep:
+			tmp.append(convert_function_to_openai_format(funcDef))
 	return tmp
 	
 func convert_fine_tuning_data(ftdata):
@@ -175,11 +204,24 @@ func convert_fine_tuning_data(ftdata):
 		}
 		# Only add tools if there are function calls in the conversation
 		# TODO: Do as the settings say
-		#if any(msg.get('tool_calls') for msg in processed_conversation):
-		#	output_entry['tools'] = tools
-		for msg in processed_conversation:
-			if msg.get('tool_calls', false):
-				output_entry['tools'] = tools
-		
+		var function_handle_setting = getSettings().get("includeFunctions", 0)
+		if function_handle_setting == 0:
+			# Always include all
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+			output_entry['tools'] = tools
+		elif function_handle_setting == 1:
+			# Only include ones used in the conversation
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_in_conversation(conversation_key))
+			output_entry['tools'] = tools
+		elif function_handle_setting == 2:
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_globally())
+			output_entry['tools'] = tools
+		elif function_handle_setting == 3: 
+			for msg in processed_conversation:
+				if msg.get('tool_calls', false):
+					output_entry['tools'] = tools
+		else:
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+			output_entry['tools'] = tools
 		jsonl_file_string += JSON.stringify(output_entry) + "\n"
 	return jsonl_file_string

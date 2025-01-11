@@ -396,8 +396,15 @@ func _on_conversations_list_gui_input(event: InputEvent) -> void:
 			# Go through every entry and check if it is selected
 			for i in range($VBoxContainer/ConversationsList.item_count):
 				if $VBoxContainer/ConversationsList.is_selected(i):
-					delete_conversation($VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)))	
-
+					delete_conversation($VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)))
+		if event.pressed and Input.is_key_pressed(KEY_CTRL) and event.keycode == KEY_D:
+			for i in range($VBoxContainer/ConversationsList.item_count):
+				if $VBoxContainer/ConversationsList.is_selected(i):
+					var newConvoID = getRandomConvoID(4)
+					var origConvoID = $VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList))
+					CONVERSATIONS[newConvoID] = CONVERSATIONS[origConvoID]
+					refresh_conversations_list()
+					
 
 func _on_collapse_burger_btn_pressed() -> void:
 	$VBoxContainer.visible = false

@@ -12,6 +12,7 @@ func to_var():
 		availableModels.append($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i))
 	me["availableModels"] = availableModels
 	me["includeFunctions"] = $VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.selected
+	me["finetuneType"] = $VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.selected
 	return me
 	
 func from_var(me):
@@ -27,7 +28,7 @@ func from_var(me):
 	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
 		if ($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i) == me["modelChoice"]):
 			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
-	
+	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	openai.connect("models_received", models_received)

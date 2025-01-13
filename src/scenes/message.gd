@@ -17,6 +17,8 @@ func to_var():
 	me["role"] = $MessageSettingsContainer/Role.get_item_text($MessageSettingsContainer/Role.selected)
 	me["type"] = $MessageSettingsContainer/MessageType.get_item_text($MessageSettingsContainer/MessageType.selected)
 	me["textContent"] = $TextMessageContainer/Message.text
+	me["unpreferredTextContent"] = $TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text
+	me["preferredTextContent"] = $TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text
 	me["imageContent"] = $ImageMessageContainer/Base64ImageEdit.text
 	me["imageDetail"] = $ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.selected
 	me["functionName"] = ""
@@ -38,6 +40,7 @@ func to_var():
 	return me
 
 func from_var(data):
+	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	print("Building from var")
 	print(data)
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data["role"]))
@@ -45,6 +48,21 @@ func from_var(data):
 	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data["type"]))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
 	$TextMessageContainer/Message.text = data["textContent"]
+	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data["unpreferredTextContent"]
+	$TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text = data["preferredTextContent"]
+	# Set the correct kind of message visible
+	$TextMessageContainer/Message.visible = false
+	$TextMessageContainer/DPOMessagesContainer.visible = false
+	match finetunetype:
+		0:
+			$TextMessageContainer/Message.visible = true
+		1:
+			if data["role"] == "assistant":
+				$TextMessageContainer/DPOMessagesContainer.visible = true
+			else:
+				$TextMessageContainer/Message.visible = true
+		2:
+			pass
 	$ImageMessageContainer/Base64ImageEdit.text = data["imageContent"]
 	# If not empty, create the image from the base64
 	if $ImageMessageContainer/Base64ImageEdit.text != "":
@@ -79,7 +97,12 @@ func _ready() -> void:
 	for item in get_node("/root/FineTune").get_available_function_names():
 		$FunctionMessageContainer/function/FunctionNameChoiceButton.add_item(item)
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(-1)
-
+	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	if finetunetype == 1:
+		# DPO: Only User and assistant messages are available, only text
+		$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
+		$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
+		$MessageSettingsContainer/Role.set_item_disabled(0, true)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -137,22 +160,30 @@ func _on_add_result_button_pressed() -> void:
 
 
 func _on_role_item_selected(index: int) -> void:
+	# Change what message types are enabled depending on what role was selected
 	$MessageSettingsContainer/MessageType.set_item_disabled(0, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
-	match index:
+	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	match finetunetype:
 		0:
-			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+			match index:
+				0:
+					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+				1:
+					$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
+					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+				2:
+					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					# Only make functions available if there are any
+					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
+						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
 		1:
-			$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
+			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
 		2:
-			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
-			# Only make functions available if there are any
-			if len(get_node("/root/FineTune").get_available_function_names()) > 0:
-				$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
-
-
+			pass
+			
 func _on_function_name_choice_button_item_selected(index: int) -> void:
 	# Die parameter abrufen, die es für diese Funktion gibt
 	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
@@ -216,6 +247,7 @@ func update_messages_global():
 
 func _on_something_int_changed(index: int) -> void:
 	update_messages_global()
+	_on_check_what_text_message_should_be_visisble()
 	
 func _on_something_string_changed(new_text: String) -> void:
 	update_messages_global()
@@ -229,6 +261,15 @@ func _on_texture_rect_gui_input(event: InputEvent) -> void:
 			if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 				$ImageMessageContainer/TextureRect.custom_minimum_size.y = 0
 
+func _on_check_what_text_message_should_be_visisble() -> void:
+	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	if finetunetype == 1:
+		if $MessageSettingsContainer/Role.selected == 2:
+			$TextMessageContainer/Message.visible = false
+			$TextMessageContainer/DPOMessagesContainer.visible = true
+			return
+	$TextMessageContainer/Message.visible = true
+	$TextMessageContainer/DPOMessagesContainer.visible = false
 
 func _on_delete_button_mouse_entered() -> void:
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcanOpen.png")

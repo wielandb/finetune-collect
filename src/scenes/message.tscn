@@ -74,6 +74,37 @@ size_flags_vertical = 3
 wrap_mode = 1
 scroll_fit_content_height = true
 
+[node name="DPOMessagesContainer" type="HBoxContainer" parent="TextMessageContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DPOUnpreferredMsgContainer" type="VBoxContainer" parent="TextMessageContainer/DPOMessagesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DPOUnpreferredMsgLabel" type="Label" parent="TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer"]
+layout_mode = 2
+text = "MESSAGES_DPO_UNPREFERRED_MSG_LABEL"
+horizontal_alignment = 1
+
+[node name="DPOUnpreferredMsgEdit" type="TextEdit" parent="TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DPOPreferredMsgContainer" type="VBoxContainer" parent="TextMessageContainer/DPOMessagesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DPOPreferredMsgLabel" type="Label" parent="TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer"]
+layout_mode = 2
+text = "MESSAGES_DPO_PREFERRED_MSG_LABEL"
+horizontal_alignment = 1
+
+[node name="DPOPreferredMsgEdit" type="TextEdit" parent="TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
 [node name="ImageMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2

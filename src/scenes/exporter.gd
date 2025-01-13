@@ -180,7 +180,11 @@ func convert_functions_to_openai_format(functions, onlykeep=null):
 		if not onlykeep or funcDef["name"] in onlykeep:
 			tmp.append(convert_function_to_openai_format(funcDef))
 	return tmp
-	
+
+func convert_dpo_data(ftdata):
+	pass
+	# TODO: Special DPO conversion
+
 func convert_fine_tuning_data(ftdata):
 	var jsonl_file_string = ""
 	# ftdata -> the project file structure

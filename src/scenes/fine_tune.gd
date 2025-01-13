@@ -228,6 +228,17 @@ func exists_parameter_without_description():
 
 func check_is_conversation_problematic(idx: String):
 	var thisconvo = CONVERSATIONS[idx]
+	var finetunetype = SETTINGS.get("finetuneType", 0)
+	if finetunetype == 1:
+		# DPO: First message user, second message assistant
+		if len(thisconvo) != 2:
+			return true
+		if len(thisconvo) >= 1:
+			if thisconvo[0]["role"] != "user":
+				return true
+		if len(thisconvo) >= 2:
+			if thisconvo[1]["role"] != "assistant":
+				return true
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
 		return true
@@ -277,9 +288,18 @@ func _on_button_pressed() -> void:
 	# Generate a new ConvoID
 	var newID = getRandomConvoID(4)
 	# Create conversation if it does not exist
-	CONVERSATIONS[newID] = []
+	var finetunetype = SETTINGS.get("finetuneType", 0)
+	if finetunetype == 0:
+		CONVERSATIONS[newID] = []
+	elif finetunetype == 1:
+		# DPO: There is only one kind of conversation we can have here, so we can also just poulate it
+		CONVERSATIONS[newID] = [
+			{ "role": "user", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""},
+			{ "role": "assistant", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""}
+		]
 	refresh_conversations_list()
 	print(CONVERSATIONS)
+	
 
 func save_to_binary(filename):
 	FINETUNEDATA = {}

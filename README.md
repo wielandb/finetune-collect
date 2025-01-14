@@ -5,6 +5,8 @@ This is a program for people that want to collect and curate their fine tuning d
 
 You can also provide the program with your OpenAI API key and it can generate responses for you that you then can then adapt instead of completely writing them by hand.
 
+## [Try it online on GitHub Pages](https://wielandb.github.io/finetune-collect/export/web)
+
 ![conversation_example](presentation/image_example.png)
 
 

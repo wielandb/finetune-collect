@@ -362,3 +362,44 @@ msgstr ""
 msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
 msgstr "Message before executing function (optional)"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_LABEL"
+msgstr "Finetuning-Method"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_TOOLTIP"
+msgstr "The kind of fine-tuning this fine tune should be.\n"
+"Supervised:\n"
+"The most common fine tuning type.\n"
+"Supports images and functions and more. Shows \n"
+"the model a correct conversation.\n"
+"\n"
+"Direct preference optimization:\n"
+"Very limited, only 2 messages per converrsation.\n"
+"Shows the model a preferred and a non-preferred\n"
+"output for an input. Useful for fine-tuning a fine-tune.\n"
+"\n"
+"Reinforcement fine-tuning:\n"
+"Not publicy available yet. Implements a grader that can\n"
+"dynamically reinforce a correct behaviour."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_SUPERVISED"
+msgstr "Supervised Fine-Tuning"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
+msgstr "Direct Preference Optimization"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
+msgstr "Reinforcement Fine-Tuning"
+
+#: scenes/message.tscn
+msgid "MESSAGES_DPO_UNPREFERRED_MSG_LABEL"
+msgstr "Non-preferred output"
+
+#: scenes/message.tscn
+msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
+msgstr "Preferred output"
+

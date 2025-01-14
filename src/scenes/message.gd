@@ -83,6 +83,7 @@ func from_var(data):
 		parameterInstance.from_var(d)
 	$FunctionMessageContainer/FunctionUseResultText.text = str(data["functionResults"])
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
+	_on_check_what_text_message_should_be_visisble()
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)
@@ -103,6 +104,7 @@ func _ready() -> void:
 		$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 		$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
 		$MessageSettingsContainer/Role.set_item_disabled(0, true)
+	_on_check_what_text_message_should_be_visisble()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

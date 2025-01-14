@@ -239,6 +239,11 @@ func check_is_conversation_problematic(idx: String):
 		if len(thisconvo) >= 2:
 			if thisconvo[1]["role"] != "assistant":
 				return true
+		if thisconvo[0]["textContent"] == "":
+			return true
+		if thisconvo[1]["preferredTextContent"] == "" or thisconvo[1]["unpreferredTextContent"] == "":
+			return true
+		return false
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
 		return true
@@ -357,11 +362,13 @@ func load_from_json(filename):
 	SETTINGS = FINETUNEDATA["settings"]
 	for i in CONVERSATIONS.keys():
 		CURRENT_EDITED_CONVO_IX = str(i)
-	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+
 
 func save_as_appropriate_from_path(path):
 	if path.ends_with(".json"):

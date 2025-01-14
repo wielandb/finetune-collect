@@ -14,6 +14,8 @@ var SETTINGS = {
 var RUNTIME = {"filepath": ""}
 
 var CURRENT_EDITED_CONVO_IX = "FtC1"
+
+var file_access_web = FileAccessWeb.new()
 # FINETUNEDATA = 
 # { functions: [],
 #   settings: {
@@ -59,6 +61,8 @@ func _ready() -> void:
 	delete_conversation("FtC1") # A janky workaround for the startup sequence
 	refresh_conversations_list()
 	_on_item_list_item_selected(0)
+	file_access_web.loaded.connect(_on_file_loaded)
+	file_access_web.progress.connect(_on_upload_progress)
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -81,7 +85,13 @@ func _process(delta: float) -> void:
 
 
 func _on_save_btn_pressed() -> void:
-	$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+	match OS.get_name():
+		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+		"Web":
+			var json_save_data =  make_save_json_data()
+			var byte_array = json_save_data.to_utf8_buffer()
+			JavaScriptBridge.download_buffer(byte_array, "fine_tune_project.json", "text/plain")
 
 func update_functions_internal():
 	FUNCTIONS = $Conversation/Functions/FunctionsList.to_var()
@@ -144,7 +154,20 @@ func save_current_conversation():
 	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = $Conversation/Messages/MessagesList.to_var()
 
 func _on_load_btn_pressed() -> void:
-	$VBoxContainer/LoadBtn/FileDialog.visible = true
+	match OS.get_name():
+		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+			$VBoxContainer/LoadBtn/FileDialog.visible = true
+		"Web":
+			file_access_web.open(".json")
+
+func _on_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
+	# A finetune project file was loaded via web
+	var json_text_data = Marshalls.base64_to_utf8(base64_data)
+	load_from_json_data(json_text_data)
+	
+	
+func _on_upload_progress(current_bytes: int, total_bytes: int) -> void:
+	pass
 
 func is_function_parameter_required(function_name, parameter_name):
 	print("Performing parameter required check!")
@@ -338,20 +361,9 @@ func load_from_binary(filename):
 		$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
 	else:
 		print("file not found")
-	
-func save_to_json(filename):
-	FINETUNEDATA = {}
-	FINETUNEDATA["functions"] = FUNCTIONS
-	FINETUNEDATA["conversations"] = CONVERSATIONS
-	FINETUNEDATA["settings"] = SETTINGS
-	var jsonstr = JSON.stringify(FINETUNEDATA, "\t", false)
-	var file = FileAccess.open(filename, FileAccess.WRITE)
-	file.store_string(jsonstr)
-	file.close()
-	
-func load_from_json(filename):
-	var json_as_text = FileAccess.get_file_as_string(filename)
-	var json_as_dict = JSON.parse_string(json_as_text)
+
+func load_from_json_data(jsondata: String):
+	var json_as_dict = JSON.parse_string(jsondata)
 	print(json_as_dict)
 	# Unload all UI
 	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
@@ -365,10 +377,27 @@ func load_from_json(filename):
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
 
+func make_save_json_data():
+	FINETUNEDATA = {}
+	FINETUNEDATA["functions"] = FUNCTIONS
+	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["settings"] = SETTINGS
+	var jsonstr = JSON.stringify(FINETUNEDATA, "\t", false)
+	return jsonstr
+
+func save_to_json(filename):
+	var file = FileAccess.open(filename, FileAccess.WRITE)
+	var jsonstr = make_save_json_data()
+	file.store_string(jsonstr)
+	file.close()
+	
+func load_from_json(filename):
+	# loads from a given file name
+	var json_as_text = FileAccess.get_file_as_string(filename)
+	load_from_json_data(json_as_text)
 
 func save_as_appropriate_from_path(path):
 	if path.ends_with(".json"):

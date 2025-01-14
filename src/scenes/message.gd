@@ -3,6 +3,7 @@ extends HBoxContainer
 @onready var function_use_parameters_scene = preload("res://scenes/function_use_parameter.tscn")
 @onready var imageTexture = $ImageMessageContainer/TextureRect
 
+var image_access_web = FileAccessWeb.new()
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -48,8 +49,8 @@ func from_var(data):
 	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data["type"]))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
 	$TextMessageContainer/Message.text = data["textContent"]
-	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data["unpreferredTextContent"]
-	$TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text = data["preferredTextContent"]
+	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data.get("unpreferredTextContent", "")
+	$TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text = data.get("preferredTextContent", "")
 	# Set the correct kind of message visible
 	$TextMessageContainer/Message.visible = false
 	$TextMessageContainer/DPOMessagesContainer.visible = false
@@ -105,6 +106,17 @@ func _ready() -> void:
 		$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
 		$MessageSettingsContainer/Role.set_item_disabled(0, true)
 	_on_check_what_text_message_should_be_visisble()
+	image_access_web.loaded.connect(_on_file_loaded)
+	image_access_web.progress.connect(_on_progress)
+
+func _on_progress(current_bytes: int, total_bytes: int) -> void:
+	var percentage: float = float(current_bytes) / float(total_bytes) * 100
+	
+
+func _on_file_loaded(file_name: String, type: String, base64_data: String) -> void:
+	# var raw_data: PackedByteArray = Marshalls.base64_to_raw(base64_data)
+	base64_to_image($ImageMessageContainer/TextureRect, base64_data)
+	$ImageMessageContainer/Base64ImageEdit.text = base64_data
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -146,7 +158,11 @@ func base64_to_image(textureRectNode, b64Data):
 	textureRectNode.texture = ImageTexture.create_from_image(img)
 	
 func _on_load_image_button_pressed() -> void:
-	$ImageMessageContainer/FileDialog.visible = true
+	match OS.get_name():
+		"Web":
+			image_access_web.open(".jpg, .jpeg")
+		_:
+			$ImageMessageContainer/FileDialog.visible = true
 
 
 func _on_delete_button_pressed() -> void:

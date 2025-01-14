@@ -441,7 +441,6 @@ func _on_export_btn_pressed() -> void:
 func _on_export_file_dialog_file_selected(path: String) -> void:
 	var FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
-	# TODO: Only export unproblematic conversations
 	var allconversations = CONVERSATIONS
 	var unproblematicconversations = {}
 	# Check all conversations and only add unproblematic ones
@@ -450,7 +449,15 @@ func _on_export_file_dialog_file_selected(path: String) -> void:
 			unproblematicconversations[convokey] = CONVERSATIONS[convokey]
 	FINETUNEDATA["conversations"] = unproblematicconversations
 	FINETUNEDATA["settings"] = SETTINGS
-	var complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+	var complete_jsonl_string = ""
+	match SETTINGS.get("finetuneType", 0):
+		0:
+			complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+		1:
+			complete_jsonl_string = $Exporter.convert_dpo_data(FINETUNEDATA)
+		2:
+			# TODO: (BLOCKED) reinforcement fine tuning
+			complete_jsonl_string = ""
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()

@@ -441,11 +441,7 @@ func _on_expand_burger_btn_pressed() -> void:
 	$VBoxContainer.visible = true
 	$CollapsedMenu.visible = false
 
-
-func _on_export_btn_pressed() -> void:
-	$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
-
-func _on_export_file_dialog_file_selected(path: String) -> void:
+func create_jsonl_data_for_file():
 	var FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
 	var allconversations = CONVERSATIONS
@@ -465,6 +461,23 @@ func _on_export_file_dialog_file_selected(path: String) -> void:
 		2:
 			# TODO: (BLOCKED) reinforcement fine tuning
 			complete_jsonl_string = ""
+	return complete_jsonl_string
+
+
+func _on_export_btn_pressed() -> void:
+	# If we are on the web, different things need to happen
+	match OS.get_name():
+		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+			$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
+		"Web":
+			# When we are on web, we need to download the file directly
+			var complete_jsonl_string = create_jsonl_data_for_file()
+			var byte_array = complete_jsonl_string.to_utf8_buffer()
+			JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
+	
+
+func _on_export_file_dialog_file_selected(path: String) -> void:
+	var complete_jsonl_string = create_jsonl_data_for_file()
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()

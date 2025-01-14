@@ -362,3 +362,47 @@ msgstr ""
 msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
 msgstr "Nachricht vor Funktionsausführung (optional)"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_LABEL"
+msgstr "Finetuning-Methode"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_TOOLTIP"
+msgstr "Die Art des fine-tunings für das diese Datei sein soll.\n"
+"\n"
+"Supervised:\n"
+"Die häufigste Art des fine-tunings.\n"
+"Unterstützt Bilder, Funktionen und noch mehr. Zeigt\n"
+"dem Modell eine korrekte Unterhaltung.\n"
+"\n"
+"Direct preference optimization:\n"
+"Sehr beschränkt, nur 2 Nachrichten pro Unterhaltung.\n"
+"Zeigt dem Modell eine bevorzugte und eine\n"
+"nicht-bevorzugte Antwort für einen Input. Nützlich,\n"
+"um einen fine-tune weiter zu verbessern.\n"
+"\n"
+"Reinforcement fine-tuning:\n"
+"Noch nicht öffentlich verfügbar. Implementiert eine\n"
+"Bewertungsfunktion die dynamisch korrektes \n"
+"Verhalten verstärkt."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_SUPERVISED"
+msgstr "Supervised Fine-Tuning"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
+msgstr "Direct Preference Optimization"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
+msgstr "Reinforcement Fine-Tuning"
+
+#: scenes/message.tscn
+msgid "MESSAGES_DPO_UNPREFERRED_MSG_LABEL"
+msgstr "nicht-bevorzugte Antwort"
+
+#: scenes/message.tscn
+msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
+msgstr "bevorzugte Antwort"
+

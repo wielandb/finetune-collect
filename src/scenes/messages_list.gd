@@ -94,6 +94,8 @@ func gpt_response_completed(message:Message, response:Dictionary):
 			"role": "assistant",
 			"type": "Function Call",
 			"textContent": "",
+			"unpreferredTextContent": "",
+			"preferredTextContent": "",
 			"imageContent": "",
 			"functionName": message["tool_calls"][0]["function"]["name"],
 			"functionParameters": parametersForFTC,
@@ -105,6 +107,8 @@ func gpt_response_completed(message:Message, response:Dictionary):
 			"role": "assistant",
 			"type": "Text",
 			"textContent": message["content"],
+			"unpreferredTextContent": message["content"],
+			"preferredTextContent": "",
 			"imageContent": "",
 			"functionName": "",
 			"functionParameters": [],
@@ -195,8 +199,22 @@ func check_autocomplete_disabled_status():
 		return true
 	return false
 
+func check_add_message_disabled_status():
+	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	if finetunetype == 1:
+		if $MessagesListContainer.get_child_count() >= 3:
+			# DPO only allows for one user and one assistant message
+			return true
+	return false
+
+func _on_something_happened_to_check_enabled_status() -> void:
+	if check_add_message_disabled_status():
+		$MessagesListContainer/AddButtonsContainer/AddMessageButton.disabled = true
+	else:
+		$MessagesListContainer/AddButtonsContainer/AddMessageButton.disabled = false
 
 func _on_add_message_completion_button_mouse_entered() -> void:
+	_on_something_happened_to_check_enabled_status()
 	if check_autocomplete_disabled_status():
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = true
 	else:

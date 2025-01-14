@@ -74,6 +74,31 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "??? px"
 
+[node name="FineTuningTypeSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="FineTuningTypeSettingLabel" type="Label" parent="VBoxContainer/FineTuningTypeSettingContainer"]
+layout_mode = 2
+text = "SETTINGS_FINETUNE_TYPE_LABEL"
+
+[node name="FineTuningTypeSettingHint" type="TextureRect" parent="VBoxContainer/FineTuningTypeSettingContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_FINETUNE_TYPE_TOOLTIP"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="FineTuningTypeSettingOptionButton" type="OptionButton" parent="VBoxContainer/FineTuningTypeSettingContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "SETTINGS_FINETUNE_TYPE_OPTION_SUPERVISED"
+popup/item_1/text = "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
+popup/item_1/id = 1
+popup/item_2/text = "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
+popup/item_2/id = 2
+popup/item_2/disabled = true
+
 [node name="AlwaysIncludeFunctionsSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -142,6 +167,7 @@ icon = ExtResource("3_swtgl")
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
+[connection signal="item_selected" from="VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]

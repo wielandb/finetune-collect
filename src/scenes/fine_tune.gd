@@ -228,6 +228,22 @@ func exists_parameter_without_description():
 
 func check_is_conversation_problematic(idx: String):
 	var thisconvo = CONVERSATIONS[idx]
+	var finetunetype = SETTINGS.get("finetuneType", 0)
+	if finetunetype == 1:
+		# DPO: First message user, second message assistant
+		if len(thisconvo) != 2:
+			return true
+		if len(thisconvo) >= 1:
+			if thisconvo[0]["role"] != "user":
+				return true
+		if len(thisconvo) >= 2:
+			if thisconvo[1]["role"] != "assistant":
+				return true
+		if thisconvo[0]["textContent"] == "":
+			return true
+		if thisconvo[1]["preferredTextContent"] == "" or thisconvo[1]["unpreferredTextContent"] == "":
+			return true
+		return false
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
 		return true
@@ -277,9 +293,18 @@ func _on_button_pressed() -> void:
 	# Generate a new ConvoID
 	var newID = getRandomConvoID(4)
 	# Create conversation if it does not exist
-	CONVERSATIONS[newID] = []
+	var finetunetype = SETTINGS.get("finetuneType", 0)
+	if finetunetype == 0:
+		CONVERSATIONS[newID] = []
+	elif finetunetype == 1:
+		# DPO: There is only one kind of conversation we can have here, so we can also just poulate it
+		CONVERSATIONS[newID] = [
+			{ "role": "user", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""},
+			{ "role": "assistant", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""}
+		]
 	refresh_conversations_list()
 	print(CONVERSATIONS)
+	
 
 func save_to_binary(filename):
 	FINETUNEDATA = {}
@@ -337,11 +362,13 @@ func load_from_json(filename):
 	SETTINGS = FINETUNEDATA["settings"]
 	for i in CONVERSATIONS.keys():
 		CURRENT_EDITED_CONVO_IX = str(i)
-	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+
 
 func save_as_appropriate_from_path(path):
 	if path.ends_with(".json"):
@@ -421,7 +448,6 @@ func _on_export_btn_pressed() -> void:
 func _on_export_file_dialog_file_selected(path: String) -> void:
 	var FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
-	# TODO: Only export unproblematic conversations
 	var allconversations = CONVERSATIONS
 	var unproblematicconversations = {}
 	# Check all conversations and only add unproblematic ones
@@ -430,7 +456,15 @@ func _on_export_file_dialog_file_selected(path: String) -> void:
 			unproblematicconversations[convokey] = CONVERSATIONS[convokey]
 	FINETUNEDATA["conversations"] = unproblematicconversations
 	FINETUNEDATA["settings"] = SETTINGS
-	var complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+	var complete_jsonl_string = ""
+	match SETTINGS.get("finetuneType", 0):
+		0:
+			complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+		1:
+			complete_jsonl_string = $Exporter.convert_dpo_data(FINETUNEDATA)
+		2:
+			# TODO: (BLOCKED) reinforcement fine tuning
+			complete_jsonl_string = ""
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()

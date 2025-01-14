@@ -154,6 +154,26 @@ msgid "??? px"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_SUPERVISED"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
 msgstr ""
 
@@ -297,6 +317,14 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "MESSAGES_TEXT_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_DPO_UNPREFERRED_MSG_LABEL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
 msgstr ""
 
 #: scenes/message.tscn

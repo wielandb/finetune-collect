@@ -180,7 +180,65 @@ func convert_functions_to_openai_format(functions, onlykeep=null):
 		if not onlykeep or funcDef["name"] in onlykeep:
 			tmp.append(convert_function_to_openai_format(funcDef))
 	return tmp
+
+func convert_dpo_data(ftdata):
+	var jsonl_file_string = ""
+	var conversations = ftdata.get("conversations", {})
 	
+	for convo_key in conversations:
+		var conversation = conversations[convo_key]
+		
+		# We only train on one-turn conversations where:
+		#   - there are exactly 2 messages (user -> assistant)
+		#   - the user message is type Text
+		#   - the assistant message is type Text
+		#   - the assistant has both preferredTextContent and unpreferredTextContent non-empty
+		if conversation.size() == 2:
+			var user_message = conversation[0]
+			var assistant_message = conversation[1]
+			
+			if user_message.get("role", "") == "user" \
+			and assistant_message.get("role", "") == "assistant" \
+			and user_message.get("type", "") == "Text" \
+			and assistant_message.get("type", "") == "Text":
+				
+				var preferred_text = assistant_message.get("preferredTextContent", "")
+				var unpreferred_text = assistant_message.get("unpreferredTextContent", "")
+				
+				if preferred_text != "" and unpreferred_text != "":
+					var user_text = user_message.get("textContent", "")
+					
+					# Build the JSON object according to the DPO schema
+					var dpo_entry = {
+						"input": {
+							"messages": [
+								{
+									"role": "user",
+									"content": user_text
+								}
+							],
+							"tools": [],
+							"parallel_tool_calls": true
+						},
+						"preferred_output": [
+							{
+								"role": "assistant",
+								"content": preferred_text
+							}
+						],
+						"non_preferred_output": [
+							{
+								"role": "assistant",
+								"content": unpreferred_text
+							}
+						]
+					}
+					
+					# Append serialized data (one JSON object per line)
+					jsonl_file_string += JSON.stringify(dpo_entry) + "\n"
+	
+	return jsonl_file_string
+
 func convert_fine_tuning_data(ftdata):
 	var jsonl_file_string = ""
 	# ftdata -> the project file structure

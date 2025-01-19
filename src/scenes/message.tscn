@@ -216,6 +216,10 @@ visible = false
 layout_mode = 2
 text = "Add result"
 
+[node name="MetaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]

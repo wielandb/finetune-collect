@@ -21,6 +21,7 @@ size_flags_vertical = 3
 script = ExtResource("1_lafvt")
 
 [node name="MessageSettingsContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 
 [node name="Role" type="OptionButton" parent="MessageSettingsContainer"]
@@ -58,6 +59,7 @@ text = "GENERIC_DELETE"
 icon = ExtResource("6_trxu4")
 
 [node name="TextMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -217,8 +219,93 @@ layout_mode = 2
 text = "Add result"
 
 [node name="MetaMessageContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConversationNameLabel" type="Label" parent="MetaMessageContainer"]
 visible = false
 layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_TEXT_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="ConversationNameContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+layout_mode = 2
+
+[node name="ConversationNameLabel" type="Label" parent="MetaMessageContainer/ConversationNameContainer"]
+layout_mode = 2
+text = "MESSAGE_META_CONVERSATION_NAME_LABEL"
+
+[node name="ConversationNameHint" type="TextureRect" parent="MetaMessageContainer/ConversationNameContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+tooltip_text = "MESSAGE_META_CONVERSATION_NAME_HINT"
+texture = ExtResource("10_b60dq")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="ConversationNameEdit" type="LineEdit" parent="MetaMessageContainer/ConversationNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConversationReadyContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+layout_mode = 2
+
+[node name="ConversationReadyCheckBox" type="CheckBox" parent="MetaMessageContainer/ConversationReadyContainer"]
+layout_mode = 2
+text = "MESSAGE_META_READY_CHECKBOX_LABEL"
+
+[node name="ConversationNameHint" type="TextureRect" parent="MetaMessageContainer/ConversationReadyContainer"]
+layout_mode = 2
+tooltip_text = "MESSAGE_META_CONVERSATION_READY_HINT"
+texture = ExtResource("10_b60dq")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="GridContainer" type="GridContainer" parent="MetaMessageContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+columns = 2
+
+[node name="Label" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label2" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label3" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label4" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label5" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label6" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label7" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
+
+[node name="Label8" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "PLACEHOLDER"
 
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
@@ -226,8 +313,8 @@ layout_mode = 2
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]

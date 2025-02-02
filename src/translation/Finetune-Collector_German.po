@@ -292,11 +292,20 @@ msgstr "Alle immer einschließen, die mindestens ein mal genutzt wurden"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT_TOOLTIP"
-msgstr "Für jede Unterhaltung muss dem Modell die Menge an verfügbaren Funktionen mitgeteilt werden. Um Tokens im Training zu sparen bietet es sich an, nur die Funktionen als Verfügbar mitzugeben, die auch in der  jeweiligen Konversation verwendet wurden. Das kann allerdings zu falschen Trainingsergebnissen führen, insbesondere wenn das Ziel ist dem Modell beizubringen, wann keine Funktion genutzt werden sollte."
+msgstr "Für jede Unterhaltung muss dem Modell die Menge an\n"
+"verfügbaren Funktionen mitgeteilt werden. Um Tokens\n"
+"im Training zu sparen bietet es sich an, nur die Funktionen\n"
+"als Verfügbar mitzugeben, die auch in der  jeweiligen\n"
+"Konversation verwendet wurden. Das kann allerdings\n"
+"zu falschen Trainingsergebnissen führen, insbesondere\n"
+"wenn das Ziel ist dem Modell beizubringen, wann keine\n"
+"Funktion genutzt werden sollte."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_API_KEY_TOOLTIP"
-msgstr "Dein OpenAI API Schlüssel. Wird benutzt um vervollständigungen zu erhalten und um die Liste der verfügbaren Modelle abzurufen."
+msgstr "Dein OpenAI API Schlüssel.\n"
+"Wird benutzt um vervollständigungen zu erhalten\n"
+"und um die Liste der verfügbaren Modelle abzurufen."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
@@ -304,7 +313,10 @@ msgstr "Modell für Vervollständigungen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
-msgstr "Das Modell das für Vervollständigungen genutzt werden soll. Beachte dass obwohl alle Modelle auf die du Zugriff hast hier aufgelistet sind, nur die wenigsten für diese Funktion genutzt werden können."
+msgstr "Das Modell das für Vervollständigungen genutzt werden soll.\n"
+"Beachte dass obwohl alle Modelle auf die du Zugriff hast hier\n"
+"aufgelistet sind, nur die wenigsten für diese Funktion genutzt\n"
+"werden können."
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_EXPORT"
@@ -320,7 +332,7 @@ msgstr "Abbrechen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TOOLTIP"
-msgstr "Wenn diese aktiviert, wird diese Nachricht\n"
+msgstr "Wenn aktiviert, wird diese Nachricht\n"
 "als Systemnachricht allen Konversationen beim\n"
 "Export und bei der automatischen Vervollständigung\n"
 "vorgehangen. Nützlich, wenn eine Systemnachricht für\n"
@@ -336,7 +348,10 @@ msgstr "Bild-Detailgrad"
 
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_DETAIL_TOOLTIP"
-msgstr "Bestimmt wie hoch die Qualität des Bildes ist, die das Modell zu sehen bekommt. Niedrige Qualität verbraucht weniger Tokens, aber das Modell kann dann eventuell wichtige Details nicht sehen."
+msgstr "Bestimmt wie hoch die Qualität des Bildes ist, die das Modell\n"
+"zu sehen bekommt. Niedrige Qualität verbraucht weniger\n"
+"Tokens, aber das Modell kann dann eventuell wichtige Details\n"
+"nicht sehen."
 
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
@@ -405,4 +420,42 @@ msgstr "nicht-bevorzugte Antwort"
 #: scenes/message.tscn
 msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
 msgstr "bevorzugte Antwort"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION"
+msgstr "Funktion hinzufügen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
+msgstr "Bilder exportieren als..."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_TOOLTIP"
+msgstr "Definiert, wie Bilder in die fine-tuning Datei exportiert werden.\n"
+"\n"
+"Wie gegeben: Die Bilder immer so exportieren, wie sie auch gegeben worden (entweder als base64 oder als URL)\n"
+"\n"
+"Immer als base64: Konvertiere URLs zu base64 Bildern beim Export\n"
+"\n"
+"Immer als URLs: Lade base64-Bilder auf einen Webserver hoch und exportiere nur die URLs"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_LIKE_SPECIFIED"
+msgstr "Wie gegeben"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_BASE64"
+msgstr "Immer als base64"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
+msgstr "Immer als URLs"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_FILE"
+msgstr "Bild von Datei laden"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
+msgstr "Bild von URL laden"
 

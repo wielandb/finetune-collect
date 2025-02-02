@@ -403,3 +403,41 @@ msgstr "Non-preferred output"
 msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
 msgstr "Preferred output"
 
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION"
+msgstr "Add function"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
+msgstr "How to export images"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_TOOLTIP"
+msgstr "Defines how images will be exported into the fine-tuning file.\n"
+"\n"
+"Like specified: Always export the image like it was given (either as base64 or via URL)\n"
+"\n"
+"Always as base64: Convert URLs to base64 images when exporting\n"
+"\n"
+"Always as URLs: Upload base64 Images to a web server and only export the URLs"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_LIKE_SPECIFIED"
+msgstr "Like specified"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_BASE64"
+msgstr "Always as base64"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
+msgstr "Always as URLs"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_FILE"
+msgstr "Load image from file"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
+msgstr "Load image from URL"
+

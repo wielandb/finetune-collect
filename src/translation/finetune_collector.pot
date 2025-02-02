@@ -110,7 +110,7 @@ msgid "FUNCTIONS_FUNCTION_PARAMETERS_TITLE"
 msgstr ""
 
 #: scenes/available_function.tscn
-msgid "GENERIC_PLUS"
+msgid "FUNCTIONS_ADD_FUNCTION"
 msgstr ""
 
 #: scenes/available_function.tscn
@@ -171,6 +171,26 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_LIKE_SPECIFIED"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_BASE64"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -352,7 +372,11 @@ msgid "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
 msgstr ""
 
 #: scenes/message.tscn
-msgid "MESSAGES_LOAD_IMAGE"
+msgid "MESSAGES_LOAD_IMAGE_FROM_FILE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
 msgstr ""
 
 #: scenes/message.tscn

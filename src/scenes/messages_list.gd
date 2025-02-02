@@ -130,6 +130,11 @@ func messages_to_openai_format():
 func _on_add_message_completion_button_pressed() -> void:
 	#var messages:Array[Message] = [Message.new()]
 	#messages[0].set_content("say hi!")
+	var image_detail_map = {
+		0: "high",
+		1: "low",
+		2: "auto"
+	}
 	var settings = get_tree().get_root().get_node("FineTune").SETTINGS
 	var my_conversation_id = get_tree().get_root().get_node("FineTune").CURRENT_EDITED_CONVO_IX
 	var ftc_messages = self.to_var()
@@ -149,7 +154,7 @@ func _on_add_message_completion_button_pressed() -> void:
 				nm.set_content(m["textContent"])
 				openai_messages.append(nm)
 			"Image":
-				nm.add_image_content(m["imageContent"])
+				nm.add_image_content(m["imageContent"], image_detail_map[m.get("imageDetail", 0)])
 				openai_messages.append(nm)
 			"Function Call":
 				# A "function call" for us when part of the messages list is two messages for openai, one the assistant calling the tool, and then the response
@@ -219,3 +224,48 @@ func _on_add_message_completion_button_mouse_entered() -> void:
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = true
 	else:
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = false
+
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""

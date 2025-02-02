@@ -13,6 +13,7 @@ func to_var():
 	me["availableModels"] = availableModels
 	me["includeFunctions"] = $VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.selected
 	me["finetuneType"] = $VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.selected
+	me["exportImagesHow"] = $VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.selected
 	return me
 	
 func from_var(me):
@@ -22,6 +23,7 @@ func from_var(me):
 	$VBoxContainer/APIKeySettingContainer/APIKeyEdit.text = me["apikey"]
 	openai.set_api($VBoxContainer/APIKeySettingContainer/APIKeyEdit.text)
 	$VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.select(me.get("includeFunctions", 0))
+	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.select(me.get("exportImagesHow", 0))
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
 	for m in me["availableModels"]:
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)
@@ -29,6 +31,8 @@ func from_var(me):
 		if ($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i) == me["modelChoice"]):
 			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	openai.connect("models_received", models_received)

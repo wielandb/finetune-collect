@@ -100,6 +100,7 @@ popup/item_2/id = 2
 popup/item_2/disabled = true
 
 [node name="ExportImagesHowContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="ExportImagesHowLabel" type="Label" parent="VBoxContainer/ExportImagesHowContainer"]

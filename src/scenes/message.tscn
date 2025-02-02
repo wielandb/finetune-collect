@@ -126,6 +126,7 @@ stretch_mode = 5
 
 [node name="Base64ImageEdit" type="LineEdit" parent="ImageMessageContainer"]
 layout_mode = 2
+placeholder_text = "URL or Base64"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="ImageMessageContainer"]
 layout_mode = 2

@@ -67,7 +67,10 @@ func from_var(data):
 	$ImageMessageContainer/Base64ImageEdit.text = data["imageContent"]
 	# If not empty, create the image from the base64
 	if $ImageMessageContainer/Base64ImageEdit.text != "":
-		base64_to_image(imageTexture, $ImageMessageContainer/Base64ImageEdit.text)
+		if isImageURL($ImageMessageContainer/Base64ImageEdit.text):
+			load_image_container_from_url($ImageMessageContainer/Base64ImageEdit.text)
+		else:
+			base64_to_image(imageTexture, $ImageMessageContainer/Base64ImageEdit.text)
 	if data.has("imageDetail"):
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(data["imageDetail"])
 	else: # TODO: Add option what the standard quality should be
@@ -295,3 +298,90 @@ func _on_delete_button_mouse_entered() -> void:
 
 func _on_delete_button_mouse_exited() -> void:
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcan.png")
+
+
+func _on_load_image_url_button_pressed() -> void:
+	load_image_container_from_url($ImageMessageContainer/Base64ImageEdit.text)
+	
+func load_image_container_from_url(url):
+	$ImageMessageContainer/TextureRect.texture = load("res://icons/image-sync-custom.png")
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.request_completed.connect(self._image_http_request_completed)
+	
+	var urlToBeLoadedFrom = url
+	if not isImageURL(urlToBeLoadedFrom):
+		print("Not a image url to load...")
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		return
+	# Perform the HTTP request. The URL below returns a PNG image as of writing.
+	var error = http_request.request(urlToBeLoadedFrom)
+	if error != OK:
+		push_error("An error occurred in the HTTP request.")
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+
+# Called when the HTTP request is completed.
+func _image_http_request_completed(result, response_code, headers, body):
+	if result != HTTPRequest.RESULT_SUCCESS:
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		push_error("Image couldn't be downloaded. Try a different image.")
+
+	var image = Image.new()
+	var imageType = getImageType($ImageMessageContainer/Base64ImageEdit.text)
+	var error = false
+	if imageType == "jpg":
+		error = image.load_jpg_from_buffer(body)
+	elif imageType == "png":
+		error = image.load_png_from_buffer(body)
+	if error != OK:
+		push_error("Couldn't load the image.")
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+
+
+	var texture = ImageTexture.create_from_image(image)
+	$ImageMessageContainer/TextureRect.texture = texture
+	
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""

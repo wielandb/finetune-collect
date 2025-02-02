@@ -4,11 +4,11 @@
 [ext_resource type="Script" path="res://scenes/message.gd" id="1_lafvt"]
 [ext_resource type="Texture2D" uid="uid://dgxn3yonojrbk" path="res://icons/figurine.png" id="2_qmf1n"]
 [ext_resource type="Texture2D" uid="uid://bptbksdfpn3qo" path="res://icons/userRobot.png" id="3_52cv2"]
-[ext_resource type="Texture2D" uid="uid://d0dc8gybqt1la" path="res://icon.svg" id="4_txusn"]
 [ext_resource type="Texture2D" uid="uid://bcua86jbbuxjy" path="res://icons/notepad.png" id="5_j80gg"]
 [ext_resource type="Texture2D" uid="uid://b5c5odgp0j7f6" path="res://icons/image-custom (1).png" id="6_nm785"]
 [ext_resource type="Texture2D" uid="uid://b7le047xxergp" path="res://icons/trashcan.png" id="6_trxu4"]
 [ext_resource type="Texture2D" uid="uid://da741wh2jb07o" path="res://icons/function-variant-custom (1).png" id="7_mo45f"]
+[ext_resource type="Texture2D" uid="uid://o7ql325bc4fu" path="res://icons/file-question-custom.png" id="9_2lsc3"]
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
@@ -120,7 +120,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_vertical = 3
-texture = ExtResource("4_txusn")
+texture = ExtResource("9_2lsc3")
 expand_mode = 2
 stretch_mode = 5
 
@@ -151,10 +151,6 @@ popup/item_1/id = 1
 popup/item_2/text = "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
 popup/item_2/id = 2
 
-[node name="LoadImageButton" type="Button" parent="ImageMessageContainer"]
-layout_mode = 2
-text = "MESSAGES_LOAD_IMAGE"
-
 [node name="FileDialog" type="FileDialog" parent="ImageMessageContainer"]
 title = "Open a File"
 position = Vector2i(325, 50)
@@ -163,6 +159,21 @@ ok_button_text = "Open"
 file_mode = 0
 access = 2
 use_native_dialog = true
+
+[node name="LoadButtonsContainer" type="HBoxContainer" parent="ImageMessageContainer"]
+layout_mode = 2
+
+[node name="LoadImageButton" type="Button" parent="ImageMessageContainer/LoadButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MESSAGES_LOAD_IMAGE_FROM_FILE"
+
+[node name="LoadImageURLButton" type="Button" parent="ImageMessageContainer/LoadButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MESSAGES_LOAD_IMAGE_FROM_URL"
+
+[node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
 visible = false
@@ -226,13 +237,14 @@ layout_mode = 2
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
-[connection signal="pressed" from="ImageMessageContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
+[connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
+[connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]

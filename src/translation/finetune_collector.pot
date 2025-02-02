@@ -110,7 +110,7 @@ msgid "FUNCTIONS_FUNCTION_PARAMETERS_TITLE"
 msgstr ""
 
 #: scenes/available_function.tscn
-msgid "FUNCTIONS_ADD_FUNCTION"
+msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
 msgstr ""
 
 #: scenes/available_function.tscn
@@ -349,6 +349,10 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 msgstr ""
 
 #: scenes/message.tscn

@@ -441,3 +441,15 @@ msgstr "Load image from file"
 msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
 msgstr "Load image from URL"
 
+#: scenes/message.tscn
+msgid "URL or Base64"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
+msgstr "Add function parameter"
+
+#: scenes/message.tscn
+msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+msgstr "URL or Base64"
+

@@ -28,13 +28,21 @@ func set_text_content(text: String) -> void:
 	content = text
 
 ## Adds an image to the content
-func add_image_content(image_base64: String) -> void:
+func add_image_content(image_base64: String, detail: String) -> void:
+	# TODO: Theese variables should be renamed now that image_base64 could be a base64 string or a url
 	if typeof(content) != TYPE_ARRAY:
 		content = []
+	var image_url_data = ""
+	if isImageURL(image_base64):
+		image_url_data = image_base64
+	else:
+		# TODO: Check if it is really jpeg or a png
+		image_url_data = "data:image/jpeg;base64," + image_base64
 	content.append({
 		"type": "image_url",
 		"image_url": {
-			"url": "data:image/jpeg;base64," + image_base64
+			"url": image_url_data,
+			"detail": detail
 		}
 	})
 
@@ -99,3 +107,48 @@ func create_tool_response(call_id: String, response_content: String) -> void:
 	role = "tool"
 	tool_call_id = call_id
 	content = [{"type":"text", "text":response_content}]
+
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""

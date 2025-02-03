@@ -190,6 +190,10 @@ layout_mode = 2
 text = "GENERIC_REFRESH"
 icon = ExtResource("3_swtgl")
 
+[node name="UseUserNamesCheckbox" type="CheckBox" parent="VBoxContainer"]
+layout_mode = 2
+text = "SETTINGS_USE_USER_NAMES"
+
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
 [connection signal="item_selected" from="VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]

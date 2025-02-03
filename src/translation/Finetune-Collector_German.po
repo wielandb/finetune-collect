@@ -459,3 +459,15 @@ msgstr "Bild von Datei laden"
 msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
 msgstr "Bild von URL laden"
 
+#: scenes/message.tscn
+msgid "URL or Base64"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
+msgstr "Neuer Funktionsparameter"
+
+#: scenes/message.tscn
+msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+msgstr "URL oder Base64"
+

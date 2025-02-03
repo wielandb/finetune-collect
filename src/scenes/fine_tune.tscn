@@ -98,6 +98,8 @@ script = ExtResource("4_slp0e")
 [node name="Exporter" type="Node" parent="."]
 script = ExtResource("10_ido41")
 
+[node name="HTTPRequest" type="HTTPRequest" parent="Exporter"]
+
 [connection signal="pressed" from="CollapsedMenu/ExpandBurgerBtn" to="." method="_on_expand_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/CollapseBurgerBtn" to="." method="_on_collapse_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewConversationButton" to="." method="_on_button_pressed"]

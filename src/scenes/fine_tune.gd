@@ -484,7 +484,7 @@ func create_jsonl_data_for_file():
 	var complete_jsonl_string = ""
 	match SETTINGS.get("finetuneType", 0):
 		0:
-			complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(FINETUNEDATA)
 		1:
 			complete_jsonl_string = $Exporter.convert_dpo_data(FINETUNEDATA)
 		2:
@@ -500,13 +500,13 @@ func _on_export_btn_pressed() -> void:
 			$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
 		"Web":
 			# When we are on web, we need to download the file directly
-			var complete_jsonl_string = create_jsonl_data_for_file()
+			var complete_jsonl_string = await create_jsonl_data_for_file()
 			var byte_array = complete_jsonl_string.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
 	
 
 func _on_export_file_dialog_file_selected(path: String) -> void:
-	var complete_jsonl_string = create_jsonl_data_for_file()
+	var complete_jsonl_string = await create_jsonl_data_for_file()
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()

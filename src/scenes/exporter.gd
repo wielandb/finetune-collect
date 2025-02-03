@@ -10,6 +10,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func url_to_base64(url: String):
+	var httpreqObj = $HTTPRequest
+	httpreqObj.request(url)
+	var response = await httpreqObj.request_completed
+	var body = response[3]
+	var base_64_data = Marshalls.raw_to_base64(body)
+	return base_64_data
+	
+
 func filter_function_map_only_keep_array(function_map, keep_functions_name_array):
 	var function_map_tmp = function_map
 	for key in function_map_tmp:
@@ -112,8 +121,15 @@ func convert_message_to_openai_format(message, function_map=null):
 				# TODO: Get if it is really a jpeg or a png we are laoding
 				image_url_data = "data:image/jpeg;base64," + message['imageContent']
 		elif getSettings().get('exportImagesHow', 0) == 1:
-			# TODO: Download URLs and convert them to base64
-			pass
+			var imageurl = message['imageContent'] 
+			var base64_data = await url_to_base64(imageurl)
+			match getImageType(imageurl):
+				"png":
+					image_url_data = "data:image/png;base64," + base64_data
+				"jpeg", "jpg":
+					image_url_data = "data:image/jpeg;base64," + base64_data
+				"":
+					push_error("Invalid file type")
 		return {
 			'role': message['role'],
 			'content': [
@@ -174,7 +190,7 @@ func convert_conversation_to_openai_format(conversation, function_map=null):
 	# :return: List of converted messages with optional system message
 	var converted_messages = []
 	for message in conversation:
-		var converted = convert_message_to_openai_format(message, function_map)
+		var converted = await convert_message_to_openai_format(message, function_map)
 		
 		# Handle cases where a single function message might return multiple messages
 		if converted is Array:
@@ -270,7 +286,7 @@ func convert_fine_tuning_data(ftdata):
 					'content': system_message
 				})
 		# Convert conversation
-		processed_conversation += convert_conversation_to_openai_format(conversation, function_map)
+		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools
 		var output_entry = {
 			'messages': processed_conversation

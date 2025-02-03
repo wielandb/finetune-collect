@@ -38,17 +38,19 @@ func to_var():
 	#		tmpFunctionResults.append(result.to_var())
 	me["functionResults"] = $FunctionMessageContainer/FunctionUseResultText.text
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
+	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	return me
 
 func from_var(data):
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	var useUserNames = get_node("/root/FineTune").SETTINGS.get("useUserNames", false)
 	print("Building from var")
 	print(data)
-	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data["role"]))
+	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
-	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data["type"]))
+	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data.get("type", "Text")))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
-	$TextMessageContainer/Message.text = data["textContent"]
+	$TextMessageContainer/Message.text = data.get("textContent", "")
 	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data.get("unpreferredTextContent", "")
 	$TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text = data.get("preferredTextContent", "")
 	# Set the correct kind of message visible
@@ -64,7 +66,7 @@ func from_var(data):
 				$TextMessageContainer/Message.visible = true
 		2:
 			pass
-	$ImageMessageContainer/Base64ImageEdit.text = data["imageContent"]
+	$ImageMessageContainer/Base64ImageEdit.text = data.get("imageContent", "")
 	# If not empty, create the image from the base64
 	if $ImageMessageContainer/Base64ImageEdit.text != "":
 		if isImageURL($ImageMessageContainer/Base64ImageEdit.text):
@@ -76,18 +78,25 @@ func from_var(data):
 	else: # TODO: Add option what the standard quality should be
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(0)
 	# Now everything regarding functions
-	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
+	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data.get("functionName", "")))
 	#if data["functionName"] != "":
 	#	_on_function_name_choice_button_item_selected(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
-	for d in data["functionParameters"]:
+	for d in data.get("functionParameters", []):
 		var parameterInstance = function_use_parameters_scene.instantiate()
 		$FunctionMessageContainer.add_child(parameterInstance)
 		var parameterSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel.get_index()
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
 		parameterInstance.from_var(d)
-	$FunctionMessageContainer/FunctionUseResultText.text = str(data["functionResults"])
+	$FunctionMessageContainer/FunctionUseResultText.text = str(data.get("functionResults", ""))
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
 	_on_check_what_text_message_should_be_visisble()
+	# All about user names
+	$MessageSettingsContainer/UserNameEdit.visible = false
+	$MessageSettingsContainer/UserNameEdit.text = data.get("userName", "")
+	if data.get("role", "user") == "user":
+		if useUserNames:
+			$MessageSettingsContainer/UserNameEdit.visible = true
+		
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)

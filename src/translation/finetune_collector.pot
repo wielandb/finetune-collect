@@ -237,6 +237,10 @@ msgstr ""
 msgid "GENERIC_REFRESH"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_USER_NAMES"
+msgstr ""
+
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_CONVERSATION_NEW"
 msgstr ""
@@ -317,6 +321,10 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "assistant"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_USER_NAME"
 msgstr ""
 
 #: scenes/message.tscn

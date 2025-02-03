@@ -15,9 +15,15 @@ var tool_calls: Array = []
 ## The tool_call_id for tool responses
 var tool_call_id: String = ""
 
+## The user name that is potentially there
+var user_name = null
+
 ## Sets the role of the message sender.
 func set_role(new_role: String) -> void:
 	role = new_role
+
+func set_user_name(new_name: String) -> void:
+	user_name = new_name
 
 ## Sets the content of the message. Can be either a string or an array of content items.
 func set_content(new_content) -> void:
@@ -50,10 +56,11 @@ func add_image_content(image_base64: String, detail: String) -> void:
 func add_text_content(text: String) -> void:
 	if typeof(content) != TYPE_ARRAY:
 		content = []
-	content.append({
+	var toAddContent = {
 		"type": "text",
 		"text": text
-	})
+	}
+	content.append(toAddContent)
 
 ## Sets tool calls for the message (used by assistant)
 func set_tool_calls(calls: Array) -> void:
@@ -82,7 +89,9 @@ func get_as_dict() -> Dictionary:
 		
 	if role == "tool" && !tool_call_id.is_empty():
 		dict["tool_call_id"] = tool_call_id
-		
+	
+	if user_name:
+		dict["name"] = user_name
 	return dict
 
 ## Sets the message from a dictionary
@@ -101,6 +110,9 @@ func set_as_dict(dictionary: Dictionary) -> void:
 		
 	if dictionary.has("tool_call_id"):
 		tool_call_id = dictionary["tool_call_id"]
+	
+	if dictionary.has("name"):
+		user_name = dictionary["name"]
 
 ## Creates a tool response message
 func create_tool_response(call_id: String, response_content: String) -> void:

@@ -37,6 +37,11 @@ popup/item_2/text = "assistant"
 popup/item_2/icon = ExtResource("3_52cv2")
 popup/item_2/id = 2
 
+[node name="UserNameEdit" type="LineEdit" parent="MessageSettingsContainer"]
+visible = false
+layout_mode = 2
+placeholder_text = "MESSAGES_USER_NAME"
+
 [node name="MessageType" type="OptionButton" parent="MessageSettingsContainer"]
 layout_mode = 2
 size_flags_vertical = 0

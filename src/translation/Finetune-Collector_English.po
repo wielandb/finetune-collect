@@ -453,3 +453,11 @@ msgstr "Add function parameter"
 msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 msgstr "URL or Base64"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_USER_NAMES"
+msgstr "Use user names"
+
+#: scenes/message.tscn
+msgid "MESSAGES_USER_NAME"
+msgstr "User name"
+

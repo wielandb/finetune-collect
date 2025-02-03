@@ -14,6 +14,7 @@ func to_var():
 	me["includeFunctions"] = $VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.selected
 	me["finetuneType"] = $VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.selected
 	me["exportImagesHow"] = $VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.selected
+	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
 	return me
 	
 func from_var(me):
@@ -24,6 +25,7 @@ func from_var(me):
 	openai.set_api($VBoxContainer/APIKeySettingContainer/APIKeyEdit.text)
 	$VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.select(me.get("includeFunctions", 0))
 	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.select(me.get("exportImagesHow", 0))
+	$VBoxContainer/UseUserNamesCheckbox.button_pressed = me.get("useUserNames", false)
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
 	for m in me["availableModels"]:
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)

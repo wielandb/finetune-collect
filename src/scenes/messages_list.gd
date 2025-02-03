@@ -44,6 +44,12 @@ func _on_add_message_button_pressed() -> void:
 	#$MessagesListContainer.move_child(addAIButton, -1)
 	#$MessagesListContainer.move_child(addButton, -1)
 	$MessagesListContainer.move_child(buttonsContainer, -1)	
+	MessageInstance.from_var(
+		{
+		"role": "user",
+		"type": "Text"
+		}
+	)
 	print(self.to_var())
 	
 
@@ -149,6 +155,8 @@ func _on_add_message_completion_button_pressed() -> void:
 	for m in ftc_messages:
 		var nm = Message.new()
 		nm.set_role(m["role"])
+		if settings.get("useUserNames", false):
+			nm.set_user_name(settings.get("useUserNames", ""))
 		match m["type"]:
 			"Text":
 				nm.set_content(m["textContent"])

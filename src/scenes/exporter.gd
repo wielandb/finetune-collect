@@ -107,10 +107,13 @@ func convert_message_to_openai_format(message, function_map=null):
 	}
 	# Text message
 	if message['type'] == 'Text':
-		return {
+		var toAddDict ={
 			'role': message['role'],
 			'content': message['textContent']
 		}
+		if message.get("userName", "") != "":
+			toAddDict["name"] = message.get("userName", "")
+		return toAddDict
 	# Image message
 	elif message['type'] == 'Image':
 		var image_url_data = ""

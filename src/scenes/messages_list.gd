@@ -27,6 +27,7 @@ func _ready() -> void:
 	openai.connect("gpt_response_completed", gpt_response_completed)
 	openai.connect("models_received", models_received)
 	openai.get_models()
+	get_viewport().files_dropped.connect(on_dropped_files)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -277,3 +278,23 @@ func getImageType(url: String) -> String:
 		return "jpg"
 	else:
 		return ""
+		
+func on_dropped_files(files):
+	for file in files:
+		if file.to_lower().ends_with(".jpg") or file.to_lower().ends_with(".jpeg") or file.to_lower().ends_with(".png"):
+			# Add a new message to the MessagesListContainer
+			var MessageInstance = MESSAGE_SCENE.instantiate()
+			#var addButton = $MessagesListContainer/AddMessageButton
+			#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
+			$MessagesListContainer.add_child(MessageInstance)
+			#$MessagesListContainer.move_child(addAIButton, -1)
+			#$MessagesListContainer.move_child(addButton, -1)
+			$MessagesListContainer.move_child(buttonsContainer, -1)	
+			MessageInstance.from_var(
+				{
+				"role": "user",
+				"type": "Image"
+				}
+			)
+			MessageInstance._on_file_dialog_file_selected(file)

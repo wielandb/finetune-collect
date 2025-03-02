@@ -140,6 +140,7 @@ func _on_message_type_item_selected(index: int) -> void:
 	$TextMessageContainer.visible = false
 	$ImageMessageContainer.visible = false
 	$FunctionMessageContainer.visible = false
+	$SchemaMessageContainer.visible = false
 	match index:
 		0:
 			$TextMessageContainer.visible = true
@@ -147,6 +148,8 @@ func _on_message_type_item_selected(index: int) -> void:
 			$ImageMessageContainer.visible = true
 		2:
 			$FunctionMessageContainer.visible = true
+		3:
+			$SchemaMessageContainer.visible = true
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -194,6 +197,7 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_disabled(0, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
+	$MessageSettingsContainer/MessageType.set_item_disabled(3, true)
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
 		0:
@@ -208,6 +212,7 @@ func _on_role_item_selected(index: int) -> void:
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
+					$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)

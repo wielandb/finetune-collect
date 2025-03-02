@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=15 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" path="res://scenes/message.gd" id="1_lafvt"]
@@ -8,8 +8,13 @@
 [ext_resource type="Texture2D" uid="uid://b5c5odgp0j7f6" path="res://icons/image-custom (1).png" id="6_nm785"]
 [ext_resource type="Texture2D" uid="uid://b7le047xxergp" path="res://icons/trashcan.png" id="6_trxu4"]
 [ext_resource type="Texture2D" uid="uid://da741wh2jb07o" path="res://icons/function-variant-custom (1).png" id="7_mo45f"]
+[ext_resource type="Texture2D" uid="uid://cdho4p4837jh8" path="res://icons/code-json-custom.png" id="8_yvjpg"]
 [ext_resource type="Texture2D" uid="uid://o7ql325bc4fu" path="res://icons/file-question-custom.png" id="9_2lsc3"]
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
+[ext_resource type="Script" path="res://scenes/schema_message_polling_animator.gd" id="12_iorou"]
+[ext_resource type="FontFile" uid="uid://iilux6cs6sv" path="res://assets/RobotoSlab-VariableFont_wght.ttf" id="12_rwbsk"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -46,7 +51,7 @@ placeholder_text = "MESSAGES_USER_NAME"
 layout_mode = 2
 size_flags_vertical = 0
 selected = 0
-item_count = 3
+item_count = 4
 popup/item_0/text = "Text"
 popup/item_0/icon = ExtResource("5_j80gg")
 popup/item_1/text = "Image"
@@ -56,6 +61,9 @@ popup/item_2/text = "Function Call"
 popup/item_2/icon = ExtResource("7_mo45f")
 popup/item_2/id = 2
 popup/item_2/disabled = true
+popup/item_3/text = "JSON Schema"
+popup/item_3/icon = ExtResource("8_yvjpg")
+popup/item_3/id = 3
 
 [node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
 layout_mode = 2
@@ -63,6 +71,7 @@ text = "GENERIC_DELETE"
 icon = ExtResource("6_trxu4")
 
 [node name="TextMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -237,6 +246,82 @@ text = "Add result"
 visible = false
 layout_mode = 2
 
+[node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SchemaMessageLabel" type="Label" parent="SchemaMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
+layout_mode = 2
+
+[node name="SchemaEditButton" type="Button" parent="SchemaMessageContainer/SchemaEditButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+icon = ExtResource("5_j80gg")
+
+[node name="SchemaMessagePolling" type="HBoxContainer" parent="SchemaMessageContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="SchemaMessagePollingAnimator" type="TextureRect" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+texture = SubResource("ImageTexture_s4g5u")
+expand_mode = 2
+script = ExtResource("12_iorou")
+
+[node name="SchemaMessagePollingLabel" type="Label" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_POLLING"
+
+[node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("12_rwbsk")
+text = "{
+          type: \"object\",
+          title: \"Car\",
+          properties: {
+            make: {
+              type: \"string\",
+              enum: [
+                \"Toyota\",
+                \"BMW\",
+                \"Honda\",
+                \"Ford\",
+                \"Chevy\",
+                \"VW\"
+              ]
+            },
+            model: {
+              type: \"string\"
+            },
+            year: {
+              type: \"integer\",
+              enum: [
+                1995,1996,1997,1998,1999,
+                2000,2001,2002,2003,2004,
+                2005,2006,2007,2008,2009,
+                2010,2011,2012,2013,2014
+              ],
+              default: 2008
+            },
+            safety: {
+              type: \"integer\",
+              format: \"rating\",
+              maximum: \"5\",
+              exclusiveMaximum: false,
+              readonly: false
+            }
+          }
+        }"
+editable = false
+
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
@@ -251,6 +336,6 @@ layout_mode = 2
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]

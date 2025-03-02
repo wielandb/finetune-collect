@@ -62,3 +62,11 @@ func _on_api_key_edit_text_changed(new_text: String) -> void:
 
 func _on_model_choice_refresh_button_pressed() -> void:
 	openai.get_models()
+
+
+func _on_schema_content_load_from_file_btn_pressed() -> void:
+	$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
+
+func _on_load_schema_file_dialog_file_selected(path: String) -> void:
+	var json_as_text = FileAccess.get_file_as_string(path)
+	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = json_as_text

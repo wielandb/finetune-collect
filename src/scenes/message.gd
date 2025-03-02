@@ -39,6 +39,7 @@ func to_var():
 	me["functionResults"] = $FunctionMessageContainer/FunctionUseResultText.text
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
+	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
 	return me
 
 func from_var(data):
@@ -96,7 +97,8 @@ func from_var(data):
 	if data.get("role", "user") == "user":
 		if useUserNames:
 			$MessageSettingsContainer/UserNameEdit.visible = true
-		
+	# JSON Schema
+	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)

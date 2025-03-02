@@ -1,6 +1,8 @@
 extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
+var default_schema_editor_url = "https://example.com/editor.php"
+
 func to_var():
 	var me = {}
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
@@ -15,6 +17,8 @@ func to_var():
 	me["finetuneType"] = $VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.selected
 	me["exportImagesHow"] = $VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.selected
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
+	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
+	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
 	return me
 	
 func from_var(me):
@@ -33,7 +37,8 @@ func from_var(me):
 		if ($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i) == me["modelChoice"]):
 			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
-
+	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
+	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

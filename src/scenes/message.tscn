@@ -266,6 +266,7 @@ text = "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
 icon = ExtResource("5_j80gg")
 
 [node name="SchemaMessagePolling" type="HBoxContainer" parent="SchemaMessageContainer"]
+visible = false
 layout_mode = 2
 alignment = 1
 
@@ -322,6 +323,12 @@ text = "{
         }"
 editable = false
 
+[node name="InitEditingRequestToken" type="HTTPRequest" parent="SchemaMessageContainer"]
+
+[node name="PollForCompletion" type="HTTPRequest" parent="SchemaMessageContainer"]
+
+[node name="PollingTimer" type="Timer" parent="SchemaMessageContainer"]
+
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
@@ -339,3 +346,4 @@ editable = false
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
+[connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]

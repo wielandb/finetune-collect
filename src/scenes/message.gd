@@ -401,3 +401,11 @@ func getImageType(url: String) -> String:
 		return "jpg"
 	else:
 		return ""
+
+
+func _on_schema_edit_button_pressed() -> void:
+	# POST the Schema and The Data we already have to the editor URL to retrieve a token
+	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
+	

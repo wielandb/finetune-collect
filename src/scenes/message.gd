@@ -4,6 +4,7 @@ extends HBoxContainer
 @onready var imageTexture = $ImageMessageContainer/TextureRect
 
 var image_access_web = FileAccessWeb.new()
+var token = "" # The token for the schema editor for this message
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -425,7 +426,17 @@ func _on_init_editing_request_token_request_completed(result: int, response_code
 	print(headers)
 	print(body)
 	if response_code == 200:
-		var token = body.get_string_from_utf8()
+		token = body.get_string_from_utf8()
 		print(token)
 		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
 		OS.shell_open(editor_url + "?token=" + token)
+	$SchemaMessageContainer/PollingTimer.start()
+
+func _on_polling_timer_timeout() -> void:
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	# Start a HTTP Request to Poll for completion of the edit from users side
+	$SchemaMessageContainer/PollForCompletion.request(editor_url + "?poll=1&token=" + token, [], HTTPClient.METHOD_GET, "")
+
+func _on_poll_for_completion_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	if response_code == 200:
+		pass

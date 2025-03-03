@@ -408,4 +408,24 @@ func _on_schema_edit_button_pressed() -> void:
 	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
 	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
 	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
-	
+	var data_to_send = {"json_data": existing_json_data, "json_schema": json_schema_string}
+	print("Sending data:")
+	print(data_to_send)
+	var json_to_send = JSON.stringify(data_to_send)
+	var custom_headers := PackedStringArray()
+	custom_headers.append("Content-Type: application/json")
+	print("json_to_send")
+	print(json_to_send)
+	$SchemaMessageContainer/InitEditingRequestToken.request(editor_url, custom_headers, HTTPClient.METHOD_POST, json_to_send)
+	print("Requested!")
+
+func _on_init_editing_request_token_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	print(result)
+	print(response_code)
+	print(headers)
+	print(body)
+	if response_code == 200:
+		var token = body.get_string_from_utf8()
+		print(token)
+		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+		OS.shell_open(editor_url + "?token=" + token)

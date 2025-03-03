@@ -83,7 +83,7 @@ def create_session():
       "type": "array",
       "format": "table",
       "title": "Pets",
-      "uniqueItems": True,
+      "uniqueItems": true,
       "items": {
         "type": "object",
         "title": "Pet",

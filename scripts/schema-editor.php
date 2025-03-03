@@ -14,6 +14,17 @@ foreach ($files as $file) {
     if (filemtime($file) < (time() - 7200)) {
         unlink($file);
     }
+    // 2. Otherwise, load and check if "ready" is true, 
+    // and if the file was last modified more than 15 seconds ago.
+    $jsonData = @file_get_contents($file);
+    if ($jsonData !== false) {
+        $data = json_decode($jsonData, true);
+        if (isset($data['ready']) && $data['ready'] === true) {
+            if (filemtime($file) < time() - 15) {
+                unlink($file);
+            }
+        }
+    }
 }
 
 
@@ -23,7 +34,19 @@ function getFilePath($token) {
     return $dataDir . '/' . $token . '.json';
 }
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+        $rawInput = file_get_contents('php://input');
+        $jsonInput = json_decode($rawInput, true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            foreach ($jsonInput as $key => $value) {
+                $_POST[$key] = $value;
+            }
+        } else {
+	echo "Smth wrong with the JSON!";
+		}
+    }
     // -------------------------------
     // POST requests:
     // 1. Without a token: initial creation (receives json_schema and json_data)
@@ -57,6 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $json_schema = $_POST['json_schema'] ?? '';
         if (!$json_data || !$json_schema) {
             echo "Missing json_data or json_schema.";
+            echo "json_data:".$json_data;
+            echo "json_schema:".$json_schema;
+            echo var_dump($_POST);
             exit;
         }
         // Generate a unique token.

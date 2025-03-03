@@ -184,6 +184,12 @@ func convert_message_to_openai_format(message, function_map=null):
 			}
 			return [tool_call, tool_response]
 		return tool_call
+	elif message['type'] == 'JSON Schema':
+		var toAddDict ={
+			'role': message['role'],
+			'content': message['jsonSchemaValue']
+		}
+		return toAddDict
 	return null
 
 func convert_conversation_to_openai_format(conversation, function_map=null):

@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=16 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" path="res://scenes/message.gd" id="1_lafvt"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
 [ext_resource type="Script" path="res://scenes/schema_message_polling_animator.gd" id="12_iorou"]
 [ext_resource type="FontFile" uid="uid://iilux6cs6sv" path="res://assets/RobotoSlab-VariableFont_wght.ttf" id="12_rwbsk"]
+[ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="13_gakvq"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
 
@@ -280,6 +281,11 @@ script = ExtResource("12_iorou")
 layout_mode = 2
 text = "MESSAGES_JSON_SCHEMA_POLLING"
 
+[node name="SchemaMessagePollingReopenBrowserBtn" type="Button" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
+icon = ExtResource("13_gakvq")
+
 [node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -322,6 +328,7 @@ text = "{
           }
         }"
 editable = false
+wrap_mode = 1
 
 [node name="InitEditingRequestToken" type="HTTPRequest" parent="SchemaMessageContainer"]
 
@@ -331,12 +338,12 @@ editable = false
 
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
-[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
@@ -347,6 +354,7 @@ editable = false
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
+[connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]
 [connection signal="request_completed" from="SchemaMessageContainer/PollForCompletion" to="." method="_on_poll_for_completion_request_completed"]
 [connection signal="timeout" from="SchemaMessageContainer/PollingTimer" to="." method="_on_polling_timer_timeout"]

@@ -124,11 +124,13 @@ msgstr "Neue Unterhaltung"
 msgid "FINETUNE_LOAD"
 msgstr "Lade Fine-Tune"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open a File"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open"
@@ -478,4 +480,45 @@ msgstr "Nutzernamen benutzen"
 #: scenes/message.tscn
 msgid "MESSAGES_USER_NAME"
 msgstr "Nutzername"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL"
+msgstr "URL des Schema-Editors:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
+msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei, die im GitHub zu finden ist. Es gibt eine bereitgestellte Instanz vom Entwickler. Bedenke, dass, wenn du diese benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHECK"
+msgstr "Prüfen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA"
+msgstr "JSON-Schema"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
+""
+msgstr "JSON-Schema aus Datei laden"
+
+#: scenes/message.tscn
+msgid "JSON Schema"
+msgstr "JSON Schema"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
+msgstr "Nachricht in JSON nach bestimmtem Schema"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+msgstr "Browser öffnen, um Nachricht/Daten zu bearbeiten"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_POLLING"
+msgstr "Warte auf Abschluss der Bearbeitung im Browser"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
+msgstr "Browser erneut öffnen"
 

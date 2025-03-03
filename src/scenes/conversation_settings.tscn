@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://d3c68j8erdmn8"]
+[gd_scene load_steps=8 format=3 uid="uid://d3c68j8erdmn8"]
 
 [ext_resource type="Script" path="res://scenes/conversation_settings.gd" id="1_efb5c"]
 [ext_resource type="Texture2D" uid="uid://ddwylhoqb77rg" path="res://icons/message-cog-custom.png" id="2_fd7a4"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bxxyp65j3tavt" path="res://icons/help-circle-outline-custom (1).png" id="3_kcvkw"]
 [ext_resource type="Texture2D" uid="uid://cq6q4oktrlqsh" path="res://icons/cloud-refresh-variant-custom.png" id="3_swtgl"]
 [ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="6_3r4bh"]
+[ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="6_uqjdu"]
 
 [node name="ConversationSettings" type="ScrollContainer"]
 anchors_preset = 15
@@ -50,6 +51,7 @@ text = "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
 horizontal_alignment = 1
 
 [node name="GlobalSystemMessageTextEdit" type="TextEdit" parent="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer"]
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -211,6 +213,7 @@ expand_mode = 2
 [node name="SchemaEditorURLEdit" type="LineEdit" parent="VBoxContainer/SchemaEditorURLContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+text = "https://www.haukauntrie.de/online/api/schema-editor/"
 
 [node name="SchemaEditorURLRefreshButton" type="Button" parent="VBoxContainer/SchemaEditorURLContainer"]
 layout_mode = 2
@@ -226,6 +229,8 @@ text = "SETTINGS_SCHEMA"
 
 [node name="SchemaValidCheckImg" type="TextureRect" parent="VBoxContainer/SchemaContainer"]
 layout_mode = 2
+texture = ExtResource("6_uqjdu")
+stretch_mode = 3
 
 [node name="SchemaContentContainer" type="VBoxContainer" parent="VBoxContainer/SchemaContainer"]
 layout_mode = 2
@@ -258,4 +263,5 @@ use_native_dialog = true
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentLoadFromFileBtn" to="." method="_on_schema_content_load_from_file_btn_pressed"]
+[connection signal="text_changed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor" to="." method="_on_schema_content_editor_text_changed"]
 [connection signal="file_selected" from="VBoxContainer/SchemaContainer/LoadSchemaFileDialog" to="." method="_on_load_schema_file_dialog_file_selected"]

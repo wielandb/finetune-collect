@@ -241,22 +241,44 @@ msgstr ""
 msgid "SETTINGS_USE_USER_NAMES"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHECK"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open a File"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open"
+msgstr ""
+
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_CONVERSATION_NEW"
 msgstr ""
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
-msgstr ""
-
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open a File"
-msgstr ""
-
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open"
 msgstr ""
 
 #: scenes/fine_tune.tscn
@@ -340,6 +362,10 @@ msgid "Function Call"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "JSON Schema"
+msgstr ""
+
+#: scenes/message.tscn
 msgid "GENERIC_DELETE"
 msgstr ""
 
@@ -416,6 +442,22 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "Add result"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_POLLING"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
 msgstr ""
 
 #: scenes/messages_list.tscn

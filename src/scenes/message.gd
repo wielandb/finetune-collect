@@ -5,6 +5,7 @@ extends HBoxContainer
 
 var image_access_web = FileAccessWeb.new()
 var token = "" # The token for the schema editor for this message
+var edit_message_url = ""
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -429,8 +430,12 @@ func _on_init_editing_request_token_request_completed(result: int, response_code
 		token = body.get_string_from_utf8()
 		print(token)
 		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
-		OS.shell_open(editor_url + "?token=" + token)
+		edit_message_url = editor_url + "?token=" + token 
+		OS.shell_open(edit_message_url)
 	$SchemaMessageContainer/PollingTimer.start()
+	$SchemaMessageContainer/SchemaMessagePolling.visible = true
+	$SchemaMessageContainer/SchemaEdit.visible = false
+	$SchemaMessageContainer/SchemaEditButtonsContainer.visible = false
 
 func _on_polling_timer_timeout() -> void:
 	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
@@ -439,4 +444,16 @@ func _on_polling_timer_timeout() -> void:
 
 func _on_poll_for_completion_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
 	if response_code == 200:
-		pass
+		var json_data = JSON.parse_string(body.get_string_from_utf8())
+		if json_data["ready"] == false:
+			return
+		elif json_data["ready"] == true:
+			$SchemaMessageContainer/SchemaEdit.text = json_data["json_data"]
+			$SchemaMessageContainer/PollingTimer.stop()
+			$SchemaMessageContainer/SchemaMessagePolling.visible = false
+			$SchemaMessageContainer/SchemaEdit.visible = true
+			$SchemaMessageContainer/SchemaEditButtonsContainer.visible = true
+
+
+func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:
+	OS.shell_open(edit_message_url)

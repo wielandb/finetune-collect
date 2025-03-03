@@ -39,6 +39,7 @@ func from_var(me):
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
+	_on_schema_content_editor_text_changed()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -75,3 +76,22 @@ func _on_schema_content_load_from_file_btn_pressed() -> void:
 func _on_load_schema_file_dialog_file_selected(path: String) -> void:
 	var json_as_text = FileAccess.get_file_as_string(path)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = json_as_text
+
+func validate_is_json(testtext) -> bool:
+	if testtext == "":
+		return false
+	var json = JSON.new()
+	var error = json.parse(testtext)
+	if error == OK:
+		return true
+	else:
+		return false
+		
+func update_valid_json_for_schema_checker() -> void:
+	if validate_is_json($VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text):
+		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-positive.png")
+	else:
+		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-negative.png")
+
+func _on_schema_content_editor_text_changed() -> void:
+	update_valid_json_for_schema_checker()

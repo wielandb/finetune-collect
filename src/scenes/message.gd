@@ -202,26 +202,43 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(3, true)
+	$MessageSettingsContainer/MessageType.set_item_tooltip(0, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(1, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(2, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(3, "")
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
 		0:
 			match index:
 				0:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 				1:
 					$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"))
 				2:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"))
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
 					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
 					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
 						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"))
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+			$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
 		2:
 			pass
 			

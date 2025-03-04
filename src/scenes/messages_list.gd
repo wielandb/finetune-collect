@@ -200,25 +200,34 @@ func _on_add_message_completion_button_pressed() -> void:
 
 func check_autocomplete_disabled_status():
 	if get_tree().get_root().get_node("FineTune").SETTINGS["apikey"] == "":
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY")
 		return true
 	if len(self.to_var()) < 1:
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_function_without_name():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_function_without_description():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_parameter_without_name():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_parameter_without_description():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS")
 		return true
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER")
 	return false
 
 func check_add_message_disabled_status():
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		if $MessagesListContainer.get_child_count() >= 3:
+			$MessagesListContainer/AddButtonsContainer/AddMessageButton.tooltip_text = tr("DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE")
 			# DPO only allows for one user and one assistant message
 			return true
+	$MessagesListContainer/AddButtonsContainer/AddMessageButton.tooltip_text = ""
 	return false
 
 func _on_something_happened_to_check_enabled_status() -> void:

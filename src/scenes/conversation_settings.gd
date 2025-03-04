@@ -43,7 +43,11 @@ func from_var(me):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Explain why some things are disabled
+	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
+	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	openai.connect("models_received", models_received)
+	# TODO: This should only be called if an OpenAI API key is set
 	openai.get_models()
 
 func models_received(models: Array[String]):

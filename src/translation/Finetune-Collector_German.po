@@ -522,3 +522,71 @@ msgstr "Warte auf Abschluss der Bearbeitung im Browser"
 msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
 msgstr "Browser erneut öffnen"
 
+#: scenes/conversation_settings.gd
+msgid "DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"
+msgstr "Noch nicht implementiert"
+
+#: scenes/function_use_parameter.tscn
+msgid "DISABLED_EXPLANATION_FUNCTIONS_MUST_USE_ALL_PARAMETERS"
+msgstr "Funktionen müssen all ihre Parameter benutzen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
+msgstr "Der System-Nutzer kann das nicht tun"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"
+msgstr "Nur der Assistent kann Funktionen benutzen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
+msgstr "Nur der Assistent kann in JSON Schema antworten"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
+msgstr "Der Assistent kann keine Bilder senden"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
+msgstr "Mindestens eine Funktion muss definiert sein um das benutzen zu können"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
+msgstr "Ein valides JSON Schema muss in den Einstellungen hinterlegt werden um das benutzen zu können"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
+msgstr "Direct Preference Optimization (DPO) unterstüzt nur Text"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
+msgstr "Ein OpenAI API Key muss in den Einstellungen hinterlegt werden"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE"
+msgstr "Mindestens eine Nachricht wird benötigt"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS"
+msgstr "Deaktiviert solange eine Funktion ohne Name existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS"
+msgstr "Deaktiviert solange eine Funktion ohne Beschreibung existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS"
+msgstr "Deaktiviert solange eine Funktion mit einem Parameter ohne Name existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS"
+msgstr "Deaktiviert solange eine Funktion mit einem Parameter ohne Beschreibung existiert"
+
+#: scenes/messages_list.gd
+msgid "MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER"
+msgstr "Die OpenAI API nach einer Vervollständigung fragen"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
+msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine Assistenten-Nachricht"
+

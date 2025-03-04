@@ -115,4 +115,3 @@ function godotFileAccessWebStart() {
 
 var godotFileAccessWeb = godotFileAccessWebStart();
 """
-

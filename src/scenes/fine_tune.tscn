@@ -82,7 +82,6 @@ text = "FINETUNE_EXPORT"
 icon = ExtResource("8_wwmoc")
 
 [node name="ExportFileDialog" type="FileDialog" parent="VBoxContainer/ExportBtn"]
-ok_button_text = "GENERIC_SAVE"
 cancel_button_text = "GENERIC_CANCEL"
 access = 2
 filters = PackedStringArray("*.jsonl;OpenAI fine-tuning file")

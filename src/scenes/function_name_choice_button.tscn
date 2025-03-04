@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dvlnjw6n55r3v"]
 
-[ext_resource type="Script" path="res://scenes/function_name_choice_button.gd" id="1_ou0fb"]
+[ext_resource type="Script" uid="uid://c8pn3t7mq07va" path="res://scenes/function_name_choice_button.gd" id="1_ou0fb"]
 
 [node name="FunctionNameChoiceButton" type="OptionButton" groups=["UI_needs_function_list"]]
 size_flags_horizontal = 3

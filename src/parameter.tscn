@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bbx4xuy48vfcf"]
 
-[ext_resource type="Script" path="res://available_parameter.gd" id="1_bbgrc"]
+[ext_resource type="Script" uid="uid://cher2icgt0y8k" path="res://available_parameter.gd" id="1_bbgrc"]
 [ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="2_trlep"]
 
 [node name="ParameterContainer" type="HBoxContainer"]

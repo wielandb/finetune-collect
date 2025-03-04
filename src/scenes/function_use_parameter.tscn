@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://qyfqi7d0l7ed"]
 
-[ext_resource type="Script" path="res://scenes/function_use_parameter.gd" id="1_yrmbv"]
+[ext_resource type="Script" uid="uid://barwdybr46fmw" path="res://scenes/function_use_parameter.gd" id="1_yrmbv"]
 
 [node name="FunctionUseParameter" type="HBoxContainer" groups=["function_use_parameter"]]
 alignment = 1

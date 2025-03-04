@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://di6careg20i2n"]
 
-[ext_resource type="Script" path="res://scenes/available_function.gd" id="1_gq8tp"]
+[ext_resource type="Script" uid="uid://dslqxjnby7dj8" path="res://scenes/available_function.gd" id="1_gq8tp"]
 [ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="3_ct8d1"]
 
 [node name="AvailableFunction" type="VBoxContainer" groups=["available_function"]]

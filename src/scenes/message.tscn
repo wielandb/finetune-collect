@@ -36,6 +36,7 @@ selected = 1
 item_count = 3
 popup/item_0/text = "system"
 popup/item_0/icon = ExtResource("1_1kcao")
+popup/item_0/id = 0
 popup/item_1/text = "user"
 popup/item_1/icon = ExtResource("2_qmf1n")
 popup/item_1/id = 1
@@ -55,6 +56,7 @@ selected = 0
 item_count = 4
 popup/item_0/text = "Text"
 popup/item_0/icon = ExtResource("5_j80gg")
+popup/item_0/id = 0
 popup/item_1/text = "Image"
 popup/item_1/icon = ExtResource("6_nm785")
 popup/item_1/id = 1
@@ -162,6 +164,7 @@ size_flags_horizontal = 3
 selected = 0
 item_count = 3
 popup/item_0/text = "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
+popup/item_0/id = 0
 popup/item_1/text = "MESSAGES_IMAGE_DETAIL_OPTION_LOW"
 popup/item_1/id = 1
 popup/item_2/text = "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
@@ -336,10 +339,10 @@ wrap_mode = 1
 
 [node name="PollingTimer" type="Timer" parent="SchemaMessageContainer"]
 
-[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
-[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
@@ -350,8 +353,8 @@ wrap_mode = 1
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]

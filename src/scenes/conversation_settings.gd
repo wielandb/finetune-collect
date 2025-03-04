@@ -87,11 +87,14 @@ func validate_is_json(testtext) -> bool:
 	else:
 		return false
 		
-func update_valid_json_for_schema_checker() -> void:
+func update_valid_json_for_schema_checker() -> bool:
+	# The return value is not used in the function below, but it is when called externally by the message object
 	if validate_is_json($VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text):
 		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-positive.png")
+		return true
 	else:
 		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-negative.png")
+		return false
 
 func _on_schema_content_editor_text_changed() -> void:
 	update_valid_json_for_schema_checker()

@@ -216,7 +216,9 @@ func _on_role_item_selected(index: int) -> void:
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
-					$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
+					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
+						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)

@@ -17,7 +17,7 @@ config/icon="res://icons/finetune-collector-icon.png"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/openai_api/plugin.cfg")
+enabled=PackedStringArray("res://addons/FileAccessWeb/plugin.cfg", "res://addons/openai_api/plugin.cfg")
 
 [global_group]
 

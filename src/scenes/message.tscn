@@ -251,6 +251,7 @@ visible = false
 layout_mode = 2
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -283,6 +284,11 @@ script = ExtResource("12_iorou")
 [node name="SchemaMessagePollingLabel" type="Label" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
 text = "MESSAGES_JSON_SCHEMA_POLLING"
+
+[node name="SchemaMessagePollingOpenBrowserLink" type="LinkButton" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+uri = "https://www.haukauntrie.de"
 
 [node name="SchemaMessagePollingReopenBrowserBtn" type="Button" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2

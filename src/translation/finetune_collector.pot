@@ -489,6 +489,10 @@ msgid "MESSAGES_JSON_SCHEMA_POLLING"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr ""
+
+#: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
 msgstr ""
 

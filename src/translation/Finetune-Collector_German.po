@@ -590,3 +590,7 @@ msgstr "Die OpenAI API nach einer Vervollständigung fragen"
 msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
 msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine Assistenten-Nachricht"
 
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr "Schema-Editor in neuem Tab öffnen"
+

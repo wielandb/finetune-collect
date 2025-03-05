@@ -572,3 +572,7 @@ msgstr "Ask the OpenAI API for a completion"
 msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
 msgstr "Direct Preference Optimization (DPO) only allows for one user and one assistant message"
 
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr "Open schema editor in new tab"
+

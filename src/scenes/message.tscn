@@ -288,7 +288,6 @@ text = "MESSAGES_JSON_SCHEMA_POLLING"
 [node name="SchemaMessagePollingOpenBrowserLink" type="LinkButton" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
 text = "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
-uri = "https://www.haukauntrie.de"
 
 [node name="SchemaMessagePollingReopenBrowserBtn" type="Button" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2

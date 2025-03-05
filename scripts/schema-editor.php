@@ -5,7 +5,7 @@ $dataDir = __DIR__ . '/data';
 if (!file_exists($dataDir)) {
     mkdir($dataDir, 0755, true);
 }
-
+header('Access-Control-Allow-Origin: *');
 $files = glob('data/*.json');
 
 // Loop through each matching file

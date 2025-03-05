@@ -5,7 +5,8 @@ $dataDir = __DIR__ . '/data';
 if (!file_exists($dataDir)) {
     mkdir($dataDir, 0755, true);
 }
-header('Access-Control-Allow-Origin: *');
+// Make sure to chenge this depending on where you are hosting this
+header('Access-Control-Allow-Origin: wielandb.github.io');
 $files = glob('data/*.json');
 
 // Loop through each matching file

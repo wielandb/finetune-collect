@@ -594,3 +594,7 @@ msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine As
 msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
 msgstr "Schema-Editor in neuem Tab öffnen"
 
+#: scenes/schema_edit_buttons_container.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
+msgstr "Nicht im Web-Export verfügbar"
+

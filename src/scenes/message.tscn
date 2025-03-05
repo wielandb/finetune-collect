@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=17 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
@@ -13,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
 [ext_resource type="Script" uid="uid://pm3h0spmo3k4" path="res://scenes/schema_message_polling_animator.gd" id="12_iorou"]
 [ext_resource type="FontFile" uid="uid://iilux6cs6sv" path="res://assets/RobotoSlab-VariableFont_wght.ttf" id="12_rwbsk"]
+[ext_resource type="Script" uid="uid://ous7aoomaueb" path="res://scenes/schema_edit_buttons_container.gd" id="12_wnabm"]
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="13_gakvq"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
@@ -263,6 +264,7 @@ horizontal_alignment = 1
 
 [node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
+script = ExtResource("12_wnabm")
 
 [node name="SchemaEditButton" type="Button" parent="SchemaMessageContainer/SchemaEditButtonsContainer"]
 layout_mode = 2

@@ -26,6 +26,7 @@
 # res://scenes/used_function.gd
 # res://scenes/used_function.tscn
 # res://scenes/exporter.gd
+# res://scenes/schema_edit_buttons_container.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -550,4 +551,8 @@ msgstr ""
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_FUNCTION_ADD_RESULT"
+msgstr ""
+
+#: scenes/schema_edit_buttons_container.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr ""

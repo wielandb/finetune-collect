@@ -1,6 +1,8 @@
 extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
+var default_schema_editor_url = "https://example.com/editor.php"
+
 func to_var():
 	var me = {}
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
@@ -15,6 +17,8 @@ func to_var():
 	me["finetuneType"] = $VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.selected
 	me["exportImagesHow"] = $VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.selected
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
+	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
+	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
 	return me
 	
 func from_var(me):
@@ -33,11 +37,17 @@ func from_var(me):
 		if ($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i) == me["modelChoice"]):
 			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
-
+	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
+	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
+	_on_schema_content_editor_text_changed()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Explain why some things are disabled
+	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
+	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	openai.connect("models_received", models_received)
+	# TODO: This should only be called if an OpenAI API key is set
 	openai.get_models()
 
 func models_received(models: Array[String]):
@@ -62,3 +72,33 @@ func _on_api_key_edit_text_changed(new_text: String) -> void:
 
 func _on_model_choice_refresh_button_pressed() -> void:
 	openai.get_models()
+
+
+func _on_schema_content_load_from_file_btn_pressed() -> void:
+	$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
+
+func _on_load_schema_file_dialog_file_selected(path: String) -> void:
+	var json_as_text = FileAccess.get_file_as_string(path)
+	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = json_as_text
+
+func validate_is_json(testtext) -> bool:
+	if testtext == "":
+		return false
+	var json = JSON.new()
+	var error = json.parse(testtext)
+	if error == OK:
+		return true
+	else:
+		return false
+		
+func update_valid_json_for_schema_checker() -> bool:
+	# The return value is not used in the function below, but it is when called externally by the message object
+	if validate_is_json($VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text):
+		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-positive.png")
+		return true
+	else:
+		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-negative.png")
+		return false
+
+func _on_schema_content_editor_text_changed() -> void:
+	update_valid_json_for_schema_checker()

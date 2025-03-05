@@ -4,6 +4,8 @@ extends HBoxContainer
 @onready var imageTexture = $ImageMessageContainer/TextureRect
 
 var image_access_web = FileAccessWeb.new()
+var token = "" # The token for the schema editor for this message
+var edit_message_url = ""
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -39,6 +41,7 @@ func to_var():
 	me["functionResults"] = $FunctionMessageContainer/FunctionUseResultText.text
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
+	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
 	return me
 
 func from_var(data):
@@ -96,7 +99,8 @@ func from_var(data):
 	if data.get("role", "user") == "user":
 		if useUserNames:
 			$MessageSettingsContainer/UserNameEdit.visible = true
-		
+	# JSON Schema
+	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)
@@ -140,6 +144,7 @@ func _on_message_type_item_selected(index: int) -> void:
 	$TextMessageContainer.visible = false
 	$ImageMessageContainer.visible = false
 	$FunctionMessageContainer.visible = false
+	$SchemaMessageContainer.visible = false
 	match index:
 		0:
 			$TextMessageContainer.visible = true
@@ -147,6 +152,8 @@ func _on_message_type_item_selected(index: int) -> void:
 			$ImageMessageContainer.visible = true
 		2:
 			$FunctionMessageContainer.visible = true
+		3:
+			$SchemaMessageContainer.visible = true
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -194,23 +201,44 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_disabled(0, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
+	$MessageSettingsContainer/MessageType.set_item_disabled(3, true)
+	$MessageSettingsContainer/MessageType.set_item_tooltip(0, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(1, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(2, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(3, "")
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
 		0:
 			match index:
 				0:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 				1:
 					$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"))
 				2:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"))
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
+					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
+					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
+						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"))
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+			$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
 		2:
 			pass
 			
@@ -394,3 +422,67 @@ func getImageType(url: String) -> String:
 		return "jpg"
 	else:
 		return ""
+
+
+func _on_schema_edit_button_pressed() -> void:
+	# POST the Schema and The Data we already have to the editor URL to retrieve a token
+	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
+	var data_to_send = {"json_data": existing_json_data, "json_schema": json_schema_string}
+	print("Sending data:")
+	print(data_to_send)
+	var json_to_send = JSON.stringify(data_to_send)
+	var custom_headers := PackedStringArray()
+	custom_headers.append("Content-Type: application/json")
+	print("json_to_send")
+	print(json_to_send)
+	$SchemaMessageContainer/InitEditingRequestToken.request(editor_url, custom_headers, HTTPClient.METHOD_POST, json_to_send)
+	print("Requested!")
+
+func _on_init_editing_request_token_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	print(result)
+	print(response_code)
+	print(headers)
+	print(body)
+	if response_code == 200:
+		token = body.get_string_from_utf8()
+		print(token)
+		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+		edit_message_url = editor_url + "?token=" + token
+		if OS.get_name() != "HTML5":
+			OS.shell_open(edit_message_url)
+		else:
+			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.uri = edit_message_url
+	$SchemaMessageContainer/PollingTimer.start()
+	$SchemaMessageContainer/SchemaMessagePolling.visible = true
+	# Make the Desktop "Reopen Browser" button and the Web-Export "Open Browser" Link invisible and make visible what needs to be depending on platform
+	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = false
+	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = false
+	if OS.get_name() != "HTML5":
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = true
+	else:
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = true
+	$SchemaMessageContainer/SchemaEdit.visible = false
+	$SchemaMessageContainer/SchemaEditButtonsContainer.visible = false
+
+func _on_polling_timer_timeout() -> void:
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	# Start a HTTP Request to Poll for completion of the edit from users side
+	$SchemaMessageContainer/PollForCompletion.request(editor_url + "?poll=1&token=" + token, [], HTTPClient.METHOD_GET, "")
+
+func _on_poll_for_completion_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	if response_code == 200:
+		var json_data = JSON.parse_string(body.get_string_from_utf8())
+		if json_data["ready"] == false:
+			return
+		elif json_data["ready"] == true:
+			$SchemaMessageContainer/SchemaEdit.text = json_data["json_data"]
+			$SchemaMessageContainer/PollingTimer.stop()
+			$SchemaMessageContainer/SchemaMessagePolling.visible = false
+			$SchemaMessageContainer/SchemaEdit.visible = true
+			$SchemaMessageContainer/SchemaEditButtonsContainer.visible = true
+
+
+func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:
+	OS.shell_open(edit_message_url)

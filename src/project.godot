@@ -12,12 +12,12 @@ config_version=5
 
 config/name="finetune-collector"
 run/main_scene="res://scenes/fine_tune.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icons/finetune-collector-icon.png"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/openai_api/plugin.cfg")
+enabled=PackedStringArray("res://addons/FileAccessWeb/plugin.cfg", "res://addons/openai_api/plugin.cfg")
 
 [global_group]
 

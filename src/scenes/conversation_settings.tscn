@@ -238,7 +238,7 @@ text = "SETTINGS_BATCH_CREATION_LOAD_FILES"
 
 [node name="BatchCreationFileDialog" type="FileDialog" parent="VBoxContainer/BatchCreatonContainer"]
 title = "Open File(s)"
-ok_button_text = "GENERIC_OPEN"
+ok_button_text = "Open"
 cancel_button_text = "GENERIC_CANCEL"
 file_mode = 1
 access = 2

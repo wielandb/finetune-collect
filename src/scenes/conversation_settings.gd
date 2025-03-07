@@ -2,6 +2,7 @@ extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
 var default_schema_editor_url = "https://example.com/editor.php"
+var schema_loader_file_access_web = FileAccessWeb.new()
 
 func to_var():
 	var me = {}
@@ -49,6 +50,13 @@ func _ready() -> void:
 	openai.connect("models_received", models_received)
 	# TODO: This should only be called if an OpenAI API key is set
 	openai.get_models()
+	schema_loader_file_access_web.loaded.connect(_on_schema_file_loaded)
+	#schema_loader_file_access_web.progress.connect(_on_file_access_web_progress)
+
+func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
+	var txtdata = Marshalls.base64_to_utf8(base64_data)
+	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = txtdata
+	update_valid_json_for_schema_checker()
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
@@ -75,11 +83,18 @@ func _on_model_choice_refresh_button_pressed() -> void:
 
 
 func _on_schema_content_load_from_file_btn_pressed() -> void:
-	$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
+	match OS.get_name():
+		"Web":
+			schema_loader_file_access_web.open(".json, .txt, .jsonschema, .schema")
+		_:
+			$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
+
 
 func _on_load_schema_file_dialog_file_selected(path: String) -> void:
 	var json_as_text = FileAccess.get_file_as_string(path)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = json_as_text
+	update_valid_json_for_schema_checker()
+	
 
 func validate_is_json(testtext) -> bool:
 	if testtext == "":

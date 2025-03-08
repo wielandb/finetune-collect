@@ -106,7 +106,6 @@ func _on_test_button_pressed() -> void:
 	for parameter in parameters_replace_vars.split("<|>"):
 		argumentslist.append(parameter) # TODO: Append an example value
 	var exit_code = OS.execute($FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer/ExecutablePathEdit.text, argumentslist, output)
-	# ""
 	print(exit_code)
 	print(output[0])
 

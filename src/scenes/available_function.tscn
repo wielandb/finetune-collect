@@ -97,6 +97,7 @@ visible = false
 layout_mode = 2
 
 [node name="TestButton" type="Button" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
+visible = false
 layout_mode = 2
 text = "Test"
 

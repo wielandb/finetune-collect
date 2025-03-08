@@ -223,7 +223,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="FunctionMessageContainer/function"]
 layout_mode = 2
-text = "MESSAGE_USE_WHICH_MESSAGE"
+text = "MESSAGE_USE_WHICH_FUNCTION_LABEL"
 
 [node name="FunctionNameChoiceButton" type="OptionButton" parent="FunctionMessageContainer/function"]
 layout_mode = 2
@@ -365,6 +365,7 @@ wrap_mode = 1
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
+[connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]

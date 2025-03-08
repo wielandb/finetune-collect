@@ -243,6 +243,53 @@ msgid "GENERIC_REFRESH"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+msgid "GENERIC_CANCEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_USER_NAMES"
 msgstr ""
 
@@ -272,12 +319,6 @@ msgstr ""
 msgid "Open a File"
 msgstr ""
 
-#: scenes/conversation_settings.tscn
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open"
-msgstr ""
-
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_CONVERSATION_NEW"
 msgstr ""
@@ -300,10 +341,6 @@ msgstr ""
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_EXPORT"
-msgstr ""
-
-#: scenes/fine_tune.tscn
-msgid "GENERIC_CANCEL"
 msgstr ""
 
 #: scenes/fine_tune.tscn

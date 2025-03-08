@@ -235,6 +235,7 @@ popup/item_1/id = 1
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SETTINGS_BATCH_CREATION_LOAD_FILES"
+icon = ExtResource("6_3r4bh")
 
 [node name="BatchCreationFileDialog" type="FileDialog" parent="VBoxContainer/BatchCreatonContainer"]
 title = "Open File(s)"

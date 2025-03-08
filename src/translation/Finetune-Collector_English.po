@@ -316,6 +316,7 @@ msgstr "Export Fine-Tune"
 msgid "GENERIC_SAVE"
 msgstr "Save"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Cancel"
@@ -490,7 +491,7 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
-msgstr "Message as JSON according to schema"
+msgstr "Message as JSON schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
@@ -579,4 +580,43 @@ msgstr "Open schema editor in new tab"
 #: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr "Not available in Web export"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr "Batch creation of new conversations"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr "Enables you to quickly import a load of files.\n"
+"For every file, a new conversation will be created with\n"
+"that file as the first message.\n"
+"You can load text files or images."
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr "System"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr "User"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr "Assistant"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr "Create new"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr "Append to existing"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr "Chose files to create conversations from"
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr "Open File(s)"
 

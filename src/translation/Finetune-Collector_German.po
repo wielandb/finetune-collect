@@ -328,6 +328,7 @@ msgstr "Exportiere Fine-Tune"
 msgid "GENERIC_SAVE"
 msgstr "Speichern"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Abbrechen"
@@ -508,7 +509,7 @@ msgstr "JSON Schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
-msgstr "Nachricht in JSON nach bestimmtem Schema"
+msgstr "Nachricht in JSON nach Schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
@@ -597,4 +598,43 @@ msgstr "Schema-Editor in neuem Tab öffnen"
 #: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr "Nicht im Web-Export verfügbar"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr "Serienerzeugung neuer Unterhaltungen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr "Damit kann eine große Menge Dateien importiert werden.\n"
+"Für jede Datei wird eine neue Unterhaltung erstellt,\n"
+"bei der die Datei die erste Nachricht ist.\n"
+"Es können Text- oder Bilddateien geladen werden."
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr "System"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr "Nutzer"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr "Assistent"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr "Neue erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr "An bestehende anhängen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr "Dateien wählen, um Unterhaltungen zu erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr "Datei(en) öffnen"
 

@@ -2,13 +2,17 @@ extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
 var default_schema_editor_url = "https://example.com/editor.php"
+var schema_loader_file_access_web = FileAccessWeb.new()
 
 func to_var():
 	var me = {}
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
 	me["globalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text
 	me["apikey"] = $VBoxContainer/APIKeySettingContainer/APIKeyEdit.text
-	me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected)
+	if $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count == 0:
+		me["modelChoice"] = ""
+	else:
+		me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected)
 	var availableModels = []
 	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
 		availableModels.append($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i))
@@ -49,6 +53,20 @@ func _ready() -> void:
 	openai.connect("models_received", models_received)
 	# TODO: This should only be called if an OpenAI API key is set
 	openai.get_models()
+	schema_loader_file_access_web.loaded.connect(_on_schema_file_loaded)
+	#schema_loader_file_access_web.progress.connect(_on_file_access_web_progress)
+	print("OSNAME")
+	print(OS.get_name())
+	match OS.get_name():
+		"Web":
+			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.disabled = true
+			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+
+
+func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
+	var txtdata = Marshalls.base64_to_utf8(base64_data)
+	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = txtdata
+	update_valid_json_for_schema_checker()
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
@@ -75,11 +93,18 @@ func _on_model_choice_refresh_button_pressed() -> void:
 
 
 func _on_schema_content_load_from_file_btn_pressed() -> void:
-	$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
+	match OS.get_name():
+		"Web":
+			schema_loader_file_access_web.open(".json, .txt, .jsonschema, .schema")
+		_:
+			$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
+
 
 func _on_load_schema_file_dialog_file_selected(path: String) -> void:
 	var json_as_text = FileAccess.get_file_as_string(path)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = json_as_text
+	update_valid_json_for_schema_checker()
+	
 
 func validate_is_json(testtext) -> bool:
 	if testtext == "":
@@ -102,3 +127,41 @@ func update_valid_json_for_schema_checker() -> bool:
 
 func _on_schema_content_editor_text_changed() -> void:
 	update_valid_json_for_schema_checker()
+
+# Batch Creation
+func create_image_message_dict_from_path(path):
+	# Returns a message var that contains that image as base64
+	var bin = FileAccess.get_file_as_bytes(path)
+	var base_64_data = Marshalls.raw_to_base64(bin)
+	return {
+		"role": "user",
+		"type": "Image",
+		"imageContent": base_64_data
+	}
+
+func create_text_message_dict_from_path(path):
+	var txtcontent = FileAccess.get_file_as_string(path)
+	return {
+		"role": "user",
+		"type": "Text",
+		"textContent": txtcontent
+	}
+
+
+func _on_batch_creation_button_pressed() -> void:
+	$VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog.visible = true
+
+func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> void:
+	var first_messages = []
+	var ft = get_node("/root/FineTune")
+	var userSelection = $VBoxContainer/BatchCreatonContainer/BatchCreationRoleChoiceBox.selected
+	var modeSelection = $VBoxContainer/BatchCreatonContainer/BatchCreationModeChoiceBox.selected
+	for file in paths:
+		if file.ends_with(".jpg") or file.ends_with(".jpeg"):
+			first_messages.append(create_image_message_dict_from_path(file))
+		if file.ends_with(".txt") or file.ends_with(".json"):
+			first_messages.append(create_text_message_dict_from_path(file))
+		if file.ends_with(".mp3") or file.ends_with(".wav") or file.ends_with(".aac"):
+			pass
+	for message in first_messages:
+			ft.create_new_conversation([message])

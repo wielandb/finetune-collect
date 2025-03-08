@@ -9,7 +9,10 @@ func to_var():
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
 	me["globalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text
 	me["apikey"] = $VBoxContainer/APIKeySettingContainer/APIKeyEdit.text
-	me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected)
+	if $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count == 0:
+		me["modelChoice"] = ""
+	else:
+		me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected)
 	var availableModels = []
 	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
 		availableModels.append($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i))
@@ -52,6 +55,13 @@ func _ready() -> void:
 	openai.get_models()
 	schema_loader_file_access_web.loaded.connect(_on_schema_file_loaded)
 	#schema_loader_file_access_web.progress.connect(_on_file_access_web_progress)
+	print("OSNAME")
+	print(OS.get_name())
+	match OS.get_name():
+		"Web":
+			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.disabled = true
+			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+
 
 func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
 	var txtdata = Marshalls.base64_to_utf8(base64_data)

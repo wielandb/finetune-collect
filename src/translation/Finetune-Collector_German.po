@@ -217,7 +217,6 @@ msgstr "Bild laden"
 msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr "Benutze Funktion"
 
-#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr "Welche?"
@@ -595,6 +594,9 @@ msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine As
 msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
 msgstr "Schema-Editor in neuem Tab öffnen"
 
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
 #: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr "Nicht im Web-Export verfügbar"
@@ -637,4 +639,55 @@ msgstr "Dateien wählen, um Unterhaltungen zu erzeugen"
 #: scenes/conversation_settings.tscn
 msgid "Open File(s)"
 msgstr "Datei(en) öffnen"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr "Lokale Funktionsausführung aktivieren"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr "Anwendungspfad"
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr "python"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr "Anwendungsparameter"
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr "C:\\Pfad\\zum\\skript.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr "Platziere alle Argumente für den Aufruf hier, getrennt mit \"<|>\" (ohne Anführungszeichen).\n"
+"z.B. für python sollte das erste Argument der Pfad zum Skript sein.\n"
+"Parameternamen, die in \"%\" eingeschlossen sind, werden zum Ausführungszeitpunkt durch den festgelgten Wert ausgetauscht, z.B. %parametername\"."
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr "Testen"
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr "Ein unerwarteter Fehler mit dem Parameter ist passiert! Bitte melde das!"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr "Keine Anwendung wurde definiert.\n"
+"In den Funktionsdefinitionen muss eine Anwendung definiert werden, damit das Funktioniert."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr "Alle Parameterwerte müssen gesetzt sein, damit das funktioniert."
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
+msgstr "Welche?"
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
+msgstr "Funktion ausführen"
 

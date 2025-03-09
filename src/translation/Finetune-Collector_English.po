@@ -217,7 +217,6 @@ msgstr "Load image"
 msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr "Use function"
 
-#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr "Which?"
@@ -577,6 +576,9 @@ msgstr "Direct Preference Optimization (DPO) only allows for one user and one as
 msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
 msgstr "Open schema editor in new tab"
 
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
 #: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr "Not available in Web export"
@@ -619,4 +621,55 @@ msgstr "Chose files to create conversations from"
 #: scenes/conversation_settings.tscn
 msgid "Open File(s)"
 msgstr "Open File(s)"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr "Enable local function execution"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr "Executable path"
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr "python"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr "Executable Parameters"
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr "Place all arguments after the executable here, separated by \"<|>\" (without quotation marks).\n"
+"E.g. for python, the first argument should be the path to the script. \n"
+"Parameter names enclosed in \"%\" will be replaced by their value on execution time, e.g. %parametername%."
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr "Test"
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr "An unexpected parameter error occured! Please report this!"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr "No executable was defined.\n"
+"An executable needs to be defined in the function definition for this to work."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr "All parameter values must be set for this to work."
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
+msgstr "Which?"
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
+msgstr "Execute function"
 

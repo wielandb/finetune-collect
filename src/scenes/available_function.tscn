@@ -88,9 +88,11 @@ size_flags_horizontal = 3
 placeholder_text = "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
 
 [node name="ExecutionParametersExplanationLabel" type="Label" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65834, 0.65834, 0.65834, 1)
 text = "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+autowrap_mode = 2
 
 [node name="ExecutionParametersReplacementShowcase" type="Label" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
 visible = false

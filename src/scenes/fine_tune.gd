@@ -29,10 +29,13 @@ var file_access_web = FileAccessWeb.new()
 
 func getRandomConvoID(length: int) -> String:
 	var ascii_letters_and_digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	var result = ""
-	for i in range(length):
-		result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
-	return result
+	while true:
+		var result = ""
+		for i in range(length):
+			result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
+		if result not in CONVERSATIONS:
+			return result
+	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -51,7 +54,6 @@ func getallnodes(node):
 		else:
 			nodeCollection.append(N)
 	return nodeCollection
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -312,20 +314,31 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	update_settings_internal()
 
 
-func _on_button_pressed() -> void:
+func create_new_conversation(msgs=[]):
 	# Generate a new ConvoID
 	var newID = getRandomConvoID(4)
+	CONVERSATIONS[newID] = msgs
+	# Update everything that needs to be updated
+	refresh_conversations_list()
+
+func append_to_conversation(convoid, msg={}):
+	if convoid in CONVERSATIONS:
+		CONVERSATIONS[convoid].append(msg)
+	else:
+		print("Error: No such conversation" + str(convoid))
+
+func _on_button_pressed() -> void:
 	# Create conversation if it does not exist
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 0:
-		CONVERSATIONS[newID] = []
+		create_new_conversation()
 	elif finetunetype == 1:
 		# DPO: There is only one kind of conversation we can have here, so we can also just poulate it
-		CONVERSATIONS[newID] = [
+		create_new_conversation([
 			{ "role": "user", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""},
 			{ "role": "assistant", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""}
-		]
-	refresh_conversations_list()
+			]
+		)
 	print(CONVERSATIONS)
 	
 
@@ -484,7 +497,7 @@ func create_jsonl_data_for_file():
 	var complete_jsonl_string = ""
 	match SETTINGS.get("finetuneType", 0):
 		0:
-			complete_jsonl_string = $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(FINETUNEDATA)
 		1:
 			complete_jsonl_string = $Exporter.convert_dpo_data(FINETUNEDATA)
 		2:
@@ -500,13 +513,59 @@ func _on_export_btn_pressed() -> void:
 			$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
 		"Web":
 			# When we are on web, we need to download the file directly
-			var complete_jsonl_string = create_jsonl_data_for_file()
+			var complete_jsonl_string = await create_jsonl_data_for_file()
 			var byte_array = complete_jsonl_string.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
 	
 
 func _on_export_file_dialog_file_selected(path: String) -> void:
-	var complete_jsonl_string = create_jsonl_data_for_file()
+	var complete_jsonl_string = await create_jsonl_data_for_file()
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()
+
+
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""

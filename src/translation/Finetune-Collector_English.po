@@ -124,11 +124,13 @@ msgstr "New conversation"
 msgid "FINETUNE_LOAD"
 msgstr "Load fine-tune file"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open a File"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open"
@@ -215,7 +217,6 @@ msgstr "Load image"
 msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr "Use function"
 
-#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr "Which?"
@@ -314,6 +315,7 @@ msgstr "Export Fine-Tune"
 msgid "GENERIC_SAVE"
 msgstr "Save"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Cancel"
@@ -402,4 +404,272 @@ msgstr "Non-preferred output"
 #: scenes/message.tscn
 msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
 msgstr "Preferred output"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION"
+msgstr "Add function"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
+msgstr "How to export images"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_TOOLTIP"
+msgstr "Defines how images will be exported into the fine-tuning file.\n"
+"\n"
+"Like specified: Always export the image like it was given (either as base64 or via URL)\n"
+"\n"
+"Always as base64: Convert URLs to base64 images when exporting\n"
+"\n"
+"Always as URLs: Upload base64 Images to a web server and only export the URLs"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_LIKE_SPECIFIED"
+msgstr "Like specified"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_BASE64"
+msgstr "Always as base64"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
+msgstr "Always as URLs"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_FILE"
+msgstr "Load image from file"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
+msgstr "Load image from URL"
+
+#: scenes/message.tscn
+msgid "URL or Base64"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
+msgstr "Add function parameter"
+
+#: scenes/message.tscn
+msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+msgstr "URL or Base64"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_USER_NAMES"
+msgstr "Use user names"
+
+#: scenes/message.tscn
+msgid "MESSAGES_USER_NAME"
+msgstr "User name"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL"
+msgstr "URL of the schema editor:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
+msgstr "The URL where an instance of the Schema-Editor-PHP-File from the repository is hosted. The developer also provides an instance. Keep in mind that your Data is transferred to the developer's server if you use the standard endpoint."
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHECK"
+msgstr "Check"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA"
+msgstr "JSON schema:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
+""
+msgstr "Load JSON schema from file"
+
+#: scenes/message.tscn
+msgid "JSON Schema"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
+msgstr "Message as JSON schema"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+msgstr "Open browser to edit message/data"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_POLLING"
+msgstr "Waiting for end of editing in browser..."
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
+msgstr "Reopen browser"
+
+#: scenes/conversation_settings.gd
+msgid "DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"
+msgstr "Not implemented yet"
+
+#: scenes/function_use_parameter.tscn
+msgid "DISABLED_EXPLANATION_FUNCTIONS_MUST_USE_ALL_PARAMETERS"
+msgstr "Functions must use all their parameters"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
+msgstr "The system user can't do that"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"
+msgstr "Only the assistant can use functions"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
+msgstr "Only the assistant can respond in JSON schema"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
+msgstr "The assistant can't send images"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
+msgstr "At least one function must be defined to use that"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
+msgstr "A valid JSON schema in the settings is needed to use that"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
+msgstr "Direct Prefernce Optimization (DPO) only supports text"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
+msgstr "OpenAI API key needed to be set in settings"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE"
+msgstr "At least one message is needed"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS"
+msgstr "Disabled as long as a function without a name exists"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS"
+msgstr "Disabled as long as a function without a description exists"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS"
+msgstr "Disabled as long as a function with a parameter without a name exists"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS"
+msgstr "Disabled as long as a function with a parameter without a description exists"
+
+#: scenes/messages_list.gd
+msgid "MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER"
+msgstr "Ask the OpenAI API for a completion"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
+msgstr "Direct Preference Optimization (DPO) only allows for one user and one assistant message"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr "Open schema editor in new tab"
+
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
+#: scenes/schema_edit_buttons_container.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
+msgstr "Not available in Web export"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr "Batch creation of new conversations"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr "Enables you to quickly import a load of files.\n"
+"For every file, a new conversation will be created with\n"
+"that file as the first message.\n"
+"You can load text files or images."
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr "System"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr "User"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr "Assistant"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr "Create new"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr "Append to existing"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr "Chose files to create conversations from"
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr "Open File(s)"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr "Enable local function execution"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr "Executable path"
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr "python"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr "Executable Parameters"
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr "Place all arguments after the executable here, separated by \"<|>\" (without quotation marks).\n"
+"E.g. for python, the first argument should be the path to the script. \n"
+"Parameter names enclosed in \"%\" will be replaced by their value on execution time, e.g. %parametername%."
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr "Test"
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr "An unexpected parameter error occured! Please report this!"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr "No executable was defined.\n"
+"An executable needs to be defined in the function definition for this to work."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr "All parameter values must be set for this to work."
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
+msgstr "Which?"
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
+msgstr "Execute function"
 

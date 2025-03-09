@@ -10,6 +10,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+func url_to_base64(url: String):
+	var httpreqObj = $HTTPRequest
+	httpreqObj.request(url)
+	var response = await httpreqObj.request_completed
+	var body = response[3]
+	var base_64_data = Marshalls.raw_to_base64(body)
+	return base_64_data
+	
+
 func filter_function_map_only_keep_array(function_map, keep_functions_name_array):
 	var function_map_tmp = function_map
 	for key in function_map_tmp:
@@ -98,19 +107,39 @@ func convert_message_to_openai_format(message, function_map=null):
 	}
 	# Text message
 	if message['type'] == 'Text':
-		return {
+		var toAddDict ={
 			'role': message['role'],
 			'content': message['textContent']
 		}
+		if message.get("userName", "") != "":
+			toAddDict["name"] = message.get("userName", "")
+		return toAddDict
 	# Image message
 	elif message['type'] == 'Image':
+		var image_url_data = ""
+		if getSettings().get('exportImagesHow', 0) == 0:
+			if isImageURL(message['imageContent']):
+				image_url_data = message['imageContent']
+			else:
+				# TODO: Get if it is really a jpeg or a png we are laoding
+				image_url_data = "data:image/jpeg;base64," + message['imageContent']
+		elif getSettings().get('exportImagesHow', 0) == 1:
+			var imageurl = message['imageContent'] 
+			var base64_data = await url_to_base64(imageurl)
+			match getImageType(imageurl):
+				"png":
+					image_url_data = "data:image/png;base64," + base64_data
+				"jpeg", "jpg":
+					image_url_data = "data:image/jpeg;base64," + base64_data
+				"":
+					push_error("Invalid file type")
 		return {
 			'role': message['role'],
 			'content': [
 				{
 					'type': 'image_url',
 					'image_url': {
-						'url': "data:image/jpeg;base64," + message['imageContent'],
+						'url': image_url_data,
 						'detail': image_detail_map[message.get("imageDetail", 0)]
 					}
 				}
@@ -155,6 +184,12 @@ func convert_message_to_openai_format(message, function_map=null):
 			}
 			return [tool_call, tool_response]
 		return tool_call
+	elif message['type'] == 'JSON Schema':
+		var toAddDict ={
+			'role': message['role'],
+			'content': message['jsonSchemaValue']
+		}
+		return toAddDict
 	return null
 
 func convert_conversation_to_openai_format(conversation, function_map=null):
@@ -164,7 +199,7 @@ func convert_conversation_to_openai_format(conversation, function_map=null):
 	# :return: List of converted messages with optional system message
 	var converted_messages = []
 	for message in conversation:
-		var converted = convert_message_to_openai_format(message, function_map)
+		var converted = await convert_message_to_openai_format(message, function_map)
 		
 		# Handle cases where a single function message might return multiple messages
 		if converted is Array:
@@ -260,7 +295,7 @@ func convert_fine_tuning_data(ftdata):
 					'content': system_message
 				})
 		# Convert conversation
-		processed_conversation += convert_conversation_to_openai_format(conversation, function_map)
+		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools
 		var output_entry = {
 			'messages': processed_conversation
@@ -288,3 +323,49 @@ func convert_fine_tuning_data(ftdata):
 			output_entry['tools'] = tools
 		jsonl_file_string += JSON.stringify(output_entry) + "\n"
 	return jsonl_file_string
+
+
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""

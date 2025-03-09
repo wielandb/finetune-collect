@@ -4,6 +4,8 @@ extends HBoxContainer
 @onready var imageTexture = $ImageMessageContainer/TextureRect
 
 var image_access_web = FileAccessWeb.new()
+var token = "" # The token for the schema editor for this message
+var edit_message_url = ""
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -38,17 +40,20 @@ func to_var():
 	#		tmpFunctionResults.append(result.to_var())
 	me["functionResults"] = $FunctionMessageContainer/FunctionUseResultText.text
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
+	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
+	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
 	return me
 
 func from_var(data):
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	var useUserNames = get_node("/root/FineTune").SETTINGS.get("useUserNames", false)
 	print("Building from var")
 	print(data)
-	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data["role"]))
+	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
-	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data["type"]))
+	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data.get("type", "Text")))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
-	$TextMessageContainer/Message.text = data["textContent"]
+	$TextMessageContainer/Message.text = data.get("textContent", "")
 	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data.get("unpreferredTextContent", "")
 	$TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text = data.get("preferredTextContent", "")
 	# Set the correct kind of message visible
@@ -64,27 +69,39 @@ func from_var(data):
 				$TextMessageContainer/Message.visible = true
 		2:
 			pass
-	$ImageMessageContainer/Base64ImageEdit.text = data["imageContent"]
+	$ImageMessageContainer/Base64ImageEdit.text = data.get("imageContent", "")
 	# If not empty, create the image from the base64
 	if $ImageMessageContainer/Base64ImageEdit.text != "":
-		base64_to_image(imageTexture, $ImageMessageContainer/Base64ImageEdit.text)
+		if isImageURL($ImageMessageContainer/Base64ImageEdit.text):
+			load_image_container_from_url($ImageMessageContainer/Base64ImageEdit.text)
+		else:
+			base64_to_image(imageTexture, $ImageMessageContainer/Base64ImageEdit.text)
 	if data.has("imageDetail"):
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(data["imageDetail"])
 	else: # TODO: Add option what the standard quality should be
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(0)
 	# Now everything regarding functions
-	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
+	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data.get("functionName", "")))
 	#if data["functionName"] != "":
 	#	_on_function_name_choice_button_item_selected(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data["functionName"]))
-	for d in data["functionParameters"]:
+	for d in data.get("functionParameters", []):
 		var parameterInstance = function_use_parameters_scene.instantiate()
 		$FunctionMessageContainer.add_child(parameterInstance)
 		var parameterSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel.get_index()
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
 		parameterInstance.from_var(d)
-	$FunctionMessageContainer/FunctionUseResultText.text = str(data["functionResults"])
+	$FunctionMessageContainer/FunctionUseResultText.text = str(data.get("functionResults", ""))
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
+	check_if_function_button_should_be_visible_or_disabled()
 	_on_check_what_text_message_should_be_visisble()
+	# All about user names
+	$MessageSettingsContainer/UserNameEdit.visible = false
+	$MessageSettingsContainer/UserNameEdit.text = data.get("userName", "")
+	if data.get("role", "user") == "user":
+		if useUserNames:
+			$MessageSettingsContainer/UserNameEdit.visible = true
+	# JSON Schema
+	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)
@@ -128,6 +145,7 @@ func _on_message_type_item_selected(index: int) -> void:
 	$TextMessageContainer.visible = false
 	$ImageMessageContainer.visible = false
 	$FunctionMessageContainer.visible = false
+	$SchemaMessageContainer.visible = false
 	match index:
 		0:
 			$TextMessageContainer.visible = true
@@ -135,6 +153,8 @@ func _on_message_type_item_selected(index: int) -> void:
 			$ImageMessageContainer.visible = true
 		2:
 			$FunctionMessageContainer.visible = true
+		3:
+			$SchemaMessageContainer.visible = true
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -182,23 +202,44 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_disabled(0, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
+	$MessageSettingsContainer/MessageType.set_item_disabled(3, true)
+	$MessageSettingsContainer/MessageType.set_item_tooltip(0, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(1, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(2, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(3, "")
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
 		0:
 			match index:
 				0:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 				1:
 					$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"))
 				2:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"))
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
+					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
+					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
+						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"))
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+			$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
 		2:
 			pass
 			
@@ -254,7 +295,7 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 					newScene.get_node("FunctionUseParameterChoice").add_item(pv)
 			else:
 				newScene.get_node("FunctionUseParameterEdit").visible = true
-
+	check_if_function_button_should_be_visible_or_disabled()
 	print("-------------------")
 
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert
@@ -295,3 +336,251 @@ func _on_delete_button_mouse_entered() -> void:
 
 func _on_delete_button_mouse_exited() -> void:
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcan.png")
+
+
+func _on_load_image_url_button_pressed() -> void:
+	load_image_container_from_url($ImageMessageContainer/Base64ImageEdit.text)
+	
+func load_image_container_from_url(url):
+	$ImageMessageContainer/TextureRect.texture = load("res://icons/image-sync-custom.png")
+	var http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.request_completed.connect(self._image_http_request_completed)
+	
+	var urlToBeLoadedFrom = url
+	if not isImageURL(urlToBeLoadedFrom):
+		print("Not a image url to load...")
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		return
+	# Perform the HTTP request. The URL below returns a PNG image as of writing.
+	var error = http_request.request(urlToBeLoadedFrom)
+	if error != OK:
+		push_error("An error occurred in the HTTP request.")
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+
+# Called when the HTTP request is completed.
+func _image_http_request_completed(result, response_code, headers, body):
+	if result != HTTPRequest.RESULT_SUCCESS:
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		push_error("Image couldn't be downloaded. Try a different image.")
+
+	var image = Image.new()
+	var imageType = getImageType($ImageMessageContainer/Base64ImageEdit.text)
+	var error = false
+	if imageType == "jpg":
+		error = image.load_jpg_from_buffer(body)
+	elif imageType == "png":
+		error = image.load_png_from_buffer(body)
+	if error != OK:
+		push_error("Couldn't load the image.")
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+
+
+	var texture = ImageTexture.create_from_image(image)
+	$ImageMessageContainer/TextureRect.texture = texture
+	
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""
+
+
+func _on_schema_edit_button_pressed() -> void:
+	# POST the Schema and The Data we already have to the editor URL to retrieve a token
+	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
+	var data_to_send = {"json_data": existing_json_data, "json_schema": json_schema_string}
+	print("Sending data:")
+	print(data_to_send)
+	var json_to_send = JSON.stringify(data_to_send)
+	var custom_headers := PackedStringArray()
+	custom_headers.append("Content-Type: application/json")
+	print("json_to_send")
+	print(json_to_send)
+	$SchemaMessageContainer/InitEditingRequestToken.request(editor_url, custom_headers, HTTPClient.METHOD_POST, json_to_send)
+	print("Requested!")
+
+func _on_init_editing_request_token_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	print(result)
+	print(response_code)
+	print(headers)
+	print(body)
+	if response_code == 200:
+		token = body.get_string_from_utf8()
+		print(token)
+		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+		edit_message_url = editor_url + "?token=" + token
+		if OS.get_name() != "Web":
+			OS.shell_open(edit_message_url)
+		else:
+			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.uri = edit_message_url
+	$SchemaMessageContainer/PollingTimer.start()
+	$SchemaMessageContainer/SchemaMessagePolling.visible = true
+	# Make the Desktop "Reopen Browser" button and the Web-Export "Open Browser" Link invisible and make visible what needs to be depending on platform
+	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = false
+	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = false
+	if OS.get_name() != "Web":
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = true
+	else:
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = true
+	$SchemaMessageContainer/SchemaEdit.visible = false
+	$SchemaMessageContainer/SchemaEditButtonsContainer.visible = false
+
+func _on_polling_timer_timeout() -> void:
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	# Start a HTTP Request to Poll for completion of the edit from users side
+	$SchemaMessageContainer/PollForCompletion.request(editor_url + "?poll=1&token=" + token, [], HTTPClient.METHOD_GET, "")
+
+func _on_poll_for_completion_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
+	if response_code == 200:
+		var json_data = JSON.parse_string(body.get_string_from_utf8())
+		if json_data["ready"] == false:
+			return
+		elif json_data["ready"] == true:
+			$SchemaMessageContainer/SchemaEdit.text = json_data["json_data"]
+			$SchemaMessageContainer/PollingTimer.stop()
+			$SchemaMessageContainer/SchemaMessagePolling.visible = false
+			$SchemaMessageContainer/SchemaEdit.visible = true
+			$SchemaMessageContainer/SchemaEditButtonsContainer.visible = true
+
+
+func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:
+	OS.shell_open(edit_message_url)
+
+## Function Execution
+func get_current_function_parameter_names():
+	# returns a list of names of the parameters of the function currently chosen
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	return get_node("/root/FineTune").get_available_parameter_names_for_function(my_function_name)
+
+func get_current_value_for_function_parameter_name(parametername):
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	var thisparameterdict = {}
+	for parameter in $FunctionMessageContainer.get_children():
+		if parameter.is_in_group("function_use_parameter"):
+			thisparameterdict = parameter.to_var()
+			if thisparameterdict["name"] == parametername:
+				break
+	var thisparameterdefdict = {}
+	for parameter in fdefdict["parameters"]:
+		if parameter["name"] == parametername:
+			thisparameterdefdict = parameter
+	# First, check string:
+	if thisparameterdefdict["type"] == "String" and thisparameterdefdict["isEnum"] == false:
+		return thisparameterdict["parameterValueText"]
+	# Then, check string choice
+	if thisparameterdefdict["type"] == "String" and thisparameterdefdict["isEnum"] == true:
+		return thisparameterdict["parameterValueChoice"]
+	# If its none, retun the number (problem: We cannot check the existence of the number in any meaningful way, because it is 0.0
+	if thisparameterdefdict["type"] == "Number":
+		return thisparameterdict["parameterValueNumber"]
+	return tr("UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS")
+
+func get_function_defintion_dict(fname):
+	var allfunctiondefs = get_node("/root/FineTune").FUNCTIONS
+	for fdef in allfunctiondefs:
+		if fdef["name"] == fname:
+			return fdef
+
+func _on_function_execution_button_pressed() -> void:
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	var output = []
+	var executable_path = fdefdict["functionExecutionExecutable"]
+	var parameters_raw_string = fdefdict["functionExecutionArgumentsString"]
+	var parameters_replace_vars = parameters_raw_string
+	print("Checking parameters")
+	for parameterName in get_current_function_parameter_names():
+		parameters_replace_vars = parameters_replace_vars.replace("%" + str(parameterName) + "%", get_current_value_for_function_parameter_name(parameterName))
+	var argumentslist = []
+	for parameter in parameters_replace_vars.split("<|>"):
+		argumentslist.append(parameter)
+	var exit_code = OS.execute(executable_path, argumentslist, output)
+	var outputstring = output[0]
+	$FunctionMessageContainer/FunctionUseResultText.text = outputstring
+
+func check_if_function_button_should_be_visible_or_disabled():
+	if not $FunctionMessageContainer.visible:
+		return
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	print("Check if execution should be...")
+	print(my_function_name)
+	if my_function_name == "":
+		$FunctionMessageContainer/FunctionExecutionButton.visible = false
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		return
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	if fdefdict["functionExecutionEnabled"]:
+		$FunctionMessageContainer/FunctionExecutionButton.visible = true
+	else:
+		$FunctionMessageContainer/FunctionExecutionButton.visible = false
+		return
+	# Now, check if the button should be visible, yes, but should it be disabled because something is wrong?
+	if fdefdict["functionExecutionExecutable"] == "":
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED")
+		return
+	# Check that none of the parameters are empty
+	for parameterName in get_current_function_parameter_names():
+		print("Checking parameter values set for")
+		print("Parameter Name")
+		print(parameterName)
+		print("Value:")
+		print(get_current_value_for_function_parameter_name(parameterName))
+		if str(get_current_value_for_function_parameter_name(parameterName)) == "":
+			$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+			$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET")
+			return
+	if OS.get_name() == "Web":
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+		return
+	$FunctionMessageContainer/FunctionExecutionButton.visible = true
+	$FunctionMessageContainer/FunctionExecutionButton.disabled = false
+	# No check for the argument string, it is technically not nessecary
+	
+
+func _on_function_message_container_mouse_entered() -> void:
+	check_if_function_button_should_be_visible_or_disabled()

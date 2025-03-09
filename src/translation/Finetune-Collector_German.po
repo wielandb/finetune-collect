@@ -124,11 +124,13 @@ msgstr "Neue Unterhaltung"
 msgid "FINETUNE_LOAD"
 msgstr "Lade Fine-Tune"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open a File"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open"
@@ -215,7 +217,6 @@ msgstr "Bild laden"
 msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr "Benutze Funktion"
 
-#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr "Welche?"
@@ -292,11 +293,20 @@ msgstr "Alle immer einschließen, die mindestens ein mal genutzt wurden"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT_TOOLTIP"
-msgstr "Für jede Unterhaltung muss dem Modell die Menge an verfügbaren Funktionen mitgeteilt werden. Um Tokens im Training zu sparen bietet es sich an, nur die Funktionen als Verfügbar mitzugeben, die auch in der  jeweiligen Konversation verwendet wurden. Das kann allerdings zu falschen Trainingsergebnissen führen, insbesondere wenn das Ziel ist dem Modell beizubringen, wann keine Funktion genutzt werden sollte."
+msgstr "Für jede Unterhaltung muss dem Modell die Menge an\n"
+"verfügbaren Funktionen mitgeteilt werden. Um Tokens\n"
+"im Training zu sparen bietet es sich an, nur die Funktionen\n"
+"als Verfügbar mitzugeben, die auch in der  jeweiligen\n"
+"Konversation verwendet wurden. Das kann allerdings\n"
+"zu falschen Trainingsergebnissen führen, insbesondere\n"
+"wenn das Ziel ist dem Modell beizubringen, wann keine\n"
+"Funktion genutzt werden sollte."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_API_KEY_TOOLTIP"
-msgstr "Dein OpenAI API Schlüssel. Wird benutzt um vervollständigungen zu erhalten und um die Liste der verfügbaren Modelle abzurufen."
+msgstr "Dein OpenAI API Schlüssel.\n"
+"Wird benutzt um vervollständigungen zu erhalten\n"
+"und um die Liste der verfügbaren Modelle abzurufen."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
@@ -304,7 +314,10 @@ msgstr "Modell für Vervollständigungen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
-msgstr "Das Modell das für Vervollständigungen genutzt werden soll. Beachte dass obwohl alle Modelle auf die du Zugriff hast hier aufgelistet sind, nur die wenigsten für diese Funktion genutzt werden können."
+msgstr "Das Modell das für Vervollständigungen genutzt werden soll.\n"
+"Beachte dass obwohl alle Modelle auf die du Zugriff hast hier\n"
+"aufgelistet sind, nur die wenigsten für diese Funktion genutzt\n"
+"werden können."
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_EXPORT"
@@ -314,13 +327,14 @@ msgstr "Exportiere Fine-Tune"
 msgid "GENERIC_SAVE"
 msgstr "Speichern"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Abbrechen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TOOLTIP"
-msgstr "Wenn diese aktiviert, wird diese Nachricht\n"
+msgstr "Wenn aktiviert, wird diese Nachricht\n"
 "als Systemnachricht allen Konversationen beim\n"
 "Export und bei der automatischen Vervollständigung\n"
 "vorgehangen. Nützlich, wenn eine Systemnachricht für\n"
@@ -336,7 +350,10 @@ msgstr "Bild-Detailgrad"
 
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_DETAIL_TOOLTIP"
-msgstr "Bestimmt wie hoch die Qualität des Bildes ist, die das Modell zu sehen bekommt. Niedrige Qualität verbraucht weniger Tokens, aber das Modell kann dann eventuell wichtige Details nicht sehen."
+msgstr "Bestimmt wie hoch die Qualität des Bildes ist, die das Modell\n"
+"zu sehen bekommt. Niedrige Qualität verbraucht weniger\n"
+"Tokens, aber das Modell kann dann eventuell wichtige Details\n"
+"nicht sehen."
 
 #: scenes/message.tscn
 msgid "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
@@ -405,4 +422,272 @@ msgstr "nicht-bevorzugte Antwort"
 #: scenes/message.tscn
 msgid "MESSAGES_DPO_PREFERRED_MSG_LABEL"
 msgstr "bevorzugte Antwort"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION"
+msgstr "Funktion hinzufügen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
+msgstr "Bilder exportieren als..."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_TOOLTIP"
+msgstr "Definiert, wie Bilder in die fine-tuning Datei exportiert werden.\n"
+"\n"
+"Wie gegeben: Die Bilder immer so exportieren, wie sie auch gegeben worden (entweder als base64 oder als URL)\n"
+"\n"
+"Immer als base64: Konvertiere URLs zu base64 Bildern beim Export\n"
+"\n"
+"Immer als URLs: Lade base64-Bilder auf einen Webserver hoch und exportiere nur die URLs"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_LIKE_SPECIFIED"
+msgstr "Wie gegeben"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_BASE64"
+msgstr "Immer als base64"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
+msgstr "Immer als URLs"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_FILE"
+msgstr "Bild von Datei laden"
+
+#: scenes/message.tscn
+msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
+msgstr "Bild von URL laden"
+
+#: scenes/message.tscn
+msgid "URL or Base64"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
+msgstr "Neuer Funktionsparameter"
+
+#: scenes/message.tscn
+msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+msgstr "URL oder Base64"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_USER_NAMES"
+msgstr "Nutzernamen benutzen"
+
+#: scenes/message.tscn
+msgid "MESSAGES_USER_NAME"
+msgstr "Nutzername"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL"
+msgstr "URL des Schema-Editors:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
+msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei, die im GitHub zu finden ist. Es gibt eine bereitgestellte Instanz vom Entwickler. Bedenke, dass, wenn du diese benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHECK"
+msgstr "Prüfen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA"
+msgstr "JSON-Schema"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
+""
+msgstr "JSON-Schema aus Datei laden"
+
+#: scenes/message.tscn
+msgid "JSON Schema"
+msgstr "JSON Schema"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
+msgstr "Nachricht in JSON nach Schema"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+msgstr "Browser öffnen, um Nachricht/Daten zu bearbeiten"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_POLLING"
+msgstr "Warte auf Abschluss der Bearbeitung im Browser"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
+msgstr "Browser erneut öffnen"
+
+#: scenes/conversation_settings.gd
+msgid "DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"
+msgstr "Noch nicht implementiert"
+
+#: scenes/function_use_parameter.tscn
+msgid "DISABLED_EXPLANATION_FUNCTIONS_MUST_USE_ALL_PARAMETERS"
+msgstr "Funktionen müssen all ihre Parameter benutzen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
+msgstr "Der System-Nutzer kann das nicht tun"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"
+msgstr "Nur der Assistent kann Funktionen benutzen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
+msgstr "Nur der Assistent kann in JSON Schema antworten"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
+msgstr "Der Assistent kann keine Bilder senden"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
+msgstr "Mindestens eine Funktion muss definiert sein um das benutzen zu können"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
+msgstr "Ein valides JSON Schema muss in den Einstellungen hinterlegt werden um das benutzen zu können"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
+msgstr "Direct Preference Optimization (DPO) unterstüzt nur Text"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
+msgstr "Ein OpenAI API Key muss in den Einstellungen hinterlegt werden"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE"
+msgstr "Mindestens eine Nachricht wird benötigt"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS"
+msgstr "Deaktiviert solange eine Funktion ohne Name existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS"
+msgstr "Deaktiviert solange eine Funktion ohne Beschreibung existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS"
+msgstr "Deaktiviert solange eine Funktion mit einem Parameter ohne Name existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS"
+msgstr "Deaktiviert solange eine Funktion mit einem Parameter ohne Beschreibung existiert"
+
+#: scenes/messages_list.gd
+msgid "MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER"
+msgstr "Die OpenAI API nach einer Vervollständigung fragen"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
+msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine Assistenten-Nachricht"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr "Schema-Editor in neuem Tab öffnen"
+
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
+#: scenes/schema_edit_buttons_container.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
+msgstr "Nicht im Web-Export verfügbar"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr "Serienerzeugung neuer Unterhaltungen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr "Damit kann eine große Menge Dateien importiert werden.\n"
+"Für jede Datei wird eine neue Unterhaltung erstellt,\n"
+"bei der die Datei die erste Nachricht ist.\n"
+"Es können Text- oder Bilddateien geladen werden."
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr "System"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr "Nutzer"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr "Assistent"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr "Neue erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr "An bestehende anhängen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr "Dateien wählen, um Unterhaltungen zu erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr "Datei(en) öffnen"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr "Lokale Funktionsausführung aktivieren"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr "Anwendungspfad"
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr "python"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr "Anwendungsparameter"
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr "C:\\Pfad\\zum\\skript.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr "Platziere alle Argumente für den Aufruf hier, getrennt mit \"<|>\" (ohne Anführungszeichen).\n"
+"z.B. für python sollte das erste Argument der Pfad zum Skript sein.\n"
+"Parameternamen, die in \"%\" eingeschlossen sind, werden zum Ausführungszeitpunkt durch den festgelgten Wert ausgetauscht, z.B. %parametername\"."
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr "Testen"
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr "Ein unerwarteter Fehler mit dem Parameter ist passiert! Bitte melde das!"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr "Keine Anwendung wurde definiert.\n"
+"In den Funktionsdefinitionen muss eine Anwendung definiert werden, damit das Funktioniert."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr "Alle Parameterwerte müssen gesetzt sein, damit das funktioniert."
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
+msgstr "Welche?"
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
+msgstr "Funktion ausführen"
 

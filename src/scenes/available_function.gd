@@ -13,6 +13,9 @@ func to_var():
 		if parameterContainer.is_in_group("available_parameter"):
 			tmpParameters.append(parameterContainer.to_var())
 	me["parameters"] = tmpParameters
+	me["functionExecutionEnabled"] = $FunctionExecutionSettings/FunctionExecutionEnabled.button_pressed
+	me["functionExecutionExecutable"] = $FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer/ExecutablePathEdit.text
+	me["functionExecutionArgumentsString"] =  $FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersContainer/ExecutionParametersEdit.text
 	return me
 	
 func from_var(data):
@@ -25,7 +28,11 @@ func from_var(data):
 		parameter_instance.add_to_group("available_parameter")
 		parameter_instance.from_var(parameter)
 		move_child(parameter_instance, parametersLabelIx + 1)
-	
+	$FunctionExecutionSettings/FunctionExecutionEnabled.button_pressed = data.get("functionExecutionEnabled", false)
+	$FunctionExecutionSettings/FunctionExecutionConfiguration.visible = data.get("functionExecutionEnabled", false)
+	$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer/ExecutablePathEdit.text = data.get("functionExecutionExecutable", "")
+	$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersContainer/ExecutionParametersEdit.text = data.get("functionExecutionArgumentsString", "")
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -39,11 +46,13 @@ func _process(delta: float) -> void:
 func _on_add_parameter_button_pressed() -> void:
 	var AddParameterButton = $AddParameterButton
 	var DelteFnBtn = $DeleteFunctionButton
+	var fesettings = $FunctionExecutionSettings
 	var newParameter = PARAMETER_SCENE.instantiate()
 	newParameter.add_to_group("available_parameter")
 	add_child(newParameter)
 	move_child(DelteFnBtn, -1)
-	move_child(AddParameterButton, -2)
+	move_child(fesettings, -2)
+	move_child(AddParameterButton, -3)
 	
 
 
@@ -58,3 +67,48 @@ func update_available_functions_global():
 func _on_function_name_edit_text_changed(new_text: String) -> void:
 	update_available_functions_global()
 	
+func self_has_name() -> bool:
+	if $FunctionNameContainer/FunctionNameEdit.text == "":
+		return false
+	return true
+
+static func find_children_in_group(parent: Node, group: String, recursive: bool = false):
+	var output: Array[Node] = []
+	for child in parent.get_children() :
+		if child.is_in_group(group) :
+			output.append(child)
+	if recursive :
+		for child in parent.get_children() :
+			var recursive_output =  find_children_in_group(child, group, recursive)
+			for recursive_child in recursive_output :
+				output.append(recursive_child)
+	return output
+
+func self_get_parameter_names():
+	var parameter_names = []
+	for paramScene in $".".find_children_in_group($".", "available_parameter"):
+		var pn = paramScene.get_node("ParameterNameEdit").text
+		parameter_names.append(pn)
+	return parameter_names
+		
+
+func _on_test_button_pressed() -> void:
+	var output = []
+	var parameters_raw_string = $FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersContainer/ExecutionParametersEdit.text
+	var parameters_replace_vars = parameters_raw_string
+	print("Checking parameters")
+	for parameterName in self_get_parameter_names():
+		print(parameterName)
+		print(parameters_replace_vars.contains("%"))
+		print(parameters_replace_vars.contains("%"+ str(parameterName)))
+		parameters_replace_vars = parameters_replace_vars.replace("%" + str(parameterName) + "%", "TESTVAR")
+	var argumentslist = []
+	for parameter in parameters_replace_vars.split("<|>"):
+		argumentslist.append(parameter) # TODO: Append an example value
+	var exit_code = OS.execute($FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer/ExecutablePathEdit.text, argumentslist, output)
+	print(exit_code)
+	print(output[0])
+
+
+func _on_function_execution_enabled_toggled(toggled_on: bool) -> void:
+	$FunctionExecutionSettings/FunctionExecutionConfiguration.visible = toggled_on

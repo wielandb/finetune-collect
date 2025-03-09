@@ -1,10 +1,22 @@
-[gd_scene load_steps=6 format=3 uid="uid://d3c68j8erdmn8"]
+[gd_scene load_steps=9 format=3 uid="uid://d3c68j8erdmn8"]
 
-[ext_resource type="Script" path="res://scenes/conversation_settings.gd" id="1_efb5c"]
+[ext_resource type="Script" uid="uid://blnyvfloajj2y" path="res://scenes/conversation_settings.gd" id="1_efb5c"]
 [ext_resource type="Texture2D" uid="uid://ddwylhoqb77rg" path="res://icons/message-cog-custom.png" id="2_fd7a4"]
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="3_5hf33"]
 [ext_resource type="Texture2D" uid="uid://bxxyp65j3tavt" path="res://icons/help-circle-outline-custom (1).png" id="3_kcvkw"]
 [ext_resource type="Texture2D" uid="uid://cq6q4oktrlqsh" path="res://icons/cloud-refresh-variant-custom.png" id="3_swtgl"]
+[ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="6_3r4bh"]
+[ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="6_uqjdu"]
+
+[sub_resource type="GDScript" id="GDScript_qyukn"]
+script/source = "extends Button
+
+func _ready() -> void:
+	match OS.get_name():
+		\"Web\":
+			disabled = true
+			tooltip_text = tr(\"DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB\")
+"
 
 [node name="ConversationSettings" type="ScrollContainer"]
 anchors_preset = 15
@@ -49,6 +61,7 @@ text = "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TITLE"
 horizontal_alignment = 1
 
 [node name="GlobalSystemMessageTextEdit" type="TextEdit" parent="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer"]
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -93,9 +106,36 @@ size_flags_horizontal = 3
 selected = 0
 item_count = 3
 popup/item_0/text = "SETTINGS_FINETUNE_TYPE_OPTION_SUPERVISED"
+popup/item_0/id = 0
 popup/item_1/text = "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
 popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
+popup/item_2/id = 2
+popup/item_2/disabled = true
+
+[node name="ExportImagesHowContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ExportImagesHowLabel" type="Label" parent="VBoxContainer/ExportImagesHowContainer"]
+layout_mode = 2
+text = "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
+
+[node name="ExportImagesHowHint" type="TextureRect" parent="VBoxContainer/ExportImagesHowContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_EXPORT_IMAGES_HOW_TOOLTIP"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ExportImagesHowOptionButton" type="OptionButton" parent="VBoxContainer/ExportImagesHowContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "SETTINGS_EXPORT_IMAGES_HOW_OPTION_LIKE_SPECIFIED"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_EXPORT_IMAGES_HOW_OPTION_BASE64"
+popup/item_1/id = 1
+popup/item_2/text = "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
 popup/item_2/id = 2
 popup/item_2/disabled = true
 
@@ -118,6 +158,7 @@ size_flags_horizontal = 3
 selected = 0
 item_count = 4
 popup/item_0/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
+popup/item_0/id = 0
 popup/item_1/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ONLY_IN_USED_CONVERSATIONS"
 popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_ONCE_USED"
@@ -165,9 +206,127 @@ layout_mode = 2
 text = "GENERIC_REFRESH"
 icon = ExtResource("3_swtgl")
 
+[node name="BatchCreatonContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="BatchCreationLabel" type="Label" parent="VBoxContainer/BatchCreatonContainer"]
+layout_mode = 2
+text = "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+
+[node name="BatchCreationHint" type="TextureRect" parent="VBoxContainer/BatchCreatonContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_BATCH_CREATION_TOOLTIP"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="BatchCreationRoleChoiceBox" type="OptionButton" parent="VBoxContainer/BatchCreatonContainer"]
+visible = false
+layout_mode = 2
+selected = 1
+item_count = 3
+popup/item_0/text = "ROLE_SYSTEM"
+popup/item_0/id = 0
+popup/item_1/text = "ROLE_USER"
+popup/item_1/id = 1
+popup/item_2/text = "ROLE_ASSISTANT"
+popup/item_2/id = 2
+
+[node name="BatchCreationModeChoiceBox" type="OptionButton" parent="VBoxContainer/BatchCreatonContainer"]
+visible = false
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "SETTINGS_BATCH_CREATION_MODE_NEW"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_BATCH_CREATION_MODE_APPEND"
+popup/item_1/id = 1
+
+[node name="BatchCreationButton" type="Button" parent="VBoxContainer/BatchCreatonContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SETTINGS_BATCH_CREATION_LOAD_FILES"
+icon = ExtResource("6_3r4bh")
+script = SubResource("GDScript_qyukn")
+
+[node name="BatchCreationFileDialog" type="FileDialog" parent="VBoxContainer/BatchCreatonContainer"]
+title = "Open File(s)"
+ok_button_text = "Open"
+cancel_button_text = "GENERIC_CANCEL"
+file_mode = 1
+access = 2
+use_native_dialog = true
+
+[node name="UseUserNamesCheckbox" type="CheckBox" parent="VBoxContainer"]
+layout_mode = 2
+text = "SETTINGS_USE_USER_NAMES"
+
+[node name="SchemaEditorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SchemaEditorURLLabel" type="Label" parent="VBoxContainer/SchemaEditorURLContainer"]
+layout_mode = 2
+text = "SETTINGS_SCHEMA_EDITOR_URL"
+
+[node name="SchemaEditorURLHint" type="TextureRect" parent="VBoxContainer/SchemaEditorURLContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_SCHEMA_EDITOR_URL_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="SchemaEditorURLEdit" type="LineEdit" parent="VBoxContainer/SchemaEditorURLContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "https://www.haukauntrie.de/online/api/schema-editor/"
+
+[node name="SchemaEditorURLRefreshButton" type="Button" parent="VBoxContainer/SchemaEditorURLContainer"]
+layout_mode = 2
+text = "GENERIC_CHECK"
+icon = ExtResource("3_swtgl")
+
+[node name="SchemaContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SchemaLabel" type="Label" parent="VBoxContainer/SchemaContainer"]
+layout_mode = 2
+text = "SETTINGS_SCHEMA"
+
+[node name="SchemaValidCheckImg" type="TextureRect" parent="VBoxContainer/SchemaContainer"]
+layout_mode = 2
+texture = ExtResource("6_uqjdu")
+stretch_mode = 3
+
+[node name="SchemaContentContainer" type="VBoxContainer" parent="VBoxContainer/SchemaContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SchemaContentLoadFromFileBtn" type="Button" parent="VBoxContainer/SchemaContainer/SchemaContentContainer"]
+layout_mode = 2
+text = "SETTINGS_SCHEMA_LOAD_FILE
+"
+icon = ExtResource("6_3r4bh")
+
+[node name="SchemaContentEditor" type="CodeEdit" parent="VBoxContainer/SchemaContainer/SchemaContentContainer"]
+custom_minimum_size = Vector2(0, 400)
+layout_mode = 2
+size_flags_horizontal = 3
+wrap_mode = 1
+
+[node name="LoadSchemaFileDialog" type="FileDialog" parent="VBoxContainer/SchemaContainer"]
+title = "Open a File"
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
 [connection signal="item_selected" from="VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/BatchCreatonContainer/BatchCreationButton" to="." method="_on_batch_creation_button_pressed"]
+[connection signal="files_selected" from="VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog" to="." method="_on_batch_creation_file_dialog_files_selected"]
+[connection signal="pressed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentLoadFromFileBtn" to="." method="_on_schema_content_load_from_file_btn_pressed"]
+[connection signal="text_changed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor" to="." method="_on_schema_content_editor_text_changed"]
+[connection signal="file_selected" from="VBoxContainer/SchemaContainer/LoadSchemaFileDialog" to="." method="_on_load_schema_file_dialog_file_selected"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ducbmcevyftgv"]
+[gd_scene load_steps=3 format=3 uid="uid://ducbmcevyftgv"]
 
-[ext_resource type="Script" path="res://scenes/functions_list.gd" id="1_i2118"]
+[ext_resource type="Script" uid="uid://j5lqi4kp3amh" path="res://scenes/functions_list.gd" id="1_i2118"]
+[ext_resource type="Texture2D" uid="uid://dlcv0anxkgnhb" path="res://icons/function-plus-variant-custom.png" id="2_l1vk0"]
 
 [node name="FunctionsList" type="ScrollContainer"]
 anchors_preset = 15
@@ -21,5 +22,6 @@ theme_override_constants/separation = 39
 [node name="AddFunctionButton" type="Button" parent="FunctionsListContainer"]
 layout_mode = 2
 text = "FUNCTIONS_ADD_NEW_FUNCTION"
+icon = ExtResource("2_l1vk0")
 
 [connection signal="pressed" from="FunctionsListContainer/AddFunctionButton" to="." method="_on_add_function_button_pressed"]

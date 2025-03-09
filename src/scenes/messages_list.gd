@@ -27,6 +27,7 @@ func _ready() -> void:
 	openai.connect("gpt_response_completed", gpt_response_completed)
 	openai.connect("models_received", models_received)
 	openai.get_models()
+	get_viewport().files_dropped.connect(on_dropped_files)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -44,6 +45,12 @@ func _on_add_message_button_pressed() -> void:
 	#$MessagesListContainer.move_child(addAIButton, -1)
 	#$MessagesListContainer.move_child(addButton, -1)
 	$MessagesListContainer.move_child(buttonsContainer, -1)	
+	MessageInstance.from_var(
+		{
+		"role": "user",
+		"type": "Text"
+		}
+	)
 	print(self.to_var())
 	
 
@@ -130,6 +137,11 @@ func messages_to_openai_format():
 func _on_add_message_completion_button_pressed() -> void:
 	#var messages:Array[Message] = [Message.new()]
 	#messages[0].set_content("say hi!")
+	var image_detail_map = {
+		0: "high",
+		1: "low",
+		2: "auto"
+	}
 	var settings = get_tree().get_root().get_node("FineTune").SETTINGS
 	var my_conversation_id = get_tree().get_root().get_node("FineTune").CURRENT_EDITED_CONVO_IX
 	var ftc_messages = self.to_var()
@@ -144,12 +156,14 @@ func _on_add_message_completion_button_pressed() -> void:
 	for m in ftc_messages:
 		var nm = Message.new()
 		nm.set_role(m["role"])
+		if settings.get("useUserNames", false):
+			nm.set_user_name(settings.get("useUserNames", ""))
 		match m["type"]:
 			"Text":
 				nm.set_content(m["textContent"])
 				openai_messages.append(nm)
 			"Image":
-				nm.add_image_content(m["imageContent"])
+				nm.add_image_content(m["imageContent"], image_detail_map[m.get("imageDetail", 0)])
 				openai_messages.append(nm)
 			"Function Call":
 				# A "function call" for us when part of the messages list is two messages for openai, one the assistant calling the tool, and then the response
@@ -186,25 +200,34 @@ func _on_add_message_completion_button_pressed() -> void:
 
 func check_autocomplete_disabled_status():
 	if get_tree().get_root().get_node("FineTune").SETTINGS["apikey"] == "":
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY")
 		return true
 	if len(self.to_var()) < 1:
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_function_without_name():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_function_without_description():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_parameter_without_name():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS")
 		return true
 	if get_tree().get_root().get_node("FineTune").exists_parameter_without_description():
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS")
 		return true
+		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER")
 	return false
 
 func check_add_message_disabled_status():
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		if $MessagesListContainer.get_child_count() >= 3:
+			$MessagesListContainer/AddButtonsContainer/AddMessageButton.tooltip_text = tr("DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE")
 			# DPO only allows for one user and one assistant message
 			return true
+	$MessagesListContainer/AddButtonsContainer/AddMessageButton.tooltip_text = ""
 	return false
 
 func _on_something_happened_to_check_enabled_status() -> void:
@@ -219,3 +242,68 @@ func _on_add_message_completion_button_mouse_entered() -> void:
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = true
 	else:
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.disabled = false
+
+func isImageURL(url: String) -> bool:
+	# Return false if the URL is empty or only whitespace.
+	if url.strip_edges() == "":
+		return false
+
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
+	var lower_url = url.to_lower()
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+
+# This function uses the above isJpgOrPngURL() to check if the URL is valid,
+# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+# Otherwise, it returns an empty string.
+func getImageType(url: String) -> String:
+	# Use our helper function to ensure the URL is valid.
+	if not isImageURL(url):
+		return ""
+	
+	# Convert to lowercase and remove any query or fragment parts.
+	var lower_url = url.to_lower()
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
+		return "png"
+	elif base_url.ends_with(".jpg"):
+		return "jpg"
+	else:
+		return ""
+		
+func on_dropped_files(files):
+	for file in files:
+		if file.to_lower().ends_with(".jpg") or file.to_lower().ends_with(".jpeg") or file.to_lower().ends_with(".png"):
+			# Add a new message to the MessagesListContainer
+			var MessageInstance = MESSAGE_SCENE.instantiate()
+			#var addButton = $MessagesListContainer/AddMessageButton
+			#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
+			$MessagesListContainer.add_child(MessageInstance)
+			#$MessagesListContainer.move_child(addAIButton, -1)
+			#$MessagesListContainer.move_child(addButton, -1)
+			$MessagesListContainer.move_child(buttonsContainer, -1)	
+			MessageInstance.from_var(
+				{
+				"role": "user",
+				"type": "Image"
+				}
+			)
+			MessageInstance._on_file_dialog_file_selected(file)

@@ -92,6 +92,7 @@ func from_var(data):
 		parameterInstance.from_var(d)
 	$FunctionMessageContainer/FunctionUseResultText.text = str(data.get("functionResults", ""))
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
+	check_if_function_button_should_be_visible_or_disabled()
 	_on_check_what_text_message_should_be_visisble()
 	# All about user names
 	$MessageSettingsContainer/UserNameEdit.visible = false
@@ -294,7 +295,7 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 					newScene.get_node("FunctionUseParameterChoice").add_item(pv)
 			else:
 				newScene.get_node("FunctionUseParameterEdit").visible = true
-
+	check_if_function_button_should_be_visible_or_disabled()
 	print("-------------------")
 
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert
@@ -486,3 +487,100 @@ func _on_poll_for_completion_request_completed(result: int, response_code: int, 
 
 func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:
 	OS.shell_open(edit_message_url)
+
+## Function Execution
+func get_current_function_parameter_names():
+	# returns a list of names of the parameters of the function currently chosen
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	return get_node("/root/FineTune").get_available_parameter_names_for_function(my_function_name)
+
+func get_current_value_for_function_parameter_name(parametername):
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	var thisparameterdict = {}
+	for parameter in $FunctionMessageContainer.get_children():
+		if parameter.is_in_group("function_use_parameter"):
+			thisparameterdict = parameter.to_var()
+			if thisparameterdict["name"] == parametername:
+				break
+	var thisparameterdefdict = {}
+	for parameter in fdefdict["parameters"]:
+		if parameter["name"] == parametername:
+			thisparameterdefdict = parameter
+	# First, check string:
+	if thisparameterdefdict["type"] == "String" and thisparameterdefdict["isEnum"] == false:
+		return thisparameterdict["parameterValueText"]
+	# Then, check string choice
+	if thisparameterdefdict["type"] == "String" and thisparameterdefdict["isEnum"] == true:
+		return thisparameterdict["parameterValueChoice"]
+	# If its none, retun the number (problem: We cannot check the existence of the number in any meaningful way, because it is 0.0
+	if thisparameterdefdict["type"] == "Number":
+		return thisparameterdict["parameterValueNumber"]
+	return tr("UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS")
+
+func get_function_defintion_dict(fname):
+	var allfunctiondefs = get_node("/root/FineTune").FUNCTIONS
+	for fdef in allfunctiondefs:
+		if fdef["name"] == fname:
+			return fdef
+
+func _on_function_execution_button_pressed() -> void:
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	var output = []
+	var executable_path = fdefdict["functionExecutionExecutable"]
+	var parameters_raw_string = fdefdict["functionExecutionArgumentsString"]
+	var parameters_replace_vars = parameters_raw_string
+	print("Checking parameters")
+	for parameterName in get_current_function_parameter_names():
+		parameters_replace_vars = parameters_replace_vars.replace("%" + str(parameterName) + "%", get_current_value_for_function_parameter_name(parameterName))
+	var argumentslist = []
+	for parameter in parameters_replace_vars.split("<|>"):
+		argumentslist.append(parameter)
+	var exit_code = OS.execute(executable_path, argumentslist, output)
+	var outputstring = output[0]
+	$FunctionMessageContainer/FunctionUseResultText.text = outputstring
+
+func check_if_function_button_should_be_visible_or_disabled():
+	if not $FunctionMessageContainer.visible:
+		return
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	print("Check if execution should be...")
+	print(my_function_name)
+	if my_function_name == "":
+		$FunctionMessageContainer/FunctionExecutionButton.visible = false
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		return
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	if fdefdict["functionExecutionEnabled"]:
+		$FunctionMessageContainer/FunctionExecutionButton.visible = true
+	else:
+		$FunctionMessageContainer/FunctionExecutionButton.visible = false
+		return
+	# Now, check if the button should be visible, yes, but should it be disabled because something is wrong?
+	if fdefdict["functionExecutionExecutable"] == "":
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED")
+		return
+	# Check that none of the parameters are empty
+	for parameterName in get_current_function_parameter_names():
+		print("Checking parameter values set for")
+		print("Parameter Name")
+		print(parameterName)
+		print("Value:")
+		print(get_current_value_for_function_parameter_name(parameterName))
+		if str(get_current_value_for_function_parameter_name(parameterName)) == "":
+			$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+			$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET")
+			return
+	if OS.get_name() == "Web":
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+		return
+	$FunctionMessageContainer/FunctionExecutionButton.visible = true
+	$FunctionMessageContainer/FunctionExecutionButton.disabled = false
+	# No check for the argument string, it is technically not nessecary
+	
+
+func _on_function_message_container_mouse_entered() -> void:
+	check_if_function_button_should_be_visible_or_disabled()

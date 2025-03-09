@@ -165,3 +165,10 @@ func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> 
 			pass
 	for message in first_messages:
 			ft.create_new_conversation([message])
+
+
+func _on_test_button_pressed() -> void:
+	var output = []
+	var exit_code = OS.execute("python", ["C:\\Users\\wiela\\Documents\\outputcheck.py"], output)
+	print(exit_code)
+	print(output)

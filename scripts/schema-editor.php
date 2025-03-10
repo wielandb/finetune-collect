@@ -7,6 +7,10 @@ if (!file_exists($dataDir)) {
 }
 // Make sure to chenge this depending on where you are hosting this
 header('Access-Control-Allow-Origin: wielandb.github.io');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: *');
+
+
 $files = glob('data/*.json');
 
 // Loop through each matching file

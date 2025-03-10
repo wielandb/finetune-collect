@@ -200,6 +200,7 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -285,6 +286,11 @@ stretch_mode = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="TextEdit" type="TextEdit" parent="MetaMessageContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+placeholder_text = "Notes"
+
 [node name="ConversationReadyContainer" type="HBoxContainer" parent="MetaMessageContainer"]
 layout_mode = 2
 
@@ -292,7 +298,7 @@ layout_mode = 2
 layout_mode = 2
 text = "MESSAGE_META_READY_CHECKBOX_LABEL"
 
-[node name="ConversationNameHint" type="TextureRect" parent="MetaMessageContainer/ConversationReadyContainer"]
+[node name="ConversationReadyHint" type="TextureRect" parent="MetaMessageContainer/ConversationReadyContainer"]
 layout_mode = 2
 tooltip_text = "MESSAGE_META_CONVERSATION_READY_HINT"
 texture = ExtResource("10_b60dq")
@@ -301,48 +307,67 @@ stretch_mode = 3
 
 [node name="GridContainer" type="GridContainer" parent="MetaMessageContainer"]
 layout_mode = 2
-size_flags_vertical = 3
 columns = 2
 
 [node name="Label" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "Tokens (this conversation)"
 
 [node name="Label2" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "1350"
 
 [node name="Label3" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "Tokens (whole fine-tune)"
 
 [node name="Label4" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "100.221"
 
 [node name="Label5" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "Training cost (this conversation)"
 
 [node name="Label6" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "0.03 €"
 
 [node name="Label7" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "Training cost (whole fine-tune)"
 
 [node name="Label8" type="Label" parent="MetaMessageContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "PLACEHOLDER"
+text = "4.12 €"
+
+[node name="Label9" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+text = "Inference cost (this conversation)"
+
+[node name="Label10" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+text = "0.05 €"
+
+[node name="Label11" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+text = "Inference cost (/w batch API, this conversation)"
+
+[node name="Label12" type="Label" parent="MetaMessageContainer/GridContainer"]
+layout_mode = 2
+text = "0.025 €"
+
+[node name="Button" type="Button" parent="MetaMessageContainer"]
+layout_mode = 2
+text = "Check token cost"
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
 visible = false
@@ -439,10 +464,10 @@ wrap_mode = 1
 
 [node name="PollingTimer" type="Timer" parent="SchemaMessageContainer"]
 
-[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
-[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
@@ -454,8 +479,8 @@ wrap_mode = 1
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
 [connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]

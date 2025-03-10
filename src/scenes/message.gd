@@ -449,23 +449,29 @@ func _on_init_editing_request_token_request_completed(result: int, response_code
 	if response_code == 200:
 		token = body.get_string_from_utf8()
 		print(token)
+		if token == "":
+			print("Kein Token, versuche es nochmal")
+			_on_schema_edit_button_pressed()
+			return
 		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
 		edit_message_url = editor_url + "?token=" + token
 		if OS.get_name() != "Web":
 			OS.shell_open(edit_message_url)
 		else:
 			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.uri = edit_message_url
-	$SchemaMessageContainer/PollingTimer.start()
-	$SchemaMessageContainer/SchemaMessagePolling.visible = true
-	# Make the Desktop "Reopen Browser" button and the Web-Export "Open Browser" Link invisible and make visible what needs to be depending on platform
-	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = false
-	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = false
-	if OS.get_name() != "Web":
-		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = true
+		$SchemaMessageContainer/PollingTimer.start()
+		$SchemaMessageContainer/SchemaMessagePolling.visible = true
+		# Make the Desktop "Reopen Browser" button and the Web-Export "Open Browser" Link invisible and make visible what needs to be depending on platform
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = false
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = false
+		if OS.get_name() != "Web":
+			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = true
+		else:
+			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = true
+		$SchemaMessageContainer/SchemaEdit.visible = false
+		$SchemaMessageContainer/SchemaEditButtonsContainer.visible = false
 	else:
-		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = true
-	$SchemaMessageContainer/SchemaEdit.visible = false
-	$SchemaMessageContainer/SchemaEditButtonsContainer.visible = false
+		print("Es kam kein 200 zurück")
 
 func _on_polling_timer_timeout() -> void:
 	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")

@@ -7,6 +7,10 @@ if (!file_exists($dataDir)) {
 }
 // Make sure to chenge this depending on where you are hosting this
 header('Access-Control-Allow-Origin: wielandb.github.io');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: *');
+
+
 $files = glob('data/*.json');
 
 // Loop through each matching file
@@ -221,6 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             })
             .then(function(text) {
                 // After saving, automatically close the window.
+		window.close();
                 document.write("Saved. You can now close this tab. <i>For example by pressing CTRL + W</i>")
             })
             .catch(function(error) {

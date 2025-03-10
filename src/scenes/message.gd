@@ -455,10 +455,8 @@ func _on_init_editing_request_token_request_completed(result: int, response_code
 			return
 		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
 		edit_message_url = editor_url + "?token=" + token
-		if OS.get_name() != "Web":
-			OS.shell_open(edit_message_url)
-		else:
-			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.uri = edit_message_url
+		OS.shell_open(edit_message_url)
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.uri = edit_message_url
 		$SchemaMessageContainer/PollingTimer.start()
 		$SchemaMessageContainer/SchemaMessagePolling.visible = true
 		# Make the Desktop "Reopen Browser" button and the Web-Export "Open Browser" Link invisible and make visible what needs to be depending on platform

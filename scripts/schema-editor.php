@@ -225,6 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             })
             .then(function(text) {
                 // After saving, automatically close the window.
+		window.close();
                 document.write("Saved. You can now close this tab. <i>For example by pressing CTRL + W</i>")
             })
             .catch(function(error) {

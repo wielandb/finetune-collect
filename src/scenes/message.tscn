@@ -370,7 +370,6 @@ layout_mode = 2
 text = "Check token cost"
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 

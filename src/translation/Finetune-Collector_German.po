@@ -217,7 +217,6 @@ msgstr "Bild laden"
 msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr "Benutze Funktion"
 
-#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr "Welche?"
@@ -328,6 +327,7 @@ msgstr "Exportiere Fine-Tune"
 msgid "GENERIC_SAVE"
 msgstr "Speichern"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Abbrechen"
@@ -508,7 +508,7 @@ msgstr "JSON Schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
-msgstr "Nachricht in JSON nach bestimmtem Schema"
+msgstr "Nachricht in JSON nach Schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
@@ -521,4 +521,173 @@ msgstr "Warte auf Abschluss der Bearbeitung im Browser"
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
 msgstr "Browser erneut öffnen"
+
+#: scenes/conversation_settings.gd
+msgid "DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"
+msgstr "Noch nicht implementiert"
+
+#: scenes/function_use_parameter.tscn
+msgid "DISABLED_EXPLANATION_FUNCTIONS_MUST_USE_ALL_PARAMETERS"
+msgstr "Funktionen müssen all ihre Parameter benutzen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
+msgstr "Der System-Nutzer kann das nicht tun"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"
+msgstr "Nur der Assistent kann Funktionen benutzen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
+msgstr "Nur der Assistent kann in JSON Schema antworten"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
+msgstr "Der Assistent kann keine Bilder senden"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
+msgstr "Mindestens eine Funktion muss definiert sein um das benutzen zu können"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
+msgstr "Ein valides JSON Schema muss in den Einstellungen hinterlegt werden um das benutzen zu können"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
+msgstr "Direct Preference Optimization (DPO) unterstüzt nur Text"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
+msgstr "Ein OpenAI API Key muss in den Einstellungen hinterlegt werden"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE"
+msgstr "Mindestens eine Nachricht wird benötigt"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS"
+msgstr "Deaktiviert solange eine Funktion ohne Name existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS"
+msgstr "Deaktiviert solange eine Funktion ohne Beschreibung existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS"
+msgstr "Deaktiviert solange eine Funktion mit einem Parameter ohne Name existiert"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS"
+msgstr "Deaktiviert solange eine Funktion mit einem Parameter ohne Beschreibung existiert"
+
+#: scenes/messages_list.gd
+msgid "MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER"
+msgstr "Die OpenAI API nach einer Vervollständigung fragen"
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
+msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine Assistenten-Nachricht"
+
+#: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr "Schema-Editor in neuem Tab öffnen"
+
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
+#: scenes/schema_edit_buttons_container.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
+msgstr "Nicht im Web-Export verfügbar"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr "Serienerzeugung neuer Unterhaltungen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr "Damit kann eine große Menge Dateien importiert werden.\n"
+"Für jede Datei wird eine neue Unterhaltung erstellt,\n"
+"bei der die Datei die erste Nachricht ist.\n"
+"Es können Text- oder Bilddateien geladen werden."
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr "System"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr "Nutzer"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr "Assistent"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr "Neue erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr "An bestehende anhängen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr "Dateien wählen, um Unterhaltungen zu erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr "Datei(en) öffnen"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr "Lokale Funktionsausführung aktivieren"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr "Anwendungspfad"
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr "python"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr "Anwendungsparameter"
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr "C:\\Pfad\\zum\\skript.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr "Platziere alle Argumente für den Aufruf hier, getrennt mit \"<|>\" (ohne Anführungszeichen).\n"
+"z.B. für python sollte das erste Argument der Pfad zum Skript sein.\n"
+"Parameternamen, die in \"%\" eingeschlossen sind, werden zum Ausführungszeitpunkt durch den festgelgten Wert ausgetauscht, z.B. %parametername\"."
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr "Testen"
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr "Ein unerwarteter Fehler mit dem Parameter ist passiert! Bitte melde das!"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr "Keine Anwendung wurde definiert.\n"
+"In den Funktionsdefinitionen muss eine Anwendung definiert werden, damit das Funktioniert."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr "Alle Parameterwerte müssen gesetzt sein, damit das funktioniert."
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
+msgstr "Welche?"
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
+msgstr "Funktion ausführen"
 

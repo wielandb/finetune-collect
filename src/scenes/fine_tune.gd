@@ -29,10 +29,13 @@ var file_access_web = FileAccessWeb.new()
 
 func getRandomConvoID(length: int) -> String:
 	var ascii_letters_and_digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	var result = ""
-	for i in range(length):
-		result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
-	return result
+	while true:
+		var result = ""
+		for i in range(length):
+			result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
+		if result not in CONVERSATIONS:
+			return result
+	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -51,7 +54,6 @@ func getallnodes(node):
 		else:
 			nodeCollection.append(N)
 	return nodeCollection
-
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -312,20 +314,31 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	update_settings_internal()
 
 
-func _on_button_pressed() -> void:
+func create_new_conversation(msgs=[]):
 	# Generate a new ConvoID
 	var newID = getRandomConvoID(4)
+	CONVERSATIONS[newID] = msgs
+	# Update everything that needs to be updated
+	refresh_conversations_list()
+
+func append_to_conversation(convoid, msg={}):
+	if convoid in CONVERSATIONS:
+		CONVERSATIONS[convoid].append(msg)
+	else:
+		print("Error: No such conversation" + str(convoid))
+
+func _on_button_pressed() -> void:
 	# Create conversation if it does not exist
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 0:
-		CONVERSATIONS[newID] = []
+		create_new_conversation()
 	elif finetunetype == 1:
 		# DPO: There is only one kind of conversation we can have here, so we can also just poulate it
-		CONVERSATIONS[newID] = [
+		create_new_conversation([
 			{ "role": "user", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""},
 			{ "role": "assistant", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""}
-		]
-	refresh_conversations_list()
+			]
+		)
 	print(CONVERSATIONS)
 	
 

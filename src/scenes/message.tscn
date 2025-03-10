@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=19 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
@@ -12,8 +12,11 @@
 [ext_resource type="Texture2D" uid="uid://o7ql325bc4fu" path="res://icons/file-question-custom.png" id="9_2lsc3"]
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
 [ext_resource type="Script" uid="uid://pm3h0spmo3k4" path="res://scenes/schema_message_polling_animator.gd" id="12_iorou"]
+[ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="12_km1wu"]
 [ext_resource type="FontFile" uid="uid://iilux6cs6sv" path="res://assets/RobotoSlab-VariableFont_wght.ttf" id="12_rwbsk"]
+[ext_resource type="Script" uid="uid://ous7aoomaueb" path="res://scenes/schema_edit_buttons_container.gd" id="12_wnabm"]
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="13_gakvq"]
+[ext_resource type="Texture2D" uid="uid://dgcgbm18sryoa" path="res://icons/script-text-play-custom.png" id="13_tqqac"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
 
@@ -186,6 +189,7 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 text = "MESSAGES_LOAD_IMAGE_FROM_FILE"
+icon = ExtResource("12_km1wu")
 
 [node name="LoadImageURLButton" type="Button" parent="ImageMessageContainer/LoadButtonsContainer"]
 layout_mode = 2
@@ -195,7 +199,6 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -221,7 +224,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="FunctionMessageContainer/function"]
 layout_mode = 2
-text = "MESSAGE_USE_WHICH_MESSAGE"
+text = "MESSAGE_USE_WHICH_FUNCTION_LABEL"
 
 [node name="FunctionNameChoiceButton" type="OptionButton" parent="FunctionMessageContainer/function"]
 layout_mode = 2
@@ -231,6 +234,11 @@ size_flags_horizontal = 3
 layout_mode = 2
 text = "MESSAGE_PARAMETERS_TITLE"
 horizontal_alignment = 1
+
+[node name="FunctionExecutionButton" type="Button" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "MESSAGE_EXECUTE_FUNCTION"
+icon = ExtResource("13_tqqac")
 
 [node name="ParamterSectionLabel2" type="Label" parent="FunctionMessageContainer"]
 layout_mode = 2
@@ -251,6 +259,7 @@ visible = false
 layout_mode = 2
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -262,6 +271,7 @@ horizontal_alignment = 1
 
 [node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
+script = ExtResource("12_wnabm")
 
 [node name="SchemaEditButton" type="Button" parent="SchemaMessageContainer/SchemaEditButtonsContainer"]
 layout_mode = 2
@@ -283,6 +293,10 @@ script = ExtResource("12_iorou")
 [node name="SchemaMessagePollingLabel" type="Label" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
 text = "MESSAGES_JSON_SCHEMA_POLLING"
+
+[node name="SchemaMessagePollingOpenBrowserLink" type="LinkButton" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
 
 [node name="SchemaMessagePollingReopenBrowserBtn" type="Button" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
@@ -353,8 +367,10 @@ wrap_mode = 1
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
+[connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]

@@ -26,6 +26,7 @@
 # res://scenes/used_function.gd
 # res://scenes/used_function.tscn
 # res://scenes/exporter.gd
+# res://scenes/schema_edit_buttons_container.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -114,6 +115,34 @@ msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
 msgstr ""
 
 #: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr ""
+
+#: scenes/available_function.tscn
 msgid "FUNCTIONS_DELETE_FUNCTION"
 msgstr ""
 
@@ -127,6 +156,17 @@ msgstr ""
 
 #: scenes/conversation.tscn
 msgid "Settings"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
+#: scenes/schema_edit_buttons_container.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -238,6 +278,53 @@ msgid "GENERIC_REFRESH"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+msgid "GENERIC_CANCEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_USER_NAMES"
 msgstr ""
 
@@ -267,12 +354,6 @@ msgstr ""
 msgid "Open a File"
 msgstr ""
 
-#: scenes/conversation_settings.tscn
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open"
-msgstr ""
-
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_CONVERSATION_NEW"
 msgstr ""
@@ -298,14 +379,6 @@ msgid "FINETUNE_EXPORT"
 msgstr ""
 
 #: scenes/fine_tune.tscn
-msgid "GENERIC_SAVE"
-msgstr ""
-
-#: scenes/fine_tune.tscn
-msgid "GENERIC_CANCEL"
-msgstr ""
-
-#: scenes/fine_tune.tscn
 msgid "OpenAI fine-tuning file"
 msgstr ""
 
@@ -326,11 +399,55 @@ msgid "X"
 msgstr ""
 
 #: scenes/function_use_parameter.tscn
+msgid "DISABLED_EXPLANATION_FUNCTIONS_MUST_USE_ALL_PARAMETERS"
+msgstr ""
+
+#: scenes/function_use_parameter.tscn
 msgid "MESSAGE_USE_PARAMETER_CHECKBOX_TITLE"
 msgstr ""
 
 #: scenes/function_use_parameter.tscn
 msgid "[Parameter Name]\n"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
+msgstr ""
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
 msgstr ""
 
 #: scenes/message.tscn
@@ -426,13 +543,16 @@ msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
 msgstr ""
 
 #: scenes/message.tscn
-#: scenes/used_function.tscn
-msgid "MESSAGE_USE_WHICH_MESSAGE"
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
 msgstr ""
 
 #: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_PARAMETERS_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
 msgstr ""
 
 #: scenes/message.tscn
@@ -457,7 +577,47 @@ msgid "MESSAGES_JSON_SCHEMA_POLLING"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+msgstr ""
+
+#: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_MESSAGE"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_NAME_EXISTS"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_WITHOUT_DESCRIPTION_EXISTS"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITHOUT_NAME_EXISTS"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DISABLED_AS_LONG_AS_FUNCTION_PARAMETER_WITTHOUT_DESCRIPTION_EXISTS"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "MESSAGE_LIST_ASK_OPENAI_API_FOR_ANSWER"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
+msgstr ""
+
+#: scenes/messages_list.gd
+msgid ""
 msgstr ""
 
 #: scenes/messages_list.tscn
@@ -474,6 +634,10 @@ msgstr ""
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_FUNCTION"
+msgstr ""
+
+#: scenes/used_function.tscn
+msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr ""
 
 #: scenes/used_function.tscn

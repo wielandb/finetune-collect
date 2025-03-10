@@ -92,6 +92,7 @@ func from_var(data):
 		parameterInstance.from_var(d)
 	$FunctionMessageContainer/FunctionUseResultText.text = str(data.get("functionResults", ""))
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
+	check_if_function_button_should_be_visible_or_disabled()
 	_on_check_what_text_message_should_be_visisble()
 	# All about user names
 	$MessageSettingsContainer/UserNameEdit.visible = false
@@ -202,26 +203,43 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(3, true)
+	$MessageSettingsContainer/MessageType.set_item_tooltip(0, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(1, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(2, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(3, "")
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
 		0:
 			match index:
 				0:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 				1:
 					$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"))
 				2:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"))
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
 					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
 					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
 						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"))
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+			$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
+			$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
 		2:
 			pass
 			
@@ -277,7 +295,7 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 					newScene.get_node("FunctionUseParameterChoice").add_item(pv)
 			else:
 				newScene.get_node("FunctionUseParameterEdit").visible = true
-
+	check_if_function_button_should_be_visible_or_disabled()
 	print("-------------------")
 
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert
@@ -432,10 +450,20 @@ func _on_init_editing_request_token_request_completed(result: int, response_code
 		token = body.get_string_from_utf8()
 		print(token)
 		var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
-		edit_message_url = editor_url + "?token=" + token 
-		OS.shell_open(edit_message_url)
+		edit_message_url = editor_url + "?token=" + token
+		if OS.get_name() != "Web":
+			OS.shell_open(edit_message_url)
+		else:
+			$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.uri = edit_message_url
 	$SchemaMessageContainer/PollingTimer.start()
 	$SchemaMessageContainer/SchemaMessagePolling.visible = true
+	# Make the Desktop "Reopen Browser" button and the Web-Export "Open Browser" Link invisible and make visible what needs to be depending on platform
+	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = false
+	$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = false
+	if OS.get_name() != "Web":
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn.visible = true
+	else:
+		$SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingOpenBrowserLink.visible = true
 	$SchemaMessageContainer/SchemaEdit.visible = false
 	$SchemaMessageContainer/SchemaEditButtonsContainer.visible = false
 
@@ -459,3 +487,100 @@ func _on_poll_for_completion_request_completed(result: int, response_code: int, 
 
 func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:
 	OS.shell_open(edit_message_url)
+
+## Function Execution
+func get_current_function_parameter_names():
+	# returns a list of names of the parameters of the function currently chosen
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	return get_node("/root/FineTune").get_available_parameter_names_for_function(my_function_name)
+
+func get_current_value_for_function_parameter_name(parametername):
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	var thisparameterdict = {}
+	for parameter in $FunctionMessageContainer.get_children():
+		if parameter.is_in_group("function_use_parameter"):
+			thisparameterdict = parameter.to_var()
+			if thisparameterdict["name"] == parametername:
+				break
+	var thisparameterdefdict = {}
+	for parameter in fdefdict["parameters"]:
+		if parameter["name"] == parametername:
+			thisparameterdefdict = parameter
+	# First, check string:
+	if thisparameterdefdict["type"] == "String" and thisparameterdefdict["isEnum"] == false:
+		return thisparameterdict["parameterValueText"]
+	# Then, check string choice
+	if thisparameterdefdict["type"] == "String" and thisparameterdefdict["isEnum"] == true:
+		return thisparameterdict["parameterValueChoice"]
+	# If its none, retun the number (problem: We cannot check the existence of the number in any meaningful way, because it is 0.0
+	if thisparameterdefdict["type"] == "Number":
+		return thisparameterdict["parameterValueNumber"]
+	return tr("UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS")
+
+func get_function_defintion_dict(fname):
+	var allfunctiondefs = get_node("/root/FineTune").FUNCTIONS
+	for fdef in allfunctiondefs:
+		if fdef["name"] == fname:
+			return fdef
+
+func _on_function_execution_button_pressed() -> void:
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	var output = []
+	var executable_path = fdefdict["functionExecutionExecutable"]
+	var parameters_raw_string = fdefdict["functionExecutionArgumentsString"]
+	var parameters_replace_vars = parameters_raw_string
+	print("Checking parameters")
+	for parameterName in get_current_function_parameter_names():
+		parameters_replace_vars = parameters_replace_vars.replace("%" + str(parameterName) + "%", get_current_value_for_function_parameter_name(parameterName))
+	var argumentslist = []
+	for parameter in parameters_replace_vars.split("<|>"):
+		argumentslist.append(parameter)
+	var exit_code = OS.execute(executable_path, argumentslist, output)
+	var outputstring = output[0]
+	$FunctionMessageContainer/FunctionUseResultText.text = outputstring
+
+func check_if_function_button_should_be_visible_or_disabled():
+	if not $FunctionMessageContainer.visible:
+		return
+	var my_function_name = $FunctionMessageContainer/function/FunctionNameChoiceButton.get_item_text($FunctionMessageContainer/function/FunctionNameChoiceButton.selected)
+	print("Check if execution should be...")
+	print(my_function_name)
+	if my_function_name == "":
+		$FunctionMessageContainer/FunctionExecutionButton.visible = false
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		return
+	var fdefdict = get_function_defintion_dict(my_function_name)
+	if fdefdict["functionExecutionEnabled"]:
+		$FunctionMessageContainer/FunctionExecutionButton.visible = true
+	else:
+		$FunctionMessageContainer/FunctionExecutionButton.visible = false
+		return
+	# Now, check if the button should be visible, yes, but should it be disabled because something is wrong?
+	if fdefdict["functionExecutionExecutable"] == "":
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED")
+		return
+	# Check that none of the parameters are empty
+	for parameterName in get_current_function_parameter_names():
+		print("Checking parameter values set for")
+		print("Parameter Name")
+		print(parameterName)
+		print("Value:")
+		print(get_current_value_for_function_parameter_name(parameterName))
+		if str(get_current_value_for_function_parameter_name(parameterName)) == "":
+			$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+			$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET")
+			return
+	if OS.get_name() == "Web":
+		$FunctionMessageContainer/FunctionExecutionButton.disabled = true
+		$FunctionMessageContainer/FunctionExecutionButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+		return
+	$FunctionMessageContainer/FunctionExecutionButton.visible = true
+	$FunctionMessageContainer/FunctionExecutionButton.disabled = false
+	# No check for the argument string, it is technically not nessecary
+	
+
+func _on_function_message_container_mouse_entered() -> void:
+	check_if_function_button_should_be_visible_or_disabled()

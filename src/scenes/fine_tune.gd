@@ -331,7 +331,11 @@ func _on_button_pressed() -> void:
 	# Create conversation if it does not exist
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 0:
-		create_new_conversation()
+		create_new_conversation(
+			[
+				{"role": "meta", "type": "meta"}
+			]
+		)
 	elif finetunetype == 1:
 		# DPO: There is only one kind of conversation we can have here, so we can also just poulate it
 		create_new_conversation([

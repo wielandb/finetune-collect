@@ -58,8 +58,8 @@ func from_var(data):
 		$MetaMessageContainer.visible = true
 		var metaData = data.get("metaData", {})
 		$MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed = metaData.get("ready", false)
-		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName")
-		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes")
+		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName", "")
+		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes", "")
 		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)

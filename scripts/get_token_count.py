@@ -217,6 +217,8 @@ def get_token_count_for_conversation(convoIx):
     conversation = SAVE_DATA["conversations"][convoIx]
     tokens = {"total": 0, "input": 0, "output": 0}
     for message in conversation:
+        if message["type"] == "meta":
+            this_message_tokens = 0
         if message["type"] == "Text":
             this_message_tokens = get_token_count_for_text_message(message)
         if message["type"] == "Image":

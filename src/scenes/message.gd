@@ -42,10 +42,13 @@ func to_var():
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
-	me["metaData"] = {}
-	me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
-	me["metaData"]["conversationName"] = $MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text
-	me["metaData"]["notes"] = $MetaMessageContainer/ConversationNotesEdit.text
+	if $MetaMessageContainer.visible:
+		me["metaData"] = {}
+		me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
+		me["metaData"]["conversationName"] = $MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text
+		me["metaData"]["notes"] = $MetaMessageContainer/ConversationNotesEdit.text
+		me["role"] = "meta"
+		me["type"] = "meta"
 	return me
 
 func from_var(data):
@@ -657,7 +660,7 @@ func update_token_costs(conversation_token_counts):
 	$MetaMessageContainer/InfoLabelsGridContainer/NumberOfImagesThisConversation.text = str(get_node("/root/FineTune").get_number_of_images_for_conversation(my_convo_ix))
 	$MetaMessageContainer/InfoLabelsGridContainer/NumberOfImagesWholeFineTune.text = str(get_node("/root/FineTune").get_number_of_images_total())
 
-func _on_button_3_pressed() -> void:
+func _do_token_calculation_update() -> void:
 	var output = []
 	var own_savefile_path = get_node("/root/FineTune").RUNTIME["filepath"]
 	var arguments_list = ["C:\\Users\\wiela\\Documents\\GitHub\\finetune-collect\\scripts\\get_token_count.py", own_savefile_path]

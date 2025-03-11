@@ -165,7 +165,6 @@ msgstr ""
 #: scenes/conversation_settings.gd
 #: scenes/conversation_settings.tscn
 #: scenes/message.gd
-#: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr ""
 
@@ -329,6 +328,28 @@ msgid "SETTINGS_USE_USER_NAMES"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open a File"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE_FILE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_EDITOR_URL"
 msgstr ""
 
@@ -346,12 +367,6 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open a File"
 msgstr ""
 
 #: scenes/fine_tune.tscn
@@ -411,6 +426,15 @@ msgid "[Parameter Name]\n"
 msgstr ""
 
 #: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH"
+msgstr ""
+
+#: scenes/message.gd
+#: scenes/messages_list.gd
+msgid ""
+msgstr ""
+
+#: scenes/message.gd
 msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
 msgstr ""
 
@@ -448,6 +472,15 @@ msgstr ""
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGE_META_HIDE_TOKEN_CALCS"
+msgstr ""
+
+#: scenes/message.gd
+#: scenes/message.tscn
+msgid "MESSAGE_META_SHOW_TOKEN_CALCS"
 msgstr ""
 
 #: scenes/message.tscn
@@ -565,6 +598,78 @@ msgid "Add result"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_LABEL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_HINT"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NOTES_PLACEHOLDER"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_READY_CHECKBOX_LABEL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_READY_HINT"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_THIS_CONVERSATION"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_WHOLE_FINETUNE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOTAL_TOKENS"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "0"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4o"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4omini"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4o"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4omini"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COST_4o"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NUMBER_OF_IMAGES"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Test Token Count"
+msgstr ""
+
+#: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
 msgstr ""
 
@@ -614,10 +719,6 @@ msgstr ""
 
 #: scenes/messages_list.gd
 msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
-msgstr ""
-
-#: scenes/messages_list.gd
-msgid ""
 msgstr ""
 
 #: scenes/messages_list.tscn

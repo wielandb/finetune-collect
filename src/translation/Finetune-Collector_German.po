@@ -487,7 +487,10 @@ msgstr "URL des Schema-Editors:"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
-msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei, die im GitHub zu finden ist. Es gibt eine bereitgestellte Instanz vom Entwickler. Bedenke, dass, wenn du diese benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
+msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei,\n"
+"die im GitHub zu finden ist. Es gibt eine bereitgestellte\n"
+"Instanz vom Entwickler. Bedenke, dass, wenn du diese\n"
+"benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
@@ -597,7 +600,6 @@ msgstr "Schema-Editor in neuem Tab öffnen"
 #: scenes/conversation_settings.gd
 #: scenes/conversation_settings.tscn
 #: scenes/message.gd
-#: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr "Nicht im Web-Export verfügbar"
 
@@ -690,4 +692,113 @@ msgstr "Welche?"
 #: scenes/message.tscn
 msgid "MESSAGE_EXECUTE_FUNCTION"
 msgstr "Funktion ausführen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
+msgstr "Pfad zum Tokenzähler-Skript"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+msgstr "Der Pfad zu der Datei namens \"get_token_count.py\"\n"
+"aus dem scripts/-Ordner dieses Repositorys. Wird benötigt\n"
+"um Token-Kosten zu berechnen."
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE"
+msgstr "Wählen"
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE_FILE"
+msgstr "Datei wählen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH"
+msgstr "Der Pfad zum Tokenzählskript muss in den Einstellungen\n"
+"festgelegt werden um das nutzen zu können."
+
+#: scenes/message.gd
+msgid "MESSAGE_META_HIDE_TOKEN_CALCS"
+msgstr "Tokenberechnungen verstecken"
+
+#: scenes/message.gd
+#: scenes/message.tscn
+msgid "MESSAGE_META_SHOW_TOKEN_CALCS"
+msgstr "Tokenberechnungen zeigen"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_LABEL"
+msgstr "Unterhaltungsname:"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_HINT"
+msgstr "Du kannst dieser Unterhaltung einen Namen geben \n"
+"um sie in der Leiste links später schneller wiederzufinden"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NOTES_PLACEHOLDER"
+msgstr "Notizen"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_READY_CHECKBOX_LABEL"
+msgstr "Fertig"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_READY_HINT"
+msgstr "Diese Unterhaltung als \"fertig\" markieren, \n"
+"damit du schnell auf der linken Seite sehen \n"
+"kannst ob du eine  Unterhaltung später noch\n"
+"einmal überprüfen willst. Es ist auch möglich, \n"
+"nur \"fertige\" Unterhaltungen zu exportieren"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
+msgstr "Tokenkosten Schätzung"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_THIS_CONVERSATION"
+msgstr "Diese Unterhaltung"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_WHOLE_FINETUNE"
+msgstr "gesamter Fine-Tune"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOTAL_TOKENS"
+msgstr "Gesamttokens"
+
+#: scenes/message.tscn
+msgid "0"
+msgstr "0"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4o"
+msgstr "Trainingskosten (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4omini"
+msgstr "Trainingskosten (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4o"
+msgstr "Inferenzkosten (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4omini"
+msgstr "Inferenzkosten (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COST_4o"
+msgstr "Batch-Inferenzkosten (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+msgstr "Batch-Inferenzkosten (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NUMBER_OF_IMAGES"
+msgstr "Anzahl Bilder"
+
+#: scenes/message.tscn
+msgid "Test Token Count"
+msgstr ""
 

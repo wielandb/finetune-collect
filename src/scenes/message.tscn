@@ -124,6 +124,9 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="HSeparator" type="HSeparator" parent="TextMessageContainer"]
+layout_mode = 2
+
 [node name="ImageMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
@@ -197,6 +200,9 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
+[node name="HSeparator" type="HSeparator" parent="ImageMessageContainer"]
+layout_mode = 2
+
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
@@ -253,6 +259,9 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 text = "Add result"
+
+[node name="HSeparator" type="HSeparator" parent="FunctionMessageContainer"]
+layout_mode = 2
 
 [node name="MetaMessageContainer" type="VBoxContainer" parent="."]
 visible = false
@@ -434,6 +443,9 @@ visible = false
 layout_mode = 2
 text = "Test Token Count"
 
+[node name="HSeparator" type="HSeparator" parent="MetaMessageContainer"]
+layout_mode = 2
+
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
@@ -528,6 +540,9 @@ wrap_mode = 1
 [node name="PollForCompletion" type="HTTPRequest" parent="SchemaMessageContainer"]
 
 [node name="PollingTimer" type="Timer" parent="SchemaMessageContainer"]
+
+[node name="HSeparator" type="HSeparator" parent="SchemaMessageContainer"]
+layout_mode = 2
 
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]

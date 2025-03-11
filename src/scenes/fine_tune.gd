@@ -81,6 +81,7 @@ func _process(delta: float) -> void:
 			var first_message_container = $Conversation/Messages/MessagesList/MessagesListContainer.get_child(0)
 			if first_message_container.is_in_group("message"):
 				first_message_container._do_token_calculation_update()
+		refresh_conversations_list()
 	if Input.is_action_just_released("load"):
 		$VBoxContainer/LoadBtn/FileDialog.visible = true
 	#	if RUNTIME["filepath"] == "":
@@ -142,7 +143,7 @@ func _on_item_list_item_selected(index: int) -> void:
 		if message.is_in_group("message"):
 			message.queue_free()	
 	# Und die neuen aus der Convo laden
-	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_text(index)
+	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_tooltip(index)
 	# Create conversation if it does not exist
 	print("IX:")
 	print(CURRENT_EDITED_CONVO_IX)
@@ -258,18 +259,21 @@ func check_is_conversation_problematic(idx: String):
 	var thisconvo = CONVERSATIONS[idx]
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
-		# DPO: First message user, second message assistant
-		if len(thisconvo) != 2:
+		# DPO: First message user, second message assistant (with meta message 3 messages)
+		var metamessageoffset = 0
+		if thisconvo[0]["role"] == "meta" or thisconvo[0]["type"] == "meta":
+			metamessageoffset = 1
+		if len(thisconvo) != 2 + metamessageoffset:
 			return true
-		if len(thisconvo) >= 1:
-			if thisconvo[0]["role"] != "user":
+		if len(thisconvo) >= 1 + metamessageoffset:
+			if thisconvo[0 + metamessageoffset]["role"] != "user":
 				return true
-		if len(thisconvo) >= 2:
-			if thisconvo[1]["role"] != "assistant":
+		if len(thisconvo) >= 2 + metamessageoffset:
+			if thisconvo[1 + metamessageoffset]["role"] != "assistant":
 				return true
-		if thisconvo[0]["textContent"] == "":
+		if thisconvo[0 + metamessageoffset]["textContent"] == "":
 			return true
-		if thisconvo[1]["preferredTextContent"] == "" or thisconvo[1]["unpreferredTextContent"] == "":
+		if thisconvo[1 + metamessageoffset]["preferredTextContent"] == "" or thisconvo[1 + metamessageoffset]["unpreferredTextContent"] == "":
 			return true
 		return false
 	# Check if at least two messages exist
@@ -310,16 +314,31 @@ func _on_file_dialog_file_selected(path: String) -> void:
 		load_from_binary(path)
 	RUNTIME["filepath"] = path
 
+
+func get_conversation_name_or_false(idx):
+	var this_convo = CONVERSATIONS[idx]
+	for msg in this_convo:
+		if msg.get("type", "Text") == "meta":
+			if msg.get("metaData", {}).get("conversationName", "") != "":
+				return msg.get("metaData", {}).get("conversationName", "")
+	return false
+
 func refresh_conversations_list():
 	$VBoxContainer/ConversationsList.clear()
+	var numberIx = -1
 	for i in CONVERSATIONS.keys():
+		numberIx += 1
+		var conversation_name = i
+		if get_conversation_name_or_false(i):
+			conversation_name = get_conversation_name_or_false(i)
 		if check_is_conversation_problematic(i):
-			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-remove-custom.png"))
+			$VBoxContainer/ConversationsList.add_item(str(conversation_name), load("res://icons/forum-remove-custom.png"))
 		else:
 			if check_is_conversation_ready(i):
-				$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-check.png"))
+				$VBoxContainer/ConversationsList.add_item(str(conversation_name), load("res://icons/forum-check.png"))
 			else:
-				$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-custom.png"))
+				$VBoxContainer/ConversationsList.add_item(str(conversation_name), load("res://icons/forum-custom.png"))
+		$VBoxContainer/ConversationsList.set_item_tooltip(numberIx, i)
 
 func _on_conversation_tab_changed(tab: int) -> void:
 	save_current_conversation()

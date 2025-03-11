@@ -30,7 +30,6 @@ size_flags_vertical = 3
 script = ExtResource("1_lafvt")
 
 [node name="MessageSettingsContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 
 [node name="Role" type="OptionButton" parent="MessageSettingsContainer"]
@@ -286,7 +285,7 @@ stretch_mode = 3
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TextEdit" type="TextEdit" parent="MetaMessageContainer"]
+[node name="ConversationNotesEdit" type="TextEdit" parent="MetaMessageContainer"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 placeholder_text = "Notes"
@@ -305,71 +304,140 @@ texture = ExtResource("10_b60dq")
 expand_mode = 2
 stretch_mode = 3
 
-[node name="GridContainer" type="GridContainer" parent="MetaMessageContainer"]
+[node name="Button2" type="Button" parent="MetaMessageContainer"]
 layout_mode = 2
-columns = 2
+text = "MESSAGE_META_TOOGLE_COST_VISIBILITY"
 
-[node name="Label" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="InfoLabelsGridContainer" type="GridContainer" parent="MetaMessageContainer"]
 layout_mode = 2
-size_flags_horizontal = 2
-text = "Tokens (this conversation)"
+columns = 3
 
-[node name="Label2" type="Label" parent="MetaMessageContainer/GridContainer"]
-layout_mode = 2
-size_flags_horizontal = 2
-text = "1350"
-
-[node name="Label3" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="Label" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "Tokens (whole fine-tune)"
+text = "Token cost estimation"
 
-[node name="Label4" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="Label2" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "100.221"
+text = "This conversation"
 
-[node name="Label5" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="Label3" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "Training cost (this conversation)"
+text = "Whole fine-tune"
 
-[node name="Label6" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="Label25" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "Total tokens"
+
+[node name="ThisConversationTotalTokens" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "350"
+
+[node name="WholeFineTuneTotalTokens" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "122.112"
+
+[node name="Label4" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "0.03 €"
+text = "Training cost (4o)"
 
-[node name="Label7" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="TrainingCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "Training cost (whole fine-tune)"
+text = "0.002 €"
 
-[node name="Label8" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="TrainingCost4oWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "12.45 €"
+
+[node name="Label7" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "Training cost (4o-mini)"
+
+[node name="TrainingCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "4.12 €"
 
-[node name="Label9" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="TrainingCost4ominiWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Inference cost (this conversation)"
+text = "23.23 €"
 
-[node name="Label10" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="Label10" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "0.05 €"
+text = "Inference cost (4o)"
 
-[node name="Label11" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="InferenceCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Inference cost (/w batch API, this conversation)"
+text = "0.023 €"
 
-[node name="Label12" type="Label" parent="MetaMessageContainer/GridContainer"]
+[node name="InferenceCost4oWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "0.025 €"
+text = "9.45 €"
+
+[node name="Label13" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "Inference cost (4o-mini)"
+
+[node name="InferenceCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0.0001 €"
+
+[node name="InferenceCost4ominiWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "4.21 €"
+
+[node name="Label16" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "Batch inference cost (4o)"
+
+[node name="BatchInferenceCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0.00001 €"
+
+[node name="BatchInferenceCost4oWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0.12 €"
+
+[node name="Label19" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "Batch inference cost (4o-mini)"
+
+[node name="BatchInferenceCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0.0000001 €"
+
+[node name="BatchInferenceCost4oMiniWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0.06 €"
+
+[node name="Label22" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "Number of images"
+
+[node name="NumberOfImagesThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="NumberOfImagesWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
 
 [node name="Button" type="Button" parent="MetaMessageContainer"]
 layout_mode = 2
 text = "Check token cost"
 
+[node name="Button3" type="Button" parent="MetaMessageContainer"]
+layout_mode = 2
+text = "Test Token Count"
+
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -469,8 +537,8 @@ wrap_mode = 1
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
@@ -478,10 +546,11 @@ wrap_mode = 1
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
 [connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
+[connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]

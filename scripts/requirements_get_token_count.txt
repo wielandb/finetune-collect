@@ -1,0 +1,5 @@
+pillow
+requests
+json
+base64
+tiktoken

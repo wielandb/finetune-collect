@@ -588,3 +588,73 @@ func check_if_function_button_should_be_visible_or_disabled():
 
 func _on_function_message_container_mouse_entered() -> void:
 	check_if_function_button_should_be_visible_or_disabled()
+
+func update_token_costs(conversation_token_counts):
+	var cost_json = FileAccess.get_file_as_string("res://assets/openai_costs.json").strip_edges()
+	#print(cost_json)
+	var costs = JSON.parse_string(cost_json)
+	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
+	var tokens_this_conversation = conversation_token_counts[my_convo_ix]
+	var tokens_all_conversations = {"total": 0, "input": 0, "output": 0}
+	for convoIx in conversation_token_counts:
+		tokens_all_conversations["total"] += conversation_token_counts[convoIx]["total"]
+		tokens_all_conversations["input"] += conversation_token_counts[convoIx]["input"]
+		tokens_all_conversations["output"] += conversation_token_counts[convoIx]["output"]
+	# Get the dollar to currency multiplier
+	var dollar_to_currency_multiplier = costs.get("dollar_to_currency_muliplier", 1)
+	# Training cost 4o (this conversation)
+	var training_cost_4o_this_conversation = (tokens_this_conversation["total"] * (costs["training"]["gpt-4o"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4oThisConversation.text = str(snapped(training_cost_4o_this_conversation, 0.001)) + " €"
+	# Training cost 4o (whole fine tune)
+	var training_cost_4o_whole_fine_tune = (tokens_all_conversations["total"] * (costs["training"]["gpt-4o"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4oWholeFineTune.text = str(snapped(training_cost_4o_whole_fine_tune, 0.001)) + " €"
+	# Training cost 4o-mini (this conversation)
+	var training_cost_4o_mini_this_conversation = (tokens_this_conversation["total"] * (costs["training"]["gpt-4o-mini"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4ominiThisConversation.text = str(snapped(training_cost_4o_mini_this_conversation, 0.001)) + " €"
+	# Training cost 4o-mini (whole fine tune)
+	var training_cost_4o_mini_whole_fine_tune = (tokens_all_conversations["total"] * (costs["training"]["gpt-4o-mini"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4ominiWholeFineTune.text = str(snapped(training_cost_4o_mini_whole_fine_tune, 0.001)) + " €"
+	# Inference cost 4o (this conversation)
+	## Inference cost = input tokens * input token price + output tokens * output token price (here and below)
+	var inferecence_cost_4o_this_conversation = (tokens_this_conversation["input"] * (costs["inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4oThisConversation.text = str(snapped(inferecence_cost_4o_this_conversation, 0.001)) + " €"
+	# Inference cost 4o (whole fine tune)
+	var inferecence_cost_4o_whole_fine_tune = (tokens_all_conversations["input"] * (costs["inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4oWholeFineTune.text = str(snapped(inferecence_cost_4o_whole_fine_tune, 0.001)) + " €"
+	# Inference cost 4o-mini (this conversation)
+	var inferecence_cost_4o_mini_this_conversation = (tokens_this_conversation["input"] * (costs["inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4ominiThisConversation.text = str(snapped(inferecence_cost_4o_mini_this_conversation, 0.001)) + " €"
+	# Inference cost 4o-mini (whole fine tune)
+	var inferecence_cost_4o_mini_whole_fine_tune = (tokens_all_conversations["input"] * (costs["inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4ominiWholeFineTune.text = str(snapped(inferecence_cost_4o_mini_whole_fine_tune, 0.001)) + " €"
+	# batch_inference_cost_4o (this conversation)
+	var batch_inference_cost_4o_this_conversation = (tokens_this_conversation["input"] * (costs["batch_inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["batch_inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4oThisConversation.text = str(snapped(batch_inference_cost_4o_this_conversation, 0.001)) + " €"
+	# batch_inference_cost_4o (whole fine tune)
+	var batch_inference_cost_4o_whole_fine_tune = (tokens_all_conversations["input"] * (costs["batch_inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["batch_inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4oWholeFineTune.text = str(snapped(batch_inference_cost_4o_whole_fine_tune, 0.001)) + " €"
+	# batch_inference_cost_4o-mini (this conversation)
+	var batch_inference_cost_4o_mini_this_conversation = (tokens_this_conversation["input"] * (costs["batch_inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["batch_inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4ominiThisConversation.text = str(snapped(batch_inference_cost_4o_mini_this_conversation, 0.001)) + " €"
+	# batch_inference_cost_4o-mini (whole fine tune)
+	var batch_inference_cost_4o_mini_whole_fine_tune = (tokens_all_conversations["input"] * (costs["batch_inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["batch_inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4oMiniWholeFineTune.text = str(snapped(batch_inference_cost_4o_mini_whole_fine_tune, 0.001)) + " €"
+	# Number of images
+	$MetaMessageContainer/InfoLabelsGridContainer/NumberOfImagesThisConversation.text = str(get_node("/root/FineTune").get_number_of_images_for_conversation(my_convo_ix))
+	$MetaMessageContainer/InfoLabelsGridContainer/NumberOfImagesWholeFineTune.text = str(get_node("/root/FineTune").get_number_of_images_total())
+
+func _on_button_3_pressed() -> void:
+	var output = []
+	var own_savefile_path = get_node("/root/FineTune").RUNTIME["filepath"]
+	var arguments_list = ["C:\\Users\\wiela\\Documents\\GitHub\\finetune-collect\\scripts\\get_token_count.py", own_savefile_path]
+	var exit_code = OS.execute("python", arguments_list, output)
+	var outputstring = output[0].strip_edges()
+	print(outputstring)
+	var conversation_token_counts = JSON.parse_string(outputstring)
+	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
+	$MetaMessageContainer/InfoLabelsGridContainer/ThisConversationTotalTokens.text = str(int(conversation_token_counts[my_convo_ix]["total"]))
+	var all_tokens = 0
+	for convoKey in conversation_token_counts:
+		all_tokens += conversation_token_counts[convoKey]["total"]
+	$MetaMessageContainer/InfoLabelsGridContainer/WholeFineTuneTotalTokens.text = str(int(all_tokens))
+	update_token_costs(conversation_token_counts)

@@ -569,3 +569,17 @@ func getImageType(url: String) -> String:
 		return "jpg"
 	else:
 		return ""
+
+
+func get_number_of_images_for_conversation(convoIx):
+	var image_count = 0
+	for message in CONVERSATIONS[convoIx]:
+		if message["type"] == "Image":
+			image_count += 1
+	return image_count
+
+func get_number_of_images_total():
+	var image_count = 0
+	for convoIx in CONVERSATIONS:
+		image_count += get_number_of_images_for_conversation(convoIx)
+	return image_count

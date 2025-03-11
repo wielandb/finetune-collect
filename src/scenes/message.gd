@@ -672,3 +672,11 @@ func _on_button_3_pressed() -> void:
 		all_tokens += conversation_token_counts[convoKey]["total"]
 	$MetaMessageContainer/InfoLabelsGridContainer/WholeFineTuneTotalTokens.text = str(int(all_tokens))
 	update_token_costs(conversation_token_counts)
+
+
+func _on_meta_message_toggle_cost_estimation_button_pressed() -> void:
+	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
+	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_TOKEN_CALCS")
+	else:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_TOKEN_CALCS")

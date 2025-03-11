@@ -552,6 +552,7 @@ wrap_mode = 1
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
+[connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_on_button_3_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]

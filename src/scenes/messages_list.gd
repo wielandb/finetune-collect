@@ -145,6 +145,14 @@ func _on_add_message_completion_button_pressed() -> void:
 	var settings = get_tree().get_root().get_node("FineTune").SETTINGS
 	var my_conversation_id = get_tree().get_root().get_node("FineTune").CURRENT_EDITED_CONVO_IX
 	var ftc_messages = self.to_var()
+	# Remove the meta message if anywhere
+	var new_ftc_messages = []
+	for msg in ftc_messages:
+		if msg["type"] == "meta" or msg["role"] == "meta":
+			continue
+		else:
+			new_ftc_messages.append(msg)
+	ftc_messages = new_ftc_messages
 	var openai_messages:Array[Message] = []
 	# Check if a global system message needs to be used, and if so, add it before working with the message list
 	if settings["useGlobalSystemMessage"]:

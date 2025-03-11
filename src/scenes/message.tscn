@@ -329,7 +329,7 @@ text = "Whole fine-tune"
 
 [node name="Label25" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Total tokens"
+text = "META_MESSAGE_TOTAL_TOKENS"
 
 [node name="ThisConversationTotalTokens" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -342,7 +342,7 @@ text = "122.112"
 [node name="Label4" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "Training cost (4o)"
+text = "META_MESSAGE_TRAINING_COST_4o"
 
 [node name="TrainingCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -357,7 +357,7 @@ text = "12.45 €"
 [node name="Label7" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
-text = "Training cost (4o-mini)"
+text = "META_MESSAGE_TRAINING_COST_4omini"
 
 [node name="TrainingCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -370,7 +370,7 @@ text = "23.23 €"
 
 [node name="Label10" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Inference cost (4o)"
+text = "META_MESSAGE_INFERENCE_COST_4o"
 
 [node name="InferenceCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -382,7 +382,7 @@ text = "9.45 €"
 
 [node name="Label13" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Inference cost (4o-mini)"
+text = "META_MESSAGE_INFERENCE_COST_4omini"
 
 [node name="InferenceCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -394,7 +394,7 @@ text = "4.21 €"
 
 [node name="Label16" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Batch inference cost (4o)"
+text = "META_MESSAGE_BATCH_INFERENCE_COST_4o"
 
 [node name="BatchInferenceCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -406,7 +406,7 @@ text = "0.12 €"
 
 [node name="Label19" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Batch inference cost (4o-mini)"
+text = "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
 
 [node name="BatchInferenceCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
@@ -418,7 +418,7 @@ text = "0.06 €"
 
 [node name="Label22" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2
-text = "Number of images"
+text = "META_MESSAGE_NUMBER_OF_IMAGES"
 
 [node name="NumberOfImagesThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
 layout_mode = 2

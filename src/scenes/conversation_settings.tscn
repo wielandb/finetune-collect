@@ -260,6 +260,36 @@ use_native_dialog = true
 layout_mode = 2
 text = "SETTINGS_USE_USER_NAMES"
 
+[node name="TokenCountPathContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="TokenCounterPathLabel" type="Label" parent="VBoxContainer/TokenCountPathContainer"]
+layout_mode = 2
+text = "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
+
+[node name="TokenCounterPathHint" type="TextureRect" parent="VBoxContainer/TokenCountPathContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="TokenCounterPathLineEdit" type="LineEdit" parent="VBoxContainer/TokenCountPathContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TokenCounterLocalizerFileDialog" type="FileDialog" parent="VBoxContainer/TokenCountPathContainer"]
+title = "Open a File"
+ok_button_text = "GENERIC_CHOOSE"
+cancel_button_text = "GENERIC_CANCEL"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="TokenCounterFilePickerBtn" type="Button" parent="VBoxContainer/TokenCountPathContainer"]
+layout_mode = 2
+text = "GENERIC_CHOOSE_FILE"
+icon = ExtResource("6_3r4bh")
+
 [node name="SchemaEditorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -327,6 +357,8 @@ use_native_dialog = true
 [connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/BatchCreatonContainer/BatchCreationButton" to="." method="_on_batch_creation_button_pressed"]
 [connection signal="files_selected" from="VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog" to="." method="_on_batch_creation_file_dialog_files_selected"]
+[connection signal="file_selected" from="VBoxContainer/TokenCountPathContainer/TokenCounterLocalizerFileDialog" to="." method="_on_token_counter_localizer_file_dialog_file_selected"]
+[connection signal="pressed" from="VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn" to="." method="_on_token_counter_file_picker_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentLoadFromFileBtn" to="." method="_on_schema_content_load_from_file_btn_pressed"]
 [connection signal="text_changed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor" to="." method="_on_schema_content_editor_text_changed"]
 [connection signal="file_selected" from="VBoxContainer/SchemaContainer/LoadSchemaFileDialog" to="." method="_on_load_schema_file_dialog_file_selected"]

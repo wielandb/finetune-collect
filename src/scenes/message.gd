@@ -142,6 +142,13 @@ func _ready() -> void:
 	_on_check_what_text_message_should_be_visisble()
 	image_access_web.loaded.connect(_on_file_loaded)
 	image_access_web.progress.connect(_on_progress)
+	var token_counter_path =  get_node("/root/FineTune").SETTINGS.get("tokenCounterPath", "")
+	if token_counter_path == "":
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = true
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH")
+	else:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = ""
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = false
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
@@ -663,7 +670,10 @@ func update_token_costs(conversation_token_counts):
 func _do_token_calculation_update() -> void:
 	var output = []
 	var own_savefile_path = get_node("/root/FineTune").RUNTIME["filepath"]
-	var arguments_list = ["C:\\Users\\wiela\\Documents\\GitHub\\finetune-collect\\scripts\\get_token_count.py", own_savefile_path]
+	var token_counter_path =  get_node("/root/FineTune").SETTINGS.get("tokenCounterPath", "")
+	if token_counter_path == "" or own_savefile_path == "":
+		return
+	var arguments_list = [token_counter_path, own_savefile_path]
 	var exit_code = OS.execute("python", arguments_list, output)
 	var outputstring = output[0].strip_edges()
 	print(outputstring)

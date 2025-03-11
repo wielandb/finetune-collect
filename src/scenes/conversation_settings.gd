@@ -23,6 +23,7 @@ func to_var():
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
 	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
 	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
+	me["tokenCounterPath"] = $VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text
 	return me
 	
 func from_var(me):
@@ -44,6 +45,7 @@ func from_var(me):
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
 	_on_schema_content_editor_text_changed()
+	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = me.get("tokenCounterPath", "")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -61,8 +63,9 @@ func _ready() -> void:
 		"Web":
 			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.disabled = true
 			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
-
-
+			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.disabled = true
+			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+			$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.disabled = true
 func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
 	var txtdata = Marshalls.base64_to_utf8(base64_data)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = txtdata
@@ -165,3 +168,10 @@ func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> 
 			pass
 	for message in first_messages:
 			ft.create_new_conversation([message])
+
+
+func _on_token_counter_file_picker_btn_pressed() -> void:
+	$VBoxContainer/TokenCountPathContainer/TokenCounterLocalizerFileDialog.visible = true
+
+func _on_token_counter_localizer_file_dialog_file_selected(path: String) -> void:
+	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = path

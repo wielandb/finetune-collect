@@ -295,6 +295,13 @@ func check_is_conversation_problematic(idx: String):
 	if not hasAssistantMessage:
 		return true
 	return false
+	
+func check_is_conversation_ready(idx: String) -> bool:
+	var thisconvo = CONVERSATIONS[idx]
+	for m in thisconvo:
+		if m["type"] == "meta" and m.get("metaData", {}).get("ready", false) == true:
+			return true
+	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
 	if path.ends_with(".json"):
@@ -309,7 +316,10 @@ func refresh_conversations_list():
 		if check_is_conversation_problematic(i):
 			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-remove-custom.png"))
 		else:
-			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-custom.png"))
+			if check_is_conversation_ready(i):
+				$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-check.png"))
+			else:
+				$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-custom.png"))
 
 func _on_conversation_tab_changed(tab: int) -> void:
 	save_current_conversation()

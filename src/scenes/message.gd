@@ -42,6 +42,10 @@ func to_var():
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
+	me["metaData"] = {}
+	me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
+	me["metaData"]["conversationName"] = $MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text
+	me["metaData"]["notes"] = $MetaMessageContainer/ConversationNotesEdit.text
 	return me
 
 func from_var(data):
@@ -49,6 +53,14 @@ func from_var(data):
 	var useUserNames = get_node("/root/FineTune").SETTINGS.get("useUserNames", false)
 	print("Building from var")
 	print(data)
+	if data.get("role", "user") == "meta" and data.get("type", "Text") == "meta":
+		$MessageSettingsContainer.visible = false
+		$MetaMessageContainer.visible = true
+		var metaData = data.get("metaData", {})
+		$MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed = metaData.get("ready", false)
+		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName")
+		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes")
+		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
 	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data.get("type", "Text")))
@@ -102,6 +114,8 @@ func from_var(data):
 			$MessageSettingsContainer/UserNameEdit.visible = true
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
+	# Check if it is a meta message
+	
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)

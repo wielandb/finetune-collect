@@ -173,7 +173,7 @@ func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> 
 		if file.ends_with(".mp3") or file.ends_with(".wav") or file.ends_with(".aac"):
 			pass
 	for message in first_messages:
-			ft.create_new_conversation([message])
+			ft.create_new_conversation([{"type": "meta", "role": "meta"}, message])
 
 
 func _on_token_counter_file_picker_btn_pressed() -> void:

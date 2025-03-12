@@ -623,6 +623,8 @@ func update_token_costs(conversation_token_counts):
 	#print(cost_json)
 	var costs = JSON.parse_string(cost_json)
 	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
+	if conversation_token_counts.has(my_convo_ix):
+		return
 	var tokens_this_conversation = conversation_token_counts[my_convo_ix]
 	var tokens_all_conversations = {"total": 0, "input": 0, "output": 0}
 	for convoIx in conversation_token_counts:

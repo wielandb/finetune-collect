@@ -45,6 +45,7 @@ def image_token_count(image_data, low_res=False):
       - a URL (if from_base64=False)
       - base64-encoded bytes (if from_base64=True)
     """
+    """
     if Image is None:
         # If PIL not installed, return 0 to avoid errors
         return 0
@@ -90,6 +91,12 @@ def image_token_count(image_data, low_res=False):
     total_image_tokens = base_tokens + tile_count * tile_token_cost
     #print(f"Total image tokens: {total_image_tokens}")
     return total_image_tokens
+    """
+    # Thats not idea and should be revisited
+    if low_res:
+        return 85
+    else:
+        return 1105
 
 def get_token_count_for_string(s):
     return len(encoding.encode(str(s)))

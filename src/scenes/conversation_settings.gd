@@ -145,7 +145,8 @@ func create_image_message_dict_from_path(path):
 	return {
 		"role": "user",
 		"type": "Image",
-		"imageContent": base_64_data
+		"imageContent": base_64_data,
+		"imageDetail": 0
 	}
 
 func create_text_message_dict_from_path(path):

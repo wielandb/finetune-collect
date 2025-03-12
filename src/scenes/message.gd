@@ -65,7 +65,8 @@ func from_var(data):
 		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName", "")
 		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes", "")
 		# Update the saved token counts if available
-		update_token_costs(savedTokenCounts)
+		if savedTokenCounts:
+			update_token_costs(savedTokenCounts)
 		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
@@ -623,7 +624,7 @@ func update_token_costs(conversation_token_counts):
 	#print(cost_json)
 	var costs = JSON.parse_string(cost_json)
 	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
-	if conversation_token_counts.has(my_convo_ix):
+	if not conversation_token_counts.has(my_convo_ix):
 		return
 	var tokens_this_conversation = conversation_token_counts[my_convo_ix]
 	var tokens_all_conversations = {"total": 0, "input": 0, "output": 0}
@@ -692,6 +693,8 @@ func _do_token_calculation_update() -> void:
 		all_tokens += conversation_token_counts[convoKey]["total"]
 	$MetaMessageContainer/InfoLabelsGridContainer/WholeFineTuneTotalTokens.text = str(int(all_tokens))
 	get_node("/root/FineTune/Conversation/Settings/ConversationSettings/VBoxContainer/TokenCountPathContainer/TokenCountValueHolder").text = str(conversation_token_counts)
+	print("Token counts")
+	print(conversation_token_counts)
 	update_token_costs(conversation_token_counts)
 
 

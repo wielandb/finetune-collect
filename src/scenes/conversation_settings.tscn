@@ -336,11 +336,11 @@ layout_mode = 2
 
 [node name="TokenCounterWhenLabel" type="Label" parent="VBoxContainer/TokenCountWhenContainer"]
 layout_mode = 2
-text = "SETTINGS_TOKEN_COUNT_WHEN_LANEL"
+text = "SETTINGS_TOKEN_COUNT_WHEN_LABEL"
 
 [node name="TokenCountWhenHint" type="TextureRect" parent="VBoxContainer/TokenCountWhenContainer"]
 layout_mode = 2
-tooltip_text = "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+tooltip_text = "SETTINGS_WHEN_TOKEN_COUNT_HINT"
 texture = ExtResource("3_kcvkw")
 expand_mode = 2
 

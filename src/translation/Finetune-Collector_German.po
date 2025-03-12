@@ -831,3 +831,19 @@ msgstr "Nur fertige"
 msgid "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
 msgstr "Alle (nicht empfohlen)"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_SAVING"
+msgstr "Beim Speichern"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
+msgstr "Nie"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_LABEL"
+msgstr "Wann Tokens zählen?"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_WHEN_TOKEN_COUNT_HINT"
+msgstr "Ob und wann Tokenkostenberechnungen durchgeführt werden sollen"
+

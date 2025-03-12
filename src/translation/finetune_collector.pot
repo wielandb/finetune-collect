@@ -185,6 +185,10 @@ msgid "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_USER_NAMES"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_MINIMAL_HEIGHT"
 msgstr ""
 
@@ -344,10 +348,6 @@ msgid "GENERIC_CANCEL"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
-msgid "SETTINGS_USE_USER_NAMES"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
 msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
 msgstr ""
 
@@ -363,6 +363,22 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_CHOOSE_FILE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_WHEN_TOKEN_COUNT_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_SAVING"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
 msgstr ""
 
 #: scenes/conversation_settings.tscn

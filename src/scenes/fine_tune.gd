@@ -79,7 +79,7 @@ func _process(delta: float) -> void:
 		else:
 			save_as_appropriate_from_path(RUNTIME["filepath"])
 			var first_message_container = $Conversation/Messages/MessagesList/MessagesListContainer.get_child(0)
-			if first_message_container.is_in_group("message"):
+			if first_message_container.is_in_group("message") and SETTINGS.get("countTokensWhen") == 0:
 				first_message_container._do_token_calculation_update()
 		refresh_conversations_list()
 	if Input.is_action_just_released("load"):

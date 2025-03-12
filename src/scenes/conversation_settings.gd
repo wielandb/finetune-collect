@@ -25,6 +25,7 @@ func to_var():
 	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
 	me["tokenCounterPath"] = $VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text
 	me["exportConvos"] = $VBoxContainer/ExportWhatConvoContainer/ExportWhatConvosOptionButton.selected
+	me["countTokensWhen"] = $VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected
 	return me
 	
 func from_var(me):
@@ -48,6 +49,7 @@ func from_var(me):
 	_on_schema_content_editor_text_changed()
 	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = me.get("tokenCounterPath", "")
 	$VBoxContainer/ExportWhatConvoContainer/ExportWhatConvosOptionButton.selcted = me.get("exportConvos", 0)
+	$VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected = me.get("countTokensWhen", 0)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

@@ -24,6 +24,7 @@ theme_override_constants/separation = 20
 
 [node name="AddButtonsContainer" type="HBoxContainer" parent="MessagesListContainer"]
 layout_mode = 2
+size_flags_vertical = 10
 
 [node name="AddMessageButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
 layout_mode = 2

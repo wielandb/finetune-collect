@@ -200,7 +200,8 @@ func convert_conversation_to_openai_format(conversation, function_map=null):
 	var converted_messages = []
 	for message in conversation:
 		var converted = await convert_message_to_openai_format(message, function_map)
-		
+		if converted == null:
+			continue
 		# Handle cases where a single function message might return multiple messages
 		if converted is Array:
 			converted_messages += converted

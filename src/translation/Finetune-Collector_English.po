@@ -784,3 +784,31 @@ msgstr "Number of images"
 msgid "Test Token Count"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
+msgstr "Export which conversations?"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVOS_HINT"
+msgstr "What conversations to include in the export.\n"
+"\"Only unproblematic\" means those where the\n"
+"program found an error (Marked by an X by the\n"
+"conversation icon) will not be exported.\n"
+"\"Only ready\" means only those where you set\n"
+"the checkbox that they are ready will be\n"
+"exported.\n"
+"\"All\" is not recommended and will probably lead\n"
+"to errors when uploading."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_UNPROBLEMATIC_OPTION"
+msgstr "Only unproblematic"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_READY_OPTION"
+msgstr "Only ready"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
+msgstr "All (not recommended)"
+

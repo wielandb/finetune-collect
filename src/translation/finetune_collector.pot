@@ -257,6 +257,26 @@ msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVOS_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_UNPROBLEMATIC_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_READY_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_API_KEY"
 msgstr ""
 
@@ -339,10 +359,6 @@ msgstr ""
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open a File"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "GENERIC_CHOOSE"
 msgstr ""
 
 #: scenes/conversation_settings.tscn

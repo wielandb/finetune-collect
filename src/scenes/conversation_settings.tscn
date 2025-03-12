@@ -166,6 +166,31 @@ popup/item_2/id = 2
 popup/item_3/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
 popup/item_3/id = 3
 
+[node name="ExportWhatConvoContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ExportWhatConvosLabel" type="Label" parent="VBoxContainer/ExportWhatConvoContainer"]
+layout_mode = 2
+text = "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
+
+[node name="ExportWhatConvosHint" type="TextureRect" parent="VBoxContainer/ExportWhatConvoContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_EXPORT_WHICH_CONVOS_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ExportWhatConvosOptionButton" type="OptionButton" parent="VBoxContainer/ExportWhatConvoContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_UNPROBLEMATIC_OPTION"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_READY_OPTION"
+popup/item_1/id = 1
+popup/item_2/text = "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
+popup/item_2/id = 2
+
 [node name="APIKeySettingContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -279,7 +304,7 @@ size_flags_horizontal = 3
 
 [node name="TokenCounterLocalizerFileDialog" type="FileDialog" parent="VBoxContainer/TokenCountPathContainer"]
 title = "Open a File"
-ok_button_text = "GENERIC_CHOOSE"
+ok_button_text = "Open"
 cancel_button_text = "GENERIC_CANCEL"
 file_mode = 0
 access = 2

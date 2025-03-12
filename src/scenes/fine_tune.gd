@@ -520,22 +520,31 @@ func _on_expand_burger_btn_pressed() -> void:
 	$CollapsedMenu.visible = false
 
 func create_jsonl_data_for_file():
-	var FINETUNEDATA = {}
-	FINETUNEDATA["functions"] = FUNCTIONS
+	var EFINETUNEDATA = {} # EFINETUNEDATA -> ExportFinetuneData (so that we don't remove anything from the save file on export)
+	EFINETUNEDATA["functions"] = FUNCTIONS
 	var allconversations = CONVERSATIONS
 	var unproblematicconversations = {}
 	# Check all conversations and only add unproblematic ones
+	# Check what the settings say about what to export
+	var whatToExport = SETTINGS.get("exportConvo", 0)
+	# 0 -> only unproblematic, 1 -> only ready, 2 -> all
 	for convokey in allconversations:
-		if not check_is_conversation_problematic(convokey):
+		if whatToExport == 0:
+			if not check_is_conversation_problematic(convokey):
+				unproblematicconversations[convokey] = CONVERSATIONS[convokey]
+		elif whatToExport == 1:
+			if not check_is_conversation_problematic(convokey) and check_is_conversation_ready(convokey):
+				unproblematicconversations[convokey] = CONVERSATIONS[convokey]
+		elif whatToExport == 2:
 			unproblematicconversations[convokey] = CONVERSATIONS[convokey]
-	FINETUNEDATA["conversations"] = unproblematicconversations
-	FINETUNEDATA["settings"] = SETTINGS
+	EFINETUNEDATA["conversations"] = unproblematicconversations
+	EFINETUNEDATA["settings"] = SETTINGS
 	var complete_jsonl_string = ""
 	match SETTINGS.get("finetuneType", 0):
 		0:
-			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(EFINETUNEDATA)
 		1:
-			complete_jsonl_string = $Exporter.convert_dpo_data(FINETUNEDATA)
+			complete_jsonl_string = $Exporter.convert_dpo_data(EFINETUNEDATA)
 		2:
 			# TODO: (BLOCKED) reinforcement fine tuning
 			complete_jsonl_string = ""

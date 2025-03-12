@@ -313,6 +313,7 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	elif path.ends_with(".ftproj"):
 		load_from_binary(path)
 	RUNTIME["filepath"] = path
+	
 
 
 func get_conversation_name_or_false(idx):

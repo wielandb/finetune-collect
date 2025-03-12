@@ -67,6 +67,10 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 placeholder_text = "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 
+[node name="UseUserNamesCheckbox" type="CheckBox" parent="VBoxContainer"]
+layout_mode = 2
+text = "SETTINGS_USE_USER_NAMES"
+
 [node name="MinimalImageHeightContainer" type="HBoxContainer" parent="VBoxContainer"]
 visible = false
 layout_mode = 2
@@ -112,6 +116,9 @@ popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
 popup/item_2/id = 2
 popup/item_2/disabled = true
+
+[node name="ExportSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
 [node name="ExportImagesHowContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -191,6 +198,9 @@ popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
 popup/item_2/id = 2
 
+[node name="APISettingsSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
 [node name="APIKeySettingContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -230,6 +240,9 @@ size_flags_horizontal = 3
 layout_mode = 2
 text = "GENERIC_REFRESH"
 icon = ExtResource("3_swtgl")
+
+[node name="BatchCreationSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
 [node name="BatchCreatonContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -281,9 +294,8 @@ file_mode = 1
 access = 2
 use_native_dialog = true
 
-[node name="UseUserNamesCheckbox" type="CheckBox" parent="VBoxContainer"]
+[node name="TokenCounterSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
-text = "SETTINGS_USE_USER_NAMES"
 
 [node name="TokenCountPathContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -315,6 +327,10 @@ layout_mode = 2
 text = "GENERIC_CHOOSE_FILE"
 icon = ExtResource("6_3r4bh")
 
+[node name="TokenCountValueHolder" type="Label" parent="VBoxContainer/TokenCountPathContainer"]
+visible = false
+layout_mode = 2
+
 [node name="TokenCountWhenContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -337,6 +353,9 @@ popup/item_0/text = "SETTINGS_TOKEN_COUNT_WHEN_OPTION_SAVING"
 popup/item_0/id = 0
 popup/item_1/text = "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
 popup/item_1/id = 1
+
+[node name="SchemaSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
 
 [node name="SchemaEditorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2

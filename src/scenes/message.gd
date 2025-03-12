@@ -54,6 +54,7 @@ func to_var():
 func from_var(data):
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	var useUserNames = get_node("/root/FineTune").SETTINGS.get("useUserNames", false)
+	var savedTokenCounts = JSON.parse_string(get_node("/root/FineTune").SETTINGS.get("tokenCounts", "{}"))
 	print("Building from var")
 	print(data)
 	if data.get("role", "user") == "meta" and data.get("type", "Text") == "meta":
@@ -63,6 +64,8 @@ func from_var(data):
 		$MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed = metaData.get("ready", false)
 		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName", "")
 		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes", "")
+		# Update the saved token counts if available
+		update_token_costs(savedTokenCounts)
 		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
@@ -117,7 +120,7 @@ func from_var(data):
 			$MessageSettingsContainer/UserNameEdit.visible = true
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
-	# Check if it is a meta message
+
 	
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
@@ -614,6 +617,8 @@ func _on_function_message_container_mouse_entered() -> void:
 	check_if_function_button_should_be_visible_or_disabled()
 
 func update_token_costs(conversation_token_counts):
+	if conversation_token_counts == {}:
+		return
 	var cost_json = FileAccess.get_file_as_string("res://assets/openai_costs.json").strip_edges()
 	#print(cost_json)
 	var costs = JSON.parse_string(cost_json)
@@ -670,7 +675,7 @@ func update_token_costs(conversation_token_counts):
 func _do_token_calculation_update() -> void:
 	var output = []
 	var own_savefile_path = get_node("/root/FineTune").RUNTIME["filepath"]
-	var token_counter_path =  get_node("/root/FineTune").SETTINGS.get("tokenCounterPath", "")
+	var token_counter_path = get_node("/root/FineTune").SETTINGS.get("tokenCounterPath", "")
 	if token_counter_path == "" or own_savefile_path == "":
 		return
 	var arguments_list = [token_counter_path, own_savefile_path]
@@ -684,6 +689,7 @@ func _do_token_calculation_update() -> void:
 	for convoKey in conversation_token_counts:
 		all_tokens += conversation_token_counts[convoKey]["total"]
 	$MetaMessageContainer/InfoLabelsGridContainer/WholeFineTuneTotalTokens.text = str(int(all_tokens))
+	get_node("/root/FineTune/Conversation/Settings/ConversationSettings/VBoxContainer/TokenCountPathContainer/TokenCountValueHolder").text = str(conversation_token_counts)
 	update_token_costs(conversation_token_counts)
 
 

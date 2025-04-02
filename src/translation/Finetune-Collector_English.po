@@ -469,7 +469,10 @@ msgstr "URL of the schema editor:"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
-msgstr "The URL where an instance of the Schema-Editor-PHP-File from the repository is hosted. The developer also provides an instance. Keep in mind that your Data is transferred to the developer's server if you use the standard endpoint."
+msgstr "The URL where an instance of the Schema-Editor-PHP-File\n"
+"from the repository is hosted. The developer also provides\n"
+"an instance. Keep in mind that your Data is transferred to\n"
+"the developer's server if you use the standard endpoint."
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
@@ -579,7 +582,6 @@ msgstr "Open schema editor in new tab"
 #: scenes/conversation_settings.gd
 #: scenes/conversation_settings.tscn
 #: scenes/message.gd
-#: scenes/schema_edit_buttons_container.gd
 msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
 msgstr "Not available in Web export"
 
@@ -672,4 +674,157 @@ msgstr "Which?"
 #: scenes/message.tscn
 msgid "MESSAGE_EXECUTE_FUNCTION"
 msgstr "Execute function"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
+msgstr "Path to token counter script"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+msgstr "The path to the python-file called \"get_token_count.py\"\n"
+"from the scripts/-directory from the repository \n"
+"somewhere on your system. Needed to calculate token costs."
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE"
+msgstr "Choose"
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE_FILE"
+msgstr "Choose file"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH"
+msgstr "A path to the token counter script must be set\n"
+"in the settings to use this."
+
+#: scenes/message.gd
+msgid "MESSAGE_META_HIDE_TOKEN_CALCS"
+msgstr "Hide token calculations"
+
+#: scenes/message.gd
+#: scenes/message.tscn
+msgid "MESSAGE_META_SHOW_TOKEN_CALCS"
+msgstr "Show token calculations"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_LABEL"
+msgstr "Conversation name:"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_HINT"
+msgstr "You can give this conversation a name to find it\n"
+"faster in the panel on the left"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NOTES_PLACEHOLDER"
+msgstr "Notes"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_READY_CHECKBOX_LABEL"
+msgstr "Ready"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_READY_HINT"
+msgstr "Mark this conversation as \"ready\", so that\n"
+"you can quickly see on the left if you wanted\n"
+"to revisit a conversation later. It is also\n"
+"possible to only export conversations marked \n"
+"as \"ready\""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
+msgstr "Token cost estimation"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_THIS_CONVERSATION"
+msgstr "This conversation"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_WHOLE_FINETUNE"
+msgstr "Whole fine-tune"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOTAL_TOKENS"
+msgstr "Total tokens"
+
+#: scenes/message.tscn
+msgid "0"
+msgstr "0"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4o"
+msgstr "Training cost (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4omini"
+msgstr "Training cost (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4o"
+msgstr "Inference cost (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4omini"
+msgstr "Inference cost (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COST_4o"
+msgstr "Batch inference cost (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+msgstr "Batch inference cost (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NUMBER_OF_IMAGES"
+msgstr "Number of images"
+
+#: scenes/message.tscn
+msgid "Test Token Count"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
+msgstr "Export which conversations?"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVOS_HINT"
+msgstr "What conversations to include in the export.\n"
+"\"Only unproblematic\" means those where the\n"
+"program found an error (Marked by an X by the\n"
+"conversation icon) will not be exported.\n"
+"\"Only ready\" means only those where you set\n"
+"the checkbox that they are ready will be\n"
+"exported.\n"
+"\"All\" is not recommended and will probably lead\n"
+"to errors when uploading."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_UNPROBLEMATIC_OPTION"
+msgstr "Only unproblematic"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_READY_OPTION"
+msgstr "Only ready"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
+msgstr "All (not recommended)"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_SAVING"
+msgstr "When saving"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
+msgstr "Never"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_LABEL"
+msgstr "When to count tokens"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_WHEN_TOKEN_COUNT_HINT"
+msgstr "When and if token cost calculations should be performed"
 

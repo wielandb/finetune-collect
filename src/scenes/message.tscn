@@ -26,7 +26,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_vertical = 3
 script = ExtResource("1_lafvt")
 
 [node name="MessageSettingsContainer" type="VBoxContainer" parent="."]
@@ -125,6 +124,9 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="HSeparator" type="HSeparator" parent="TextMessageContainer"]
+layout_mode = 2
+
 [node name="ImageMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
@@ -198,6 +200,9 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
+[node name="HSeparator" type="HSeparator" parent="ImageMessageContainer"]
+layout_mode = 2
+
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
@@ -255,11 +260,194 @@ visible = false
 layout_mode = 2
 text = "Add result"
 
+[node name="HSeparator" type="HSeparator" parent="FunctionMessageContainer"]
+layout_mode = 2
+
 [node name="MetaMessageContainer" type="VBoxContainer" parent="."]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConversationNameLabel" type="Label" parent="MetaMessageContainer"]
+visible = false
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_TEXT_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="ConversationNameContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+layout_mode = 2
+
+[node name="ConversationNameLabel" type="Label" parent="MetaMessageContainer/ConversationNameContainer"]
+layout_mode = 2
+text = "MESSAGE_META_CONVERSATION_NAME_LABEL"
+
+[node name="ConversationNameHint" type="TextureRect" parent="MetaMessageContainer/ConversationNameContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+tooltip_text = "MESSAGE_META_CONVERSATION_NAME_HINT"
+texture = ExtResource("10_b60dq")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="ConversationNameEdit" type="LineEdit" parent="MetaMessageContainer/ConversationNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ConversationNotesEdit" type="TextEdit" parent="MetaMessageContainer"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+placeholder_text = "META_MESSAGE_NOTES_PLACEHOLDER"
+
+[node name="ConversationReadyContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+layout_mode = 2
+
+[node name="ConversationReadyCheckBox" type="CheckBox" parent="MetaMessageContainer/ConversationReadyContainer"]
+layout_mode = 2
+text = "MESSAGE_META_READY_CHECKBOX_LABEL"
+
+[node name="ConversationReadyHint" type="TextureRect" parent="MetaMessageContainer/ConversationReadyContainer"]
+layout_mode = 2
+tooltip_text = "MESSAGE_META_CONVERSATION_READY_HINT"
+texture = ExtResource("10_b60dq")
+expand_mode = 2
+stretch_mode = 3
+
+[node name="MetaMessageToggleCostEstimationButton" type="Button" parent="MetaMessageContainer"]
+layout_mode = 2
+text = "MESSAGE_META_SHOW_TOKEN_CALCS"
+
+[node name="InfoLabelsGridContainer" type="GridContainer" parent="MetaMessageContainer"]
+visible = false
+layout_mode = 2
+columns = 3
+
+[node name="Label" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "META_MESSAGE_TOKEN_COST_ESTIMATION"
+
+[node name="Label2" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "META_MESSAGE_THIS_CONVERSATION"
+
+[node name="Label3" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "META_MESSAGE_WHOLE_FINETUNE"
+
+[node name="Label25" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "META_MESSAGE_TOTAL_TOKENS"
+
+[node name="ThisConversationTotalTokens" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="WholeFineTuneTotalTokens" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Label4" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "META_MESSAGE_TRAINING_COST_4o"
+
+[node name="TrainingCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "0"
+
+[node name="TrainingCost4oWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "0"
+
+[node name="Label7" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "META_MESSAGE_TRAINING_COST_4omini"
+
+[node name="TrainingCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+text = "0"
+
+[node name="TrainingCost4ominiWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Label10" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "META_MESSAGE_INFERENCE_COST_4o"
+
+[node name="InferenceCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="InferenceCost4oWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Label13" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "META_MESSAGE_INFERENCE_COST_4omini"
+
+[node name="InferenceCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="InferenceCost4ominiWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Label16" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "META_MESSAGE_BATCH_INFERENCE_COST_4o"
+
+[node name="BatchInferenceCost4oThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="BatchInferenceCost4oWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Label19" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+
+[node name="BatchInferenceCost4ominiThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="BatchInferenceCost4oMiniWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Label22" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "META_MESSAGE_NUMBER_OF_IMAGES"
+
+[node name="NumberOfImagesThisConversation" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="NumberOfImagesWholeFineTune" type="Label" parent="MetaMessageContainer/InfoLabelsGridContainer"]
+layout_mode = 2
+text = "0"
+
+[node name="Button3" type="Button" parent="MetaMessageContainer"]
+visible = false
+layout_mode = 2
+text = "Test Token Count"
+
+[node name="HSeparator" type="HSeparator" parent="MetaMessageContainer"]
+layout_mode = 2
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -353,14 +541,17 @@ wrap_mode = 1
 
 [node name="PollingTimer" type="Timer" parent="SchemaMessageContainer"]
 
+[node name="HSeparator" type="HSeparator" parent="SchemaMessageContainer"]
+layout_mode = 2
+
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
@@ -372,6 +563,8 @@ wrap_mode = 1
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
+[connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
+[connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_do_token_calculation_update"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]

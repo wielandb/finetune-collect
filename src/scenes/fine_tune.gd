@@ -78,6 +78,10 @@ func _process(delta: float) -> void:
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 		else:
 			save_as_appropriate_from_path(RUNTIME["filepath"])
+			var first_message_container = $Conversation/Messages/MessagesList/MessagesListContainer.get_child(0)
+			if first_message_container.is_in_group("message") and SETTINGS.get("countTokensWhen") == 0:
+				first_message_container._do_token_calculation_update()
+		refresh_conversations_list()
 	if Input.is_action_just_released("load"):
 		$VBoxContainer/LoadBtn/FileDialog.visible = true
 	#	if RUNTIME["filepath"] == "":
@@ -139,7 +143,7 @@ func _on_item_list_item_selected(index: int) -> void:
 		if message.is_in_group("message"):
 			message.queue_free()	
 	# Und die neuen aus der Convo laden
-	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_text(index)
+	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_tooltip(index)
 	# Create conversation if it does not exist
 	print("IX:")
 	print(CURRENT_EDITED_CONVO_IX)
@@ -255,18 +259,21 @@ func check_is_conversation_problematic(idx: String):
 	var thisconvo = CONVERSATIONS[idx]
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
-		# DPO: First message user, second message assistant
-		if len(thisconvo) != 2:
+		# DPO: First message user, second message assistant (with meta message 3 messages)
+		var metamessageoffset = 0
+		if thisconvo[0]["role"] == "meta" or thisconvo[0]["type"] == "meta":
+			metamessageoffset = 1
+		if len(thisconvo) != 2 + metamessageoffset:
 			return true
-		if len(thisconvo) >= 1:
-			if thisconvo[0]["role"] != "user":
+		if len(thisconvo) >= 1 + metamessageoffset:
+			if thisconvo[0 + metamessageoffset]["role"] != "user":
 				return true
-		if len(thisconvo) >= 2:
-			if thisconvo[1]["role"] != "assistant":
+		if len(thisconvo) >= 2 + metamessageoffset:
+			if thisconvo[1 + metamessageoffset]["role"] != "assistant":
 				return true
-		if thisconvo[0]["textContent"] == "":
+		if thisconvo[0 + metamessageoffset]["textContent"] == "":
 			return true
-		if thisconvo[1]["preferredTextContent"] == "" or thisconvo[1]["unpreferredTextContent"] == "":
+		if thisconvo[1 + metamessageoffset]["preferredTextContent"] == "" or thisconvo[1 + metamessageoffset]["unpreferredTextContent"] == "":
 			return true
 		return false
 	# Check if at least two messages exist
@@ -292,6 +299,13 @@ func check_is_conversation_problematic(idx: String):
 	if not hasAssistantMessage:
 		return true
 	return false
+	
+func check_is_conversation_ready(idx: String) -> bool:
+	var thisconvo = CONVERSATIONS[idx]
+	for m in thisconvo:
+		if m["type"] == "meta" and m.get("metaData", {}).get("ready", false) == true:
+			return true
+	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
 	if path.ends_with(".json"):
@@ -299,14 +313,33 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	elif path.ends_with(".ftproj"):
 		load_from_binary(path)
 	RUNTIME["filepath"] = path
+	
+
+
+func get_conversation_name_or_false(idx):
+	var this_convo = CONVERSATIONS[idx]
+	for msg in this_convo:
+		if msg.get("type", "Text") == "meta":
+			if msg.get("metaData", {}).get("conversationName", "") != "":
+				return msg.get("metaData", {}).get("conversationName", "")
+	return false
 
 func refresh_conversations_list():
 	$VBoxContainer/ConversationsList.clear()
+	var numberIx = -1
 	for i in CONVERSATIONS.keys():
+		numberIx += 1
+		var conversation_name = i
+		if get_conversation_name_or_false(i):
+			conversation_name = get_conversation_name_or_false(i)
 		if check_is_conversation_problematic(i):
-			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-remove-custom.png"))
+			$VBoxContainer/ConversationsList.add_item(str(conversation_name), load("res://icons/forum-remove-custom.png"))
 		else:
-			$VBoxContainer/ConversationsList.add_item(str(i), load("res://icons/forum-custom.png"))
+			if check_is_conversation_ready(i):
+				$VBoxContainer/ConversationsList.add_item(str(conversation_name), load("res://icons/forum-check.png"))
+			else:
+				$VBoxContainer/ConversationsList.add_item(str(conversation_name), load("res://icons/forum-custom.png"))
+		$VBoxContainer/ConversationsList.set_item_tooltip(numberIx, i)
 
 func _on_conversation_tab_changed(tab: int) -> void:
 	save_current_conversation()
@@ -331,7 +364,11 @@ func _on_button_pressed() -> void:
 	# Create conversation if it does not exist
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 0:
-		create_new_conversation()
+		create_new_conversation(
+			[
+				{"role": "meta", "type": "meta"}
+			]
+		)
 	elif finetunetype == 1:
 		# DPO: There is only one kind of conversation we can have here, so we can also just poulate it
 		create_new_conversation([
@@ -484,22 +521,31 @@ func _on_expand_burger_btn_pressed() -> void:
 	$CollapsedMenu.visible = false
 
 func create_jsonl_data_for_file():
-	var FINETUNEDATA = {}
-	FINETUNEDATA["functions"] = FUNCTIONS
+	var EFINETUNEDATA = {} # EFINETUNEDATA -> ExportFinetuneData (so that we don't remove anything from the save file on export)
+	EFINETUNEDATA["functions"] = FUNCTIONS
 	var allconversations = CONVERSATIONS
 	var unproblematicconversations = {}
 	# Check all conversations and only add unproblematic ones
+	# Check what the settings say about what to export
+	var whatToExport = SETTINGS.get("exportConvo", 0)
+	# 0 -> only unproblematic, 1 -> only ready, 2 -> all
 	for convokey in allconversations:
-		if not check_is_conversation_problematic(convokey):
+		if whatToExport == 0:
+			if not check_is_conversation_problematic(convokey):
+				unproblematicconversations[convokey] = CONVERSATIONS[convokey]
+		elif whatToExport == 1:
+			if not check_is_conversation_problematic(convokey) and check_is_conversation_ready(convokey):
+				unproblematicconversations[convokey] = CONVERSATIONS[convokey]
+		elif whatToExport == 2:
 			unproblematicconversations[convokey] = CONVERSATIONS[convokey]
-	FINETUNEDATA["conversations"] = unproblematicconversations
-	FINETUNEDATA["settings"] = SETTINGS
+	EFINETUNEDATA["conversations"] = unproblematicconversations
+	EFINETUNEDATA["settings"] = SETTINGS
 	var complete_jsonl_string = ""
 	match SETTINGS.get("finetuneType", 0):
 		0:
-			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(FINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(EFINETUNEDATA)
 		1:
-			complete_jsonl_string = $Exporter.convert_dpo_data(FINETUNEDATA)
+			complete_jsonl_string = $Exporter.convert_dpo_data(EFINETUNEDATA)
 		2:
 			# TODO: (BLOCKED) reinforcement fine tuning
 			complete_jsonl_string = ""
@@ -569,3 +615,17 @@ func getImageType(url: String) -> String:
 		return "jpg"
 	else:
 		return ""
+
+
+func get_number_of_images_for_conversation(convoIx):
+	var image_count = 0
+	for message in CONVERSATIONS[convoIx]:
+		if message["type"] == "Image":
+			image_count += 1
+	return image_count
+
+func get_number_of_images_total():
+	var image_count = 0
+	for convoIx in CONVERSATIONS:
+		image_count += get_number_of_images_for_conversation(convoIx)
+	return image_count

@@ -23,6 +23,10 @@ func to_var():
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
 	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
 	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
+	me["tokenCounterPath"] = $VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text
+	me["exportConvos"] = $VBoxContainer/ExportWhatConvoContainer/ExportWhatConvosOptionButton.selected
+	me["countTokensWhen"] = $VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected
+	me["tokenCounts"] = $VBoxContainer/TokenCountPathContainer/TokenCountValueHolder.text
 	return me
 	
 func from_var(me):
@@ -44,6 +48,10 @@ func from_var(me):
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
 	_on_schema_content_editor_text_changed()
+	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = me.get("tokenCounterPath", "")
+	$VBoxContainer/ExportWhatConvoContainer/ExportWhatConvosOptionButton.selected = me.get("exportConvos", 0)
+	$VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected = me.get("countTokensWhen", 0)
+	$VBoxContainer/TokenCountPathContainer/TokenCountValueHolder.text = me.get("tokenCounts", "{}")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -61,8 +69,9 @@ func _ready() -> void:
 		"Web":
 			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.disabled = true
 			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
-
-
+			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.disabled = true
+			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+			$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.disabled = true
 func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
 	var txtdata = Marshalls.base64_to_utf8(base64_data)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = txtdata
@@ -136,7 +145,8 @@ func create_image_message_dict_from_path(path):
 	return {
 		"role": "user",
 		"type": "Image",
-		"imageContent": base_64_data
+		"imageContent": base_64_data,
+		"imageDetail": 0
 	}
 
 func create_text_message_dict_from_path(path):
@@ -164,4 +174,11 @@ func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> 
 		if file.ends_with(".mp3") or file.ends_with(".wav") or file.ends_with(".aac"):
 			pass
 	for message in first_messages:
-			ft.create_new_conversation([message])
+			ft.create_new_conversation([{"type": "meta", "role": "meta"}, message])
+
+
+func _on_token_counter_file_picker_btn_pressed() -> void:
+	$VBoxContainer/TokenCountPathContainer/TokenCounterLocalizerFileDialog.visible = true
+
+func _on_token_counter_localizer_file_dialog_file_selected(path: String) -> void:
+	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = path

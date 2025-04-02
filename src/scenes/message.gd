@@ -42,13 +42,32 @@ func to_var():
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
+	if $MetaMessageContainer.visible:
+		me["metaData"] = {}
+		me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
+		me["metaData"]["conversationName"] = $MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text
+		me["metaData"]["notes"] = $MetaMessageContainer/ConversationNotesEdit.text
+		me["role"] = "meta"
+		me["type"] = "meta"
 	return me
 
 func from_var(data):
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	var useUserNames = get_node("/root/FineTune").SETTINGS.get("useUserNames", false)
+	var savedTokenCounts = JSON.parse_string(get_node("/root/FineTune").SETTINGS.get("tokenCounts", "{}"))
 	print("Building from var")
 	print(data)
+	if data.get("role", "user") == "meta" and data.get("type", "Text") == "meta":
+		$MessageSettingsContainer.visible = false
+		$MetaMessageContainer.visible = true
+		var metaData = data.get("metaData", {})
+		$MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed = metaData.get("ready", false)
+		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName", "")
+		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes", "")
+		# Update the saved token counts if available
+		if savedTokenCounts:
+			update_token_costs(savedTokenCounts)
+		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
 	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data.get("type", "Text")))
@@ -102,6 +121,8 @@ func from_var(data):
 			$MessageSettingsContainer/UserNameEdit.visible = true
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
+
+	
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)
@@ -125,6 +146,13 @@ func _ready() -> void:
 	_on_check_what_text_message_should_be_visisble()
 	image_access_web.loaded.connect(_on_file_loaded)
 	image_access_web.progress.connect(_on_progress)
+	var token_counter_path =  get_node("/root/FineTune").SETTINGS.get("tokenCounterPath", "")
+	if token_counter_path == "":
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = true
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH")
+	else:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = ""
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = false
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
@@ -588,3 +616,91 @@ func check_if_function_button_should_be_visible_or_disabled():
 
 func _on_function_message_container_mouse_entered() -> void:
 	check_if_function_button_should_be_visible_or_disabled()
+
+func update_token_costs(conversation_token_counts):
+	if conversation_token_counts == {}:
+		return
+	var cost_json = FileAccess.get_file_as_string("res://assets/openai_costs.json").strip_edges()
+	#print(cost_json)
+	var costs = JSON.parse_string(cost_json)
+	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
+	if not conversation_token_counts.has(my_convo_ix):
+		return
+	var tokens_this_conversation = conversation_token_counts[my_convo_ix]
+	var tokens_all_conversations = {"total": 0, "input": 0, "output": 0}
+	for convoIx in conversation_token_counts:
+		tokens_all_conversations["total"] += conversation_token_counts[convoIx]["total"]
+		tokens_all_conversations["input"] += conversation_token_counts[convoIx]["input"]
+		tokens_all_conversations["output"] += conversation_token_counts[convoIx]["output"]
+	# Get the dollar to currency multiplier
+	var dollar_to_currency_multiplier = costs.get("dollar_to_currency_muliplier", 1)
+	# Training cost 4o (this conversation)
+	var training_cost_4o_this_conversation = (tokens_this_conversation["total"] * (costs["training"]["gpt-4o"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4oThisConversation.text = str(snapped(training_cost_4o_this_conversation, 0.001)) + " €"
+	# Training cost 4o (whole fine tune)
+	var training_cost_4o_whole_fine_tune = (tokens_all_conversations["total"] * (costs["training"]["gpt-4o"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4oWholeFineTune.text = str(snapped(training_cost_4o_whole_fine_tune, 0.001)) + " €"
+	# Training cost 4o-mini (this conversation)
+	var training_cost_4o_mini_this_conversation = (tokens_this_conversation["total"] * (costs["training"]["gpt-4o-mini"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4ominiThisConversation.text = str(snapped(training_cost_4o_mini_this_conversation, 0.001)) + " €"
+	# Training cost 4o-mini (whole fine tune)
+	var training_cost_4o_mini_whole_fine_tune = (tokens_all_conversations["total"] * (costs["training"]["gpt-4o-mini"] / 1_000_000)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/TrainingCost4ominiWholeFineTune.text = str(snapped(training_cost_4o_mini_whole_fine_tune, 0.001)) + " €"
+	# Inference cost 4o (this conversation)
+	## Inference cost = input tokens * input token price + output tokens * output token price (here and below)
+	var inferecence_cost_4o_this_conversation = (tokens_this_conversation["input"] * (costs["inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4oThisConversation.text = str(snapped(inferecence_cost_4o_this_conversation, 0.001)) + " €"
+	# Inference cost 4o (whole fine tune)
+	var inferecence_cost_4o_whole_fine_tune = (tokens_all_conversations["input"] * (costs["inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4oWholeFineTune.text = str(snapped(inferecence_cost_4o_whole_fine_tune, 0.001)) + " €"
+	# Inference cost 4o-mini (this conversation)
+	var inferecence_cost_4o_mini_this_conversation = (tokens_this_conversation["input"] * (costs["inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4ominiThisConversation.text = str(snapped(inferecence_cost_4o_mini_this_conversation, 0.001)) + " €"
+	# Inference cost 4o-mini (whole fine tune)
+	var inferecence_cost_4o_mini_whole_fine_tune = (tokens_all_conversations["input"] * (costs["inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/InferenceCost4ominiWholeFineTune.text = str(snapped(inferecence_cost_4o_mini_whole_fine_tune, 0.001)) + " €"
+	# batch_inference_cost_4o (this conversation)
+	var batch_inference_cost_4o_this_conversation = (tokens_this_conversation["input"] * (costs["batch_inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["batch_inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4oThisConversation.text = str(snapped(batch_inference_cost_4o_this_conversation, 0.001)) + " €"
+	# batch_inference_cost_4o (whole fine tune)
+	var batch_inference_cost_4o_whole_fine_tune = (tokens_all_conversations["input"] * (costs["batch_inference"]["gpt-4o"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["batch_inference"]["gpt-4o"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4oWholeFineTune.text = str(snapped(batch_inference_cost_4o_whole_fine_tune, 0.001)) + " €"
+	# batch_inference_cost_4o-mini (this conversation)
+	var batch_inference_cost_4o_mini_this_conversation = (tokens_this_conversation["input"] * (costs["batch_inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_this_conversation["output"] * (costs["batch_inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4ominiThisConversation.text = str(snapped(batch_inference_cost_4o_mini_this_conversation, 0.001)) + " €"
+	# batch_inference_cost_4o-mini (whole fine tune)
+	var batch_inference_cost_4o_mini_whole_fine_tune = (tokens_all_conversations["input"] * (costs["batch_inference"]["gpt-4o-mini"]["input"] / 1_000_000) + tokens_all_conversations["output"] * (costs["batch_inference"]["gpt-4o-mini"]["output"] / 1_000_00)) * dollar_to_currency_multiplier
+	$MetaMessageContainer/InfoLabelsGridContainer/BatchInferenceCost4oMiniWholeFineTune.text = str(snapped(batch_inference_cost_4o_mini_whole_fine_tune, 0.001)) + " €"
+	# Number of images
+	$MetaMessageContainer/InfoLabelsGridContainer/NumberOfImagesThisConversation.text = str(get_node("/root/FineTune").get_number_of_images_for_conversation(my_convo_ix))
+	$MetaMessageContainer/InfoLabelsGridContainer/NumberOfImagesWholeFineTune.text = str(get_node("/root/FineTune").get_number_of_images_total())
+
+func _do_token_calculation_update() -> void:
+	var output = []
+	var own_savefile_path = get_node("/root/FineTune").RUNTIME["filepath"]
+	var token_counter_path = get_node("/root/FineTune").SETTINGS.get("tokenCounterPath", "")
+	if token_counter_path == "" or own_savefile_path == "":
+		return
+	var arguments_list = [token_counter_path, own_savefile_path]
+	var exit_code = OS.execute("python", arguments_list, output)
+	var outputstring = output[0].strip_edges()
+	print(outputstring)
+	var conversation_token_counts = JSON.parse_string(outputstring)
+	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
+	$MetaMessageContainer/InfoLabelsGridContainer/ThisConversationTotalTokens.text = str(int(conversation_token_counts[my_convo_ix]["total"]))
+	var all_tokens = 0
+	for convoKey in conversation_token_counts:
+		all_tokens += conversation_token_counts[convoKey]["total"]
+	$MetaMessageContainer/InfoLabelsGridContainer/WholeFineTuneTotalTokens.text = str(int(all_tokens))
+	get_node("/root/FineTune/Conversation/Settings/ConversationSettings/VBoxContainer/TokenCountPathContainer/TokenCountValueHolder").text = str(conversation_token_counts)
+	print("Token counts")
+	print(conversation_token_counts)
+	update_token_costs(conversation_token_counts)
+
+
+func _on_meta_message_toggle_cost_estimation_button_pressed() -> void:
+	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
+	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_TOKEN_CALCS")
+	else:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_TOKEN_CALCS")

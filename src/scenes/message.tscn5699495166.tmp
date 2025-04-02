@@ -1,0 +1,376 @@
+[gd_scene load_steps=18 format=3 uid="uid://clmrayf2uklte"]
+
+[ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
+[ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
+[ext_resource type="Texture2D" uid="uid://dgxn3yonojrbk" path="res://icons/figurine.png" id="2_qmf1n"]
+[ext_resource type="Texture2D" uid="uid://bptbksdfpn3qo" path="res://icons/userRobot.png" id="3_52cv2"]
+[ext_resource type="Texture2D" uid="uid://bcua86jbbuxjy" path="res://icons/notepad.png" id="5_j80gg"]
+[ext_resource type="Texture2D" uid="uid://b5c5odgp0j7f6" path="res://icons/image-custom (1).png" id="6_nm785"]
+[ext_resource type="Texture2D" uid="uid://b7le047xxergp" path="res://icons/trashcan.png" id="6_trxu4"]
+[ext_resource type="Texture2D" uid="uid://da741wh2jb07o" path="res://icons/function-variant-custom (1).png" id="7_mo45f"]
+[ext_resource type="Texture2D" uid="uid://cdho4p4837jh8" path="res://icons/code-json-custom.png" id="8_yvjpg"]
+[ext_resource type="Texture2D" uid="uid://o7ql325bc4fu" path="res://icons/file-question-custom.png" id="9_2lsc3"]
+[ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
+[ext_resource type="Script" uid="uid://pm3h0spmo3k4" path="res://scenes/schema_message_polling_animator.gd" id="12_iorou"]
+[ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="12_km1wu"]
+[ext_resource type="FontFile" uid="uid://iilux6cs6sv" path="res://assets/RobotoSlab-VariableFont_wght.ttf" id="12_rwbsk"]
+[ext_resource type="Script" uid="uid://ous7aoomaueb" path="res://scenes/schema_edit_buttons_container.gd" id="12_wnabm"]
+[ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="13_gakvq"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
+
+[node name="Message" type="HBoxContainer" groups=["message"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+script = ExtResource("1_lafvt")
+
+[node name="MessageSettingsContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Role" type="OptionButton" parent="MessageSettingsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+selected = 1
+item_count = 3
+popup/item_0/text = "system"
+popup/item_0/icon = ExtResource("1_1kcao")
+popup/item_0/id = 0
+popup/item_1/text = "user"
+popup/item_1/icon = ExtResource("2_qmf1n")
+popup/item_1/id = 1
+popup/item_2/text = "assistant"
+popup/item_2/icon = ExtResource("3_52cv2")
+popup/item_2/id = 2
+
+[node name="UserNameEdit" type="LineEdit" parent="MessageSettingsContainer"]
+visible = false
+layout_mode = 2
+placeholder_text = "MESSAGES_USER_NAME"
+
+[node name="MessageType" type="OptionButton" parent="MessageSettingsContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+selected = 0
+item_count = 4
+popup/item_0/text = "Text"
+popup/item_0/icon = ExtResource("5_j80gg")
+popup/item_0/id = 0
+popup/item_1/text = "Image"
+popup/item_1/icon = ExtResource("6_nm785")
+popup/item_1/id = 1
+popup/item_2/text = "Function Call"
+popup/item_2/icon = ExtResource("7_mo45f")
+popup/item_2/id = 2
+popup/item_2/disabled = true
+popup/item_3/text = "JSON Schema"
+popup/item_3/icon = ExtResource("8_yvjpg")
+popup/item_3/id = 3
+
+[node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
+layout_mode = 2
+text = "GENERIC_DELETE"
+icon = ExtResource("6_trxu4")
+
+[node name="TextMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TextnachrichtLabel" type="Label" parent="TextMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_TEXT_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="Message" type="TextEdit" parent="TextMessageContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+wrap_mode = 1
+scroll_fit_content_height = true
+
+[node name="DPOMessagesContainer" type="HBoxContainer" parent="TextMessageContainer"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DPOUnpreferredMsgContainer" type="VBoxContainer" parent="TextMessageContainer/DPOMessagesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DPOUnpreferredMsgLabel" type="Label" parent="TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer"]
+layout_mode = 2
+text = "MESSAGES_DPO_UNPREFERRED_MSG_LABEL"
+horizontal_alignment = 1
+
+[node name="DPOUnpreferredMsgEdit" type="TextEdit" parent="TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DPOPreferredMsgContainer" type="VBoxContainer" parent="TextMessageContainer/DPOMessagesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DPOPreferredMsgLabel" type="Label" parent="TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer"]
+layout_mode = 2
+text = "MESSAGES_DPO_PREFERRED_MSG_LABEL"
+horizontal_alignment = 1
+
+[node name="DPOPreferredMsgEdit" type="TextEdit" parent="TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ImageMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BildNachrichtLabel" type="Label" parent="ImageMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_IMAGE_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="ImageMessageContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+size_flags_vertical = 3
+texture = ExtResource("9_2lsc3")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="Base64ImageEdit" type="LineEdit" parent="ImageMessageContainer"]
+layout_mode = 2
+placeholder_text = "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="ImageMessageContainer"]
+layout_mode = 2
+
+[node name="ImageDetailLabel" type="Label" parent="ImageMessageContainer/HBoxContainer"]
+layout_mode = 2
+text = "MESSAGES_IMAGE_DETAIL"
+
+[node name="ImageDetailHintTextureRect" type="TextureRect" parent="ImageMessageContainer/HBoxContainer"]
+layout_mode = 2
+tooltip_text = "MESSAGES_IMAGE_DETAIL_TOOLTIP"
+texture = ExtResource("10_b60dq")
+expand_mode = 2
+
+[node name="ImageDetailOptionButton" type="OptionButton" parent="ImageMessageContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "MESSAGES_IMAGE_DETAIL_OPTION_HIGH"
+popup/item_0/id = 0
+popup/item_1/text = "MESSAGES_IMAGE_DETAIL_OPTION_LOW"
+popup/item_1/id = 1
+popup/item_2/text = "MESSAGES_IMAGE_DETAIL_OPTION_AUTO"
+popup/item_2/id = 2
+
+[node name="FileDialog" type="FileDialog" parent="ImageMessageContainer"]
+title = "Open a File"
+position = Vector2i(325, 50)
+size = Vector2i(637, 560)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+use_native_dialog = true
+
+[node name="LoadButtonsContainer" type="HBoxContainer" parent="ImageMessageContainer"]
+layout_mode = 2
+
+[node name="LoadImageButton" type="Button" parent="ImageMessageContainer/LoadButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MESSAGES_LOAD_IMAGE_FROM_FILE"
+icon = ExtResource("12_km1wu")
+
+[node name="LoadImageURLButton" type="Button" parent="ImageMessageContainer/LoadButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MESSAGES_LOAD_IMAGE_FROM_URL"
+
+[node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
+
+[node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="FunctionMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGE_USE_FUNCTION_TITLE"
+horizontal_alignment = 1
+
+[node name="preFunctionCallTextContainer" type="HBoxContainer" parent="FunctionMessageContainer"]
+layout_mode = 2
+
+[node name="preFunctionCallTextLabel" type="Label" parent="FunctionMessageContainer/preFunctionCallTextContainer"]
+layout_mode = 2
+text = "MESSAGE_FUNCTION_PRETEXT_LABEL"
+
+[node name="preFunctionCallTextEdit" type="LineEdit" parent="FunctionMessageContainer/preFunctionCallTextContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="function" type="HBoxContainer" parent="FunctionMessageContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="FunctionMessageContainer/function"]
+layout_mode = 2
+text = "MESSAGE_USE_WHICH_MESSAGE"
+
+[node name="FunctionNameChoiceButton" type="OptionButton" parent="FunctionMessageContainer/function"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ParamterSectionLabel" type="Label" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "MESSAGE_PARAMETERS_TITLE"
+horizontal_alignment = 1
+
+[node name="FunctionExecutionButton" type="Button" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "MESSAGE_EXECUTE_FUNCTION"
+
+[node name="ParamterSectionLabel2" type="Label" parent="FunctionMessageContainer"]
+layout_mode = 2
+text = "MESSAGE_FUNCTION_RESULT_TITLE"
+horizontal_alignment = 1
+
+[node name="FunctionUseResultText" type="TextEdit" parent="FunctionMessageContainer"]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+
+[node name="AddResultButton" type="Button" parent="FunctionMessageContainer"]
+visible = false
+layout_mode = 2
+text = "Add result"
+
+[node name="MetaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SchemaMessageLabel" type="Label" parent="SchemaMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
+layout_mode = 2
+script = ExtResource("12_wnabm")
+
+[node name="SchemaEditButton" type="Button" parent="SchemaMessageContainer/SchemaEditButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+icon = ExtResource("5_j80gg")
+
+[node name="SchemaMessagePolling" type="HBoxContainer" parent="SchemaMessageContainer"]
+visible = false
+layout_mode = 2
+alignment = 1
+
+[node name="SchemaMessagePollingAnimator" type="TextureRect" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+texture = SubResource("ImageTexture_s4g5u")
+expand_mode = 2
+script = ExtResource("12_iorou")
+
+[node name="SchemaMessagePollingLabel" type="Label" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_POLLING"
+
+[node name="SchemaMessagePollingOpenBrowserLink" type="LinkButton" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
+
+[node name="SchemaMessagePollingReopenBrowserBtn" type="Button" parent="SchemaMessageContainer/SchemaMessagePolling"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
+icon = ExtResource("13_gakvq")
+
+[node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("12_rwbsk")
+text = "{
+          type: \"object\",
+          title: \"Car\",
+          properties: {
+            make: {
+              type: \"string\",
+              enum: [
+                \"Toyota\",
+                \"BMW\",
+                \"Honda\",
+                \"Ford\",
+                \"Chevy\",
+                \"VW\"
+              ]
+            },
+            model: {
+              type: \"string\"
+            },
+            year: {
+              type: \"integer\",
+              enum: [
+                1995,1996,1997,1998,1999,
+                2000,2001,2002,2003,2004,
+                2005,2006,2007,2008,2009,
+                2010,2011,2012,2013,2014
+              ],
+              default: 2008
+            },
+            safety: {
+              type: \"integer\",
+              format: \"rating\",
+              maximum: \"5\",
+              exclusiveMaximum: false,
+              readonly: false
+            }
+          }
+        }"
+editable = false
+wrap_mode = 1
+
+[node name="InitEditingRequestToken" type="HTTPRequest" parent="SchemaMessageContainer"]
+
+[node name="PollForCompletion" type="HTTPRequest" parent="SchemaMessageContainer"]
+
+[node name="PollingTimer" type="Timer" parent="SchemaMessageContainer"]
+
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
+[connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
+[connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
+[connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
+[connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
+[connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
+[connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
+[connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
+[connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
+[connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
+[connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
+[connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
+[connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]
+[connection signal="request_completed" from="SchemaMessageContainer/PollForCompletion" to="." method="_on_poll_for_completion_request_completed"]
+[connection signal="timeout" from="SchemaMessageContainer/PollingTimer" to="." method="_on_polling_timer_timeout"]

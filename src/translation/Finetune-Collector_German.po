@@ -217,7 +217,6 @@ msgstr "Bild laden"
 msgid "MESSAGE_USE_FUNCTION_TITLE"
 msgstr "Benutze Funktion"
 
-#: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr "Welche?"
@@ -328,6 +327,7 @@ msgstr "Exportiere Fine-Tune"
 msgid "GENERIC_SAVE"
 msgstr "Speichern"
 
+#: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
 msgstr "Abbrechen"
@@ -487,7 +487,10 @@ msgstr "URL des Schema-Editors:"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
-msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei, die im GitHub zu finden ist. Es gibt eine bereitgestellte Instanz vom Entwickler. Bedenke, dass, wenn du diese benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
+msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei,\n"
+"die im GitHub zu finden ist. Es gibt eine bereitgestellte\n"
+"Instanz vom Entwickler. Bedenke, dass, wenn du diese\n"
+"benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
@@ -508,7 +511,7 @@ msgstr "JSON Schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
-msgstr "Nachricht in JSON nach bestimmtem Schema"
+msgstr "Nachricht in JSON nach Schema"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
@@ -593,4 +596,254 @@ msgstr "Direct Preference Optimization (DPO) erlaubt nur eine Nutzer und eine As
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_OPEN_EDITOR_IN_NEW_TAB"
 msgstr "Schema-Editor in neuem Tab öffnen"
+
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
+msgstr "Nicht im Web-Export verfügbar"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr "Serienerzeugung neuer Unterhaltungen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr "Damit kann eine große Menge Dateien importiert werden.\n"
+"Für jede Datei wird eine neue Unterhaltung erstellt,\n"
+"bei der die Datei die erste Nachricht ist.\n"
+"Es können Text- oder Bilddateien geladen werden."
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr "System"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr "Nutzer"
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr "Assistent"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr "Neue erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr "An bestehende anhängen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr "Dateien wählen, um Unterhaltungen zu erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr "Datei(en) öffnen"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr "Lokale Funktionsausführung aktivieren"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr "Anwendungspfad"
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr "python"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr "Anwendungsparameter"
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr "C:\\Pfad\\zum\\skript.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr "Platziere alle Argumente für den Aufruf hier, getrennt mit \"<|>\" (ohne Anführungszeichen).\n"
+"z.B. für python sollte das erste Argument der Pfad zum Skript sein.\n"
+"Parameternamen, die in \"%\" eingeschlossen sind, werden zum Ausführungszeitpunkt durch den festgelgten Wert ausgetauscht, z.B. %parametername\"."
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr "Testen"
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr "Ein unerwarteter Fehler mit dem Parameter ist passiert! Bitte melde das!"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr "Keine Anwendung wurde definiert.\n"
+"In den Funktionsdefinitionen muss eine Anwendung definiert werden, damit das Funktioniert."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr "Alle Parameterwerte müssen gesetzt sein, damit das funktioniert."
+
+#: scenes/message.tscn
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
+msgstr "Welche?"
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
+msgstr "Funktion ausführen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
+msgstr "Pfad zum Tokenzähler-Skript"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+msgstr "Der Pfad zu der Datei namens \"get_token_count.py\"\n"
+"aus dem scripts/-Ordner dieses Repositorys. Wird benötigt\n"
+"um Token-Kosten zu berechnen."
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE"
+msgstr "Wählen"
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE_FILE"
+msgstr "Datei wählen"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH"
+msgstr "Der Pfad zum Tokenzählskript muss in den Einstellungen\n"
+"festgelegt werden um das nutzen zu können."
+
+#: scenes/message.gd
+msgid "MESSAGE_META_HIDE_TOKEN_CALCS"
+msgstr "Tokenberechnungen verstecken"
+
+#: scenes/message.gd
+#: scenes/message.tscn
+msgid "MESSAGE_META_SHOW_TOKEN_CALCS"
+msgstr "Tokenberechnungen zeigen"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_LABEL"
+msgstr "Unterhaltungsname:"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_HINT"
+msgstr "Du kannst dieser Unterhaltung einen Namen geben \n"
+"um sie in der Leiste links später schneller wiederzufinden"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NOTES_PLACEHOLDER"
+msgstr "Notizen"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_READY_CHECKBOX_LABEL"
+msgstr "Fertig"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_READY_HINT"
+msgstr "Diese Unterhaltung als \"fertig\" markieren, \n"
+"damit du schnell auf der linken Seite sehen \n"
+"kannst ob du eine  Unterhaltung später noch\n"
+"einmal überprüfen willst. Es ist auch möglich, \n"
+"nur \"fertige\" Unterhaltungen zu exportieren"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
+msgstr "Tokenkosten Schätzung"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_THIS_CONVERSATION"
+msgstr "Diese Unterhaltung"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_WHOLE_FINETUNE"
+msgstr "gesamter Fine-Tune"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOTAL_TOKENS"
+msgstr "Gesamttokens"
+
+#: scenes/message.tscn
+msgid "0"
+msgstr "0"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4o"
+msgstr "Trainingskosten (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4omini"
+msgstr "Trainingskosten (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4o"
+msgstr "Inferenzkosten (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4omini"
+msgstr "Inferenzkosten (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COST_4o"
+msgstr "Batch-Inferenzkosten (4o)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+msgstr "Batch-Inferenzkosten (4o-mini)"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NUMBER_OF_IMAGES"
+msgstr "Anzahl Bilder"
+
+#: scenes/message.tscn
+msgid "Test Token Count"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
+msgstr "Welche Unterhaltungen exportieren?"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVOS_HINT"
+msgstr "Welche Unterhaltungen im Export eingeschlossen\n"
+"werden sollen.\n"
+"\"Nur unproblematische\" bedeutet, Unterhaltungen\n"
+"die vom Programm als fehlerhaft eingeschätzt\n"
+"werden, (durch X beim Icon verdeutlicht) werden\n"
+"nicht exportiert.\n"
+"\"Nur fertige\" bedeutet nur die, bei denen der Haken\n"
+"gesetzt wurde, werden exportiert.\n"
+"\"Alle\" wird nicht empfohlen und kann beim Upload\n"
+"zu Fehlern führen."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_UNPROBLEMATIC_OPTION"
+msgstr "Nur unproblematische"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_READY_OPTION"
+msgstr "Nur fertige"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
+msgstr "Alle (nicht empfohlen)"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_SAVING"
+msgstr "Beim Speichern"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
+msgstr "Nie"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_LABEL"
+msgstr "Wann Tokens zählen?"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_WHEN_TOKEN_COUNT_HINT"
+msgstr "Ob und wann Tokenkostenberechnungen durchgeführt werden sollen"
 

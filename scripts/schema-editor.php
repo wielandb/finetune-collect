@@ -5,6 +5,11 @@ $dataDir = __DIR__ . '/data';
 if (!file_exists($dataDir)) {
     mkdir($dataDir, 0755, true);
 }
+// Make sure to chenge this depending on where you are hosting this
+header('Access-Control-Allow-Origin: wielandb.github.io');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: *');
+
 
 $files = glob('data/*.json');
 
@@ -178,11 +183,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
 
 </head>
-<body>
+<body style="
+    margin-left: 150px;
+    max-width: 50%;
+    margin-top: 50px;
+    margin-bottom: 50px;
+">
     <!-- Container for the editor -->
     <div id="editor_holder"></div>
     <!-- Save button to submit updated JSON -->
-    <button id="save_button">Save</button>
+    <button width="100%" id="save_button">Save</button>
     <script>
         var schema = <?php echo json_encode($schemaObj); ?>;
         var jsonData = <?php echo json_encode($dataObj); ?>;
@@ -215,6 +225,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             })
             .then(function(text) {
                 // After saving, automatically close the window.
+		window.close();
                 document.write("Saved. You can now close this tab. <i>For example by pressing CTRL + W</i>")
             })
             .catch(function(error) {

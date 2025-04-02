@@ -26,6 +26,7 @@
 # res://scenes/used_function.gd
 # res://scenes/used_function.tscn
 # res://scenes/exporter.gd
+# res://scenes/schema_edit_buttons_container.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -114,6 +115,34 @@ msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
 msgstr ""
 
 #: scenes/available_function.tscn
+msgid "FUNCTIONS_ENABLE_EXECUTION"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PATH"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "python"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "C:\\Path\\to\\script.py<|>argument1<|>%parametername%<|>parameter2=%parameter2name%"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "FUNCTIONS_EXECUTABLE_PARAMETERS_EXPLANATION"
+msgstr ""
+
+#: scenes/available_function.tscn
+msgid "Test"
+msgstr ""
+
+#: scenes/available_function.tscn
 msgid "FUNCTIONS_DELETE_FUNCTION"
 msgstr ""
 
@@ -133,6 +162,12 @@ msgstr ""
 msgid "DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"
 msgstr ""
 
+#: scenes/conversation_settings.gd
+#: scenes/conversation_settings.tscn
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB"
+msgstr ""
+
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
 msgstr ""
@@ -147,6 +182,10 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "STANDARD_GLOBAL_SYSTEM_MESSAGE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_USE_USER_NAMES"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -222,6 +261,26 @@ msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHICH_CONVOS_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_UNPROBLEMATIC_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVOS_ONLY_READY_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_EXPORT_WHAT_CONVO_ALL_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_API_KEY"
 msgstr ""
 
@@ -242,7 +301,84 @@ msgid "GENERIC_REFRESH"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
-msgid "SETTINGS_USE_USER_NAMES"
+msgid "SETTINGS_BATCH_CREATION_LABEL_TEXT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_SYSTEM"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_USER"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "ROLE_ASSISTANT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_NEW"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_MODE_APPEND"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "Open File(s)"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+msgid "GENERIC_CANCEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNTER_PATH_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+#: scenes/fine_tune.tscn
+#: scenes/message.tscn
+msgid "Open a File"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "GENERIC_CHOOSE_FILE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_WHEN_TOKEN_COUNT_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_SAVING"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -263,18 +399,6 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open a File"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-#: scenes/fine_tune.tscn
-#: scenes/message.tscn
-msgid "Open"
 msgstr ""
 
 #: scenes/fine_tune.tscn
@@ -299,10 +423,6 @@ msgstr ""
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_EXPORT"
-msgstr ""
-
-#: scenes/fine_tune.tscn
-msgid "GENERIC_CANCEL"
 msgstr ""
 
 #: scenes/fine_tune.tscn
@@ -338,6 +458,15 @@ msgid "[Parameter Name]\n"
 msgstr ""
 
 #: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_TOKEN_COUNTER_PATH"
+msgstr ""
+
+#: scenes/message.gd
+#: scenes/messages_list.gd
+msgid ""
+msgstr ""
+
+#: scenes/message.gd
 msgid "DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"
 msgstr ""
 
@@ -363,6 +492,27 @@ msgstr ""
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
+msgstr ""
+
+#: scenes/message.gd
+msgid "UNEXPECTED_PARAMETER_ERROR_PLEASE_REPORT_THIS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NO_EXECUTABLE_DEFINED"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGE_META_HIDE_TOKEN_CALCS"
+msgstr ""
+
+#: scenes/message.gd
+#: scenes/message.tscn
+msgid "MESSAGE_META_SHOW_TOKEN_CALCS"
 msgstr ""
 
 #: scenes/message.tscn
@@ -458,13 +608,16 @@ msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
 msgstr ""
 
 #: scenes/message.tscn
-#: scenes/used_function.tscn
-msgid "MESSAGE_USE_WHICH_MESSAGE"
+msgid "MESSAGE_USE_WHICH_FUNCTION_LABEL"
 msgstr ""
 
 #: scenes/message.tscn
 #: scenes/used_function.tscn
 msgid "MESSAGE_PARAMETERS_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_EXECUTE_FUNCTION"
 msgstr ""
 
 #: scenes/message.tscn
@@ -474,6 +627,78 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "Add result"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_LABEL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_NAME_HINT"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NOTES_PLACEHOLDER"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_READY_CHECKBOX_LABEL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_CONVERSATION_READY_HINT"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_THIS_CONVERSATION"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_WHOLE_FINETUNE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOTAL_TOKENS"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "0"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4o"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST_4omini"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4o"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST_4omini"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COST_4o"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_NUMBER_OF_IMAGES"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Test Token Count"
 msgstr ""
 
 #: scenes/message.tscn
@@ -528,10 +753,6 @@ msgstr ""
 msgid "DISABLED_EXPLANATION_DPO_ONLY_ALLOWS_ONE_USER_AND_ONE_ASSISTANT_MESSAGE"
 msgstr ""
 
-#: scenes/messages_list.gd
-msgid ""
-msgstr ""
-
 #: scenes/messages_list.tscn
 msgid "MESSAGES_ADD_MESSAGE"
 msgstr ""
@@ -546,6 +767,10 @@ msgstr ""
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_FUNCTION"
+msgstr ""
+
+#: scenes/used_function.tscn
+msgid "MESSAGE_USE_WHICH_MESSAGE"
 msgstr ""
 
 #: scenes/used_function.tscn

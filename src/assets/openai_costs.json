@@ -1,0 +1,27 @@
+{
+"training": {
+        "gpt-4o": 25.00,
+        "gpt-4o-mini": 3.00
+    },
+"inference": {
+        "gpt-4o": {
+            "input": 3.750,
+            "output": 15.00
+            },
+        "gpt-4o-mini": {
+            "input": 0.30,
+            "output": 1.20
+            }
+    },
+"batch_inference":{
+        "gpt-4o": {
+            "input": 1.875,
+            "output": 7.50,
+            },
+        "gpt-4o-mini": {
+            "input": 0.15,
+            "output": 0.60
+            }
+    },
+"dollar_to_currency_multiplier": 0.92
+}

@@ -354,6 +354,24 @@ popup/item_0/id = 0
 popup/item_1/text = "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
 popup/item_1/id = 1
 
+[node name="TokenCountModelChoiceContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="TokenCountModelChoiceLabel" type="Label" parent="VBoxContainer/TokenCountModelChoiceContainer"]
+layout_mode = 2
+text = "SETTINGS_TOKEN_COUNT_MODEL_CHOICE"
+
+[node name="TokenCountModelChoiceHint" type="TextureRect" parent="VBoxContainer/TokenCountModelChoiceContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_TOKEN_COUNT_MODEL_CHOICE_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="TokenCountModelChoiceOptionButton" type="OptionButton" parent="VBoxContainer/TokenCountModelChoiceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+
 [node name="SchemaSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -426,6 +444,7 @@ use_native_dialog = true
 [connection signal="files_selected" from="VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog" to="." method="_on_batch_creation_file_dialog_files_selected"]
 [connection signal="file_selected" from="VBoxContainer/TokenCountPathContainer/TokenCounterLocalizerFileDialog" to="." method="_on_token_counter_localizer_file_dialog_file_selected"]
 [connection signal="pressed" from="VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn" to="." method="_on_token_counter_file_picker_btn_pressed"]
+[connection signal="item_selected" from="VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton" to="." method="_on_something_int_needs_update_global"]
 [connection signal="pressed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentLoadFromFileBtn" to="." method="_on_schema_content_load_from_file_btn_pressed"]
 [connection signal="text_changed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor" to="." method="_on_schema_content_editor_text_changed"]
 [connection signal="file_selected" from="VBoxContainer/SchemaContainer/LoadSchemaFileDialog" to="." method="_on_load_schema_file_dialog_file_selected"]

@@ -264,9 +264,12 @@ text = "Add result"
 layout_mode = 2
 
 [node name="MetaMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ShowMetaMessageToggleButton" type="Button" parent="MetaMessageContainer"]
+layout_mode = 2
+text = "MESSAGE_META_TOGGLE_META_MESSAGE"
 
 [node name="ConversationNameLabel" type="Label" parent="MetaMessageContainer"]
 visible = false
@@ -276,6 +279,7 @@ text = "MESSAGES_TEXT_MESSAGE_TITLE"
 horizontal_alignment = 1
 
 [node name="ConversationNameContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+visible = false
 layout_mode = 2
 
 [node name="ConversationNameLabel" type="Label" parent="MetaMessageContainer/ConversationNameContainer"]
@@ -295,11 +299,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ConversationNotesEdit" type="TextEdit" parent="MetaMessageContainer"]
+visible = false
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 placeholder_text = "META_MESSAGE_NOTES_PLACEHOLDER"
 
 [node name="ConversationReadyContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+visible = false
 layout_mode = 2
 
 [node name="ConversationReadyCheckBox" type="CheckBox" parent="MetaMessageContainer/ConversationReadyContainer"]
@@ -314,10 +320,12 @@ expand_mode = 2
 stretch_mode = 3
 
 [node name="MetaMessageToggleCostEstimationButton" type="Button" parent="MetaMessageContainer"]
+visible = false
 layout_mode = 2
-text = "MESSAGE_META_SHOW_TOKEN_CALCS"
+text = "MESSAGE_META_TOGGLE_TOKEN_CACLULATIONS"
 
 [node name="InfoLabelsGridContainer" type="GridContainer" parent="MetaMessageContainer"]
+visible = false
 layout_mode = 2
 columns = 3
 
@@ -524,6 +532,7 @@ layout_mode = 2
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
+[connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_do_token_calculation_update"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]

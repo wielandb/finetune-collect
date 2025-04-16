@@ -684,9 +684,25 @@ func _do_token_calculation_update() -> void:
 	update_token_costs(conversation_token_counts)
 
 
+
+
 func _on_meta_message_toggle_cost_estimation_button_pressed() -> void:
+	$MetaMessageContainer/ConversationReadyContainer.visible = not $MetaMessageContainer/ConversationReadyContainer.visible
+	$MetaMessageContainer/ConversationNotesEdit.visible = not $MetaMessageContainer/ConversationNotesEdit.visible
+	$MetaMessageContainer/ConversationNameContainer.visible = not $MetaMessageContainer/ConversationNameContainer.visible
 	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
 	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
-		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_TOKEN_CALCS")
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
 	else:
-		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_TOKEN_CALCS")
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")
+
+
+func _on_show_meta_message_toggle_button_pressed() -> void:
+	$MetaMessageContainer/ConversationReadyContainer.visible = not $MetaMessageContainer/ConversationReadyContainer.visible
+	$MetaMessageContainer/ConversationNotesEdit.visible = not $MetaMessageContainer/ConversationNotesEdit.visible
+	$MetaMessageContainer/ConversationNameContainer.visible = not $MetaMessageContainer/ConversationNameContainer.visible
+	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
+	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
+	else:
+		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")

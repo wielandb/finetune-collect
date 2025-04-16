@@ -703,6 +703,6 @@ func _on_show_meta_message_toggle_button_pressed() -> void:
 	$MetaMessageContainer/ConversationNameContainer.visible = not $MetaMessageContainer/ConversationNameContainer.visible
 	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
 	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
-		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
+		$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
 	else:
-		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")
+		$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")

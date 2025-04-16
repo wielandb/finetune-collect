@@ -27,6 +27,7 @@ func to_var():
 	me["exportConvos"] = $VBoxContainer/ExportWhatConvoContainer/ExportWhatConvosOptionButton.selected
 	me["countTokensWhen"] = $VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected
 	me["tokenCounts"] = $VBoxContainer/TokenCountPathContainer/TokenCountValueHolder.text
+	me["countTokensModel"] = $VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected
 	return me
 	
 func from_var(me):
@@ -52,6 +53,12 @@ func from_var(me):
 	$VBoxContainer/ExportWhatConvoContainer/ExportWhatConvosOptionButton.selected = me.get("exportConvos", 0)
 	$VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected = me.get("countTokensWhen", 0)
 	$VBoxContainer/TokenCountPathContainer/TokenCountValueHolder.text = me.get("tokenCounts", "{}")
+	# Token count model choice
+	## Load the available models
+	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.clear()
+	for item in load_available_fine_tuning_models_from_file():
+		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
+	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected = me.get("countTokensModel", 0)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -59,6 +66,10 @@ func _ready() -> void:
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	openai.connect("models_received", models_received)
+	# Get available fine-tuning-models from asset file and set for the option button
+	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.clear()
+	for item in load_available_fine_tuning_models_from_file():
+		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
 	# TODO: This should only be called if an OpenAI API key is set
 	openai.get_models()
 	schema_loader_file_access_web.loaded.connect(_on_schema_file_loaded)
@@ -94,7 +105,11 @@ func _on_api_key_edit_text_changed(new_text: String) -> void:
 	update_settings_global()
 	openai.get_models()
 	
-
+func load_available_fine_tuning_models_from_file():
+	var cost_json = FileAccess.get_file_as_string("res://assets/openai_costs.json").strip_edges()
+	#print(cost_json)
+	var costs = JSON.parse_string(cost_json)
+	return costs["available_models"]
 
 
 func _on_model_choice_refresh_button_pressed() -> void:
@@ -182,3 +197,7 @@ func _on_token_counter_file_picker_btn_pressed() -> void:
 
 func _on_token_counter_localizer_file_dialog_file_selected(path: String) -> void:
 	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = path
+
+
+func _on_something_int_needs_update_global(index: int) -> void:
+	update_settings_global()

@@ -32,25 +32,81 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	if Input.is_action_just_released("new_msg"):
+		_on_add_message_button_pressed()
 
+
+func update_conversation():
+	var my_conversation_id = get_tree().get_root().get_node("FineTune").CURRENT_EDITED_CONVO_IX
+	get_tree().get_root().get_node("FineTune").CONVERSATIONS[my_conversation_id] = to_var()
+
+func get_last_message_role():
+	update_conversation()
+	var my_conversation_id = get_tree().get_root().get_node("FineTune").CURRENT_EDITED_CONVO_IX
+	var my_conversation = get_tree().get_root().get_node("FineTune").CONVERSATIONS[my_conversation_id]
+	var last_message_role = ""
+	for msg in my_conversation:
+		last_message_role = msg["role"]
+	return last_message_role
+	
 
 func _on_add_message_button_pressed() -> void:
+	var isGlobalSystemMessageEnabled = get_tree().get_root().get_node("FineTune").SETTINGS.get("useGlobalSystemMessage", false)
 	# Add a new message to the MessagesListContainer
 	var MessageInstance = MESSAGE_SCENE.instantiate()
 	#var addButton = $MessagesListContainer/AddMessageButton
 	#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+	var last_message_role = get_last_message_role()
 	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
 	#$MessagesListContainer.move_child(addAIButton, -1)
 	#$MessagesListContainer.move_child(addButton, -1)
-	$MessagesListContainer.move_child(buttonsContainer, -1)	
-	MessageInstance.from_var(
-		{
-		"role": "user",
-		"type": "Text"
-		}
-	)
+	$MessagesListContainer.move_child(buttonsContainer, -1)
+	match last_message_role:
+		"meta":
+			if isGlobalSystemMessageEnabled:
+				MessageInstance.from_var(
+					{
+					"role": "user",
+					"type": "Text"
+					}
+				)
+			else:
+				MessageInstance.from_var(
+					{
+					"role": "system",
+					"type": "Text"
+					}
+				)
+		"none":
+			MessageInstance.from_var(
+				{
+				"role": "system",
+				"type": "Text"
+				}
+			)
+		"system":
+			MessageInstance.from_var(
+				{
+				"role": "user",
+				"type": "Text"
+				}
+			)
+		"user":
+			MessageInstance.from_var(
+				{
+				"role": "assistant",
+				"type": "Text"
+				}
+			)
+		"assistant":
+			MessageInstance.from_var(
+				{
+				"role": "user",
+				"type": "Text"
+				}
+			)
+	print("Aktueller Konversationszustand nach hinzugefügter Nachricht:")
 	print(self.to_var())
 	
 

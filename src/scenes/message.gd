@@ -696,7 +696,6 @@ func _on_meta_message_toggle_cost_estimation_button_pressed() -> void:
 	else:
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")
 
-
 func _on_show_meta_message_toggle_button_pressed() -> void:
 	$MetaMessageContainer/ConversationReadyContainer.visible = not $MetaMessageContainer/ConversationReadyContainer.visible
 	$MetaMessageContainer/ConversationNotesEdit.visible = not $MetaMessageContainer/ConversationNotesEdit.visible

@@ -1,7 +1,4 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
-*.jsonl
-*.json
-*.ftproj
 /.vscode

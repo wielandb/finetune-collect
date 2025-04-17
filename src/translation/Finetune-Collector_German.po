@@ -750,6 +750,7 @@ msgstr "Diese Unterhaltung als \"fertig\" markieren, \n"
 "einmal überprüfen willst. Es ist auch möglich, \n"
 "nur \"fertige\" Unterhaltungen zu exportieren"
 
+#: scenes/message.gd
 #: scenes/message.tscn
 msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
 msgstr "Tokenkosten Schätzung"
@@ -846,4 +847,40 @@ msgstr "Wann Tokens zählen?"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_WHEN_TOKEN_COUNT_HINT"
 msgstr "Ob und wann Tokenkostenberechnungen durchgeführt werden sollen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE"
+msgstr "Modell für Kostenabschätzung:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE_HINT"
+msgstr "Die Auswahl bestimmt, welche Preise pro einer Millionen Tokens für die Kostenabschätzungen herangezogen werden."
+
+#: scenes/message.gd
+msgid "MESSAGE_META_HIDE_META_MESSAGE"
+msgstr "Meta-Infos verstecken"
+
+#: scenes/message.gd
+msgid "MESSAGE_META_SHOW_META_MESSAGE"
+msgstr "Meta-Infos zeigen"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_TOGGLE_META_MESSAGE"
+msgstr "Meta-Info-Sichtbarkeit umschalten"
+
+#: scenes/message.tscn
+msgid "MESSAGE_META_TOGGLE_TOKEN_CACLULATIONS"
+msgstr "Kostenabschätzung-Sichtbarkeit umschalten"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_TRAINING_COST"
+msgstr "Trainingskosten"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_INFERENCE_COST"
+msgstr "Inferenzkosten"
+
+#: scenes/message.tscn
+msgid "META_MESSAGE_BATCH_INFERENCE_COST"
+msgstr "Batch-Inferenzkosten"
 

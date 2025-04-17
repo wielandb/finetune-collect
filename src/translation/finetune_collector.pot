@@ -382,6 +382,14 @@ msgid "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_EDITOR_URL"
 msgstr ""
 
@@ -507,12 +515,16 @@ msgid "DISABLED_EXPLANATION_ALL_PARAMETER_VALUES_MUST_BE_SET"
 msgstr ""
 
 #: scenes/message.gd
-msgid "MESSAGE_META_HIDE_TOKEN_CALCS"
+#: scenes/message.tscn
+msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
 msgstr ""
 
 #: scenes/message.gd
-#: scenes/message.tscn
-msgid "MESSAGE_META_SHOW_TOKEN_CALCS"
+msgid "MESSAGE_META_HIDE_META_MESSAGE"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGE_META_SHOW_META_MESSAGE"
 msgstr ""
 
 #: scenes/message.tscn
@@ -630,6 +642,10 @@ msgid "Add result"
 msgstr ""
 
 #: scenes/message.tscn
+msgid "MESSAGE_META_TOGGLE_META_MESSAGE"
+msgstr ""
+
+#: scenes/message.tscn
 msgid "MESSAGE_META_CONVERSATION_NAME_LABEL"
 msgstr ""
 
@@ -650,7 +666,7 @@ msgid "MESSAGE_META_CONVERSATION_READY_HINT"
 msgstr ""
 
 #: scenes/message.tscn
-msgid "META_MESSAGE_TOKEN_COST_ESTIMATION"
+msgid "MESSAGE_META_TOGGLE_TOKEN_CACLULATIONS"
 msgstr ""
 
 #: scenes/message.tscn
@@ -670,27 +686,15 @@ msgid "0"
 msgstr ""
 
 #: scenes/message.tscn
-msgid "META_MESSAGE_TRAINING_COST_4o"
+msgid "META_MESSAGE_TRAINING_COST"
 msgstr ""
 
 #: scenes/message.tscn
-msgid "META_MESSAGE_TRAINING_COST_4omini"
+msgid "META_MESSAGE_INFERENCE_COST"
 msgstr ""
 
 #: scenes/message.tscn
-msgid "META_MESSAGE_INFERENCE_COST_4o"
-msgstr ""
-
-#: scenes/message.tscn
-msgid "META_MESSAGE_INFERENCE_COST_4omini"
-msgstr ""
-
-#: scenes/message.tscn
-msgid "META_MESSAGE_BATCH_INFERENCE_COST_4o"
-msgstr ""
-
-#: scenes/message.tscn
-msgid "META_MESSAGE_BATCH_INFERENCE_COAT_4omini"
+msgid "META_MESSAGE_BATCH_INFERENCE_COST"
 msgstr ""
 
 #: scenes/message.tscn

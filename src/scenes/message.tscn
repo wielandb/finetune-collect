@@ -465,7 +465,6 @@ icon = ExtResource("13_gakvq")
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("12_rwbsk")
-text = "{}"
 editable = false
 wrap_mode = 1
 
@@ -478,6 +477,7 @@ wrap_mode = 1
 [node name="HSeparator" type="HSeparator" parent="SchemaMessageContainer"]
 layout_mode = 2
 
+[connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]

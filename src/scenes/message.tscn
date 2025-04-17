@@ -264,6 +264,7 @@ text = "Add result"
 layout_mode = 2
 
 [node name="MetaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 

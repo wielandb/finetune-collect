@@ -370,7 +370,6 @@ expand_mode = 2
 [node name="TokenCountModelChoiceOptionButton" type="OptionButton" parent="VBoxContainer/TokenCountModelChoiceContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-selected = 0
 
 [node name="SchemaSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2

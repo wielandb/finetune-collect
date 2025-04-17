@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1744892888|62598627';
+const CACHE_VERSION = '1744894791|160609542';
 /** @type {string} */
 const CACHE_PREFIX = 'finetune-collect-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;

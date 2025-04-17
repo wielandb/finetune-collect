@@ -21,3 +21,4 @@ You can also provide the program with your OpenAI API key and it can generate re
 - `Del` - Delete a conversation (when selected in the conversation overview)
 - `Ctrl` + `Left Click` - Enlarge Image (when hovering image)
 - `Crtl` + `Right Click` - Smallen Image (when hovering image)
+- `Ctrl` + `Space` - Add new message

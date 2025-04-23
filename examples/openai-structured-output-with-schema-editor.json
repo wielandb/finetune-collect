@@ -1,0 +1,157 @@
+{
+	"functions": [],
+	"conversations": {
+		"fhU0": [
+			{
+				"role": "meta",
+				"type": "meta",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}",
+				"metaData": {
+					"ready": false,
+					"conversationName": "",
+					"notes": "This is the example from the OpenAI docs unter the name \"structured output\". This is the example as-is, but there is another example using json schema."
+				}
+			},
+			{
+				"role": "system",
+				"type": "Text",
+				"textContent": "Given a sports headline, provide the following fields in a JSON dict, where applicable: \"player\" (full name), \"team\", \"sport\", and \"gender\".",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "user",
+				"type": "Text",
+				"textContent": "Sources: Colts grant RB Taylor OK to seek trade",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "assistant",
+				"type": "JSON Schema",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{\"player\": \"Jonathan Taylor\", \"team\": \"Colts\", \"sport\": \"football\", \"gender\": \"male\" }"
+			}
+		],
+		"R4s0": [
+			{
+				"role": "meta",
+				"type": "meta",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}",
+				"metaData": {
+					"ready": false,
+					"conversationName": "",
+					"notes": ""
+				}
+			},
+			{
+				"role": "system",
+				"type": "Text",
+				"textContent": "Given a sports headline, provide the following fields in a JSON dict, where applicable: \"player\" (full name), \"team\", \"sport\", and \"gender\".",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "user",
+				"type": "Text",
+				"textContent": "OSU 'split down middle' on starting QB battle",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "assistant",
+				"type": "JSON Schema",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{\"player\": null, \"team\": \"OSU\", \"sport\": \"football\", \"gender\": null }"
+			}
+		]
+	},
+	"settings": {
+		"useGlobalSystemMessage": false,
+		"globalSystemMessage": "",
+		"apikey": "",
+		"modelChoice": "",
+		"availableModels": [],
+		"includeFunctions": 0,
+		"finetuneType": 0,
+		"exportImagesHow": 0,
+		"useUserNames": false,
+		"schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+		"jsonSchema": "{\n  \"title\": \"SportsEntry\",\n  \"type\": \"object\",\n  \"required\": [\n    \"sport\",\n    \"player\",\n    \"gender\",\n    \"team\"\n  ],\n  \"properties\": {\n    \"sport\": {\n      \"type\": \"string\",\n      \"description\": \"Kind of sport\",\n      \"minLength\": 3,\n    },\n    \"player\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\": \"Name of the athlete (may be null)\",\n      \"minLength\": 1,\n      \"default\": null\n    },\n    \"gender\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\": \"Gender category of the competition (may be null)\",\n      \"enum\": [\n        \"male\",\n        \"female\",\n        \"other\"\n      ],\n      \"default\": null\n    },\n    \"team\": {\n      \"type\": [\n        \"string\",\n        \"null\"\n      ],\n      \"description\": \"Team or club name (may be null)\",\n      \"minLength\": 1,\n      \"default\": null\n    }\n  }\n}\n",
+		"tokenCounterPath": "",
+		"exportConvos": 0,
+		"countTokensWhen": 0,
+		"tokenCounts": "",
+		"countTokensModel": 0
+	}
+}

@@ -275,7 +275,7 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_tooltip(5, "")
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
-		0:
+		0, 2:
 			match index:
 				0:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
@@ -312,8 +312,6 @@ func _on_role_item_selected(index: int) -> void:
 			$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
 			$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
 			$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"))
-		2:
-			pass
 			
 func _on_function_name_choice_button_item_selected(index: int) -> void:
 	# Die parameter abrufen, die es für diese Funktion gibt

@@ -53,6 +53,9 @@ func to_var():
 	me["audioData"] = $AudioMessageContainer/Base64AudioEdit.text
 	me["audioTranscript"] = $AudioMessageContainer/TranscriptionContainer/RichTextLabel.text
 	me["audioFiletype"] = $AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text
+	# File Message section
+	me["fileMessageData"] = $FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileDataBase64Edit.text
+	me["fileMessageName"] = $FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileNameEdit.text
 	return me
 
 func from_var(data):
@@ -142,7 +145,12 @@ func from_var(data):
 			$AudioMessageContainer/AudioStreamPlayer.stream = AudioStreamWAV.load_from_buffer(bin_audio_data)
 		else:
 			print("Invalid file format!")
-		
+	# File message
+	$FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileNameEdit.text = data.get("fileMessageName", "")
+	$FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileDataBase64Edit.text = data.get("fileMessageData", "")
+	if $FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileNameEdit.text.ends_with(".pdf"):
+		$FileMessageContainer/FileSelectorContainer/FileTypeSymbolTextureRect.texture = load("res://icons/file-pdf.png")
+
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)
@@ -195,6 +203,7 @@ func _on_message_type_item_selected(index: int) -> void:
 	$FunctionMessageContainer.visible = false
 	$SchemaMessageContainer.visible = false
 	$AudioMessageContainer.visible = false
+	$FileMessageContainer.visible = false
 	match index:
 		0:
 			$TextMessageContainer.visible = true
@@ -206,6 +215,8 @@ func _on_message_type_item_selected(index: int) -> void:
 			$SchemaMessageContainer.visible = true
 		4:
 			$AudioMessageContainer.visible = true
+		5:
+			$FileMessageContainer.visible = true
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -778,3 +789,22 @@ func _on_audio_message_content_play_pause_button_pressed() -> void:
 func _on_audio_stream_player_finished() -> void:
 		$AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton.icon = load("res://icons/audio_play.png")
 		$AudioMessageContainer/AudioMediaPlayerContainer/PlayHeadSlider.value = 0
+
+func getBasePath(path: String) -> String:
+	# returns only the file name
+	return path.split("/")[len(path.split("/")) - 1]
+
+func _on_file_message_load_file_dialog_file_selected(path: String) -> void:
+	if path.ends_with(".pdf"):
+		var bin = FileAccess.get_file_as_bytes(path)
+		var base_64_data = Marshalls.raw_to_base64(bin)
+		$FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileDataBase64Edit.text = base_64_data
+		$FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileNameEdit.text = getBasePath(path)
+		$FileMessageContainer/FileSelectorContainer/FileTypeSymbolTextureRect.texture = load("res://icons/file-pdf.png")
+	else:
+		$FileMessageContainer/FileSelectorContainer/FileTypeSymbolTextureRect.texture = load("res://icons/file-question-small.png")
+		$FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileDataBase64Edit.text = ""
+		$FileMessageContainer/FileSelectorContainer/NameAndContentContainer/FileNameEdit.text = ""
+
+func _on_load_pdf_file_button_pressed() -> void:
+	$FileMessageContainer/FileMessageLoadFileDialog.visible = true

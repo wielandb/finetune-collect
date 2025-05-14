@@ -884,3 +884,51 @@ msgstr "Inferenzkosten"
 msgid "META_MESSAGE_BATCH_INFERENCE_COST"
 msgstr "Batch-Inferenzkosten"
 
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_AUDIO"
+msgstr "Der Assistent kann (für fine-tuning) keine Audios senden"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_PDF"
+msgstr "Der Assistent kann keine PDFs senden"
+
+#: scenes/message.gd
+msgid "mp3"
+msgstr ""
+
+#: scenes/message.gd
+msgid "wav"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Audio"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "PDF File"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_PDF_FILE_MESSAGE_TITLE"
+msgstr "PDF Datei Nachricht"
+
+#: scenes/message.tscn
+msgid "PDF-File"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_AUDIO_MESSAGE_TITLE"
+msgstr "Audio Nachricht"
+
+#: scenes/message.tscn
+msgid "NON"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_AUDIO_AUDIO_EDIT_PLACEHOLDER"
+msgstr "Hier kommen die base64-Daten hin..."
+
+#: scenes/message.tscn
+msgid "Supported Audio Files"
+msgstr ""
+

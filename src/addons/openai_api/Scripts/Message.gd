@@ -63,6 +63,17 @@ func add_audio_content(audio_base64: String, filetype: String) -> void:
 		}
 	)
 
+func add_pdf_content(pdf_base64: String, filename: String) -> void:
+	content.append(
+		{
+			'type': 'file',
+			'file': {
+				'filename': filename,
+				'file_data': 'data:application/pdf;base64,' + pdf_base64
+			}
+		}
+	)
+
 ## Adds a text part to the content
 func add_text_content(text: String) -> void:
 	if typeof(content) != TYPE_ARRAY:

@@ -206,6 +206,20 @@ func convert_message_to_openai_format(message, function_map=null):
 			]
 		}
 		return toAddDict
+	elif message['type'] == "PDF File":
+		var toAddDict = {
+			'role': message['role'],
+			'content': [
+					{
+						'type': 'file',
+						'file': {
+							'filename': message['fileMessageName'],
+							'file_data': 'data:application/pdf;base64,' + message['fileMessageData']
+						}
+					}
+				]
+			}
+		return toAddDict
 	return null
 
 func convert_conversation_to_openai_format(conversation, function_map=null):

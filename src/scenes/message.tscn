@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=24 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
@@ -20,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="13_gakvq"]
 [ext_resource type="Texture2D" uid="uid://dgcgbm18sryoa" path="res://icons/script-text-play-custom.png" id="13_tqqac"]
 [ext_resource type="Texture2D" uid="uid://beb5dnd44v53w" path="res://icons/audio_play.png" id="15_bvel6"]
+[ext_resource type="Texture2D" uid="uid://dpp6b31g3i6ro" path="res://icons/file-question-small.png" id="15_gcntp"]
 [ext_resource type="Script" uid="uid://bntf230jpxxm2" path="res://scenes/audio_message_container.gd" id="15_gt8h6"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
@@ -211,6 +212,61 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
 [node name="HSeparator" type="HSeparator" parent="ImageMessageContainer"]
+layout_mode = 2
+
+[node name="FileMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BildNachrichtLabel" type="Label" parent="FileMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_PDF_FILE_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="FileSelectorContainer" type="HBoxContainer" parent="FileMessageContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="FileTypeSymbolTextureRect" type="TextureRect" parent="FileMessageContainer/FileSelectorContainer"]
+layout_mode = 2
+texture = ExtResource("15_gcntp")
+
+[node name="NameAndContentContainer" type="VBoxContainer" parent="FileMessageContainer/FileSelectorContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="FileNameEdit" type="LineEdit" parent="FileMessageContainer/FileSelectorContainer/NameAndContentContainer"]
+layout_mode = 2
+alignment = 1
+editable = false
+
+[node name="FileDataBase64Edit" type="LineEdit" parent="FileMessageContainer/FileSelectorContainer/NameAndContentContainer"]
+layout_mode = 2
+editable = false
+
+[node name="LoadPDFFileButton" type="Button" parent="FileMessageContainer/FileSelectorContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+icon = ExtResource("12_km1wu")
+icon_alignment = 1
+
+[node name="FileMessageLoadFileDialog" type="FileDialog" parent="FileMessageContainer"]
+auto_translate_mode = 1
+title = "Open a File"
+position = Vector2i(325, 50)
+size = Vector2i(637, 560)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.pdf;PDF-File;application/pdf")
+use_native_dialog = true
+
+[node name="LoadFileFromURLHTTPRequest" type="HTTPRequest" parent="FileMessageContainer"]
+
+[node name="HSeparator" type="HSeparator" parent="FileMessageContainer"]
 layout_mode = 2
 
 [node name="AudioMessageContainer" type="VBoxContainer" parent="."]
@@ -571,6 +627,8 @@ layout_mode = 2
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
+[connection signal="pressed" from="FileMessageContainer/FileSelectorContainer/LoadPDFFileButton" to="." method="_on_load_pdf_file_button_pressed"]
+[connection signal="file_selected" from="FileMessageContainer/FileMessageLoadFileDialog" to="." method="_on_file_message_load_file_dialog_file_selected"]
 [connection signal="pressed" from="AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton" to="." method="_on_audio_message_content_play_pause_button_pressed"]
 [connection signal="pressed" from="AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageLoadFileButton" to="." method="_on_audio_message_load_file_button_pressed"]
 [connection signal="text_changed" from="AudioMessageContainer/Base64AudioEdit" to="." method="_on_something_string_changed"]

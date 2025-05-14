@@ -491,6 +491,14 @@ msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
 msgstr ""
 
 #: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_AUDIO"
+msgstr ""
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_PDF"
+msgstr ""
+
+#: scenes/message.gd
 msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
 msgstr ""
 
@@ -527,6 +535,14 @@ msgstr ""
 msgid "MESSAGE_META_SHOW_META_MESSAGE"
 msgstr ""
 
+#: scenes/message.gd
+msgid "mp3"
+msgstr ""
+
+#: scenes/message.gd
+msgid "wav"
+msgstr ""
+
 #: scenes/message.tscn
 msgid "system"
 msgstr ""
@@ -557,6 +573,14 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "JSON Schema"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Audio"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "PDF File"
 msgstr ""
 
 #: scenes/message.tscn
@@ -609,6 +633,30 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "MESSAGES_LOAD_IMAGE_FROM_URL"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_PDF_FILE_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "PDF-File"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_AUDIO_MESSAGE_TITLE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "NON"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_AUDIO_AUDIO_EDIT_PLACEHOLDER"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Supported Audio Files"
 msgstr ""
 
 #: scenes/message.tscn

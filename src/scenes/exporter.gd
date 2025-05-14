@@ -99,6 +99,8 @@ func convert_function_to_openai_format(funcdef):
 func convert_message_to_openai_format(message, function_map=null):
 	# Convert a message from the source format to OpenAI message format.
 	# Handles text, image, and function call messages.
+	print("Converting message of type...")
+	print(message['type'])
 	var tool_call = {}
 	var image_detail_map = {
 		0: "high",
@@ -185,10 +187,38 @@ func convert_message_to_openai_format(message, function_map=null):
 			return [tool_call, tool_response]
 		return tool_call
 	elif message['type'] == 'JSON Schema':
-		var toAddDict ={
+		var toAddDict = {
 			'role': message['role'],
 			'content': message['jsonSchemaValue']
 		}
+		return toAddDict
+	elif message['type'] == 'Audio':
+		var toAddDict = {
+			'role': message['role'],
+			'content': [
+				{
+					'type': 'input_audio',
+					'input_audio': {
+						'format': message['audioFiletype'],
+						'data': message['audioData']
+					}
+				}
+			]
+		}
+		return toAddDict
+	elif message['type'] == "PDF File":
+		var toAddDict = {
+			'role': message['role'],
+			'content': [
+					{
+						'type': 'file',
+						'file': {
+							'filename': message['fileMessageName'],
+							'file_data': 'data:application/pdf;base64,' + message['fileMessageData']
+						}
+					}
+				]
+			}
 		return toAddDict
 	return null
 

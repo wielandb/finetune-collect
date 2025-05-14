@@ -247,6 +247,121 @@ func convert_functions_to_openai_format(functions, onlykeep=null):
 			tmp.append(convert_function_to_openai_format(funcDef))
 	return tmp
 
+func get_parameter_values_from_function_parameter_dict(fpdict):
+	var parametersAndValues = {}
+	for fp in fpdict:
+		if fp["parameterValueChoice"] != "":
+			parametersAndValues[fp['name']] = fp["parameterValueChoice"]
+		elif fp["parameterValueText"] != "":
+			parametersAndValues[fp['name']] = fp["parameterValueText"]
+		else:
+			parametersAndValues[fp['name']] = fp["parameterValueNumber"]
+	return parametersAndValues
+
+func create_conversation_parts(conversation):
+	print("Creating conversation parts...")
+	# This takes in a conversation and outputs a list of conversations, split at every Function Call.
+	var list_of_new_conversations = []
+	var tmp_conversation = []
+	for msg in conversation:
+		tmp_conversation.append(msg)
+		# Check if the now last message in the tmp_conversation is now assistant + Function Call:
+		if tmp_conversation[len(tmp_conversation)-1]['role'] == 'assistant' and tmp_conversation[len(tmp_conversation)-1]['type'] == "Function Call" and len(tmp_conversation) != len(conversation):
+			list_of_new_conversations.append(tmp_conversation)
+	return list_of_new_conversations
+
+func convert_rft_data(ftdata):
+	var jsonl_file_string = ""
+	# ftdata -> the project file structure
+	### Needs to be converted from scripts
+	## function_map = {func['name']: func for func in data.get('functions', [])}
+	var function_map = {}
+	for funcDef in ftdata.get('functions', []):
+		function_map[funcDef["name"]] = funcDef
+	var tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+	var system_message = null
+	if ftdata['settings'].get('useGlobalSystemMessage', false):
+		system_message = ftdata['settings'].get('globalSystemMessage', '')
+	# Split conversations where needed
+	print("Splitting conversations!")
+	var tmp_conv = {}
+	for conversation_key in ftdata['conversations']:
+		var convoparts = create_conversation_parts(ftdata['conversations'][conversation_key])
+		print("Split convo in " + str(len(convoparts)) + " parts!")
+		print(convoparts)
+		for i in len(convoparts):			
+			var convopart = convoparts[i]
+			tmp_conv[str(conversation_key)+"-"+str(i)] = convopart
+	for ck in tmp_conv:
+		ftdata['conversations'][ck] = tmp_conv[ck]
+	print("So, alle conversations sind:")
+	print(ftdata['conversations'])
+	for conversation_key in ftdata['conversations']:
+		var conversation = ftdata['conversations'][conversation_key]
+		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
+		var last_message = conversation.pop_back()
+		# We need to check if the message we got is assistant + either JSON Schema or function call
+		if last_message['role'] != "assistant":
+			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")
+			print("Last message:")
+			print(last_message)
+			continue
+		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call":
+			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
+			continue
+		var correct_data = {}
+		if last_message['type'] == "JSON Schema":
+			# Get the value, parse it and put it into correct data, append empty function data...
+			correct_data = JSON.parse_string(last_message['jsonSchemaValue'])
+			correct_data['ideal_function_call_data'] = []
+			correct_data['do_function_call'] = false
+		elif last_message['type'] == "Function Call":
+			correct_data['do_function_call'] = true
+			correct_data['ideal_function_call_data'] = {
+				"name": last_message["functionName"],
+				"arguments": get_parameter_values_from_function_parameter_dict(last_message["functionParameters"]),
+				"functionUsePreText": last_message["functionUsePreText"]
+			}
+		else:
+			print("Something went very wrong...")
+			continue
+			
+		
+		var processed_conversation = []
+		if system_message:
+				processed_conversation.append({
+					'role': 'system', 
+					'content': system_message
+				})
+		# Convert conversation
+		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		# Write to JSONL, optionally including tools
+		var output_entry = correct_data
+		output_entry['messages'] = processed_conversation
+		# Only add tools if there are function calls in the conversation
+		# TODO: Do as the settings say
+		var function_handle_setting = getSettings().get("includeFunctions", 0)
+		if function_handle_setting == 0:
+			# Always include all
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+			output_entry['tools'] = tools
+		elif function_handle_setting == 1:
+			# Only include ones used in the conversation
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_in_conversation(conversation_key))
+			output_entry['tools'] = tools
+		elif function_handle_setting == 2:
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_globally())
+			output_entry['tools'] = tools
+		elif function_handle_setting == 3: 
+			for msg in processed_conversation:
+				if msg.get('tool_calls', false):
+					output_entry['tools'] = tools
+		else:
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+			output_entry['tools'] = tools
+		jsonl_file_string += JSON.stringify(output_entry) + "\n"
+	return jsonl_file_string
+
 func convert_dpo_data(ftdata):
 	var jsonl_file_string = ""
 	var conversations = ftdata.get("conversations", {})

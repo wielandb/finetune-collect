@@ -376,6 +376,12 @@ func _on_button_pressed() -> void:
 			{ "role": "assistant", "type": "Text", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""}
 			]
 		)
+	elif finetunetype == 2:
+		create_new_conversation(
+			[
+				{"role": "meta", "type": "meta"}
+			]
+		)
 	print(CONVERSATIONS)
 	
 
@@ -547,8 +553,7 @@ func create_jsonl_data_for_file():
 		1:
 			complete_jsonl_string = $Exporter.convert_dpo_data(EFINETUNEDATA)
 		2:
-			# TODO: (BLOCKED) reinforcement fine tuning
-			complete_jsonl_string = ""
+			complete_jsonl_string = $Exporter.convert_rft_data(EFINETUNEDATA)
 	return complete_jsonl_string
 
 

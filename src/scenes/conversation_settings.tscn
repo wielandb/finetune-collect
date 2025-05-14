@@ -115,7 +115,6 @@ popup/item_1/text = "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
 popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
 popup/item_2/id = 2
-popup/item_2/disabled = true
 
 [node name="ExportSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2

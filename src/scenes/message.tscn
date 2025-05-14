@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=23 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
@@ -10,13 +10,17 @@
 [ext_resource type="Texture2D" uid="uid://da741wh2jb07o" path="res://icons/function-variant-custom (1).png" id="7_mo45f"]
 [ext_resource type="Texture2D" uid="uid://cdho4p4837jh8" path="res://icons/code-json-custom.png" id="8_yvjpg"]
 [ext_resource type="Texture2D" uid="uid://o7ql325bc4fu" path="res://icons/file-question-custom.png" id="9_2lsc3"]
+[ext_resource type="Texture2D" uid="uid://dqicsio1dbgif" path="res://icons/audio.png" id="9_or42e"]
 [ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="10_b60dq"]
+[ext_resource type="Texture2D" uid="uid://bju7l7kjvi0vh" path="res://icons/file-pdf-box.png" id="10_bvel6"]
 [ext_resource type="Script" uid="uid://pm3h0spmo3k4" path="res://scenes/schema_message_polling_animator.gd" id="12_iorou"]
 [ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="12_km1wu"]
 [ext_resource type="FontFile" uid="uid://iilux6cs6sv" path="res://assets/RobotoSlab-VariableFont_wght.ttf" id="12_rwbsk"]
 [ext_resource type="Script" uid="uid://ous7aoomaueb" path="res://scenes/schema_edit_buttons_container.gd" id="12_wnabm"]
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="13_gakvq"]
 [ext_resource type="Texture2D" uid="uid://dgcgbm18sryoa" path="res://icons/script-text-play-custom.png" id="13_tqqac"]
+[ext_resource type="Texture2D" uid="uid://beb5dnd44v53w" path="res://icons/audio_play.png" id="15_bvel6"]
+[ext_resource type="Script" uid="uid://bntf230jpxxm2" path="res://scenes/audio_message_container.gd" id="15_gt8h6"]
 
 [sub_resource type="ImageTexture" id="ImageTexture_s4g5u"]
 
@@ -55,7 +59,7 @@ placeholder_text = "MESSAGES_USER_NAME"
 layout_mode = 2
 size_flags_vertical = 0
 selected = 0
-item_count = 4
+item_count = 6
 popup/item_0/text = "Text"
 popup/item_0/icon = ExtResource("5_j80gg")
 popup/item_0/id = 0
@@ -69,6 +73,12 @@ popup/item_2/disabled = true
 popup/item_3/text = "JSON Schema"
 popup/item_3/icon = ExtResource("8_yvjpg")
 popup/item_3/id = 3
+popup/item_4/text = "Audio"
+popup/item_4/icon = ExtResource("9_or42e")
+popup/item_4/id = 4
+popup/item_5/text = "PDF File"
+popup/item_5/icon = ExtResource("10_bvel6")
+popup/item_5/id = 5
 
 [node name="DeleteButton" type="Button" parent="MessageSettingsContainer"]
 layout_mode = 2
@@ -202,6 +212,75 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 
 [node name="HSeparator" type="HSeparator" parent="ImageMessageContainer"]
 layout_mode = 2
+
+[node name="AudioMessageContainer" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+script = ExtResource("15_gt8h6")
+
+[node name="BildNachrichtLabel" type="Label" parent="AudioMessageContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "MESSAGES_AUDIO_MESSAGE_TITLE"
+horizontal_alignment = 1
+
+[node name="AudioMediaPlayerContainer" type="HBoxContainer" parent="AudioMessageContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="AudioMessageContentPlayPauseButton" type="Button" parent="AudioMessageContainer/AudioMediaPlayerContainer"]
+layout_mode = 2
+icon = ExtResource("15_bvel6")
+
+[node name="PlayHeadSlider" type="HSlider" parent="AudioMessageContainer/AudioMediaPlayerContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+step = 0.01
+editable = false
+scrollable = false
+
+[node name="FileTypeLabel" type="Label" parent="AudioMessageContainer/AudioMediaPlayerContainer"]
+layout_mode = 2
+text = "NON"
+
+[node name="AudioMessageLoadFileButton" type="Button" parent="AudioMessageContainer/AudioMediaPlayerContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+icon = ExtResource("12_km1wu")
+icon_alignment = 1
+
+[node name="TranscriptionContainer" type="HBoxContainer" parent="AudioMessageContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="AudioMessageContainer/TranscriptionContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Base64AudioEdit" type="LineEdit" parent="AudioMessageContainer"]
+layout_mode = 2
+placeholder_text = "MESSAGE_AUDIO_AUDIO_EDIT_PLACEHOLDER"
+editable = false
+
+[node name="AudioLoaderFileDialog" type="FileDialog" parent="AudioMessageContainer"]
+auto_translate_mode = 1
+title = "Open a File"
+position = Vector2i(325, 50)
+size = Vector2i(637, 560)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.mp3,*.wav;Supported Audio Files;audio/mp3,audio/wav")
+use_native_dialog = true
+
+[node name="TranscriptionHTTPRequest" type="HTTPRequest" parent="AudioMessageContainer"]
+
+[node name="HSeparator" type="HSeparator" parent="AudioMessageContainer"]
+layout_mode = 2
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="AudioMessageContainer"]
 
 [node name="FunctionMessageContainer" type="VBoxContainer" parent="."]
 visible = false
@@ -484,17 +563,22 @@ layout_mode = 2
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
+[connection signal="pressed" from="AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton" to="." method="_on_audio_message_content_play_pause_button_pressed"]
+[connection signal="pressed" from="AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageLoadFileButton" to="." method="_on_audio_message_load_file_button_pressed"]
+[connection signal="text_changed" from="AudioMessageContainer/Base64AudioEdit" to="." method="_on_something_string_changed"]
+[connection signal="file_selected" from="AudioMessageContainer/AudioLoaderFileDialog" to="." method="_on_audio_loader_file_dialog_file_selected"]
+[connection signal="finished" from="AudioMessageContainer/AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]
 [connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]

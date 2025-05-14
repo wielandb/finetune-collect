@@ -49,12 +49,20 @@ func to_var():
 		me["metaData"]["notes"] = $MetaMessageContainer/ConversationNotesEdit.text
 		me["role"] = "meta"
 		me["type"] = "meta"
+	# Audio Message section
+	me["audioData"] = $AudioMessageContainer/Base64AudioEdit.text
+	me["audioTranscript"] = $AudioMessageContainer/TranscriptionContainer/RichTextLabel.text
+	me["audioFiletype"] = $AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text
 	return me
 
 func from_var(data):
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	var useUserNames = get_node("/root/FineTune").SETTINGS.get("useUserNames", false)
-	var savedTokenCounts = JSON.parse_string(get_node("/root/FineTune").SETTINGS.get("tokenCounts", "{}"))
+	print("tokenCounts:")
+	print(get_node("/root/FineTune").SETTINGS.get("tokenCounts", "{}"))
+	var savedTokenCounts = JSON.parse_string("{}")
+	if get_node("/root/FineTune").SETTINGS.get("tokenCounts", "{}") != "":
+		savedTokenCounts = JSON.parse_string(get_node("/root/FineTune").SETTINGS.get("tokenCounts", "{}"))
 	print("Building from var")
 	print(data)
 	if data.get("role", "user") == "meta" and data.get("type", "Text") == "meta":
@@ -121,8 +129,20 @@ func from_var(data):
 			$MessageSettingsContainer/UserNameEdit.visible = true
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
-
-	
+	# Audio Message
+	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
+	$AudioMessageContainer/TranscriptionContainer/RichTextLabel.text = data.get("audioTranscript", "")
+	# - Load the Audio Data into the Audio stream, if available
+	if $AudioMessageContainer/Base64AudioEdit.text != "":
+		$AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text = data.get("audioFiletype", "")
+		var bin_audio_data = Marshalls.base64_to_raw($AudioMessageContainer/Base64AudioEdit.text)
+		if $AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text == "mp3":
+			$AudioMessageContainer/AudioStreamPlayer.stream = AudioStreamMP3.load_from_buffer(bin_audio_data)
+		elif $AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text == "wav":
+			$AudioMessageContainer/AudioStreamPlayer.stream = AudioStreamWAV.load_from_buffer(bin_audio_data)
+		else:
+			print("Invalid file format!")
+		
 	#for d in data["functionResults"]:
 	#	var resultInstance = result_parameters_scene.instantiate()
 	#	$FunctionMessageContainer.add_child(resultInstance)
@@ -174,6 +194,7 @@ func _on_message_type_item_selected(index: int) -> void:
 	$ImageMessageContainer.visible = false
 	$FunctionMessageContainer.visible = false
 	$SchemaMessageContainer.visible = false
+	$AudioMessageContainer.visible = false
 	match index:
 		0:
 			$TextMessageContainer.visible = true
@@ -183,6 +204,8 @@ func _on_message_type_item_selected(index: int) -> void:
 			$FunctionMessageContainer.visible = true
 		3:
 			$SchemaMessageContainer.visible = true
+		4:
+			$AudioMessageContainer.visible = true
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -231,10 +254,14 @@ func _on_role_item_selected(index: int) -> void:
 	$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(2, true)
 	$MessageSettingsContainer/MessageType.set_item_disabled(3, true)
+	$MessageSettingsContainer/MessageType.set_item_disabled(4, true)
+	$MessageSettingsContainer/MessageType.set_item_disabled(5, true)
 	$MessageSettingsContainer/MessageType.set_item_tooltip(0, "")
 	$MessageSettingsContainer/MessageType.set_item_tooltip(1, "")
 	$MessageSettingsContainer/MessageType.set_item_tooltip(2, "")
 	$MessageSettingsContainer/MessageType.set_item_tooltip(3, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(4, "")
+	$MessageSettingsContainer/MessageType.set_item_tooltip(5, "")
 	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
 	match finetunetype:
 		0:
@@ -244,14 +271,20 @@ func _on_role_item_selected(index: int) -> void:
 					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(4, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(5, tr("DISABLED_EXPLANATION_SYSTEM_USER_CANT_DO_THAT"))
 				1:
 					$MessageSettingsContainer/MessageType.set_item_disabled(1, false)
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
+					$MessageSettingsContainer/MessageType.set_item_disabled(4, false)
+					$MessageSettingsContainer/MessageType.set_item_disabled(5, false)
 					$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_USE_FUNCTIONS"))
 					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"))
 				2:
 					$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
 					$MessageSettingsContainer/MessageType.set_item_tooltip(1, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(4, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_AUDIO"))
+					$MessageSettingsContainer/MessageType.set_item_tooltip(5, tr("DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_PDF"))
 					# Only make functions available if there are any
 					if len(get_node("/root/FineTune").get_available_function_names()) > 0:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
@@ -705,3 +738,43 @@ func _on_show_meta_message_toggle_button_pressed() -> void:
 		$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
 	else:
 		$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")
+
+
+func _on_audio_message_load_file_button_pressed() -> void:
+	$AudioMessageContainer/AudioLoaderFileDialog.visible = true
+	
+
+
+func _on_audio_loader_file_dialog_file_selected(path: String) -> void:
+	# Load the audio into the AudioStramPlayer
+	# We need to do things differently depending if we chose an mp3 or wav
+	if path.ends_with(".mp3"):
+		$AudioMessageContainer/AudioStreamPlayer.stream = AudioStreamMP3.load_from_file(path)
+		$AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text = "mp3"
+	elif path.ends_with(".wav"):
+		$AudioMessageContainer/AudioStreamPlayer.stream = AudioStreamWAV.load_from_file(path)
+		$AudioMessageContainer/AudioMediaPlayerContainer/FileTypeLabel.text = "wav"
+	else:
+		print("Invalid file chosen")
+		return
+	# Load the file into the base64 representation
+	var bin = FileAccess.get_file_as_bytes(path)
+	var base_64_data = Marshalls.raw_to_base64(bin)
+	$AudioMessageContainer/Base64AudioEdit.text = base_64_data
+	
+
+
+
+func _on_audio_message_content_play_pause_button_pressed() -> void:
+	if $AudioMessageContainer/Base64AudioEdit.text == "":
+		return
+	if $AudioMessageContainer/AudioStreamPlayer.playing:
+		$AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton.icon = load("res://icons/audio_play.png")
+		$AudioMessageContainer/AudioStreamPlayer.stream_paused = true
+	else:
+		$AudioMessageContainer/AudioStreamPlayer.play()
+		$AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton.icon = load("res://icons/audio_pause.png")
+		
+func _on_audio_stream_player_finished() -> void:
+		$AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton.icon = load("res://icons/audio_play.png")
+		$AudioMessageContainer/AudioMediaPlayerContainer/PlayHeadSlider.value = 0

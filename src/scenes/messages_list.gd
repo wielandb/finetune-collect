@@ -229,6 +229,9 @@ func _on_add_message_completion_button_pressed() -> void:
 			"Image":
 				nm.add_image_content(m["imageContent"], image_detail_map[m.get("imageDetail", 0)])
 				openai_messages.append(nm)
+			"Audio":
+				nm.add_audio_content(m["audioData"], m["audioFiletype"])
+				openai_messages.append(nm)
 			"Function Call":
 				# A "function call" for us when part of the messages list is two messages for openai, one the assistant calling the tool, and then the response
 				# However, when we receive a tool call as an answer from the model, its only one message

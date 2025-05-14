@@ -51,6 +51,17 @@ func add_image_content(image_base64: String, detail: String) -> void:
 			"detail": detail
 		}
 	})
+	
+func add_audio_content(audio_base64: String, filetype: String) -> void:
+	content.append(
+		{
+			'type': 'input_audio',
+			'input_audio': {
+				'format': filetype,
+				'data': audio_base64
+			}
+		}
+	)
 
 ## Adds a text part to the content
 func add_text_content(text: String) -> void:

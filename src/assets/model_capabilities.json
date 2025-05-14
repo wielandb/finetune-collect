@@ -1,0 +1,17 @@
+{
+"o4-mini": {
+    "text": true,
+    "image": true,
+    "structured": true,
+    "audio": false,
+    "pdf": true
+    },
+"gpt-4o": {
+    "text": true,
+    "image": true,
+    "structured": true,
+    "audio": false,
+    "pdf": true
+    },
+
+}

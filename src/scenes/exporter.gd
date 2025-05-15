@@ -285,8 +285,8 @@ func convert_rft_data(ftdata):
 	if ftdata['settings'].get('useGlobalSystemMessage', false):
 		system_message = ftdata['settings'].get('globalSystemMessage', '')
 	# Expand conversations: include original and mid-call prefixes
-	if ftdata['settings'].get('doRFTExportConversationSplits', 0):
-		var original = ftdata['conversations']
+	if ftdata['settings'].get('doRFTExportConversationSplits', 0) == 0:
+		var original = ftdata['conversations'].duplicate(true)
 		var expanded = {}
 		for conversation_key in original:
 			# keep full original
@@ -302,7 +302,7 @@ func convert_rft_data(ftdata):
 	print("Expanded conversations:")
 	print(ftdata['conversations'])
 	for conversation_key in ftdata['conversations']:
-		var conversation = ftdata['conversations'][conversation_key]
+		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
 		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
 		var last_message = conversation.pop_back()
 		# We need to check if the message we got is assistant + either JSON Schema or function call

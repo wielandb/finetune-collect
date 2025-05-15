@@ -276,6 +276,12 @@ func check_is_conversation_problematic(idx: String):
 		if thisconvo[1 + metamessageoffset]["preferredTextContent"] == "" or thisconvo[1 + metamessageoffset]["unpreferredTextContent"] == "":
 			return true
 		return false
+	elif finetunetype == 2:
+		# Check that the last message is assistant and JSON Schema or Function Call
+		if thisconvo[-1]["role"] != "assistant":
+			return true
+		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON Schema":
+			return true
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
 		return true
@@ -528,8 +534,8 @@ func _on_expand_burger_btn_pressed() -> void:
 
 func create_jsonl_data_for_file():
 	var EFINETUNEDATA = {} # EFINETUNEDATA -> ExportFinetuneData (so that we don't remove anything from the save file on export)
-	EFINETUNEDATA["functions"] = FUNCTIONS
-	var allconversations = CONVERSATIONS
+	EFINETUNEDATA["functions"] = FUNCTIONS.duplicate(true)
+	var allconversations = CONVERSATIONS.duplicate(true)
 	var unproblematicconversations = {}
 	# Check all conversations and only add unproblematic ones
 	# Check what the settings say about what to export
@@ -545,7 +551,7 @@ func create_jsonl_data_for_file():
 		elif whatToExport == 2:
 			unproblematicconversations[convokey] = CONVERSATIONS[convokey]
 	EFINETUNEDATA["conversations"] = unproblematicconversations
-	EFINETUNEDATA["settings"] = SETTINGS
+	EFINETUNEDATA["settings"] = SETTINGS.duplicate(true)
 	var complete_jsonl_string = ""
 	match SETTINGS.get("finetuneType", 0):
 		0:

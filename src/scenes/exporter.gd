@@ -258,17 +258,19 @@ func get_parameter_values_from_function_parameter_dict(fpdict):
 			parametersAndValues[fp['name']] = fp["parameterValueNumber"]
 	return parametersAndValues
 
-func create_conversation_parts(conversation):
-	print("Creating conversation parts...")
-	# This takes in a conversation and outputs a list of conversations, split at every Function Call.
-	var list_of_new_conversations = []
-	var tmp_conversation = []
-	for msg in conversation:
-		tmp_conversation.append(msg)
-		# Check if the now last message in the tmp_conversation is now assistant + Function Call:
-		if tmp_conversation[len(tmp_conversation)-1]['role'] == 'assistant' and tmp_conversation[len(tmp_conversation)-1]['type'] == "Function Call" and len(tmp_conversation) != len(conversation):
-			list_of_new_conversations.append(tmp_conversation)
-	return list_of_new_conversations
+func create_conversation_parts(conversation: Array) -> Array:
+	# Return full prefixes up to each non-final assistant Function Call
+	var parts: Array = []
+	var count: int = conversation.size()
+	for i in range(count):
+		var msg = conversation[i]
+		if msg['role'] == 'assistant' and msg['type'] == 'Function Call' and i < count - 1:
+			# build prefix through this call
+			var prefix: Array = []
+			for j in range(i + 1):
+				prefix.append(conversation[j])
+			parts.append(prefix)
+	return parts
 
 func convert_rft_data(ftdata):
 	var jsonl_file_string = ""
@@ -282,19 +284,20 @@ func convert_rft_data(ftdata):
 	var system_message = null
 	if ftdata['settings'].get('useGlobalSystemMessage', false):
 		system_message = ftdata['settings'].get('globalSystemMessage', '')
-	# Split conversations where needed
-	print("Splitting conversations!")
-	var tmp_conv = {}
-	for conversation_key in ftdata['conversations']:
-		var convoparts = create_conversation_parts(ftdata['conversations'][conversation_key])
-		print("Split convo in " + str(len(convoparts)) + " parts!")
-		print(convoparts)
-		for i in len(convoparts):			
-			var convopart = convoparts[i]
-			tmp_conv[str(conversation_key)+"-"+str(i)] = convopart
-	for ck in tmp_conv:
-		ftdata['conversations'][ck] = tmp_conv[ck]
-	print("So, alle conversations sind:")
+	# Expand conversations: include original and mid-call prefixes
+	var original = ftdata['conversations']
+	var expanded = {}
+	for conversation_key in original:
+		# keep full original
+		expanded[conversation_key] = original[conversation_key]
+		var splits = create_conversation_parts(original[conversation_key])
+		print("Found " + str(splits.size()) + " mid-call splits for " + conversation_key)
+		for i in range(splits.size()):
+			var part_key = conversation_key + "-" + str(i)
+			expanded[part_key] = splits[i]
+	# replace conversations map with expanded version
+	ftdata['conversations'] = expanded
+	print("Expanded conversations:")
 	print(ftdata['conversations'])
 	for conversation_key in ftdata['conversations']:
 		var conversation = ftdata['conversations'][conversation_key]

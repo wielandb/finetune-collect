@@ -285,18 +285,20 @@ func convert_rft_data(ftdata):
 	if ftdata['settings'].get('useGlobalSystemMessage', false):
 		system_message = ftdata['settings'].get('globalSystemMessage', '')
 	# Expand conversations: include original and mid-call prefixes
-	var original = ftdata['conversations']
-	var expanded = {}
-	for conversation_key in original:
-		# keep full original
-		expanded[conversation_key] = original[conversation_key]
-		var splits = create_conversation_parts(original[conversation_key])
-		print("Found " + str(splits.size()) + " mid-call splits for " + conversation_key)
-		for i in range(splits.size()):
-			var part_key = conversation_key + "-" + str(i)
-			expanded[part_key] = splits[i]
-	# replace conversations map with expanded version
-	ftdata['conversations'] = expanded
+	if ftdata['settings'].get('doRFTExportConversationSplits', 0):
+		var original = ftdata['conversations']
+		var expanded = {}
+		for conversation_key in original:
+			# keep full original
+			expanded[conversation_key] = original[conversation_key]
+			var splits = create_conversation_parts(original[conversation_key])
+			print("Found " + str(splits.size()) + " mid-call splits for " + conversation_key)
+			for i in range(splits.size()):
+				var part_key = conversation_key + "-" + str(i)
+				expanded[part_key] = splits[i]
+		# replace conversations map with expanded version
+		ftdata['conversations'] = expanded
+	## End of convo expanding
 	print("Expanded conversations:")
 	print(ftdata['conversations'])
 	for conversation_key in ftdata['conversations']:

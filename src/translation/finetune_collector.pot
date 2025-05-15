@@ -217,6 +217,22 @@ msgid "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVO_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_YES_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_NO_OPTION"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_EXPORT_IMAGES_HOW_LABEL"
 msgstr ""
 

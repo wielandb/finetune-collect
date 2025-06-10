@@ -640,3 +640,35 @@ func get_number_of_images_total():
 	for convoIx in CONVERSATIONS:
 		image_count += get_number_of_images_for_conversation(convoIx)
 	return image_count
+	
+	
+func conversation_from_openai_message_json(oaimsgjson):
+	# Check if it is a list
+	## TODO
+	# Create a new conversation Object
+	var NEWCONVO = []
+	for msg in oaimsgjson:
+		# Do other things depending on what type of content it is
+		if msg["role"] == "system" or msg["role"] == "developer":
+			# Create a system message with the content
+			NEWCONVO.append({ "role": "assistant", "type": "Text", "textContent": msg["content"], "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})
+		elif msg["role"] == "user":
+			# Check if the content is a list or a string
+			if msg["content"] is Array:
+				# We need to create a new user message for each object in the array
+				for contentpiece in msg["content"]:
+					if contentpiece["type"] == "text":
+						NEWCONVO.append({ "role": "user", "type": "Text", "textContent": contentpiece["text"], "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})
+					elif contentpiece["type"] == "image_url":
+						# "url": "data:image/jpeg;base64,
+						if "data:image/jpeg;base64," in contentpiece["image_url"]:
+							var image_base64 = contentpiece["image_url"].replace("data:image/jpeg;base64,", "")
+							NEWCONVO.append({ "role": "user", "type": "Image", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": image_base64, "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})						
+						else:
+							NEWCONVO.append({ "role": "user", "type": "Image", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": contentpiece["image_url"], "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})						
+			else:
+				NEWCONVO.append({ "role": "user", "type": "Text", "textContent": msg["content"], "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})
+		elif msg["role"] == "assistant":
+			# TODO: Handle Assistant Text responses and function calls (and function call return data)
+			# If assistant return data is valid json, put it in JSON schema container
+			pass

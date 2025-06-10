@@ -115,9 +115,34 @@ popup/item_1/text = "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
 popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
 popup/item_2/id = 2
-popup/item_2/disabled = true
 
 [node name="ExportSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="RFTSplitConversationsSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="RFTSplitConvoLabel" type="Label" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
+layout_mode = 2
+text = "SETTINGS_RFT_SPLIT_CONVO_LABEL"
+
+[node name="RFTSplitHint" type="TextureRect" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="RFTSplitOptionButton" type="OptionButton" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 2
+popup/item_0/text = "SETTINGS_RFT_SPLIT_YES_OPTION"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_RFT_SPLIT_NO_OPTION"
+popup/item_1/id = 1
+
+[node name="RFTSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ExportImagesHowContainer" type="HBoxContainer" parent="VBoxContainer"]
@@ -435,6 +460,7 @@ use_native_dialog = true
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
 [connection signal="item_selected" from="VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]

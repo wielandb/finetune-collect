@@ -932,3 +932,26 @@ msgstr "Hier kommen die base64-Daten hin..."
 msgid "Supported Audio Files"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVO_LABEL"
+msgstr "RFT-Subunterhaltungen erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
+msgstr "Im RFT wird nur auf dem letzten Funktionsaufruf oder auf der letzten JSON \n"
+"Schema Nachricht trainiert. Wenn du deinem (agentischen) Modell beibringen\n"
+"möchtest, wie man jede Funktion auf dem Weg richtig benutzt, muss es die \n"
+"Unterhaltung ein mal pro Funktionsaufruf geben, mit dem jeweiligen \n"
+"Funktionsaufruf als letzte Nachricht. Diese Einstellung erzeugt automatisch \n"
+"die dafür nötigen Unterhaltungen im Export. Erzeugt mehr Trainingsbeispiele \n"
+"die mehr kosten werden. Deaktiviere diese Option wenn du sicher bist dass\n"
+"das Modell bereits alles ausreichend kann bis auf den letzten Schritt."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_YES_OPTION"
+msgstr "Ja, erzeuge eine Unterhaltung für jeden Funktionsaufruf"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_NO_OPTION"
+msgstr "Nein, erzeuge nur ein Trainingsbeispiel pro Unterhaltung"
+

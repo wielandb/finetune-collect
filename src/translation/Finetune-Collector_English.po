@@ -913,3 +913,27 @@ msgstr "Audio base64 data goes here..."
 msgid "Supported Audio Files"
 msgstr ""
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVO_LABEL"
+msgstr "Create RFT-Subconversations"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
+msgstr "In RFT, only the last Function Call or JSON Schema message\n"
+"is actually trained upon. If you want to teach your (agentic)\n"
+"model to correctly make every function call in a long\n"
+"conversation, every function call needs to exist as the last\n"
+"message once. This setting automatically splits your\n"
+"conversations in RFT to train on every function call.\n"
+"Produces more training examples that will cost more money.\n"
+"Turn off if you are very sure the model can do everything\n"
+"sufficient already except from the last step."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_YES_OPTION"
+msgstr "Yes, create conversation for each function call"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_NO_OPTION"
+msgstr "No, only create one training example per conversation"
+

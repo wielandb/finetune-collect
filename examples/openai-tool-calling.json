@@ -1,0 +1,122 @@
+{
+	"functions": [
+		{
+			"name": "get_current_weather",
+			"description": "Get the current weather",
+			"parameters": [
+				{
+					"type": "String",
+					"name": "location",
+					"description": "The city and country, eg. San Francisco, USA",
+					"minimum": 0.0,
+					"maximum": 0.0,
+					"isEnum": false,
+					"hasLimits": false,
+					"enumOptions": "",
+					"isRequired": true
+				},
+				{
+					"type": "String",
+					"name": "format",
+					"description": "",
+					"minimum": 0.0,
+					"maximum": 0.0,
+					"isEnum": true,
+					"hasLimits": false,
+					"enumOptions": "celsius,fahrenheit",
+					"isRequired": true
+				}
+			],
+			"functionExecutionEnabled": false,
+			"functionExecutionExecutable": "",
+			"functionExecutionArgumentsString": ""
+		}
+	],
+	"conversations": {
+		"r2fz": [
+			{
+				"role": "meta",
+				"type": "meta",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}",
+				"metaData": {
+					"ready": false,
+					"conversationName": "",
+					"notes": "This is the example from the OpenAI fine-tuning docs under \"Tool calling\".\nNotice how there is a function defined in the functions tab.\nNote:\n- finetune-collect uses tool calls, and not the deprecated function calls.\n- finetune-collect does not support parallel tool calls"
+				}
+			},
+			{
+				"role": "user",
+				"type": "Text",
+				"textContent": "What is the weather in San Francisco?",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "assistant",
+				"type": "Function Call",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "get_current_weather",
+				"functionParameters": [
+					{
+						"name": "format",
+						"isUsed": true,
+						"parameterValueText": "",
+						"parameterValueChoice": "celsius",
+						"parameterValueNumber": 0.0
+					},
+					{
+						"name": "location",
+						"isUsed": true,
+						"parameterValueText": "",
+						"parameterValueChoice": "",
+						"parameterValueNumber": 0.0
+					}
+				],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			}
+		]
+	},
+	"settings": {
+		"useGlobalSystemMessage": false,
+		"globalSystemMessage": "",
+		"apikey": "",
+		"modelChoice": "",
+		"availableModels": [],
+		"includeFunctions": 0,
+		"finetuneType": 0,
+		"exportImagesHow": 0,
+		"useUserNames": false,
+		"schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+		"jsonSchema": "",
+		"tokenCounterPath": "",
+		"exportConvos": 0,
+		"countTokensWhen": 0,
+		"tokenCounts": "",
+		"countTokensModel": 0
+	}
+}

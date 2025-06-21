@@ -1,0 +1,94 @@
+{
+	"functions": [],
+	"conversations": {
+		"hiRQ": [
+			{
+				"role": "meta",
+				"type": "meta",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}",
+				"metaData": {
+					"ready": false,
+					"conversationName": "",
+					"notes": ""
+				}
+			},
+			{
+				"role": "system",
+				"type": "Text",
+				"textContent": "You are an assistant that identifies uncommon cheeses.",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "user",
+				"type": "Text",
+				"textContent": "What is this cheese?",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "user",
+				"type": "Image",
+				"textContent": "",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "https://upload.wikimedia.org/wikipedia/commons/3/36/Danbo_Cheese.jpg",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			},
+			{
+				"role": "assistant",
+				"type": "Text",
+				"textContent": "Danbo",
+				"unpreferredTextContent": "",
+				"preferredTextContent": "",
+				"imageContent": "",
+				"imageDetail": 0,
+				"functionName": "",
+				"functionParameters": [],
+				"functionResults": "",
+				"functionUsePreText": "",
+				"userName": "",
+				"jsonSchemaValue": "{}"
+			}
+		]
+	},
+	"settings": {
+		"apikey": "",
+		"useGlobalSystemMessage": false,
+		"globalSystemMessage": "",
+		"modelChoice": "gpt-4o",
+		"availableModels": []
+	}
+}

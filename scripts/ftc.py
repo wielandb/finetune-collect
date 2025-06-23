@@ -1,5 +1,7 @@
 import json
 import copy
+import sys
+import argparse
 
 def convert_parameter_to_openai_format(param):
     """
@@ -191,11 +193,16 @@ def convert_fine_tuning_data(input_file, output_file):
             out_f.write(json.dumps(output_entry) + '\n')
 
 def main():
-    if sys.argv[0]:
-        filename = sys.argv[0]
-    else:
-        filename = "data.json"
-    convert_fine_tuning_data(filename, 'output_finetune.jsonl')
+    parser = argparse.ArgumentParser(
+        description="Convert fine tune project to OpenAI JSONL"
+    )
+    parser.add_argument("filename", nargs="?", default="data.json",
+                        help="Input fine tune project JSON file")
+    parser.add_argument("--output", dest="output", default="output_finetune.jsonl",
+                        help="Output JSONL file")
+    args = parser.parse_args()
 
-if __name__ == '__main__':
+    convert_fine_tuning_data(args.filename, args.output)
+
+if __name__ == "__main__":
     main()

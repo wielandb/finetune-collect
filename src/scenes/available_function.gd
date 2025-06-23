@@ -19,6 +19,7 @@ func to_var():
 	return me
 	
 func from_var(data):
+	PARAMETER_SCENE = load("res://parameter.tscn")
 	$FunctionNameContainer/FunctionNameEdit.text = data["name"]
 	$FunctionDescriptionContainer2/FunctionDescriptionEdit.text = data["description"]
 	for parameter in data["parameters"]:

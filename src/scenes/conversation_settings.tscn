@@ -321,6 +321,7 @@ access = 2
 use_native_dialog = true
 
 [node name="FromClipboardJSONCreationContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
 layout_mode = 2
 
 [node name="FromClipboardJSONCreationLabel" type="Label" parent="VBoxContainer/FromClipboardJSONCreationContainer"]

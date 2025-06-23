@@ -1,0 +1,18 @@
+name: Run Godot Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Godot
+        uses: firebelley/setup-godot@v1
+        with:
+          version: 4.4.1
+          export-templates: false
+      - name: Run tests
+        run: godot --headless --path src -s res://tests/test_import_openai.gd

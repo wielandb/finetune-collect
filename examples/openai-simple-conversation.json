@@ -1,0 +1,75 @@
+{
+  "functions": [],
+  "conversations": {
+    "nml1": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}",
+        "metaData": {
+          "ready": false,
+          "conversationName": "",
+          "notes": "Einfache Unterhaltung mit einer Nutzer- und einer Assistentennachricht."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Wie weit ist der Mond von der Erde entfernt?",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Text",
+        "textContent": "Der Mond ist etwa 384.400 Kilometer von der Erde entfernt.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      }
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": "",
+    "apikey": "",
+    "modelChoice": "",
+    "availableModels": [],
+    "includeFunctions": 0,
+    "finetuneType": 0,
+    "exportImagesHow": 0,
+    "useUserNames": false,
+    "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+    "jsonSchema": "",
+    "tokenCounterPath": "",
+    "exportConvos": 0,
+    "countTokensWhen": 0,
+    "tokenCounts": "",
+    "countTokensModel": 0
+  }
+}

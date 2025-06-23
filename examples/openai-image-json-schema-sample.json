@@ -1,0 +1,75 @@
+{
+  "functions": [],
+  "conversations": {
+    "ijs1": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}",
+        "metaData": {
+          "ready": false,
+          "conversationName": "",
+          "notes": "Bild-Eingabe mit JSON-Ausgabe gemäß Schema."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Image",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Tulip-flower.jpg",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Text",
+        "textContent": "{\"flower\": \"tulip\", \"color\": \"red\"}",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      }
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": "",
+    "apikey": "",
+    "modelChoice": "",
+    "availableModels": [],
+    "includeFunctions": 0,
+    "finetuneType": 0,
+    "exportImagesHow": 0,
+    "useUserNames": false,
+    "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+    "jsonSchema": "{\n  \"title\": \"FlowerInfo\",\n  \"type\": \"object\",\n  \"required\": [\n    \"flower\",\n    \"color\"\n  ],\n  \"properties\": {\n    \"flower\": {\n      \"type\": \"string\"\n    },\n    \"color\": {\n      \"type\": \"string\"\n    }\n  }\n}\n",
+    "tokenCounterPath": "",
+    "exportConvos": 0,
+    "countTokensWhen": 0,
+    "tokenCounts": "",
+    "countTokensModel": 0
+  }
+}

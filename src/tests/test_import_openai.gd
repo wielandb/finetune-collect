@@ -1,0 +1,91 @@
+extends SceneTree
+
+# Ensure required classes are available when loading project scripts
+const _DummyFileAccessWeb = preload("res://tests/dummy_file_access_web.gd")
+
+var tests_run := 0
+var tests_failed := 0
+
+func assert_eq(a, b, name := ""):
+    tests_run += 1
+    if a != b:
+        tests_failed += 1
+        push_error("Assertion failed %s: expected %s got %s" % [name, str(b), str(a)])
+
+
+# Basic save and load using FileAccess to ensure the engine can store data
+func test_save_and_load_var():
+    var path = "user://tmp_save.bin"
+    var data = {"a": 1, "b": 2}
+    var file = FileAccess.open(path, FileAccess.WRITE)
+    file.store_var(data)
+    file.close()
+    var file_r = FileAccess.open(path, FileAccess.READ)
+    var loaded = file_r.get_var()
+    file_r.close()
+    assert_eq(loaded["a"], 1, "saved var a")
+    assert_eq(loaded["b"], 2, "saved var b")
+
+func test_convert_functions():
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    var param = {"name":"age","type":"Integer","description":"Age","isRequired":true}
+    var p_out = ex.convert_parameter_to_openai_format(param)
+    assert_eq(p_out["type"], "integer", "convert_parameter_to_openai_format type")
+    assert_eq(p_out["description"], "Age", "convert_parameter_to_openai_format description")
+    var funcdef = {"name":"test","description":"desc","parameters":[param]}
+    var f_out = ex.convert_function_to_openai_format(funcdef)
+    assert_eq(f_out["function"]["name"], "test", "convert_function_to_openai_format name")
+    assert_eq(f_out["function"]["parameters"]["properties"]["age"]["type"], "integer", "convert_function param type")
+    assert_eq(f_out["function"]["parameters"]["required"][0], "age", "convert_function required")
+
+func test_parameter_value_helpers():
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    var arr = [
+        {"name":"p1","parameterValueChoice":"choice","parameterValueText":"","parameterValueNumber":0},
+        {"name":"p2","parameterValueChoice":"","parameterValueText":"text","parameterValueNumber":0},
+        {"name":"p3","parameterValueChoice":"","parameterValueText":"","parameterValueNumber":42}
+    ]
+    var res = ex.get_parameter_values_from_function_parameter_dict(arr)
+    assert_eq(res["p1"], "choice", "param value choice")
+    assert_eq(res["p2"], "text", "param value text")
+    assert_eq(res["p3"], 42, "param value number")
+
+func test_create_conversation_parts():
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    var convo = [
+        {"role":"user","type":"Text","textContent":"hi"},
+        {"role":"assistant","type":"Function Call","functionName":"foo","functionParameters":[]},
+        {"role":"assistant","type":"Function Call","functionName":"bar","functionParameters":[]}
+    ]
+    var parts = ex.create_conversation_parts(convo)
+    assert_eq(parts.size(), 1, "conversation parts size")
+    assert_eq(parts[0].size(), 2, "conversation part length")
+    assert_eq(parts[0][0]["role"], "user", "conversation part role")
+
+func test_image_utils():
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    assert_eq(ex.isImageURL("http://example.com/img.png"), true, "isImageURL valid")
+    assert_eq(ex.isImageURL("invalid"), false, "isImageURL invalid")
+    assert_eq(ex.getImageType("https://example.com/pic.jpg?x=1"), "jpg", "getImageType jpg")
+
+func test_convert_text_message():
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    var msg = {"role":"user","type":"Text","textContent":"hello"}
+    var conv = ex.convert_message_to_openai_format(msg)
+    assert_eq(conv["role"], "user", "convert_message role")
+    assert_eq(conv["content"], "hello", "convert_message content")
+
+func _init():
+    test_save_and_load_var()
+    test_convert_functions()
+    test_parameter_value_helpers()
+    test_create_conversation_parts()
+    test_image_utils()
+    test_convert_text_message()
+    print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
+    quit(tests_failed)

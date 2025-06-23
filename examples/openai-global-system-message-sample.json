@@ -1,0 +1,75 @@
+{
+        "functions": [],
+        "conversations": {
+                "glo1": [
+                        {
+                                "role": "meta",
+                                "type": "meta",
+                                "textContent": "",
+                                "unpreferredTextContent": "",
+                                "preferredTextContent": "",
+                                "imageContent": "",
+                                "imageDetail": 0,
+                                "functionName": "",
+                                "functionParameters": [],
+                                "functionResults": "",
+                                "functionUsePreText": "",
+                                "userName": "",
+                                "jsonSchemaValue": "{}",
+                                "metaData": {
+                                        "ready": false,
+                                        "conversationName": "",
+                                        "notes": "System message stored globally instead of as first message."
+                                }
+                        },
+                        {
+                                "role": "user",
+                                "type": "Text",
+                                "textContent": "Name the largest planet in our solar system.",
+                                "unpreferredTextContent": "",
+                                "preferredTextContent": "",
+                                "imageContent": "",
+                                "imageDetail": 0,
+                                "functionName": "",
+                                "functionParameters": [],
+                                "functionResults": "",
+                                "functionUsePreText": "",
+                                "userName": "",
+                                "jsonSchemaValue": "{}"
+                        },
+                        {
+                                "role": "assistant",
+                                "type": "Text",
+                                "textContent": "The largest planet is Jupiter.",
+                                "unpreferredTextContent": "",
+                                "preferredTextContent": "",
+                                "imageContent": "",
+                                "imageDetail": 0,
+                                "functionName": "",
+                                "functionParameters": [],
+                                "functionResults": "",
+                                "functionUsePreText": "",
+                                "userName": "",
+                                "jsonSchemaValue": "{}"
+                        }
+                ]
+        },
+        "settings": {
+                "useGlobalSystemMessage": true,
+                "globalSystemMessage": "You are a helpful astronomy assistant.",
+                "apikey": "",
+                "modelChoice": "",
+                "availableModels": [],
+                "includeFunctions": 0,
+                "finetuneType": 0,
+                "exportImagesHow": 0,
+                "useUserNames": false,
+                "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+                "jsonSchema": "",
+                "tokenCounterPath": "",
+                "exportConvos": 0,
+                "countTokensWhen": 0,
+                "tokenCounts": "",
+                "countTokensModel": 0
+        }
+}

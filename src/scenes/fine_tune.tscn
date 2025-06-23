@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bjjksasvd2r5u"]
+[gd_scene load_steps=13 format=3 uid="uid://bjjksasvd2r5u"]
 
 [ext_resource type="PackedScene" uid="uid://cd35p8jv7axv5" path="res://scenes/conversation.tscn" id="1_o1j2m"]
 [ext_resource type="Theme" uid="uid://cebssi3strko3" path="res://themes/theme.res" id="1_v4ety"]
@@ -11,6 +11,7 @@
 [ext_resource type="Texture2D" uid="uid://dclev2i1xdu5c" path="res://icons/forum-plus-custom.png" id="5_ks358"]
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="8_wwmoc"]
 [ext_resource type="Script" uid="uid://bqrnafj6dml8a" path="res://scenes/exporter.gd" id="10_ido41"]
+[ext_resource type="Script" path="res://scenes/working_popup_controller.gd" id="11_wpctl"]
 
 [node name="FineTune" type="HBoxContainer"]
 anchors_preset = 15
@@ -98,6 +99,9 @@ script = ExtResource("4_slp0e")
 script = ExtResource("10_ido41")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="Exporter"]
+
+[node name="WorkingPopupController" type="Node" parent="."]
+script = ExtResource("11_wpctl")
 
 [connection signal="pressed" from="CollapsedMenu/ExpandBurgerBtn" to="." method="_on_expand_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/CollapseBurgerBtn" to="." method="_on_collapse_burger_btn_pressed"]

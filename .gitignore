@@ -2,3 +2,5 @@
 .godot/
 /android/
 /.vscode
+scripts/data.json
+scripts/output_finetune.jsonl

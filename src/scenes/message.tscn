@@ -600,7 +600,6 @@ icon = ExtResource("13_gakvq")
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("12_rwbsk")
-editable = false
 wrap_mode = 1
 
 [node name="InitEditingRequestToken" type="HTTPRequest" parent="SchemaMessageContainer"]
@@ -635,8 +634,8 @@ layout_mode = 2
 [connection signal="file_selected" from="AudioMessageContainer/AudioLoaderFileDialog" to="." method="_on_audio_loader_file_dialog_file_selected"]
 [connection signal="finished" from="AudioMessageContainer/AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]
 [connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]

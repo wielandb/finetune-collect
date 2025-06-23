@@ -14,6 +14,6 @@ Dieses Verzeichnis enthält verschiedene kleine Fine-Tuning Projekte, die die un
 | `openai-image-function-call-sample.json` | Kombiniert ein Bild mit einem Funktionsaufruf. |
 | `openai-image-json-schema-sample.json` | Kombiniert ein Bild mit einer JSON-Antwort. |
 | `openai-image-function-call-json-schema-sample.json` | Vereint Bild, Funktionsaufruf und JSON-Schema-Ausgabe. |
-| `openai-user-names-sample.json` | Zeigt eine Unterhaltung mit expliziten Benutzernamen. |
+| `openai-user-names-sample.json` | Mehrere Nutzer listen etwas auf; der Assistent nennt, wer was gesagt hat. |
 
 Die beinhalteten Nachrichten sind absichtlich kurz gehalten und sollen lediglich als Ausgangspunkt für eigene Experimente dienen.

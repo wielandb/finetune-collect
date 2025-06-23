@@ -19,13 +19,13 @@
         "metaData": {
           "ready": false,
           "conversationName": "",
-          "notes": "Beispiel für die Verwendung von User Names."
+          "notes": "Beispiel für die Unterscheidung mehrerer Benutzernamen."
         }
       },
       {
         "role": "user",
         "type": "Text",
-        "textContent": "Hallo, kannst du mir ein kurzes Haiku über den Frühling schreiben?",
+        "textContent": "Meine Lieblingsobstsorten sind Apfel und Birne.",
         "unpreferredTextContent": "",
         "preferredTextContent": "",
         "imageContent": "",
@@ -38,9 +38,24 @@
         "jsonSchemaValue": "{}"
       },
       {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Ich mag Kirsche und Pfirsich am liebsten.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "Bob",
+        "jsonSchemaValue": "{}"
+      },
+      {
         "role": "assistant",
         "type": "Text",
-        "textContent": "Frische Knospen sprießen / Lauer Wind trägt süßen Duft / Frühling kehrt zurück.",
+        "textContent": "Alice mag Apfel und Birne, Bob bevorzugt Kirsche und Pfirsich.",
         "unpreferredTextContent": "",
         "preferredTextContent": "",
         "imageContent": "",

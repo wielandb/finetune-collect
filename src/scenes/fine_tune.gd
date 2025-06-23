@@ -668,7 +668,15 @@ func conversation_from_openai_message_json(oaimsgjson):
 							NEWCONVO.append({ "role": "user", "type": "Image", "textContent": "", "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": contentpiece["image_url"], "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})						
 			else:
 				NEWCONVO.append({ "role": "user", "type": "Text", "textContent": msg["content"], "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})
-		elif msg["role"] == "assistant":
+		elif msg["role"] == "assistant" or msg["role"] == "developer":
 			# TODO: Handle Assistant Text responses and function calls (and function call return data)
 			# If assistant return data is valid json, put it in JSON schema container
-			pass
+			if msg["content"] is Array:
+				# The content is an array, wtf
+				pass
+			if msg["content"] is String:
+				NEWCONVO.append({ "role": "assistant", "type": "Text", "textContent": msg["content"], "unpreferredTextContent": "", "preferredTextContent": "", "imageContent": "", "imageDetail": 0, "functionName": "", "functionParameters": [], "functionResults": "", "functionUsePreText": ""})
+			if msg["tool_calls"]:
+				# This is an array, but we only support one tool call.
+				# We need to handle the response to the tool call also. In OpenAI syntax, its two messages. For us, its just one
+				pass # For now

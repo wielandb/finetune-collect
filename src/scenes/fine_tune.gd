@@ -853,7 +853,7 @@ func conversation_from_openai_message_json(oaimsgjson):
                                if i + 1 < oaimsgjson.size():
                                        var nxt = oaimsgjson[i + 1]
                                        if nxt.get("role", "") == "tool" and nxt.get("tool_call_id", "") == call_id:
-                                               function_result = nxt.get("content", "")
+                                               function_result = _extract_text_from_msg(nxt)
                                                i += 1
 
                                var pretext := _extract_text_from_msg(msg)
@@ -870,7 +870,10 @@ func conversation_from_openai_message_json(oaimsgjson):
                                if i + 1 < oaimsgjson.size():
                                        var nxt2 = oaimsgjson[i + 1]
                                        if nxt2.get("role", "") in ["function", "tool"] and nxt2.get("name", "") == function_name:
-                                               function_result = nxt2.get("content", "")
+                                               if nxt2.get("role", "") == "tool":
+                                                       function_result = _extract_text_from_msg(nxt2)
+                                               else:
+                                                       function_result = nxt2.get("content", "")
                                                i += 1
 
                                var pretext := _extract_text_from_msg(msg)

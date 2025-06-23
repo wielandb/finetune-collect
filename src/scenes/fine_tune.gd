@@ -726,23 +726,23 @@ func _create_ft_function_call_msg(function_name: String, arguments_dict: Diction
 # Extract text content from an OpenAI message which may contain either a string
 # or an array with text parts.
 func _extract_text_from_msg(msg: Dictionary) -> String:
-        var text := ""
-        if msg.has("content"):
-                        var content = msg["content"]
-                        if content is String:
-                                        text = content
-                        elif content is Array:
-                                        for p in content:
-                                                        if p is String:
-                                                                        text += p
-                                                        elif typeof(p) == TYPE_DICTIONARY:
-                                                                        if p.get("type", "") == "text":
-                                                                                        text += p.get("text", "")
-                                                                        elif p.has("text"):
-                                                                                        text += p["text"]
-                        elif content is Dictionary:
-                                        text = content.get("text", "")
-        return text
+		var text := ""
+		if msg.has("content"):
+						var content = msg["content"]
+						if content is String:
+										text = content
+						elif content is Array:
+										for p in content:
+														if p is String:
+																		text += p
+														elif typeof(p) == TYPE_DICTIONARY:
+																		if p.get("type", "") == "text":
+																						text += p.get("text", "")
+																		elif p.has("text"):
+																						text += p["text"]
+						elif content is Dictionary:
+										text = content.get("text", "")
+		return text
 
 # Simple JSON validity check used when importing OpenAI messages
 func _validate_is_json(testtext) -> bool:
@@ -792,78 +792,78 @@ func conversation_from_openai_message_json(oaimsgjson):
 					"imageDetail": 0,
 					"functionName": "",
 					"functionParameters": [],
-                                                        "functionResults": "",
-                                                        "functionUsePreText": ""
-                                        })
-                        elif role == "user":
-                                        var content = msg.get("content")
-                                        if content is Array:
-                                                        for piece in content:
-                                                                        if piece is Dictionary and piece.get("type", "") == "text":
-                                                                                NEWCONVO.append({
-                                                                                "role": "user",
-                                                                                "type": "Text",
-                                                                                "textContent": piece.get("text", ""),
-                                                                                "unpreferredTextContent": "",
-                                                                                "preferredTextContent": "",
-                                                                                "imageContent": "",
-                                                                                "imageDetail": 0,
-                                                                                "functionName": "",
-                                                                                "functionParameters": [],
-                                                                                "functionResults": "",
-                                                                                "functionUsePreText": "",
-                                                                                "userName": msg.get("name", "")
-                                                                                })
-                                                                        elif piece is Dictionary and piece.get("type", "") == "image_url":
-                                                                                var url = piece["image_url"].get("url", "")
-                                                                                var detail = image_detail_map.get(piece["image_url"].get("detail", "high"), 0)
-                                                                                if url.begins_with("data:image/jpeg;base64,"):
-                                                                                        url = url.replace("data:image/jpeg;base64,", "")
-                                                                                NEWCONVO.append({
-                                                                                "role": "user",
-                                                                                "type": "Image",
-                                                                                "textContent": "",
-                                                                                "unpreferredTextContent": "",
-                                                                                "preferredTextContent": "",
-                                                                                "imageContent": url,
-                                                                                "imageDetail": detail,
-                                                                                "functionName": "",
-                                                                                "functionParameters": [],
-                                                                                "functionResults": "",
-                                                                                "functionUsePreText": "",
-                                                                                "userName": msg.get("name", "")
-                                                                                })
-                                                                        elif piece is String:
-                                                                                NEWCONVO.append({
-                                                                                "role": "user",
-                                                                                "type": "Text",
-                                                                                "textContent": piece,
-                                                                                "unpreferredTextContent": "",
-                                                                                "preferredTextContent": "",
-                                                                                "imageContent": "",
-                                                                                "imageDetail": 0,
-                                                                                "functionName": "",
-                                                                                "functionParameters": [],
-                                                                                "functionResults": "",
-                                                                                "functionUsePreText": "",
-                                                                                "userName": msg.get("name", "")
-                                                                                })
-                                        else:
-                                                        var text = _extract_text_from_msg(msg)
-                                                        NEWCONVO.append({
-                                                                        "role": "user",
-                                                                        "type": "Text",
-                                                                        "textContent": text,
-                                                                        "unpreferredTextContent": "",
-                                                                        "preferredTextContent": "",
-                                                                        "imageContent": "",
-                                                                        "imageDetail": 0,
-                                                                        "functionName": "",
-                                                                        "functionParameters": [],
-                                                                        "functionResults": "",
-                                                                        "functionUsePreText": "",
-                                                                        "userName": msg.get("name", "")
-                                                        })
+														"functionResults": "",
+														"functionUsePreText": ""
+										})
+			elif role == "user":
+				var content = msg.get("content")
+				if content is Array:
+								for piece in content:
+												if piece is Dictionary and piece.get("type", "") == "text":
+														NEWCONVO.append({
+														"role": "user",
+														"type": "Text",
+														"textContent": piece.get("text", ""),
+														"unpreferredTextContent": "",
+														"preferredTextContent": "",
+														"imageContent": "",
+														"imageDetail": 0,
+														"functionName": "",
+														"functionParameters": [],
+														"functionResults": "",
+														"functionUsePreText": "",
+														"userName": msg.get("name", "")
+														})
+												elif piece is Dictionary and piece.get("type", "") == "image_url":
+														var url = piece["image_url"].get("url", "")
+														var detail = image_detail_map.get(piece["image_url"].get("detail", "high"), 0)
+														if url.begins_with("data:image/jpeg;base64,"):
+																url = url.replace("data:image/jpeg;base64,", "")
+														NEWCONVO.append({
+														"role": "user",
+														"type": "Image",
+														"textContent": "",
+														"unpreferredTextContent": "",
+														"preferredTextContent": "",
+														"imageContent": url,
+														"imageDetail": detail,
+														"functionName": "",
+														"functionParameters": [],
+														"functionResults": "",
+														"functionUsePreText": "",
+														"userName": msg.get("name", "")
+														})
+												elif piece is String:
+														NEWCONVO.append({
+														"role": "user",
+														"type": "Text",
+														"textContent": piece,
+														"unpreferredTextContent": "",
+														"preferredTextContent": "",
+														"imageContent": "",
+														"imageDetail": 0,
+														"functionName": "",
+														"functionParameters": [],
+														"functionResults": "",
+														"functionUsePreText": "",
+														"userName": msg.get("name", "")
+														})
+												else:
+														var text = _extract_text_from_msg(msg)
+														NEWCONVO.append({
+																		"role": "user",
+																		"type": "Text",
+																		"textContent": text,
+																		"unpreferredTextContent": "",
+																		"preferredTextContent": "",
+																		"imageContent": "",
+																		"imageDetail": 0,
+																		"functionName": "",
+																		"functionParameters": [],
+																		"functionResults": "",
+																		"functionUsePreText": "",
+																		"userName": msg.get("name", "")
+														})
 			elif msg_type == "function_call":
 					var call_id = msg.get("call_id", msg.get("id", ""))
 					var function_name = msg.get("name", "")

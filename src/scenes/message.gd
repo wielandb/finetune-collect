@@ -232,19 +232,44 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	var base_64_data = Marshalls.raw_to_base64(bin)
 	$ImageMessageContainer/Base64ImageEdit.text = base_64_data
 
+func get_image_type_from_base64(data: String) -> String:
+        if data.begins_with("data:image/jpeg;base64,"):
+                return "jpg"
+        elif data.begins_with("data:image/png;base64,"):
+                return "png"
+        var raw: PackedByteArray = Marshalls.base64_to_raw(data)
+        if raw.size() >= 4:
+                if raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
+                        return "jpg"
+                if raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
+                        return "png"
+        return "jpg"
+
 func base64_to_image(textureRectNode, b64Data):
-	var img = Image.new()
-	img.load_jpg_from_buffer(
-		Marshalls.base64_to_raw(b64Data)
-	)
-	textureRectNode.texture = ImageTexture.create_from_image(img)
+        var img = Image.new()
+        var data := b64Data
+        if data.begins_with("data:image/jpeg;base64,"):
+                data = data.replace("data:image/jpeg;base64,", "")
+        elif data.begins_with("data:image/png;base64,"):
+                data = data.replace("data:image/png;base64,", "")
+        var raw = Marshalls.base64_to_raw(data)
+        var img_type = get_image_type_from_base64(b64Data)
+        var err = OK
+        if img_type == "png":
+                err = img.load_png_from_buffer(raw)
+        else:
+                err = img.load_jpg_from_buffer(raw)
+        if err != OK:
+                push_error("Couldn't load the image")
+                return
+        textureRectNode.texture = ImageTexture.create_from_image(img)
 	
 func _on_load_image_button_pressed() -> void:
-	match OS.get_name():
-		"Web":
-			image_access_web.open(".jpg, .jpeg")
-		_:
-			$ImageMessageContainer/FileDialog.visible = true
+        match OS.get_name():
+                "Web":
+                        image_access_web.open(".jpg, .jpeg, .png")
+                _:
+                        $ImageMessageContainer/FileDialog.visible = true
 
 
 func _on_delete_button_pressed() -> void:

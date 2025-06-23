@@ -42,8 +42,11 @@ func add_image_content(image_base64: String, detail: String) -> void:
 	if isImageURL(image_base64):
 		image_url_data = image_base64
 	else:
-		# TODO: Check if it is really jpeg or a png
-		image_url_data = "data:image/jpeg;base64," + image_base64
+		var mime := "jpeg"
+		var img_type := get_image_type_from_base64(image_base64)
+		if img_type == "png":
+			mime = "png"
+		image_url_data = "data:image/%s;base64," % mime + image_base64
 	content.append({
 		"type": "image_url",
 		"image_url": {
@@ -186,3 +189,16 @@ func getImageType(url: String) -> String:
 		return "jpg"
 	else:
 		return ""
+
+func get_image_type_from_base64(data: String) -> String:
+	if data.begins_with("data:image/jpeg;base64,"):
+		return "jpg"
+	elif data.begins_with("data:image/png;base64,"):
+		return "png"
+	var raw: PackedByteArray = Marshalls.base64_to_raw(data)
+	if raw.size() >= 4:
+		if raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
+			return "jpg"
+		if raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
+			return "png"
+	return "jpg"

@@ -114,6 +114,15 @@ func test_message_class():
     assert_eq(d["tool_calls"].size(), 1, "message tool calls size")
     assert_eq(d["tool_calls"][0]["function"]["name"], "foo", "function call name")
 
+func test_message_base64_png():
+    var Message = load("res://addons/openai_api/Scripts/Message.gd")
+    var msg = Message.new()
+    var png_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAADUlEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg=="
+    msg.add_image_content(png_b64, "auto")
+    var d = msg.get_as_dict()
+    var url = d["content"][0]["image_url"]["url"]
+    assert_eq(url.begins_with("data:image/png;base64,"), true, "png prefix")
+
 func _init():
     test_save_and_load_var()
     test_convert_functions()
@@ -124,5 +133,6 @@ func _init():
     test_convert_functions_list()
     await test_convert_conversation_function_call()
     test_message_class()
+    test_message_base64_png()
     print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
     quit(tests_failed)

@@ -1,0 +1,90 @@
+{
+  "functions": [],
+  "conversations": {
+    "usn1": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}",
+        "metaData": {
+          "ready": false,
+          "conversationName": "",
+          "notes": "Beispiel für die Unterscheidung mehrerer Benutzernamen."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Meine Lieblingsobstsorten sind Apfel und Birne.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "Alice",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Ich mag Kirsche und Pfirsich am liebsten.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "Bob",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Text",
+        "textContent": "Alice mag Apfel und Birne, Bob bevorzugt Kirsche und Pfirsich.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "Bot",
+        "jsonSchemaValue": "{}"
+      }
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": "",
+    "apikey": "",
+    "modelChoice": "",
+    "availableModels": [],
+    "includeFunctions": 0,
+    "finetuneType": 0,
+    "exportImagesHow": 0,
+    "useUserNames": true,
+    "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+    "jsonSchema": "",
+    "tokenCounterPath": "",
+    "exportConvos": 0,
+    "countTokensWhen": 0,
+    "tokenCounts": "",
+    "countTokensModel": 0
+  }
+}

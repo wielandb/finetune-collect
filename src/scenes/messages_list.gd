@@ -178,7 +178,9 @@ func gpt_response_completed(message:Message, response:Dictionary):
 			"functionResults": "",
 			"functionUsePreText": ""
 		}
-	MessageInstance.from_var(RecvMsgVar)
+        MessageInstance.from_var(RecvMsgVar)
+        var root = get_tree().get_root().get_node("FineTune")
+        root.hide_working_popup()
 	
 func messages_to_openai_format():
 	var ftc_messages = self.to_var()
@@ -266,7 +268,9 @@ func _on_add_message_completion_button_pressed() -> void:
 	var model = settings["modelChoice"]
 	print(model)
 	var toolsforopenAI = get_tree().get_root().get_node("FineTune/Conversation/Functions/FunctionsList").functions_list_to_gpt_available_tools_list()
-	openai.prompt_gpt(openai_messages, model, "https://api.openai.com/v1/chat/completions", toolsforopenAI)
+        var root = get_tree().get_root().get_node("FineTune")
+        root.show_working_popup()
+        openai.prompt_gpt(openai_messages, model, "https://api.openai.com/v1/chat/completions", toolsforopenAI)
 
 func check_autocomplete_disabled_status():
 	if get_tree().get_root().get_node("FineTune").SETTINGS["apikey"] == "":

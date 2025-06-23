@@ -1,0 +1,18 @@
+{
+  "functions": [
+    {
+      "name": "get_age",
+      "description": "Return user age",
+      "parameters": [
+        {"type": "Integer", "name": "age", "description": "Age", "isRequired": true}
+      ]
+    }
+  ],
+  "conversations": {
+    "C1": [
+      {"role": "user", "type": "Text", "textContent": "How old am I?"},
+      {"role": "assistant", "type": "Function Call", "functionName": "get_age", "functionParameters": [{"name": "age", "isUsed": true, "parameterValueNumber": 30, "parameterValueText": "", "parameterValueChoice": ""}], "functionResults": "30", "functionUsePreText": ""}
+    ]
+  },
+  "settings": {}
+}

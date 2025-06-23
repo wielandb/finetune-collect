@@ -16,4 +16,7 @@ jobs:
           use-dotnet: false
           include-templates: false
       - name: Run tests
-        run: godot --headless --path src -s res://tests/test_import_openai.gd
+        run: |
+          godot --headless --path src -s res://tests/test_import_openai.gd && \
+          godot --headless --path src -s res://tests/test_application_start.gd && \
+          godot --headless --path src -s res://tests/test_load_examples.gd

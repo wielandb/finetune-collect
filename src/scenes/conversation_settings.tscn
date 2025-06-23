@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://d3c68j8erdmn8"]
+[gd_scene load_steps=10 format=3 uid="uid://d3c68j8erdmn8"]
 
 [ext_resource type="Script" uid="uid://blnyvfloajj2y" path="res://scenes/conversation_settings.gd" id="1_efb5c"]
 [ext_resource type="Texture2D" uid="uid://ddwylhoqb77rg" path="res://icons/message-cog-custom.png" id="2_fd7a4"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cq6q4oktrlqsh" path="res://icons/cloud-refresh-variant-custom.png" id="3_swtgl"]
 [ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="6_3r4bh"]
 [ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="6_uqjdu"]
+[ext_resource type="Texture2D" uid="uid://clt2r8je0okr1" path="res://icons/clipboard-file-outline-custom.png" id="7_a2kuo"]
 
 [sub_resource type="GDScript" id="GDScript_qyukn"]
 script/source = "extends Button
@@ -115,9 +116,34 @@ popup/item_1/text = "SETTINGS_FINETUNE_TYPE_OPTION_DPO"
 popup/item_1/id = 1
 popup/item_2/text = "SETTINGS_FINETUNE_TYPE_OPTION_REINFORCEMENT"
 popup/item_2/id = 2
-popup/item_2/disabled = true
 
 [node name="ExportSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="RFTSplitConversationsSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="RFTSplitConvoLabel" type="Label" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
+layout_mode = 2
+text = "SETTINGS_RFT_SPLIT_CONVO_LABEL"
+
+[node name="RFTSplitHint" type="TextureRect" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="RFTSplitOptionButton" type="OptionButton" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 2
+popup/item_0/text = "SETTINGS_RFT_SPLIT_YES_OPTION"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_RFT_SPLIT_NO_OPTION"
+popup/item_1/id = 1
+
+[node name="RFTSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ExportImagesHowContainer" type="HBoxContainer" parent="VBoxContainer"]
@@ -294,6 +320,26 @@ file_mode = 1
 access = 2
 use_native_dialog = true
 
+[node name="FromClipboardJSONCreationContainer" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="FromClipboardJSONCreationLabel" type="Label" parent="VBoxContainer/FromClipboardJSONCreationContainer"]
+layout_mode = 2
+text = "FROMCLIPBOARDJSON_LABEL_TEXT"
+
+[node name="FromClipboardJSONCreationHint" type="TextureRect" parent="VBoxContainer/FromClipboardJSONCreationContainer"]
+layout_mode = 2
+tooltip_text = "FROMCLIPBOARDJSON_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="BatchCreationButton" type="Button" parent="VBoxContainer/FromClipboardJSONCreationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "LOAD_FROM_CLIPBOARD_JSON"
+icon = ExtResource("7_a2kuo")
+
 [node name="TokenCounterSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -435,6 +481,7 @@ use_native_dialog = true
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]
 [connection signal="item_selected" from="VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]

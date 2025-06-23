@@ -28,6 +28,7 @@ func to_var():
 	me["countTokensWhen"] = $VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected
 	me["tokenCounts"] = $VBoxContainer/TokenCountPathContainer/TokenCountValueHolder.text
 	me["countTokensModel"] = $VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected
+	me["doRFTExportConversationSplits"] = $VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton.selected
 	return me
 	
 func from_var(me):
@@ -59,6 +60,7 @@ func from_var(me):
 	for item in load_available_fine_tuning_models_from_file():
 		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
 	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected = me.get("countTokensModel", 0)
+	$VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton.selected = me.get("doRFTExportConversationSplits", 0)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

@@ -99,6 +99,8 @@ func convert_function_to_openai_format(funcdef):
 func convert_message_to_openai_format(message, function_map=null):
 	# Convert a message from the source format to OpenAI message format.
 	# Handles text, image, and function call messages.
+	print("Converting message of type...")
+	print(message['type'])
 	var tool_call = {}
 	var image_detail_map = {
 		0: "high",
@@ -185,10 +187,38 @@ func convert_message_to_openai_format(message, function_map=null):
 			return [tool_call, tool_response]
 		return tool_call
 	elif message['type'] == 'JSON Schema':
-		var toAddDict ={
+		var toAddDict = {
 			'role': message['role'],
 			'content': message['jsonSchemaValue']
 		}
+		return toAddDict
+	elif message['type'] == 'Audio':
+		var toAddDict = {
+			'role': message['role'],
+			'content': [
+				{
+					'type': 'input_audio',
+					'input_audio': {
+						'format': message['audioFiletype'],
+						'data': message['audioData']
+					}
+				}
+			]
+		}
+		return toAddDict
+	elif message['type'] == "PDF File":
+		var toAddDict = {
+			'role': message['role'],
+			'content': [
+					{
+						'type': 'file',
+						'file': {
+							'filename': message['fileMessageName'],
+							'file_data': 'data:application/pdf;base64,' + message['fileMessageData']
+						}
+					}
+				]
+			}
 		return toAddDict
 	return null
 
@@ -216,6 +246,126 @@ func convert_functions_to_openai_format(functions, onlykeep=null):
 		if not onlykeep or funcDef["name"] in onlykeep:
 			tmp.append(convert_function_to_openai_format(funcDef))
 	return tmp
+
+func get_parameter_values_from_function_parameter_dict(fpdict):
+	var parametersAndValues = {}
+	for fp in fpdict:
+		if fp["parameterValueChoice"] != "":
+			parametersAndValues[fp['name']] = fp["parameterValueChoice"]
+		elif fp["parameterValueText"] != "":
+			parametersAndValues[fp['name']] = fp["parameterValueText"]
+		else:
+			parametersAndValues[fp['name']] = fp["parameterValueNumber"]
+	return parametersAndValues
+
+func create_conversation_parts(conversation: Array) -> Array:
+	# Return full prefixes up to each non-final assistant Function Call
+	var parts: Array = []
+	var count: int = conversation.size()
+	for i in range(count):
+		var msg = conversation[i]
+		if msg['role'] == 'assistant' and msg['type'] == 'Function Call' and i < count - 1:
+			# build prefix through this call
+			var prefix: Array = []
+			for j in range(i + 1):
+				prefix.append(conversation[j])
+			parts.append(prefix)
+	return parts
+
+func convert_rft_data(ftdata):
+	var jsonl_file_string = ""
+	# ftdata -> the project file structure
+	### Needs to be converted from scripts
+	## function_map = {func['name']: func for func in data.get('functions', [])}
+	var function_map = {}
+	for funcDef in ftdata.get('functions', []):
+		function_map[funcDef["name"]] = funcDef
+	var tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+	var system_message = null
+	if ftdata['settings'].get('useGlobalSystemMessage', false):
+		system_message = ftdata['settings'].get('globalSystemMessage', '')
+	# Expand conversations: include original and mid-call prefixes
+	if ftdata['settings'].get('doRFTExportConversationSplits', 0) == 0:
+		var original = ftdata['conversations'].duplicate(true)
+		var expanded = {}
+		for conversation_key in original:
+			# keep full original
+			expanded[conversation_key] = original[conversation_key]
+			var splits = create_conversation_parts(original[conversation_key])
+			print("Found " + str(splits.size()) + " mid-call splits for " + conversation_key)
+			for i in range(splits.size()):
+				var part_key = conversation_key + "-" + str(i)
+				expanded[part_key] = splits[i]
+		# replace conversations map with expanded version
+		ftdata['conversations'] = expanded
+	## End of convo expanding
+	print("Expanded conversations:")
+	print(ftdata['conversations'])
+	for conversation_key in ftdata['conversations']:
+		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
+		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
+		var last_message = conversation.pop_back()
+		# We need to check if the message we got is assistant + either JSON Schema or function call
+		if last_message['role'] != "assistant":
+			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")
+			print("Last message:")
+			print(last_message)
+			continue
+		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call":
+			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
+			continue
+		var correct_data = {}
+		if last_message['type'] == "JSON Schema":
+			# Get the value, parse it and put it into correct data, append empty function data...
+			correct_data = JSON.parse_string(last_message['jsonSchemaValue'])
+			correct_data['ideal_function_call_data'] = []
+			correct_data['do_function_call'] = false
+		elif last_message['type'] == "Function Call":
+			correct_data['do_function_call'] = true
+			correct_data['ideal_function_call_data'] = {
+				"name": last_message["functionName"],
+				"arguments": get_parameter_values_from_function_parameter_dict(last_message["functionParameters"]),
+				"functionUsePreText": last_message["functionUsePreText"]
+			}
+		else:
+			print("Something went very wrong...")
+			continue
+			
+		
+		var processed_conversation = []
+		if system_message:
+				processed_conversation.append({
+					'role': 'system', 
+					'content': system_message
+				})
+		# Convert conversation
+		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		# Write to JSONL, optionally including tools
+		var output_entry = correct_data
+		output_entry['messages'] = processed_conversation
+		# Only add tools if there are function calls in the conversation
+		# TODO: Do as the settings say
+		var function_handle_setting = getSettings().get("includeFunctions", 0)
+		if function_handle_setting == 0:
+			# Always include all
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+			output_entry['tools'] = tools
+		elif function_handle_setting == 1:
+			# Only include ones used in the conversation
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_in_conversation(conversation_key))
+			output_entry['tools'] = tools
+		elif function_handle_setting == 2:
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_globally())
+			output_entry['tools'] = tools
+		elif function_handle_setting == 3: 
+			for msg in processed_conversation:
+				if msg.get('tool_calls', false):
+					output_entry['tools'] = tools
+		else:
+			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+			output_entry['tools'] = tools
+		jsonl_file_string += JSON.stringify(output_entry) + "\n"
+	return jsonl_file_string
 
 func convert_dpo_data(ftdata):
 	var jsonl_file_string = ""

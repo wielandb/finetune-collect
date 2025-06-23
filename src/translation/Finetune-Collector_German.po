@@ -884,3 +884,74 @@ msgstr "Inferenzkosten"
 msgid "META_MESSAGE_BATCH_INFERENCE_COST"
 msgstr "Batch-Inferenzkosten"
 
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_AUDIO"
+msgstr "Der Assistent kann (für fine-tuning) keine Audios senden"
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_PDF"
+msgstr "Der Assistent kann keine PDFs senden"
+
+#: scenes/message.gd
+msgid "mp3"
+msgstr ""
+
+#: scenes/message.gd
+msgid "wav"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "Audio"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "PDF File"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_PDF_FILE_MESSAGE_TITLE"
+msgstr "PDF Datei Nachricht"
+
+#: scenes/message.tscn
+msgid "PDF-File"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_AUDIO_MESSAGE_TITLE"
+msgstr "Audio Nachricht"
+
+#: scenes/message.tscn
+msgid "NON"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGE_AUDIO_AUDIO_EDIT_PLACEHOLDER"
+msgstr "Hier kommen die base64-Daten hin..."
+
+#: scenes/message.tscn
+msgid "Supported Audio Files"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVO_LABEL"
+msgstr "RFT-Subunterhaltungen erzeugen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
+msgstr "Im RFT wird nur auf dem letzten Funktionsaufruf oder auf der letzten JSON \n"
+"Schema Nachricht trainiert. Wenn du deinem (agentischen) Modell beibringen\n"
+"möchtest, wie man jede Funktion auf dem Weg richtig benutzt, muss es die \n"
+"Unterhaltung ein mal pro Funktionsaufruf geben, mit dem jeweiligen \n"
+"Funktionsaufruf als letzte Nachricht. Diese Einstellung erzeugt automatisch \n"
+"die dafür nötigen Unterhaltungen im Export. Erzeugt mehr Trainingsbeispiele \n"
+"die mehr kosten werden. Deaktiviere diese Option wenn du sicher bist dass\n"
+"das Modell bereits alles ausreichend kann bis auf den letzten Schritt."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_YES_OPTION"
+msgstr "Ja, erzeuge eine Unterhaltung für jeden Funktionsaufruf"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_RFT_SPLIT_NO_OPTION"
+msgstr "Nein, erzeuge nur ein Trainingsbeispiel pro Unterhaltung"
+

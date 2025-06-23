@@ -1,0 +1,75 @@
+{
+  "functions": [],
+  "conversations": {
+    "usn1": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}",
+        "metaData": {
+          "ready": false,
+          "conversationName": "",
+          "notes": "Beispiel für die Verwendung von User Names."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Hallo, kannst du mir ein kurzes Haiku über den Frühling schreiben?",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "Alice",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Text",
+        "textContent": "Frische Knospen sprießen / Lauer Wind trägt süßen Duft / Frühling kehrt zurück.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "Bot",
+        "jsonSchemaValue": "{}"
+      }
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": "",
+    "apikey": "",
+    "modelChoice": "",
+    "availableModels": [],
+    "includeFunctions": 0,
+    "finetuneType": 0,
+    "exportImagesHow": 0,
+    "useUserNames": true,
+    "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+    "jsonSchema": "",
+    "tokenCounterPath": "",
+    "exportConvos": 0,
+    "countTokensWhen": 0,
+    "tokenCounts": "",
+    "countTokensModel": 0
+  }
+}

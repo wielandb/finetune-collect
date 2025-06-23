@@ -90,6 +90,8 @@ func _process(delta: float) -> void:
 		if is_cb_json:
 			print("War JSON")
 			var ftcmsglist = conversation_from_openai_message_json(clipboard_content)
+			for ftmsg in ftcmsglist:
+				$Conversation/Messages/MessagesList.add_message(ftmsg)
 	#	if RUNTIME["filepath"] == "":
 	#		$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 	#	else:
@@ -737,6 +739,8 @@ func _validate_is_json(testtext) -> bool:
 	
 	
 func conversation_from_openai_message_json(oaimsgjson):
+
+	
 	# Accept both a JSON string or an already parsed array
 	if typeof(oaimsgjson) == TYPE_STRING:
 			var parsed = JSON.parse_string(oaimsgjson)
@@ -746,15 +750,21 @@ func conversation_from_openai_message_json(oaimsgjson):
 					oaimsgjson = parsed
 	if typeof(oaimsgjson) != TYPE_ARRAY:
 			return []
-
+	# Go over the list and remove all members that arent dictionarys
+	for msg in oaimsgjson:
+		if msg is Dictionary:
+			print("All clear")
+		else:
+			oaimsgjson.erase(msg)
 	var NEWCONVO = []
 	var image_detail_map = {"high": 0, "low": 1, "auto": 2}
 	var i := 0
 	while i < oaimsgjson.size():
 			var msg = oaimsgjson[i]
+			if msg is Array:
+				continue
 			var role = msg.get("role", "")
-			var msg_type = msg.get("type", "")
-
+			var msg_type = msg.get("type", "")			
 			if role == "system" or role == "developer":
 					NEWCONVO.append({
 							"role": "assistant",

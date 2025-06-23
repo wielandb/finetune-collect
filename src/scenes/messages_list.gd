@@ -377,3 +377,15 @@ func on_dropped_files(files):
 				}
 			)
 			MessageInstance._on_file_dialog_file_selected(file)
+
+func add_message(message_obj):
+			# Add a new message to the MessagesListContainer
+			var MessageInstance = MESSAGE_SCENE.instantiate()
+			#var addButton = $MessagesListContainer/AddMessageButton
+			#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
+			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
+			$MessagesListContainer.add_child(MessageInstance)
+			#$MessagesListContainer.move_child(addAIButton, -1)
+			#$MessagesListContainer.move_child(addButton, -1)
+			$MessagesListContainer.move_child(buttonsContainer, -1)	
+			MessageInstance.from_var(message_obj)

@@ -16,6 +16,13 @@ var RUNTIME = {"filepath": ""}
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 
 var file_access_web = FileAccessWeb.new()
+@onready var working_popup_controller = $WorkingPopupController
+
+func show_working_popup() -> void:
+    working_popup_controller.show_popup()
+
+func hide_working_popup() -> void:
+    working_popup_controller.hide_popup()
 # FINETUNEDATA = 
 # { functions: [],
 #   settings: {
@@ -323,11 +330,13 @@ func check_is_conversation_ready(idx: String) -> bool:
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	if path.ends_with(".json"):
-		load_from_json(path)
-	elif path.ends_with(".ftproj"):
-		load_from_binary(path)
-	RUNTIME["filepath"] = path
+        show_working_popup()
+        if path.ends_with(".json"):
+                load_from_json(path)
+        elif path.ends_with(".ftproj"):
+                load_from_binary(path)
+        RUNTIME["filepath"] = path
+        hide_working_popup()
 	
 
 
@@ -488,11 +497,13 @@ func load_from_appropriate_from_path(path):
 
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
-	if path.ends_with(".json"):
-		save_to_json(path)
-	elif path.ends_with(".ftproj"):
-		save_to_binary(path)
-	RUNTIME["filepath"] = path
+        show_working_popup()
+        if path.ends_with(".json"):
+                save_to_json(path)
+        elif path.ends_with(".ftproj"):
+                save_to_binary(path)
+        RUNTIME["filepath"] = path
+        hide_working_popup()
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)
@@ -573,22 +584,26 @@ func create_jsonl_data_for_file():
 
 
 func _on_export_btn_pressed() -> void:
-	# If we are on the web, different things need to happen
-	match OS.get_name():
-		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
-		"Web":
-			# When we are on web, we need to download the file directly
-			var complete_jsonl_string = await create_jsonl_data_for_file()
-			var byte_array = complete_jsonl_string.to_utf8_buffer()
-			JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
+        show_working_popup()
+        # If we are on the web, different things need to happen
+        match OS.get_name():
+                "Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+                        $VBoxContainer/ExportBtn/ExportFileDialog.visible = true
+                "Web":
+                        # When we are on web, we need to download the file directly
+                        var complete_jsonl_string = await create_jsonl_data_for_file()
+                        var byte_array = complete_jsonl_string.to_utf8_buffer()
+                        JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
+        hide_working_popup()
 	
 
 func _on_export_file_dialog_file_selected(path: String) -> void:
-	var complete_jsonl_string = await create_jsonl_data_for_file()
-	var file = FileAccess.open(path, FileAccess.WRITE)
-	file.store_string(complete_jsonl_string)
-	file.close()
+        show_working_popup()
+        var complete_jsonl_string = await create_jsonl_data_for_file()
+        var file = FileAccess.open(path, FileAccess.WRITE)
+        file.store_string(complete_jsonl_string)
+        file.close()
+        hide_working_popup()
 
 
 func isImageURL(url: String) -> bool:

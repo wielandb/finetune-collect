@@ -1,7 +1,5 @@
 extends SceneTree
 
-# Ensure required classes are available when loading project scripts
-const _DummyFileAccessWeb = preload("res://tests/dummy_file_access_web.gd")
 
 var tests_run := 0
 var tests_failed := 0

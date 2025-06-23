@@ -80,6 +80,42 @@ func test_convert_text_message():
     assert_eq(conv["role"], "user", "convert_message role")
     assert_eq(conv["content"], "hello", "convert_message content")
 
+func test_convert_functions_list():
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    var f1 = {"name":"f1","description":"","parameters":[]}
+    var f2 = {"name":"f2","description":"","parameters":[]}
+    var res = ex.convert_functions_to_openai_format([f1, f2], ["f2"])
+    assert_eq(res.size(), 1, "convert_functions_to_openai_format size")
+    assert_eq(res[0]["function"]["name"], "f2", "convert_functions_to_openai_format name")
+
+func test_convert_conversation_function_call() -> void:
+    var Exporter = load("res://scenes/exporter.gd")
+    var ex = Exporter.new()
+    var convo = [
+        {"role":"user","type":"Text","textContent":"hi"},
+        {"role":"assistant","type":"Function Call","functionName":"foo","functionParameters":[{"name":"a","isUsed":true,"parameterValueChoice":"1","parameterValueText":""}],"functionResults":"ok","functionUsePreText":""}
+    ]
+    var result = await ex.convert_conversation_to_openai_format(convo)
+    assert_eq(result.size(), 3, "convert_conversation size")
+    assert_eq(result[1]["role"], "assistant", "function call role")
+    assert_eq(result[1].has("tool_calls"), true, "function call tool_calls")
+    assert_eq(result[2]["role"], "tool", "tool response role")
+
+func test_message_class():
+    var Message = load("res://addons/openai_api/Scripts/Message.gd")
+    var msg = Message.new()
+    msg.set_role("assistant")
+    msg.add_text_content("hello")
+    msg.add_image_content("https://example.com/img.png", "auto")
+    msg.add_function_call("1", "foo", {"bar":"baz"})
+    var d = msg.get_as_dict()
+    assert_eq(d["role"], "assistant", "message role")
+    assert_eq(d["content"].size(), 2, "message content size")
+    assert_eq(d["content"][0]["type"], "text", "message text type")
+    assert_eq(d["tool_calls"].size(), 1, "message tool calls size")
+    assert_eq(d["tool_calls"][0]["function"]["name"], "foo", "function call name")
+
 func _init():
     test_save_and_load_var()
     test_convert_functions()
@@ -87,5 +123,8 @@ func _init():
     test_create_conversation_parts()
     test_image_utils()
     test_convert_text_message()
+    test_convert_functions_list()
+    await test_convert_conversation_function_call()
+    test_message_class()
     print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
     quit(tests_failed)

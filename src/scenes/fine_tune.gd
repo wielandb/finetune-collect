@@ -773,19 +773,20 @@ func conversation_from_openai_message_json(oaimsgjson):
 			var role = msg.get("role", "")
 			var msg_type = msg.get("type", "")			
 			if role == "system" or role == "developer":
-					NEWCONVO.append({
-							"role": "system",
-							"type": "Text",
-							"textContent": msg.get("content", ""),
-							"unpreferredTextContent": "",
-							"preferredTextContent": "",
-							"imageContent": "",
-							"imageDetail": 0,
-							"functionName": "",
-							"functionParameters": [],
-							"functionResults": "",
-							"functionUsePreText": ""
-					})
+				var sys_text = _extract_text_from_msg(msg)
+				NEWCONVO.append({
+					"role": "system",
+					"type": "Text",
+					"textContent": sys_text,
+					"unpreferredTextContent": "",
+					"preferredTextContent": "",
+					"imageContent": "",
+					"imageDetail": 0,
+					"functionName": "",
+					"functionParameters": [],
+                                                        "functionResults": "",
+                                                        "functionUsePreText": ""
+                                        })
 			elif role == "user":
 					var content = msg.get("content")
 					if content is Array:

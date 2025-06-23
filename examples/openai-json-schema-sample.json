@@ -1,90 +1,90 @@
 {
-        "functions": [],
-        "conversations": {
-                "jsn1": [
-                        {
-                                "role": "meta",
-                                "type": "meta",
-                                "textContent": "",
-                                "unpreferredTextContent": "",
-                                "preferredTextContent": "",
-                                "imageContent": "",
-                                "imageDetail": 0,
-                                "functionName": "",
-                                "functionParameters": [],
-                                "functionResults": "",
-                                "functionUsePreText": "",
-                                "userName": "",
-                                "jsonSchemaValue": "{}",
-                                "metaData": {
-                                        "ready": false,
-                                        "conversationName": "",
-                                        "notes": "Example that produces JSON according to a schema."
-                                }
-                        },
-                        {
-                                "role": "system",
-                                "type": "Text",
-                                "textContent": "Respond with a JSON object containing fields 'artist' and 'song'.",
-                                "unpreferredTextContent": "",
-                                "preferredTextContent": "",
-                                "imageContent": "",
-                                "imageDetail": 0,
-                                "functionName": "",
-                                "functionParameters": [],
-                                "functionResults": "",
-                                "functionUsePreText": "",
-                                "userName": "",
-                                "jsonSchemaValue": "{}"
-                        },
-                        {
-                                "role": "user",
-                                "type": "Text",
-                                "textContent": "Who sings 'Imagine'?",
-                                "unpreferredTextContent": "",
-                                "preferredTextContent": "",
-                                "imageContent": "",
-                                "imageDetail": 0,
-                                "functionName": "",
-                                "functionParameters": [],
-                                "functionResults": "",
-                                "functionUsePreText": "",
-                                "userName": "",
-                                "jsonSchemaValue": "{}"
-                        },
-                        {
-                                "role": "assistant",
-                                "type": "Text",
-                                "textContent": "{\"artist\": \"John Lennon\", \"song\": \"Imagine\"}",
-                                "unpreferredTextContent": "",
-                                "preferredTextContent": "",
-                                "imageContent": "",
-                                "imageDetail": 0,
-                                "functionName": "",
-                                "functionParameters": [],
-                                "functionResults": "",
-                                "functionUsePreText": "",
-                                "userName": "",
-                                "jsonSchemaValue": "{}"
-                        }
-                ]
-        },
-        "settings": {
-                "useGlobalSystemMessage": false,
-                "globalSystemMessage": "",
-                "apikey": "",
-                "modelChoice": "",
-                "availableModels": [],
-                "includeFunctions": 0,
-                "finetuneType": 0,
-                "exportImagesHow": 0,
-                "useUserNames": false,
-                "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
-                "jsonSchema": "{\n  \"title\": \"SongInfo\",\n  \"type\": \"object\",\n  \"required\": [\n    \"artist\",\n    \"song\"\n  ],\n  \"properties\": {\n    \"artist\": {\n      \"type\": \"string\"\n    },\n    \"song\": {\n      \"type\": \"string\"\n    }\n  }\n}\n",
-                "tokenCounterPath": "",
-                "exportConvos": 0,
-                "countTokensWhen": 0,
-                "tokenCounts": "",
-                "countTokensModel": 0
+  "functions": [],
+  "conversations": {
+    "jsn1": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}",
+        "metaData": {
+          "ready": false,
+          "conversationName": "",
+          "notes": "Beispiel, das JSON entsprechend einem Schema erzeugt."
         }
+      },
+      {
+        "role": "system",
+        "type": "Text",
+        "textContent": "Antworte mit einem JSON-Objekt, das die Felder artist und song enthält.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Wer singt Imagine?",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Text",
+        "textContent": "{\"artist\": \"John Lennon\", \"song\": \"Imagine\"}",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      }
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": "",
+    "apikey": "",
+    "modelChoice": "",
+    "availableModels": [],
+    "includeFunctions": 0,
+    "finetuneType": 0,
+    "exportImagesHow": 0,
+    "useUserNames": false,
+    "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+    "jsonSchema": "{\n  \"title\": \"SongInfo\",\n  \"type\": \"object\",\n  \"required\": [\n    \"artist\",\n    \"song\"\n  ],\n  \"properties\": {\n    \"artist\": {\n      \"type\": \"string\"\n    },\n    \"song\": {\n      \"type\": \"string\"\n    }\n  }\n}\n",
+    "tokenCounterPath": "",
+    "exportConvos": 0,
+    "countTokensWhen": 0,
+    "tokenCounts": "",
+    "countTokensModel": 0
+  }
 }

@@ -653,63 +653,62 @@ func get_number_of_images_total():
 # Helper to create a Finetune-Collect function call message and ensure the
 # function definition exists in the global FUNCTIONS array.
 func _create_ft_function_call_msg(function_name: String, arguments_dict: Dictionary, function_result: String, pretext: String) -> Dictionary:
-        update_functions_internal()
-        var param_list := []
-        for arg_name in arguments_dict.keys():
-                        var val = arguments_dict[arg_name]
-                        var entry = {
-                                        "name": str(arg_name),
-                                        "isUsed": true,
-                                        "parameterValueText": "",
-                                        "parameterValueChoice": "",
-                                        "parameterValueNumber": 0
-                        }
-                        match typeof(val):
-                                        TYPE_INT, TYPE_FLOAT:
-                                                        entry["parameterValueNumber"] = val
-                                        _:
-                                                        entry["parameterValueText"] = str(val)
-                        param_list.append(entry)
+	update_functions_internal()
+	var param_list := []
+	for arg_name in arguments_dict.keys():
+					var val = arguments_dict[arg_name]
+					var entry = {
+									"name": str(arg_name),
+									"isUsed": true,
+									"parameterValueText": "",
+									"parameterValueChoice": "",
+									"parameterValueNumber": 0
+					}
+					match typeof(val):
+									TYPE_INT, TYPE_FLOAT:
+													entry["parameterValueNumber"] = val
+									_:
+													entry["parameterValueText"] = str(val)
+					param_list.append(entry)
 
-        var fn_exists = false
-        for f in FUNCTIONS:
-                        if f.get("name", "") == function_name:
-                                        fn_exists = true
-                                        break
-        if !fn_exists:
-                        var param_defs := []
-                        for arg_name in arguments_dict.keys():
-                                        var v = arguments_dict[arg_name]
-                                        var p_type = "Number" if (typeof(v) in [TYPE_INT, TYPE_FLOAT]) else "String"
-                                        param_defs.append({
-                                                        "type": p_type,
-                                                        "name": str(arg_name),
-                                                        "description": "",
-                                                        "minimum": 0,
-                                                        "maximum": 0,
-                                                        "isEnum": false,
-                                                        "hasLimits": false,
-                                                        "enumOptions": "",
-                                                        "isRequired": true
-                                        })
-                        var new_func_def = {
-                                        "name": function_name,
-                                        "description": "",
-                                        "parameters": param_defs,
-                                        "functionExecutionEnabled": false,
-                                        "functionExecutionExecutable": "",
-                                        "functionExecutionArgumentsString": ""
-                        }
-                        var func_scene = load("res://scenes/available_function.tscn")
-                        var func_instance = func_scene.instantiate()
-                        func_instance.from_var(new_func_def)
-                        var list_container = $Conversation/Functions/FunctionsList/FunctionsListContainer
-                        list_container.add_child(func_instance)
-                        var add_btn = list_container.get_node("AddFunctionButton")
-                        list_container.move_child(add_btn, -1)
-                        update_functions_internal()
-                        update_available_functions_in_UI_global()
-
+	var fn_exists = false
+	for f in FUNCTIONS:
+					if f.get("name", "") == function_name:
+									fn_exists = true
+									break
+	if !fn_exists:
+					var param_defs := []
+					for arg_name in arguments_dict.keys():
+									var v = arguments_dict[arg_name]
+									var p_type = "Number" if (typeof(v) in [TYPE_INT, TYPE_FLOAT]) else "String"
+									param_defs.append({
+													"type": p_type,
+													"name": str(arg_name),
+													"description": "",
+													"minimum": 0,
+													"maximum": 0,
+													"isEnum": false,
+													"hasLimits": false,
+													"enumOptions": "",
+													"isRequired": true
+									})
+					var new_func_def = {
+									"name": function_name,
+									"description": "",
+									"parameters": param_defs,
+									"functionExecutionEnabled": false,
+									"functionExecutionExecutable": "",
+									"functionExecutionArgumentsString": ""
+					}
+					var func_scene = load("res://scenes/available_function.tscn")
+					var func_instance = func_scene.instantiate()
+					func_instance.from_var(new_func_def)
+					var list_container = $Conversation/Functions/FunctionsList/FunctionsListContainer
+					list_container.add_child(func_instance)
+					var add_btn = list_container.get_node("AddFunctionButton")
+					list_container.move_child(add_btn, -1)
+					update_functions_internal()
+					update_available_functions_in_UI_global()
 	return {
 			"role": "assistant",
 			"type": "Function Call",
@@ -749,8 +748,6 @@ func _validate_is_json(testtext) -> bool:
 	
 	
 func conversation_from_openai_message_json(oaimsgjson):
-
-	
 	# Accept both a JSON string or an already parsed array
 	if typeof(oaimsgjson) == TYPE_STRING:
 			var parsed = JSON.parse_string(oaimsgjson)

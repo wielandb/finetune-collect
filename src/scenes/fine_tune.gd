@@ -774,7 +774,7 @@ func conversation_from_openai_message_json(oaimsgjson):
 			var msg_type = msg.get("type", "")			
 			if role == "system" or role == "developer":
 					NEWCONVO.append({
-							"role": "assistant",
+							"role": "system",
 							"type": "Text",
 							"textContent": msg.get("content", ""),
 							"unpreferredTextContent": "",

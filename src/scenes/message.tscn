@@ -552,7 +552,6 @@ text = "Test Token Count"
 layout_mode = 2
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -600,7 +599,6 @@ icon = ExtResource("13_gakvq")
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("12_rwbsk")
-editable = false
 wrap_mode = 1
 
 [node name="InitEditingRequestToken" type="HTTPRequest" parent="SchemaMessageContainer"]

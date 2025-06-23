@@ -1,0 +1,137 @@
+{
+  "functions": [
+    {
+      "name": "addiere_zahlen",
+      "description": "Addiert zwei Zahlen",
+      "parameters": [
+        {
+          "type": "Number",
+          "name": "a",
+          "description": "Erste Zahl",
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "isEnum": false,
+          "hasLimits": false,
+          "enumOptions": "",
+          "isRequired": true
+        },
+        {
+          "type": "Number",
+          "name": "b",
+          "description": "Zweite Zahl",
+          "minimum": 0.0,
+          "maximum": 0.0,
+          "isEnum": false,
+          "hasLimits": false,
+          "enumOptions": "",
+          "isRequired": true
+        }
+      ],
+      "functionExecutionEnabled": false,
+      "functionExecutionExecutable": "",
+      "functionExecutionArgumentsString": ""
+    }
+  ],
+  "conversations": {
+    "ptf1": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}",
+        "metaData": {
+          "ready": false,
+          "conversationName": "",
+          "notes": "Beispiel, das Text vor dem Funktionsaufruf zeigt."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Bitte addiere 3 und 4.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Function Call",
+        "textContent": "",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "addiere_zahlen",
+        "functionParameters": [
+          {
+            "name": "a",
+            "isUsed": true,
+            "parameterValueText": "",
+            "parameterValueChoice": "",
+            "parameterValueNumber": 3.0
+          },
+          {
+            "name": "b",
+            "isUsed": true,
+            "parameterValueText": "",
+            "parameterValueChoice": "",
+            "parameterValueNumber": 4.0
+          }
+        ],
+        "functionResults": "",
+        "functionUsePreText": "Ich berechne das Ergebnis und rufe daf\u00fcr eine Funktion auf.",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      },
+      {
+        "role": "assistant",
+        "type": "Text",
+        "textContent": "Das Ergebnis ist 7.",
+        "unpreferredTextContent": "",
+        "preferredTextContent": "",
+        "imageContent": "",
+        "imageDetail": 0,
+        "functionName": "",
+        "functionParameters": [],
+        "functionResults": "",
+        "functionUsePreText": "",
+        "userName": "",
+        "jsonSchemaValue": "{}"
+      }
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": "",
+    "apikey": "",
+    "modelChoice": "",
+    "availableModels": [],
+    "includeFunctions": 0,
+    "finetuneType": 0,
+    "exportImagesHow": 0,
+    "useUserNames": false,
+    "schemaEditorURL": "https://www.haukauntrie.de/online/api/schema-editor/",
+    "jsonSchema": "",
+    "tokenCounterPath": "",
+    "exportConvos": 0,
+    "countTokensWhen": 0,
+    "tokenCounts": "",
+    "countTokensModel": 0
+  }
+}

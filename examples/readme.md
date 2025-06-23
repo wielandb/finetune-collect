@@ -9,6 +9,8 @@ Dieses Verzeichnis enthält verschiedene kleine Fine-Tuning Projekte, die die un
 | `openai-system-message-sample.json` | Beispiel für eine Systemnachricht innerhalb der Unterhaltung. |
 | `openai-global-system-message-sample.json` | Die Systemnachricht wird global in den Einstellungen gespeichert. |
 | `openai-function-call-sample.json` | Demonstriert einen Funktionsaufruf des Assistenten. |
+| `openai-pre-text-function-call-sample.json` | Funktionsaufruf, bei dem der Assistent vor der Ausführung Text sendet. |
+| `openai-local-tool-execution-sample.json` | Lokaler Funktionsaufruf über das plattformübergreifende Kommando `echo`. |
 | `openai-image-sample.json` | Einfaches Vision-Beispiel mit einer Bildnachricht. |
 | `openai-json-schema-sample.json` | Antwortet mit JSON entsprechend einem Schema. |
 | `openai-image-function-call-sample.json` | Kombiniert ein Bild mit einem Funktionsaufruf. |

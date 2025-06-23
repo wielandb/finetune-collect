@@ -84,6 +84,15 @@ func _process(delta: float) -> void:
 		refresh_conversations_list()
 	if Input.is_action_just_released("load"):
 		$VBoxContainer/LoadBtn/FileDialog.visible = true
+	if Input.is_action_just_released("ui_paste"):
+		# Check if the clipboard contains valid JSON ( a list of dicts)
+		var clipboard_contents = DisplayServer.clipboard_get()
+		# CHeck if valid JSON
+		var is_cb_json = $Conversation/Settings/ConversationSettings.validate_is_json(clipboard_contents)
+		if is_cb_json:
+			print("Contains valid json!")
+			var ftmsglist = conversation_from_openai_message_json(clipboard_contents)
+		
 	#	if RUNTIME["filepath"] == "":
 	#		$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 	#	else:
@@ -643,7 +652,15 @@ func get_number_of_images_total():
 
 # Helper to create a Finetune-Collect function call message and ensure the
 # function definition exists in the global FUNCTIONS array.
-func _create_ft_function_call_msg(function_name: String, arguments_dict: Dictionary, function_result: String, pretext: String) -> Dictionary:
+func _create_ft_function_call_msg(function_name: String, arguments_dict: Dictionary, function_result, pretext: String) -> Dictionary:
+	print("Function name")
+	print(function_name)
+	print("Argumentsdict")
+	print(arguments_dict)
+	print("Function_result")
+	print(function_result)
+	print("Pretext")
+	print(pretext)
 	var param_list := []
 	for arg_name in arguments_dict.keys():
 		var val = arguments_dict[arg_name]
@@ -670,7 +687,7 @@ func _create_ft_function_call_msg(function_name: String, arguments_dict: Diction
 			var param_defs := []
 			for arg_name in arguments_dict.keys():
 				var v = arguments_dict[arg_name]
-				var p_type = (typeof(v) in [TYPE_INT, TYPE_FLOAT]) ? "Number" : "String"
+				var p_type = "Number" if (typeof(v) in [TYPE_INT, TYPE_FLOAT]) else "String"
 				param_defs.append({
 							"type": p_type,
 							"name": str(arg_name),

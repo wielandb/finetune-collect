@@ -1,0 +1,13 @@
+{
+  "functions": [],
+  "conversations": {
+    "C1": [
+      {"role": "system", "type": "Text", "textContent": "Hello"},
+      {"role": "user", "type": "Text", "textContent": "Hi there"}
+    ]
+  },
+  "settings": {
+    "useGlobalSystemMessage": false,
+    "globalSystemMessage": ""
+  }
+}

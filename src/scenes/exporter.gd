@@ -142,7 +142,7 @@ func convert_message_to_openai_format(message, function_map=null):
 					'type': 'image_url',
 					'image_url': {
 						'url': image_url_data,
-						'detail': image_detail_map[message.get("imageDetail", 0)]
+						'detail': image_detail_map[int(message.get("imageDetail", 0))]
 					}
 				}
 			]

@@ -187,7 +187,7 @@ def convert_fine_tuning_data(input_file, output_file):
             }
             
             # Only add tools if there are function calls in the conversation
-            if any(msg.get('tool_calls') for msg in processed_conversation):
+            if any(msg.get('tool_calls') for msg in processed_conversation) and len(tools) > 0:
                 output_entry['tools'] = tools
             
             out_f.write(json.dumps(output_entry) + '\n')

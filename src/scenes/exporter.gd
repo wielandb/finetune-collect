@@ -349,21 +349,26 @@ func convert_rft_data(ftdata):
 		if function_handle_setting == 0:
 			# Always include all
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
-			output_entry['tools'] = tools
+			if tools.size() > 0:
+				output_entry['tools'] = tools
 		elif function_handle_setting == 1:
 			# Only include ones used in the conversation
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_in_conversation(conversation_key))
-			output_entry['tools'] = tools
+			if tools.size() > 0:
+				output_entry['tools'] = tools
 		elif function_handle_setting == 2:
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_globally())
-			output_entry['tools'] = tools
-		elif function_handle_setting == 3: 
+			if tools.size() > 0:
+				output_entry['tools'] = tools
+		elif function_handle_setting == 3:
 			for msg in processed_conversation:
-				if msg.get('tool_calls', false):
+				if msg.get('tool_calls', false) and tools.size() > 0:
 					output_entry['tools'] = tools
+					break
 		else:
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
-			output_entry['tools'] = tools
+			if tools.size() > 0:
+				output_entry['tools'] = tools
 		jsonl_file_string += JSON.stringify(output_entry) + "\n"
 	return jsonl_file_string
 
@@ -457,21 +462,26 @@ func convert_fine_tuning_data(ftdata):
 		if function_handle_setting == 0:
 			# Always include all
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
-			output_entry['tools'] = tools
+			if tools.size() > 0:
+				output_entry['tools'] = tools
 		elif function_handle_setting == 1:
 			# Only include ones used in the conversation
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_in_conversation(conversation_key))
-			output_entry['tools'] = tools
+			if tools.size() > 0:
+				output_entry['tools'] = tools
 		elif function_handle_setting == 2:
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []), get_all_functions_used_globally())
-			output_entry['tools'] = tools
-		elif function_handle_setting == 3: 
+			if tools.size() > 0:
+				output_entry['tools'] = tools
+		elif function_handle_setting == 3:
 			for msg in processed_conversation:
-				if msg.get('tool_calls', false):
+				if msg.get('tool_calls', false) and tools.size() > 0:
 					output_entry['tools'] = tools
+					break
 		else:
 			tools = convert_functions_to_openai_format(ftdata.get('functions', []))
-			output_entry['tools'] = tools
+			if tools.size() > 0:
+				output_entry['tools'] = tools
 		jsonl_file_string += JSON.stringify(output_entry) + "\n"
 	return jsonl_file_string
 

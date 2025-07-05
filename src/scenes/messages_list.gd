@@ -377,6 +377,21 @@ func on_dropped_files(files):
 				}
 			)
 			MessageInstance._on_file_dialog_file_selected(file)
+		elif file.to_lower().ends_with(".ftproj") or file.to_lower().ends_with(".json"):
+				var ft_node = get_tree().get_root().get_node("FineTune")
+				if file.to_lower().ends_with(".ftproj"):
+					ft_node.load_from_binary(file)
+					ft_node.RUNTIME["filepath"] = file
+				else:
+					var json_text = FileAccess.get_file_as_string(file)
+					var parsed = JSON.parse_string(json_text)
+					if parsed is Dictionary and parsed.has("functions") and parsed.has("conversations") and parsed.has("settings"):
+						ft_node.load_from_json_data(json_text)
+						ft_node.RUNTIME["filepath"] = file
+					else:
+						var ftcmsglist = ft_node.conversation_from_openai_message_json(json_text)
+						for ftmsg in ftcmsglist:
+							add_message(ftmsg)
 
 func add_message(message_obj):
 			# Add a new message to the MessagesListContainer

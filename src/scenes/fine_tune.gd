@@ -57,14 +57,15 @@ func getallnodes(node):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	_on_button_pressed()
-	refresh_conversations_list()
-	_on_item_list_item_selected(0)
-	delete_conversation("FtC1") # A janky workaround for the startup sequence
-	refresh_conversations_list()
-	_on_item_list_item_selected(0)
-	file_access_web.loaded.connect(_on_file_loaded)
-	file_access_web.progress.connect(_on_upload_progress)
+        _on_button_pressed()
+        refresh_conversations_list()
+        _on_item_list_item_selected(0)
+        delete_conversation("FtC1") # A janky workaround for the startup sequence
+        refresh_conversations_list()
+        _on_item_list_item_selected(0)
+        file_access_web.loaded.connect(_on_file_loaded)
+        file_access_web.progress.connect(_on_upload_progress)
+        _autoload_last_project()
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -176,9 +177,15 @@ func _on_load_btn_pressed() -> void:
 			file_access_web.open(".json")
 
 func _on_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
-	# A finetune project file was loaded via web
-	var json_text_data = Marshalls.base64_to_utf8(base64_data)
-	load_from_json_data(json_text_data)
+        # A finetune project file was loaded via web
+        var json_text_data = Marshalls.base64_to_utf8(base64_data)
+        load_from_json_data(json_text_data)
+        var save_path = "user://last_project.json"
+        var f = FileAccess.open(save_path, FileAccess.WRITE)
+        if f:
+                f.store_string(json_text_data)
+                f.close()
+        _store_last_project_path(save_path)
 	
 	
 func _on_upload_progress(current_bytes: int, total_bytes: int) -> void:
@@ -323,11 +330,12 @@ func check_is_conversation_ready(idx: String) -> bool:
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	if path.ends_with(".json"):
-		load_from_json(path)
-	elif path.ends_with(".ftproj"):
-		load_from_binary(path)
-	RUNTIME["filepath"] = path
+        if path.ends_with(".json"):
+                load_from_json(path)
+        elif path.ends_with(".ftproj"):
+                load_from_binary(path)
+        RUNTIME["filepath"] = path
+        _store_last_project_path(path)
 	
 
 
@@ -488,11 +496,12 @@ func load_from_appropriate_from_path(path):
 
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
-	if path.ends_with(".json"):
-		save_to_json(path)
-	elif path.ends_with(".ftproj"):
-		save_to_binary(path)
-	RUNTIME["filepath"] = path
+        if path.ends_with(".json"):
+                save_to_json(path)
+        elif path.ends_with(".ftproj"):
+                save_to_binary(path)
+        RUNTIME["filepath"] = path
+        _store_last_project_path(path)
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)
@@ -985,4 +994,22 @@ func conversation_from_openai_message_json(oaimsgjson):
 									})
 			i += 1
 
-	return NEWCONVO
+        return NEWCONVO
+
+# Store the path of the last opened project for automatic reload.
+func _store_last_project_path(path: String) -> void:
+        var f = FileAccess.open("user://last_project_path.txt", FileAccess.WRITE)
+        if f:
+                f.store_string(path)
+                f.close()
+
+# Attempt to autoload the last project if present and valid.
+func _autoload_last_project() -> void:
+        var cfg_path = "user://last_project_path.txt"
+        if FileAccess.file_exists(cfg_path):
+                var f = FileAccess.open(cfg_path, FileAccess.READ)
+                var last_path = f.get_as_text().strip_edges()
+                f.close()
+                if last_path != "" and FileAccess.file_exists(last_path):
+                        load_from_appropriate_from_path(last_path)
+                        RUNTIME["filepath"] = last_path

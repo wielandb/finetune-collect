@@ -109,7 +109,11 @@ func _ready() -> void:
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
 	load_last_project_on_start()
-	
+
+	var tab_bar := $Conversation.get_tab_bar()
+	tab_bar.set_tab_title(0, tr("Messages"))
+	tab_bar.set_tab_title(1, tr("Functions"))
+	tab_bar.set_tab_title(2, tr("Settings"))
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

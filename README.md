@@ -22,5 +22,5 @@ You can also provide the program with your OpenAI API key and it can generate re
 - `Ctrl` + `Left Click` - Enlarge Image (when hovering image)
 - `Crtl` + `Right Click` - Smallen Image (when hovering image)
 - `Ctrl` + `Space` - Add new message
-- Drag and drop a `.ftproj` or `.json` file onto the window to load a project or
-  insert messages
+- Drag and drop a `.ftproj` or `.json` file onto the window to load a project or insert messages
+- The application remembers the last opened project file and loads it automatically on the next start if it still exists

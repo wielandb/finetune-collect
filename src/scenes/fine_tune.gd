@@ -13,6 +13,10 @@ var SETTINGS = {
 
 var RUNTIME = {"filepath": ""}
 
+# File used to remember the last opened project across sessions
+const LAST_PROJECT_PATH_FILE := "user://last_project.txt"
+const LAST_PROJECT_DATA_FILE := "user://last_project_data.json"
+
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 
 var file_access_web = FileAccessWeb.new()
@@ -55,6 +59,45 @@ func getallnodes(node):
 			nodeCollection.append(N)
 	return nodeCollection
 
+# Store the given path so it can be loaded on the next start
+func save_last_project_path(path: String) -> void:
+	var file = FileAccess.open(LAST_PROJECT_PATH_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(path)
+		file.close()
+
+# Store raw project data for platforms where the file path can't be accessed
+func save_last_project_data(json_data: String) -> void:
+	var file = FileAccess.open(LAST_PROJECT_DATA_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(json_data)
+		file.close()
+
+# Retrieve the stored project path if available
+func get_last_project_path() -> String:
+	if FileAccess.file_exists(LAST_PROJECT_PATH_FILE):
+		var file = FileAccess.open(LAST_PROJECT_PATH_FILE, FileAccess.READ)
+		var txt = file.get_as_text()
+		file.close()
+		return txt.strip_edges()
+	return ""
+
+# Load project data stored for web platforms
+func load_last_project_data() -> void:
+	if FileAccess.file_exists(LAST_PROJECT_DATA_FILE):
+		var data = FileAccess.get_file_as_string(LAST_PROJECT_DATA_FILE)
+		if data.strip_edges() != "":
+			load_from_json_data(data)
+
+# Attempt to load the previously opened project
+func load_last_project_on_start() -> void:
+	var last_path = get_last_project_path()
+	if last_path != "" and FileAccess.file_exists(last_path):
+		load_from_appropriate_from_path(last_path)
+		RUNTIME["filepath"] = last_path
+	elif OS.get_name() == "Web":
+		load_last_project_data()
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_on_button_pressed()
@@ -65,6 +108,7 @@ func _ready() -> void:
 	_on_item_list_item_selected(0)
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
+	load_last_project_on_start()
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -104,6 +148,8 @@ func _on_save_btn_pressed() -> void:
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 		"Web":
 			var json_save_data =  make_save_json_data()
+			save_last_project_path("")
+			save_last_project_data(json_save_data)
 			var byte_array = json_save_data.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune_project.json", "text/plain")
 
@@ -179,6 +225,8 @@ func _on_file_loaded(file_name: String, file_type: String, base64_data: String) 
 	# A finetune project file was loaded via web
 	var json_text_data = Marshalls.base64_to_utf8(base64_data)
 	load_from_json_data(json_text_data)
+	save_last_project_path("")
+	save_last_project_data(json_text_data)
 	
 	
 func _on_upload_progress(current_bytes: int, total_bytes: int) -> void:
@@ -328,6 +376,7 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	elif path.ends_with(".ftproj"):
 		load_from_binary(path)
 	RUNTIME["filepath"] = path
+	save_last_project_path(path)
 	
 
 
@@ -493,6 +542,7 @@ func _on_save_file_dialog_file_selected(path: String) -> void:
 	elif path.ends_with(".ftproj"):
 		save_to_binary(path)
 	RUNTIME["filepath"] = path
+	save_last_project_path(path)
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)

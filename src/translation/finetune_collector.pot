@@ -414,6 +414,22 @@ msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
 msgstr ""
 

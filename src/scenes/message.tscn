@@ -211,6 +211,8 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
+[node name="UploadImageHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
+
 [node name="HSeparator" type="HSeparator" parent="ImageMessageContainer"]
 layout_mode = 2
 
@@ -645,4 +647,5 @@ layout_mode = 2
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]
 [connection signal="request_completed" from="SchemaMessageContainer/PollForCompletion" to="." method="_on_poll_for_completion_request_completed"]
+[connection signal="request_completed" from="ImageMessageContainer/UploadImageHTTPRequest" to="." method="_on_image_upload_request_completed"]
 [connection signal="timeout" from="SchemaMessageContainer/PollingTimer" to="." method="_on_polling_timer_timeout"]

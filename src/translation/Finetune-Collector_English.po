@@ -479,6 +479,22 @@ msgid "GENERIC_CHECK"
 msgstr "Check"
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_LABEL"
+msgstr "URL of the image upload server:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
+msgstr "Endpoint of the PHP upload script used to store images."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
+msgstr "Upload key:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
+msgstr "Secret key required by the upload server"
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA"
 msgstr "JSON schema:"
 

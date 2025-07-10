@@ -1,0 +1,70 @@
+<?php
+$UPLOAD_DIR = __DIR__ . '/uploaded_images';
+$SECRET_KEY = 'CHANGE_ME';
+if (!file_exists($UPLOAD_DIR)) {
+    mkdir($UPLOAD_DIR, 0755, true);
+}
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: *');
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    exit;
+}
+
+// helper to build base url
+function base_url() {
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+    return $protocol . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $input = file_get_contents('php://input');
+    $data = [];
+    if (isset($_SERVER['CONTENT_TYPE']) && str_starts_with($_SERVER['CONTENT_TYPE'], 'application/json')) {
+        $json = json_decode($input, true);
+        if ($json !== null) { $data = $json; }
+    } else {
+        $data = $_POST;
+    }
+    $key = $data['key'] ?? '';
+    if ($key !== $SECRET_KEY) {
+        http_response_code(403);
+        echo 'invalid key';
+        exit;
+    }
+    $image_b64 = $data['image'] ?? '';
+    if ($image_b64 === '') {
+        http_response_code(400);
+        echo 'missing image';
+        exit;
+    }
+    $ext = $data['ext'] ?? 'jpg';
+    $img_data = base64_decode($image_b64);
+    if ($img_data === false) {
+        http_response_code(400);
+        echo 'decode failed';
+        exit;
+    }
+    $filename = uniqid('img_', true) . '.' . preg_replace('/[^a-zA-Z0-9]/', '', $ext);
+    file_put_contents($UPLOAD_DIR . '/' . $filename, $img_data);
+    echo base_url() . '?image=' . urlencode($filename);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['image'])) {
+    $file = basename($_GET['image']);
+    $path = $UPLOAD_DIR . '/' . $file;
+    if (!is_file($path)) {
+        http_response_code(404);
+        echo 'not found';
+        exit;
+    }
+    $mime = mime_content_type($path);
+    header('Content-Type: ' . $mime);
+    readfile($path);
+    exit;
+}
+
+http_response_code(400);
+echo 'invalid request';
+?>

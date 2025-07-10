@@ -39,3 +39,8 @@ metadata/_tab_index = 2
 
 [node name="ConversationSettings" parent="Settings" instance=ExtResource("3_wqhly")]
 layout_mode = 1
+
+[node name="Graders" type="TabBar" parent="."]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3

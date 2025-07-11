@@ -14,7 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // helper to build base url
 function base_url() {
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-    return $protocol . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    // include the script name so that the returned url can be used directly
+    return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -59,7 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['image'])) {
         echo 'not found';
         exit;
     }
-    $mime = mime_content_type($path);
+    if (function_exists('mime_content_type')) {
+        $mime = mime_content_type($path);
+    } else if (class_exists('finfo')) {
+        $finfo = new finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($path);
+    } else {
+        $mime = 'application/octet-stream';
+    }
     header('Content-Type: ' . $mime);
     readfile($path);
     exit;

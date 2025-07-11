@@ -111,6 +111,7 @@ func from_var(data):
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(data["imageDetail"])
 	else: # TODO: Add option what the standard quality should be
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(0)
+	maybe_upload_base64_image()
 	# Now everything regarding functions
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data.get("functionName", "")))
 	#if data["functionName"] != "":
@@ -254,16 +255,47 @@ func _on_file_dialog_file_selected(path: String) -> void:
 func _on_image_upload_request_completed(result, response_code, headers, body, request):
 	request.queue_free()
 	if response_code == 200:
-		$ImageMessageContainer/Base64ImageEdit.text = body.get_string_from_utf8().strip_edges()
+		var url = body.get_string_from_utf8().strip_edges()
+		$ImageMessageContainer/Base64ImageEdit.text = url
+		load_image_container_from_url(url)
 	else:
 		$ImageMessageContainer/Base64ImageEdit.text = last_base64_to_upload
+		base64_to_image($ImageMessageContainer/TextureRect, last_base64_to_upload)
 
 func base64_to_image(textureRectNode, b64Data):
 	var img = Image.new()
 	img.load_jpg_from_buffer(
-		Marshalls.base64_to_raw(b64Data)
+	        Marshalls.base64_to_raw(b64Data)
 	)
 	textureRectNode.texture = ImageTexture.create_from_image(img)
+
+func get_ext_from_base64(b64:String) -> String:
+	var raw = Marshalls.base64_to_raw(b64)
+	if raw.size() >= 3 and raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
+		return "jpg"
+	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
+		return "png"
+	return "jpg"
+
+func maybe_upload_base64_image():
+	var img_data = $ImageMessageContainer/Base64ImageEdit.text
+	if img_data == "" or isImageURL(img_data):
+		return
+	var upload_url = get_node("/root/FineTune").SETTINGS.get("imageUploadServerURL", "")
+	var upload_key = get_node("/root/FineTune").SETTINGS.get("imageUploadServerKey", "")
+	var upload_enabled = get_node("/root/FineTune").SETTINGS.get("imageUploadSetting", 0)
+	if upload_enabled == 1 and upload_url != "" and upload_key != "":
+		last_base64_to_upload = img_data
+		var http = HTTPRequest.new()
+		add_child(http)
+		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
+		var headers := PackedStringArray()
+		headers.append("Content-Type: application/json")
+		var ext = get_ext_from_base64(img_data)
+		var payload = {"key": upload_key, "image": img_data, "ext": ext}
+		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+		if err != OK:
+				$ImageMessageContainer/Base64ImageEdit.text = img_data
 	
 func _on_load_image_button_pressed() -> void:
 	match OS.get_name():

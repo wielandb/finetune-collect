@@ -73,15 +73,15 @@ msgstr "Delete Function"
 
 #: scenes/conversation.tscn
 msgid "Messages"
-msgstr ""
+msgstr "Messages"
 
 #: scenes/conversation.tscn
 msgid "Functions"
-msgstr ""
+msgstr "Functions"
 
 #: scenes/conversation.tscn
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"

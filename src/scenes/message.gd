@@ -6,6 +6,7 @@ extends HBoxContainer
 var image_access_web = FileAccessWeb.new()
 var token = "" # The token for the schema editor for this message
 var edit_message_url = ""
+var last_base64_to_upload = ""
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -230,7 +231,31 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	get_node("ImageMessageContainer/TextureRect").texture = image_texture
 	var bin = FileAccess.get_file_as_bytes(image_path)
 	var base_64_data = Marshalls.raw_to_base64(bin)
+	var upload_url = get_node("/root/FineTune").SETTINGS.get("imageUploadServerURL", "")
+	var upload_key = get_node("/root/FineTune").SETTINGS.get("imageUploadServerKey", "")
+	last_base64_to_upload = base_64_data
+	if upload_url != "" and upload_key != "":
+		var http = HTTPRequest.new()
+		add_child(http)
+		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
+		var headers := PackedStringArray()
+		headers.append("Content-Type: application/json")
+		var ext = "jpg"
+		if image_path.to_lower().ends_with(".png"):
+			ext = "png"
+		var payload = {"key": upload_key, "image": base_64_data, "ext": ext}
+		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+		if err != OK:
+			$ImageMessageContainer/Base64ImageEdit.text = base_64_data
+		return
 	$ImageMessageContainer/Base64ImageEdit.text = base_64_data
+
+func _on_image_upload_request_completed(result, response_code, headers, body, request):
+	request.queue_free()
+	if response_code == 200:
+		$ImageMessageContainer/Base64ImageEdit.text = body.get_string_from_utf8().strip_edges()
+	else:
+		$ImageMessageContainer/Base64ImageEdit.text = last_base64_to_upload
 
 func base64_to_image(textureRectNode, b64Data):
 	var img = Image.new()

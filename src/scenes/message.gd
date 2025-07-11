@@ -475,6 +475,7 @@ func _image_http_request_completed(result, response_code, headers, body):
 	var texture = ImageTexture.create_from_image(image)
 	$ImageMessageContainer/TextureRect.texture = texture
 	
+
 func isImageURL(url: String) -> bool:
 	# Return false if the URL is empty or only whitespace.
 	if url.strip_edges() == "":
@@ -495,30 +496,54 @@ func isImageURL(url: String) -> bool:
 	if not scheme_valid:
 		return false
 
-	# Remove any query parameters or fragment identifiers.
-	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+	# Remove fragment identifiers for easier handling.
+	var no_fragment = lower_url.split("#")[0]
 
-	# Finally, check if the cleaned URL ends with a valid image extension.
-	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+	# Check path part first (before query string).
+	var path_part = no_fragment.split("?")[0]
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
+		return true
 
-# This function uses the above isJpgOrPngURL() to check if the URL is valid,
-# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+	# Check query parameters for an 'image' parameter with a jpg/jpeg extension.
+	var query_index := no_fragment.find("?")
+	if query_index != -1:
+		var query = no_fragment.substr(query_index + 1)
+		var params = query.split("&")
+		for param in params:
+			var kv = param.split("=")
+			if kv.size() == 2 and kv[0] == "image":
+				var value = kv[1]
+				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
+					return true
+
+	return false
+# This function uses the above isImageURL() to check if the URL is valid,
+# and if so, returns "jpg" for URLs ending with .jpg or .jpeg.
 # Otherwise, it returns an empty string.
 func getImageType(url: String) -> String:
 	# Use our helper function to ensure the URL is valid.
 	if not isImageURL(url):
 		return ""
-	
-	# Convert to lowercase and remove any query or fragment parts.
+
 	var lower_url = url.to_lower()
-	var base_url = lower_url.split("?")[0].split("#")[0]
-	
-	if base_url.ends_with(".png"):
-		return "png"
-	elif base_url.ends_with(".jpg"):
+	var no_fragment = lower_url.split("#")[0]
+	var path_part = no_fragment.split("?")[0]
+
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
 		return "jpg"
-	else:
-		return ""
+
+	var query_index := no_fragment.find("?")
+	if query_index != -1:
+		var query = no_fragment.substr(query_index + 1)
+		var params = query.split("&")
+		for param in params:
+			var kv = param.split("=")
+			if kv.size() == 2 and kv[0] == "image":
+				var value = kv[1]
+				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
+					return "jpg"
+
+	return ""
 
 
 func _on_schema_edit_button_pressed() -> void:

@@ -233,8 +233,9 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	var base_64_data = Marshalls.raw_to_base64(bin)
 	var upload_url = get_node("/root/FineTune").SETTINGS.get("imageUploadServerURL", "")
 	var upload_key = get_node("/root/FineTune").SETTINGS.get("imageUploadServerKey", "")
+	var upload_enabled = get_node("/root/FineTune").SETTINGS.get("imageUploadSetting", 0)
 	last_base64_to_upload = base_64_data
-	if upload_url != "" and upload_key != "":
+	if upload_enabled == 1 and upload_url != "" and upload_key != "":
 		var http = HTTPRequest.new()
 		add_child(http)
 		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))

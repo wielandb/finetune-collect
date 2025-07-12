@@ -11,9 +11,15 @@ func _process(delta: float) -> void:
 	pass
 
 func url_to_base64(url: String):
-	var httpreqObj = $HTTPRequest
-	httpreqObj.request(url)
+	var httpreqObj := HTTPRequest.new()
+	add_child(httpreqObj)
+	var err := httpreqObj.request(url)
+	if err != OK:
+		push_error("Failed to request URL: " + url)
+		httpreqObj.queue_free()
+		return ""
 	var response = await httpreqObj.request_completed
+	httpreqObj.queue_free()
 	var body = response[3]
 	var base_64_data = Marshalls.raw_to_base64(body)
 	return base_64_data
@@ -119,22 +125,24 @@ func convert_message_to_openai_format(message, function_map=null):
 	# Image message
 	elif message['type'] == 'Image':
 		var image_url_data = ""
+		var image_content = message['imageContent']
 		if getSettings().get('exportImagesHow', 0) == 0:
-			if isImageURL(message['imageContent']):
-				image_url_data = message['imageContent']
+			if isImageURL(image_content):
+				image_url_data = image_content
 			else:
-				# TODO: Get if it is really a jpeg or a png we are laoding
-				image_url_data = "data:image/jpeg;base64," + message['imageContent']
+				var ext = get_ext_from_base64(image_content)
+				image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
 		elif getSettings().get('exportImagesHow', 0) == 1:
-			var imageurl = message['imageContent'] 
-			var base64_data = await url_to_base64(imageurl)
-			match getImageType(imageurl):
-				"png":
-					image_url_data = "data:image/png;base64," + base64_data
-				"jpeg", "jpg":
-					image_url_data = "data:image/jpeg;base64," + base64_data
-				"":
+			if isImageURL(image_content):
+				var base64_data = await url_to_base64(image_content)
+				var ext = getImageType(image_content)
+				if ext == "":
 					push_error("Invalid file type")
+					ext = "jpeg"
+				image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
+			else:
+				var ext = get_ext_from_base64(image_content)
+				image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
 		return {
 			'role': message['role'],
 			'content': [
@@ -532,3 +540,11 @@ func getImageType(url: String) -> String:
 		return "jpeg"
 	else:
 		return ""
+
+func get_ext_from_base64(b64: String) -> String:
+	var raw = Marshalls.base64_to_raw(b64)
+	if raw.size() >= 3 and raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
+		return "jpeg"
+	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
+		return "png"
+	return "jpeg"

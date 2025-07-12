@@ -473,18 +473,19 @@ func load_from_binary(filename):
 		file.close()
 		FUNCTIONS = FINETUNEDATA["functions"]
 		CONVERSATIONS = FINETUNEDATA["conversations"]
-		SETTINGS = FINETUNEDATA["settings"]
-		for i in CONVERSATIONS.keys():
-			CURRENT_EDITED_CONVO_IX = str(i)
-		$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
-		$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
-		$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-		$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
-		$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-		refresh_conversations_list()
-		$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
-	else:
-		print("file not found")
+                SETTINGS = FINETUNEDATA["settings"]
+                for i in CONVERSATIONS.keys():
+                        CURRENT_EDITED_CONVO_IX = str(i)
+                $Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+                $Conversation/Messages/MessagesList.delete_all_messages_from_UI()
+                $Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
+                $Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+                $Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+                refresh_conversations_list()
+                $VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+		call_deferred("_convert_base64_images_after_load")
+        else:
+                print("file not found")
 
 func load_from_json_data(jsondata: String):
 	var json_as_dict = JSON.parse_string(jsondata)
@@ -500,9 +501,10 @@ func load_from_json_data(jsondata: String):
 		CURRENT_EDITED_CONVO_IX = str(i)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+        $Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+	call_deferred("_convert_base64_images_after_load")
 
 func make_save_json_data():
 	FINETUNEDATA = {}
@@ -699,10 +701,54 @@ func get_number_of_images_for_conversation(convoIx):
 	return image_count
 
 func get_number_of_images_total():
-		var image_count = 0
-		for convoIx in CONVERSATIONS:
-				image_count += get_number_of_images_for_conversation(convoIx)
-		return image_count
+	var image_count = 0
+	for convoIx in CONVERSATIONS:
+		image_count += get_number_of_images_for_conversation(convoIx)
+	return image_count
+
+func get_ext_from_base64(b64: String) -> String:
+	var raw = Marshalls.base64_to_raw(b64)
+	if raw.size() >= 3 and raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
+		return "jpg"
+	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
+		return "png"
+	return "jpg"
+
+func _upload_base64_image_get_url(b64: String, upload_url: String, upload_key: String) -> String:
+	var http = HTTPRequest.new()
+	add_child(http)
+	var headers := PackedStringArray()
+	headers.append("Content-Type: application/json")
+	var ext = get_ext_from_base64(b64)
+	var payload = {"key": upload_key, "image": b64, "ext": ext}
+	var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+	if err != OK:
+		http.queue_free()
+		return b64
+	var resp = await http.request_completed
+	http.queue_free()
+	if resp[1] == 200:
+		return resp[3].get_string_from_utf8().strip_edges()
+	return b64
+
+func convert_base64_images_in_all_conversations() -> void:
+	var upload_enabled = SETTINGS.get("imageUploadSetting", 0)
+	var upload_url = SETTINGS.get("imageUploadServerURL", "")
+	var upload_key = SETTINGS.get("imageUploadServerKey", "")
+	if upload_enabled != 1 or upload_url == "" or upload_key == "":
+		return
+	for convo_key in CONVERSATIONS.keys():
+		var convo = CONVERSATIONS[convo_key]
+		for i in range(convo.size()):
+			var msg = convo[i]
+			if msg.get("type", "") == "Image":
+				var img_data = msg.get("imageContent", "")
+				if img_data != "" and not isImageURL(img_data):
+					var url = await _upload_base64_image_get_url(img_data, upload_url, upload_key)
+					CONVERSATIONS[convo_key][i]["imageContent"] = url
+
+func _convert_base64_images_after_load() -> void:
+	await convert_base64_images_in_all_conversations()
 
 # Helper to create a Finetune-Collect function call message and ensure the
 # function definition exists in the global FUNCTIONS array.

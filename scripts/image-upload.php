@@ -39,14 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		echo 'missing image';
 		exit;
 	}
-	$ext = $data['ext'] ?? 'jpg';
-	$img_data = base64_decode($image_b64);
+        $img_data = base64_decode($image_b64);
 	if ($img_data === false) {
 		http_response_code(400);
 		echo 'decode failed';
 		exit;
 	}
-	$filename = uniqid('img_', true) . '.' . preg_replace('/[^a-zA-Z0-9]/', '', $ext);
+        $filename = md5($img_data);
 	file_put_contents($UPLOAD_DIR . '/' . $filename, $img_data);
 	echo base_url() . '?image=' . urlencode($filename);
 	exit;

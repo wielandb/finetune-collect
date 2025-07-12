@@ -40,15 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		exit;
 	}
         $img_data = base64_decode($image_b64);
-	if ($img_data === false) {
-		http_response_code(400);
-		echo 'decode failed';
-		exit;
-	}
-        $filename = md5($img_data);
-	file_put_contents($UPLOAD_DIR . '/' . $filename, $img_data);
-	echo base_url() . '?image=' . urlencode($filename);
-	exit;
+        if ($img_data === false) {
+                http_response_code(400);
+                echo 'decode failed';
+                exit;
+        }
+        $ext = strtolower($data['ext'] ?? '');
+        if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                $ext = 'jpg';
+        }
+        $filename = 'img_' . md5($img_data) . '.' . $ext;
+        file_put_contents($UPLOAD_DIR . '/' . $filename, $img_data);
+        echo base_url() . '?image=' . urlencode($filename);
+        exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['image'])) {

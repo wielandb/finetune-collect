@@ -473,19 +473,19 @@ func load_from_binary(filename):
 		file.close()
 		FUNCTIONS = FINETUNEDATA["functions"]
 		CONVERSATIONS = FINETUNEDATA["conversations"]
-                SETTINGS = FINETUNEDATA["settings"]
-                for i in CONVERSATIONS.keys():
-                        CURRENT_EDITED_CONVO_IX = str(i)
-                $Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
-                $Conversation/Messages/MessagesList.delete_all_messages_from_UI()
-                $Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-                $Conversation/Settings/ConversationSettings.from_var(SETTINGS)
-                $Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-                refresh_conversations_list()
-                $VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
-		call_deferred("_convert_base64_images_after_load")
-        else:
-                print("file not found")
+		SETTINGS = FINETUNEDATA["settings"]
+		for i in CONVERSATIONS.keys():
+			CURRENT_EDITED_CONVO_IX = str(i)
+			$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+			$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
+			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
+			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+			refresh_conversations_list()
+			$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+			call_deferred("_convert_base64_images_after_load")
+	else:
+		print("file not found")
 
 func load_from_json_data(jsondata: String):
 	var json_as_dict = JSON.parse_string(jsondata)
@@ -501,7 +501,7 @@ func load_from_json_data(jsondata: String):
 		CURRENT_EDITED_CONVO_IX = str(i)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-        $Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
+	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
 	call_deferred("_convert_base64_images_after_load")

@@ -265,7 +265,7 @@ func _on_image_upload_request_completed(result, response_code, headers, body, re
 func base64_to_image(textureRectNode, b64Data):
 	var img = Image.new()
 	img.load_jpg_from_buffer(
-	        Marshalls.base64_to_raw(b64Data)
+		Marshalls.base64_to_raw(b64Data)
 	)
 	textureRectNode.texture = ImageTexture.create_from_image(img)
 

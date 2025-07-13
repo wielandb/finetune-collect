@@ -513,9 +513,45 @@ func isImageURL(url: String) -> bool:
 	if url.strip_edges() == "":
 		return false
 
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
 	var lower_url = url.to_lower()
-	# Any http or https link is treated as an image URL
-	return lower_url.begins_with("http://") or lower_url.begins_with("https://")
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove fragment identifiers for easier handling.
+	var no_fragment = lower_url.split("#")[0]
+
+	# Check path part first (before query string).
+	var path_part = no_fragment.split("?")[0]
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
+		return true
+
+	# Check query parameters for an 'image' parameter with a jpg/jpeg extension.
+	var query_index := no_fragment.find("?")
+	if query_index != -1:
+		var query = no_fragment.substr(query_index + 1)
+		var params = query.split("&")
+		for param in params:
+			var kv = param.split("=")
+			if kv.size() == 2 and kv[0] == "image":
+				var value = kv[1]
+				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
+					return true
+
+	return false
+# This function uses the above isImageURL() to check if the URL is valid,
+# and if so, returns "jpg" for URLs ending with .jpg or .jpeg.
+# Otherwise, it returns an empty string.
 func getImageType(url: String) -> String:
 	# Use our helper function to ensure the URL is valid.
 	if not isImageURL(url):
@@ -524,27 +560,34 @@ func getImageType(url: String) -> String:
 	var lower_url = url.to_lower()
 	var no_fragment = lower_url.split("#")[0]
 	var path_part = no_fragment.split("?")[0]
-	if path_part.ends_with(".png"):
-		return "png"
-	elif path_part.ends_with(".jpg"):
+
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
 		return "jpg"
-	elif path_part.ends_with(".jpeg"):
-		return "jpeg"
+
 	var query_index := no_fragment.find("?")
 	if query_index != -1:
 		var query = no_fragment.substr(query_index + 1)
 		var params = query.split("&")
 		for param in params:
 			var kv = param.split("=")
-			if kv.size() == 2:
+			if kv.size() == 2 and kv[0] == "image":
 				var value = kv[1]
-				if value.ends_with(".png"):
-					return "png"
-				elif value.ends_with(".jpg"):
+				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
 					return "jpg"
-				elif value.ends_with(".jpeg"):
-					return "jpeg"
+
 	return ""
+
+
+func _on_schema_edit_button_pressed() -> void:
+	# POST the Schema and The Data we already have to the editor URL to retrieve a token
+	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
+	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
+	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
+	var data_to_send = {"json_data": existing_json_data, "json_schema": json_schema_string}
+	print("Sending data:")
+	print(data_to_send)
+	var json_to_send = JSON.stringify(data_to_send)
+	var custom_headers := PackedStringArray()
 	custom_headers.append("Content-Type: application/json")
 	print("json_to_send")
 	print(json_to_send)

@@ -1,9 +1,0 @@
-{
-  "functions": [],
-  "conversations": {
-    "C1": [
-      {"role": "user", "type": "Image", "imageContent": "http://example.com/image-upload.php?image=foo.jpg", "imageDetail": 0}
-    ]
-  },
-  "settings": {}
-}

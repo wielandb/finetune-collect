@@ -499,43 +499,47 @@ func isImageURL(url: String) -> bool:
 	if url.strip_edges() == "":
 		return false
 
+	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
+	var valid_schemes = ["http://", "https://"]
+
+	# Convert the URL to lowercase for case-insensitive comparisons.
 	var lower_url = url.to_lower()
-	# Any http or https link is treated as an image URL
-	return lower_url.begins_with("http://") or lower_url.begins_with("https://")
+
+	# Check if the URL begins with one of the valid schemes.
+	var scheme_valid = false
+	for scheme in valid_schemes:
+		if lower_url.begins_with(scheme):
+			scheme_valid = true
+			break
+	if not scheme_valid:
+		return false
+
+	# Remove any query parameters or fragment identifiers.
+	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+
+	# Finally, check if the cleaned URL ends with a valid image extension.
+	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg") or cleaned_url.ends_with(".jpeg")
+
 # This function uses the above isJpgOrPngURL() to check if the URL is valid,
 # and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
 # Otherwise, it returns an empty string.
-
 func getImageType(url: String) -> String:
 	# Use our helper function to ensure the URL is valid.
 	if not isImageURL(url):
 		return ""
-
+	
+	# Convert to lowercase and remove any query or fragment parts.
 	var lower_url = url.to_lower()
-	var no_fragment = lower_url.split("#")[0]
-	var path_part = no_fragment.split("?")[0]
-	if path_part.ends_with(".png"):
+	var base_url = lower_url.split("?")[0].split("#")[0]
+	
+	if base_url.ends_with(".png"):
 		return "png"
-	elif path_part.ends_with(".jpg"):
+	elif base_url.ends_with(".jpg"):
 		return "jpg"
-	elif path_part.ends_with(".jpeg"):
+	elif base_url.ends_with(".jpeg"):
 		return "jpeg"
-	var query_index := no_fragment.find("?")
-	if query_index != -1:
-		var query = no_fragment.substr(query_index + 1)
-		var params = query.split("&")
-		for param in params:
-			var kv = param.split("=")
-			if kv.size() == 2:
-				var value = kv[1]
-				if value.ends_with(".png"):
-					return "png"
-				elif value.ends_with(".jpg"):
-					return "jpg"
-				elif value.ends_with(".jpeg"):
-					return "jpeg"
-	return ""
-
+	else:
+		return ""
 
 func get_ext_from_base64(b64: String) -> String:
 	var raw = Marshalls.base64_to_raw(b64)

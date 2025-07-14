@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
 
 $UPLOAD_DIR = __DIR__ . '/uploaded_images';
 $SECRET_KEY = 'gaertner';

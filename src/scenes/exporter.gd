@@ -124,35 +124,35 @@ func convert_message_to_openai_format(message, function_map=null):
 		return toAddDict
 	# Image message
 	elif message['type'] == 'Image':
-                var image_url_data = ""
-                var image_content = message['imageContent']
-                var begins_with_http = image_content.begins_with("http://") or image_content.begins_with("https://")
+		var image_url_data = ""
+		var image_content = message['imageContent']
+		var begins_with_http = image_content.begins_with("http://") or image_content.begins_with("https://")
 
-                if getSettings().get('exportImagesHow', 0) == 0:
-                        if isImageURL(image_content):
-                                image_url_data = image_content
-                        elif begins_with_http:
-                                var base64_data = await url_to_base64(image_content)
-                                var ext = get_ext_from_base64(base64_data)
-                                image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
-                        else:
-                                var ext = get_ext_from_base64(image_content)
-                                image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
-                elif getSettings().get('exportImagesHow', 0) == 1:
-                        if isImageURL(image_content):
-                                var base64_data = await url_to_base64(image_content)
-                                var ext = getImageType(image_content)
-                                if ext == "":
-                                        push_error("Invalid file type")
-                                        ext = "jpeg"
-                                image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
-                        elif begins_with_http:
-                                var base64_data = await url_to_base64(image_content)
-                                var ext = get_ext_from_base64(base64_data)
-                                image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
-                        else:
-                                var ext = get_ext_from_base64(image_content)
-                                image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
+		if getSettings().get('exportImagesHow', 0) == 0:
+			if isImageURL(image_content):
+				image_url_data = image_content
+			elif begins_with_http:
+				var base64_data = await url_to_base64(image_content)
+				var ext = get_ext_from_base64(base64_data)
+				image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
+			else:
+				var ext = get_ext_from_base64(image_content)
+				image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
+		elif getSettings().get('exportImagesHow', 0) == 1:
+			if isImageURL(image_content):
+				var base64_data = await url_to_base64(image_content)
+				var ext = getImageType(image_content)
+				if ext == "":
+					push_error("Invalid file type")
+					ext = "jpeg"
+				image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
+			elif begins_with_http:
+				var base64_data = await url_to_base64(image_content)
+				var ext = get_ext_from_base64(base64_data)
+				image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
+			else:
+				var ext = get_ext_from_base64(image_content)
+				image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
 		return {
 			'role': message['role'],
 			'content': [

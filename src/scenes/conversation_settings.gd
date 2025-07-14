@@ -206,6 +206,14 @@ func _on_token_counter_file_picker_btn_pressed() -> void:
 func _on_token_counter_localizer_file_dialog_file_selected(path: String) -> void:
 	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = path
 
-
 func _on_something_int_needs_update_global(index: int) -> void:
+	update_settings_global()
+
+func _on_image_upload_server_key_edit_text_changed(new_text: String) -> void:
+	update_settings_global()
+	
+func _on_image_upload_server_url_edit_text_changed(new_text: String) -> void:
+	update_settings_global()
+
+func _on_image_uplaod_setting_option_button_item_selected(index: int) -> void:
 	update_settings_global()

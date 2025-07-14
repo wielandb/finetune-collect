@@ -1,6 +1,9 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
+
 $UPLOAD_DIR = __DIR__ . '/uploaded_images';
-$SECRET_KEY = 'CHANGE_ME';
+$SECRET_KEY = 'gaertner';
 if (!file_exists($UPLOAD_DIR)) {
 	mkdir($UPLOAD_DIR, 0755, true);
 }
@@ -21,7 +24,7 @@ function base_url() {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$input = file_get_contents('php://input');
 	$data = [];
-	if (isset($_SERVER['CONTENT_TYPE']) && str_starts_with($_SERVER['CONTENT_TYPE'], 'application/json')) {
+	if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
 		$json = json_decode($input, true);
 		if ($json !== null) { $data = $json; }
 	} else {

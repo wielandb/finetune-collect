@@ -72,16 +72,19 @@ msgid "FUNCTIONS_DELETE_FUNCTION"
 msgstr "Delete Function"
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Messages"
-msgstr "Messages"
+msgstr ""
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Functions"
-msgstr "Functions"
+msgstr ""
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Settings"
-msgstr "Settings"
+msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
@@ -936,4 +939,48 @@ msgstr "Yes, create conversation for each function call"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_RFT_SPLIT_NO_OPTION"
 msgstr "No, only create one training example per conversation"
+
+#: scenes/conversation_settings.tscn
+msgid "FROMCLIPBOARDJSON_LABEL_TEXT"
+msgstr "Paste JSON from Clipboard"
+
+#: scenes/conversation_settings.tscn
+msgid "FROMCLIPBOARDJSON_HINT"
+msgstr "Pastes Messages that were copied in the OpenAI message JSON format"
+
+#: scenes/conversation_settings.tscn
+msgid "LOAD_FROM_CLIPBOARD_JSON"
+msgstr "Load from clipboard JSON"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_LABEL"
+msgstr "Auto-Upload images to image server"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_HINT"
+msgstr "Automatically upload images to the image upload script specified in the URL. Useful if a lot of image files make the program respond slowly."
+
+#: scenes/conversation_settings.tscn
+msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_NEVER"
+msgstr "Never"
+
+#: scenes/conversation_settings.tscn
+msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_ALWAYS"
+msgstr "Always"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_LABEL"
+msgstr "URL to image upload script"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
+msgstr "The URL to a hosted instance of the upload-image.php file from the scripts directory"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
+msgstr "Secret key"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
+msgstr "The secret key you've set in the upload-image.php file"
 

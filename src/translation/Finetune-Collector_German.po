@@ -72,16 +72,19 @@ msgid "FUNCTIONS_DELETE_FUNCTION"
 msgstr "Funktion löschen"
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Messages"
-msgstr "Nachrichten"
+msgstr "Messages"
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Functions"
-msgstr "Funktionen"
+msgstr "Functions"
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Settings"
-msgstr "Einstellungen"
+msgstr "Settings"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
@@ -954,4 +957,48 @@ msgstr "Ja, erzeuge eine Unterhaltung für jeden Funktionsaufruf"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_RFT_SPLIT_NO_OPTION"
 msgstr "Nein, erzeuge nur ein Trainingsbeispiel pro Unterhaltung"
+
+#: scenes/conversation_settings.tscn
+msgid "FROMCLIPBOARDJSON_LABEL_TEXT"
+msgstr "JSON aus Zwischenablage einfügen"
+
+#: scenes/conversation_settings.tscn
+msgid "FROMCLIPBOARDJSON_HINT"
+msgstr "Fügt Nachrichten aus der Zwischenablage ein, die im OpenAI messages JSON-Format vorliegen"
+
+#: scenes/conversation_settings.tscn
+msgid "LOAD_FROM_CLIPBOARD_JSON"
+msgstr "Aus Zwischenablagen-JSON laden"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_LABEL"
+msgstr "Bilder automatisch hochladen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_HINT"
+msgstr "Lokale Bilder automatisch auf den Server in der URL hochladen. Nützlich wenn das Programm aufgrund vieler großer Bilddateien langsam reagiert."
+
+#: scenes/conversation_settings.tscn
+msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_NEVER"
+msgstr "Niemals"
+
+#: scenes/conversation_settings.tscn
+msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_ALWAYS"
+msgstr "Immer"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_LABEL"
+msgstr "URL zum Upload-Skript"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
+msgstr "Die URL zu einer gehosteten Instanz des upload-image.php Skripts aus dem scripts/-Ordner"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
+msgstr "Geheimer Schlüssel"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
+msgstr "Der geheime Schlüssel, der in der upload-image.php festgelegt wurde"
 

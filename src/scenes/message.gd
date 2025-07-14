@@ -279,7 +279,7 @@ func get_ext_from_base64(b64:String) -> String:
 
 func maybe_upload_base64_image():
 	var img_data = $ImageMessageContainer/Base64ImageEdit.text
-	if img_data == "" or isImageURL(img_data):
+	if img_data == "" or isImageURL(img_data) or img_data.begins_with("http://") or img_data.begins_with("https://"):
 		return
 	var upload_url = get_node("/root/FineTune").SETTINGS.get("imageUploadServerURL", "")
 	var upload_key = get_node("/root/FineTune").SETTINGS.get("imageUploadServerKey", "")

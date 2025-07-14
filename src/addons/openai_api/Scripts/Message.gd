@@ -165,7 +165,7 @@ func isImageURL(url: String) -> bool:
 	# Remove any query parameters or fragment identifiers.
 	var cleaned_url = lower_url.split("?")[0].split("#")[0]
 
-        # Finally, check if the cleaned URL ends with a valid image extension.
+		# Finally, check if the cleaned URL ends with a valid image extension.
 	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg") or cleaned_url.ends_with(".jpeg")
 
 # This function uses the above isJpgOrPngURL() to check if the URL is valid,

@@ -719,7 +719,7 @@ func get_ext_from_base64(b64: String) -> String:
 func _upload_base64_image_get_url(b64: String, upload_url: String, upload_key: String) -> String:
 	var data_str = b64
 	if data_str.begins_with("http://") or data_str.begins_with("https://"):
-		data_str = await url_to_base64(data_str)
+		return data_str
 	var http = HTTPRequest.new()
 	add_child(http)
 	var headers := PackedStringArray()

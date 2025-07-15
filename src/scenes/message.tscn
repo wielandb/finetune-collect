@@ -211,6 +211,8 @@ text = "MESSAGES_LOAD_IMAGE_FROM_URL"
 
 [node name="LoadImageFromURLHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
 
+[node name="UploadImageHTTPRequest" type="HTTPRequest" parent="ImageMessageContainer"]
+
 [node name="HSeparator" type="HSeparator" parent="ImageMessageContainer"]
 layout_mode = 2
 
@@ -614,8 +616,8 @@ layout_mode = 2
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
-[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
@@ -626,6 +628,7 @@ layout_mode = 2
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
+[connection signal="request_completed" from="ImageMessageContainer/UploadImageHTTPRequest" to="." method="_on_image_upload_request_completed"]
 [connection signal="pressed" from="FileMessageContainer/FileSelectorContainer/LoadPDFFileButton" to="." method="_on_load_pdf_file_button_pressed"]
 [connection signal="file_selected" from="FileMessageContainer/FileMessageLoadFileDialog" to="." method="_on_file_message_load_file_dialog_file_selected"]
 [connection signal="pressed" from="AudioMessageContainer/AudioMediaPlayerContainer/AudioMessageContentPlayPauseButton" to="." method="_on_audio_message_content_play_pause_button_pressed"]
@@ -634,8 +637,8 @@ layout_mode = 2
 [connection signal="file_selected" from="AudioMessageContainer/AudioLoaderFileDialog" to="." method="_on_audio_loader_file_dialog_file_selected"]
 [connection signal="finished" from="AudioMessageContainer/AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]
 [connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]

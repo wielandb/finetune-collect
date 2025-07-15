@@ -147,14 +147,17 @@ msgid "FUNCTIONS_DELETE_FUNCTION"
 msgstr ""
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Messages"
 msgstr ""
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Functions"
 msgstr ""
 
 #: scenes/conversation.tscn
+#: scenes/fine_tune.gd
 msgid "Settings"
 msgstr ""
 
@@ -364,6 +367,18 @@ msgid "GENERIC_CANCEL"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "FROMCLIPBOARDJSON_LABEL_TEXT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "FROMCLIPBOARDJSON_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "LOAD_FROM_CLIPBOARD_JSON"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_TOKEN_COUNTER_PATH_LABEL_TEXT"
 msgstr ""
 
@@ -403,6 +418,38 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_NEVER"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_ALWAYS"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn

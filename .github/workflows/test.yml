@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Check tab indentation
+        run: bash check_tabs.sh
       - name: Set up Godot
         uses: chickensoft-games/setup-godot@v2
         with:

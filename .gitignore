@@ -4,3 +4,4 @@
 /.vscode
 scripts/output_finetune.jsonl
 scripts/data.json
+/scripts/uploaded_images

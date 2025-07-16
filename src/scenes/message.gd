@@ -6,6 +6,7 @@ extends HBoxContainer
 var image_access_web = FileAccessWeb.new()
 var token = "" # The token for the schema editor for this message
 var edit_message_url = ""
+var last_base64_to_upload = ""
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -110,6 +111,7 @@ func from_var(data):
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(data["imageDetail"])
 	else: # TODO: Add option what the standard quality should be
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(0)
+	maybe_upload_base64_image()
 	# Now everything regarding functions
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(selectionStringToIndex($FunctionMessageContainer/function/FunctionNameChoiceButton, data.get("functionName", "")))
 	#if data["functionName"] != "":
@@ -230,7 +232,35 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	get_node("ImageMessageContainer/TextureRect").texture = image_texture
 	var bin = FileAccess.get_file_as_bytes(image_path)
 	var base_64_data = Marshalls.raw_to_base64(bin)
+	var upload_url = get_node("/root/FineTune").SETTINGS.get("imageUploadServerURL", "")
+	var upload_key = get_node("/root/FineTune").SETTINGS.get("imageUploadServerKey", "")
+	var upload_enabled = get_node("/root/FineTune").SETTINGS.get("imageUploadSetting", 0)
+	last_base64_to_upload = base_64_data
+	if upload_enabled == 1 and upload_url != "" and upload_key != "":
+		var http = HTTPRequest.new()
+		add_child(http)
+		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
+		var headers := PackedStringArray()
+		headers.append("Content-Type: application/json")
+		var ext = "jpg"
+		if image_path.to_lower().ends_with(".png"):
+			ext = "png"
+		var payload = {"key": upload_key, "image": base_64_data, "ext": ext}
+		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+		if err != OK:
+			$ImageMessageContainer/Base64ImageEdit.text = base_64_data
+		return
 	$ImageMessageContainer/Base64ImageEdit.text = base_64_data
+
+func _on_image_upload_request_completed(result, response_code, headers, body, request):
+	request.queue_free()
+	if response_code == 200:
+		var url = body.get_string_from_utf8().strip_edges()
+		$ImageMessageContainer/Base64ImageEdit.text = url
+		load_image_container_from_url(url)
+	else:
+		$ImageMessageContainer/Base64ImageEdit.text = last_base64_to_upload
+		base64_to_image($ImageMessageContainer/TextureRect, last_base64_to_upload)
 
 func base64_to_image(textureRectNode, b64Data):
 	var img = Image.new()
@@ -238,6 +268,34 @@ func base64_to_image(textureRectNode, b64Data):
 		Marshalls.base64_to_raw(b64Data)
 	)
 	textureRectNode.texture = ImageTexture.create_from_image(img)
+
+func get_ext_from_base64(b64:String) -> String:
+	var raw = Marshalls.base64_to_raw(b64)
+	if raw.size() >= 3 and raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
+		return "jpg"
+	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
+		return "png"
+	return "jpg"
+
+func maybe_upload_base64_image():
+	var img_data = $ImageMessageContainer/Base64ImageEdit.text
+	if img_data == "" or isImageURL(img_data) or img_data.begins_with("http://") or img_data.begins_with("https://"):
+		return
+	var upload_url = get_node("/root/FineTune").SETTINGS.get("imageUploadServerURL", "")
+	var upload_key = get_node("/root/FineTune").SETTINGS.get("imageUploadServerKey", "")
+	var upload_enabled = get_node("/root/FineTune").SETTINGS.get("imageUploadSetting", 0)
+	if upload_enabled == 1 and upload_url != "" and upload_key != "":
+		last_base64_to_upload = img_data
+		var http = HTTPRequest.new()
+		add_child(http)
+		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
+		var headers := PackedStringArray()
+		headers.append("Content-Type: application/json")
+		var ext = get_ext_from_base64(img_data)
+		var payload = {"key": upload_key, "image": img_data, "ext": ext}
+		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+		if err != OK:
+				$ImageMessageContainer/Base64ImageEdit.text = img_data
 	
 func _on_load_image_button_pressed() -> void:
 	match OS.get_name():
@@ -449,6 +507,7 @@ func _image_http_request_completed(result, response_code, headers, body):
 	var texture = ImageTexture.create_from_image(image)
 	$ImageMessageContainer/TextureRect.texture = texture
 	
+
 func isImageURL(url: String) -> bool:
 	# Return false if the URL is empty or only whitespace.
 	if url.strip_edges() == "":
@@ -469,30 +528,54 @@ func isImageURL(url: String) -> bool:
 	if not scheme_valid:
 		return false
 
-	# Remove any query parameters or fragment identifiers.
-	var cleaned_url = lower_url.split("?")[0].split("#")[0]
+	# Remove fragment identifiers for easier handling.
+	var no_fragment = lower_url.split("#")[0]
 
-	# Finally, check if the cleaned URL ends with a valid image extension.
-	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg")
+	# Check path part first (before query string).
+	var path_part = no_fragment.split("?")[0]
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
+		return true
 
-# This function uses the above isJpgOrPngURL() to check if the URL is valid,
-# and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.
+	# Check query parameters for an 'image' parameter with a jpg/jpeg extension.
+	var query_index := no_fragment.find("?")
+	if query_index != -1:
+		var query = no_fragment.substr(query_index + 1)
+		var params = query.split("&")
+		for param in params:
+			var kv = param.split("=")
+			if kv.size() == 2 and kv[0] == "image":
+				var value = kv[1]
+				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
+					return true
+
+	return false
+# This function uses the above isImageURL() to check if the URL is valid,
+# and if so, returns "jpg" for URLs ending with .jpg or .jpeg.
 # Otherwise, it returns an empty string.
 func getImageType(url: String) -> String:
 	# Use our helper function to ensure the URL is valid.
 	if not isImageURL(url):
 		return ""
-	
-	# Convert to lowercase and remove any query or fragment parts.
+
 	var lower_url = url.to_lower()
-	var base_url = lower_url.split("?")[0].split("#")[0]
-	
-	if base_url.ends_with(".png"):
-		return "png"
-	elif base_url.ends_with(".jpg"):
+	var no_fragment = lower_url.split("#")[0]
+	var path_part = no_fragment.split("?")[0]
+
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
 		return "jpg"
-	else:
-		return ""
+
+	var query_index := no_fragment.find("?")
+	if query_index != -1:
+		var query = no_fragment.substr(query_index + 1)
+		var params = query.split("&")
+		for param in params:
+			var kv = param.split("=")
+			if kv.size() == 2 and kv[0] == "image":
+				var value = kv[1]
+				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
+					return "jpg"
+
+	return ""
 
 
 func _on_schema_edit_button_pressed() -> void:

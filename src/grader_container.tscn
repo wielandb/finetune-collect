@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://bxjaykkfeey4u"]
+
+[node name="GraderContainer" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GraderHeaderMarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 35
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 35
+theme_override_constants/margin_bottom = 5
+
+[node name="LabelAndChoiceBoxContainer" type="HBoxContainer" parent="GraderHeaderMarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="GraderTypeLabel" type="Label" parent="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer"]
+layout_mode = 2
+text = "Grader of type "
+
+[node name="GraderTypeOptionButton" type="OptionButton" parent="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 5
+popup/item_0/text = "String Check Grader"
+popup/item_0/id = 0
+popup/item_1/text = "String Similarity Grader"
+popup/item_1/id = 1
+popup/item_2/text = "Score Model Grader"
+popup/item_2/id = 2
+popup/item_3/text = "Label Model Grader"
+popup/item_3/id = 3
+popup/item_4/text = "Python Grader"
+popup/item_4/id = 4
+
+[node name="ActualGraderContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GraderSettingsContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="GraderVerificationStatus" type="Label" parent="GraderSettingsContainer"]
+layout_mode = 2
+text = "Grader verified!"
+
+[node name="UseThisGraderButton" type="CheckBox" parent="GraderSettingsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Use this grader"
+
+[node name="Button" type="Button" parent="GraderSettingsContainer"]
+layout_mode = 2
+text = "Delete grader"

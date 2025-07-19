@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://cgski2qyhb6o6"]
+
+[node name="ScoreModelGrader" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NameContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="NameContainer"]
+layout_mode = 2
+text = "Name: "
+
+[node name="NameEdit" type="LineEdit" parent="NameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PromptLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Model input/Prompt:"
+
+[node name="PromptEdit" type="TextEdit" parent="."]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+
+[node name="ModelContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ModelLabel" type="Label" parent="ModelContainer"]
+layout_mode = 2
+text = "Model:"
+
+[node name="ModelOptionButton" type="OptionButton" parent="ModelContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RangeContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RangeLabel" type="Label" parent="RangeContainer"]
+layout_mode = 2
+text = "Range: "
+
+[node name="RangeFromLabel" type="Label" parent="RangeContainer"]
+layout_mode = 2
+text = "From "
+
+[node name="RangeFromEdit" type="LineEdit" parent="RangeContainer"]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="RangeToLabel" type="Label" parent="RangeContainer"]
+layout_mode = 2
+text = "to"
+
+[node name="RangeToEdit" type="LineEdit" parent="RangeContainer"]
+layout_mode = 2
+text = "1"
+placeholder_text = "1"
+
+[node name="SamplingParametersContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SamplingParametersLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "Sampling parameters:"
+
+[node name="TemperatureLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "Temperature: "
+
+[node name="TemperatureEdit" type="LineEdit" parent="SamplingParametersContainer"]
+layout_mode = 2
+
+[node name="TopPLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "Top P:"
+
+[node name="TopPEdit" type="LineEdit" parent="SamplingParametersContainer"]
+layout_mode = 2
+
+[node name="SeedLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "Seed:"
+
+[node name="SeedEdit" type="LineEdit" parent="SamplingParametersContainer"]
+layout_mode = 2

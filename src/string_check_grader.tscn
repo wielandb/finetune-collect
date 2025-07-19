@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://wvjrsh1bdxls"]
+
+[node name="StringCheckGrader" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NameContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="NameContainer"]
+layout_mode = 2
+text = "Name: "
+
+[node name="NameEdit" type="LineEdit" parent="NameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="GridContainer" type="GridContainer" parent="."]
+layout_mode = 2
+columns = 3
+
+[node name="InputLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Input"
+horizontal_alignment = 1
+
+[node name="OperationLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Operation"
+horizontal_alignment = 1
+
+[node name="ReferenceLabel" type="Label" parent="GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Reference"
+horizontal_alignment = 1
+
+[node name="InputEdit" type="LineEdit" parent="GridContainer"]
+layout_mode = 2
+
+[node name="OperationOptionButton" type="OptionButton" parent="GridContainer"]
+layout_mode = 2
+item_count = 4
+popup/item_0/text = "eq"
+popup/item_0/id = 0
+popup/item_1/text = "ne"
+popup/item_1/id = 1
+popup/item_2/text = "like"
+popup/item_2/id = 2
+popup/item_3/text = "ilike"
+popup/item_3/id = 3
+
+[node name="ReferenceEdit" type="LineEdit" parent="GridContainer"]
+layout_mode = 2

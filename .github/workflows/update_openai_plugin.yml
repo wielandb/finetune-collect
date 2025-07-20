@@ -1,0 +1,50 @@
+name: Update OpenAI Plugin
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Checkout OpenAi-Godot source
+        uses: actions/checkout@v3
+        with:
+          repository: wielandb/OpenAi-Godot
+          path: openai-source
+
+      - name: Sync plugin
+        run: |
+          rm -rf src/addons/openai_api
+          cp -r openai-source/addons/openai_api src/addons/openai_api
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add src/addons/openai_api
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Update OpenAI plugin"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: Update OpenAI plugin
+          branch: bot/update-openai-plugin
+          title: Update OpenAI plugin
+          body: Automated update of OpenAI plugin from OpenAi-Godot repository.
+          delete-branch: true
+          signoff: false

@@ -9,12 +9,12 @@ extends VBoxContainer
 ]
 
 func _ready() -> void:
-	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", self, "_on_grader_type_option_button_item_selected")
+	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
 	for child in $ActualGraderContainer.get_children():
-	    child.queue_free()
+		child.queue_free()
 	if index >= 0 and index < GRADER_SCENES.size():
-	    var inst = GRADER_SCENES[index].instantiate()
-	    $ActualGraderContainer.add_child(inst)
+		var inst = GRADER_SCENES[index].instantiate()
+		$ActualGraderContainer.add_child(inst)

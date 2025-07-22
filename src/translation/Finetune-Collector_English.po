@@ -7,43 +7,43 @@ msgstr ""
 "Project-Id-Version: Finetune-Collector\n"
 "Language: en\n"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 msgstr "Typ"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
 msgstr "String"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
 msgstr "Number"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
 msgstr "Name"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
 msgstr "Description"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Has limits"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Min."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Max."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
 msgstr "Enumeration?"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
 msgstr "Required?"
 
@@ -274,11 +274,11 @@ msgstr "Warnings"
 msgid "ANALYSIS_ERROS_TITLE"
 msgstr "Errors"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "String"
 msgstr "String"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Number"
 msgstr "Number"
 

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bxjaykkfeey4u"]
 
-[ext_resource type="Script" path="res://grader_container.gd" id="1_grdc"]
+[ext_resource type="Script" path="res://scenes/graders/grader_container.gd" id="1_grdc"]
 
 [node name="GraderContainer" type="VBoxContainer"]
 anchors_preset = 15

@@ -4,7 +4,7 @@ extends VBoxContainer
 	preload("res://scenes/graders/string_check_grader.tscn"),
 	preload("res://scenes/graders/string_similarity_grader.tscn"),
 	preload("res://scenes/graders/score_model_grader.tscn"),
-	preload("res://label_model_grader.tscn"),
+	preload("res://scenes/graders/label_model_grader.tscn"),
 	preload("res://scenes/graders/python_grader.tscn")
 ]
 

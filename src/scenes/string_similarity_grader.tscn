@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://xfk2w5ctn8lg"]
+[gd_scene load_steps=0 format=3 uid="uid://xfk2w5ctn8lg"]
 
 [node name="StringSimilarityGrader" type="VBoxContainer"]
 anchors_preset = 15

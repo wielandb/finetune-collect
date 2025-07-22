@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://wvjrsh1bdxls"]
+[gd_scene load_steps=0 format=3 uid="uid://wvjrsh1bdxls"]
 
 [node name="StringCheckGrader" type="VBoxContainer"]
 anchors_preset = 15

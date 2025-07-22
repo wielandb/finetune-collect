@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cgski2qyhb6o6"]
+[gd_scene load_steps=0 format=3 uid="uid://cgski2qyhb6o6"]
 
 [node name="ScoreModelGrader" type="VBoxContainer"]
 anchors_preset = 15

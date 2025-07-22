@@ -1,4 +1,6 @@
-[gd_scene load_steps=0 format=3 uid="uid://xfk2w5ctn8lg"]
+[gd_scene load_steps=2 format=3 uid="uid://xfk2w5ctn8lg"]
+
+[ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_fjscc"]
 
 [node name="StringSimilarityGrader" type="VBoxContainer"]
 anchors_preset = 15
@@ -7,16 +9,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="NameContainer" type="HBoxContainer" parent="."]
+[node name="NameContainer" parent="." instance=ExtResource("1_fjscc")]
 layout_mode = 2
-
-[node name="NameLabel" type="Label" parent="NameContainer"]
-layout_mode = 2
-text = "Name:"
-
-[node name="NameEdit" type="LineEdit" parent="NameContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="InputContainer" type="HBoxContainer" parent="."]
 layout_mode = 2

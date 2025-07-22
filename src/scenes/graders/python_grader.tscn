@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://crrh08nwhteko"]
+[gd_scene load_steps=3 format=3 uid="uid://crrh08nwhteko"]
 
 [ext_resource type="FontFile" uid="uid://p0vkq2a410tm" path="res://themes/DarkTheme/Fonts/Ubuntu-L.ttf" id="1_ed0j7"]
+[ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_ruql7"]
 
 [node name="PythonGrader" type="VBoxContainer"]
 anchors_preset = 15
@@ -9,16 +10,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="NameContainer" type="HBoxContainer" parent="."]
+[node name="NameContainer" parent="." instance=ExtResource("1_ruql7")]
 layout_mode = 2
-
-[node name="NameLabel" type="Label" parent="NameContainer"]
-layout_mode = 2
-text = "Name: "
-
-[node name="NameEdit" type="LineEdit" parent="NameContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2

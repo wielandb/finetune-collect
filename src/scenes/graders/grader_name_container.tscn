@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://dawsni6j2ydhu"]
+
+[ext_resource type="Script" uid="uid://ci4qp2rk1p2pq" path="res://scenes/graders/grader_name_container.gd" id="1_ue5ce"]
+[ext_resource type="Texture2D" uid="uid://dsyqi00gxikb7" path="res://icons/help-circle-outline-custom.png" id="2_u5ow8"]
+
+[node name="NameContainer" type="HBoxContainer"]
+script = ExtResource("1_ue5ce")
+
+[node name="NameLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Name: "
+
+[node name="NameHint" type="TextureRect" parent="."]
+layout_mode = 2
+tooltip_text = "GRADER_NAME_HINT"
+texture = ExtResource("2_u5ow8")
+expand_mode = 2
+
+[node name="NameEdit" type="LineEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3

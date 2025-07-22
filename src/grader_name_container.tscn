@@ -1,4 +1,0 @@
-[gd_scene format=3 uid="uid://i05cns40c8dk"]
-
-[node name="NameContainer" type="HBoxContainer"]
-size_flags_vertical = 3

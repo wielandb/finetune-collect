@@ -1,11 +1,14 @@
 [gd_scene format=3 uid="uid://bxjaykkfeey4u"]
 
+[ext_resource type="Script" path="res://grader_container.gd" id="1_grdc"]
+
 [node name="GraderContainer" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_grdc")
 
 [node name="GraderHeaderMarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
@@ -36,6 +39,8 @@ popup/item_3/text = "Label Model Grader"
 popup/item_3/id = 3
 popup/item_4/text = "Python Grader"
 popup/item_4/id = 4
+
+[connection signal="item_selected" from="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton" to="." method="_on_grader_type_option_button_item_selected"]
 
 [node name="ActualGraderContainer" type="VBoxContainer" parent="."]
 layout_mode = 2

@@ -20,3 +20,5 @@ size_flags_vertical = 3
 [node name="AddGraderButton" type="Button" parent="GradersListContainer"]
 layout_mode = 2
 text = "GRADERS_ADD_GRADER_BUTTON_TEXT"
+
+[connection signal="pressed" from="GradersListContainer/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

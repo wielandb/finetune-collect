@@ -9,18 +9,24 @@ You can also provide the program with your OpenAI API key and it can generate re
 
 ![conversation_example](presentation/image_example.png)
 
-
-
-
-
 ![function_example](presentation/function_example_vertical.png)
 
-## Usage
+## Features
+- Supports text, image, JSON schema, function call, audio and PDF messages
+- Import OpenAI message JSON from the clipboard or drag & drop `.json`/`.ftproj` files
+- Execute local functions with optional pre‑text and store the results
+- Automatically upload images to a configurable server
+- Export images as base64 or URLs and choose which conversations to export
+- Token usage and cost estimation via a script
+- Conversation auto-splitting for Reinforcement Fine-Tuning
+- Optional global system message and user names per message
+- Show or hide meta information and token calculations per conversation
 
-- `Ctrl` + `S`- Save fine tune project file without re-opening save dialog
-- `Del` - Delete a conversation (when selected in the conversation overview)
-- `Ctrl` + `Left Click` - Enlarge Image (when hovering image)
-- `Crtl` + `Right Click` - Smallen Image (when hovering image)
-- `Ctrl` + `Space` - Add new message
+## Keyboard Shortcuts
+- `Ctrl` + `S` – Save the project without re-opening the dialog
+- `Del` – Delete a conversation (when selected in the list)
+- `Ctrl` + `Left Click` – Enlarge image when hovering
+- `Ctrl` + `Right Click` – Shrink image when hovering
+- `Ctrl` + `Space` – Add new message
 - Drag and drop a `.ftproj` or `.json` file onto the window to load a project or insert messages
 - The application remembers the last opened project file and loads it automatically on the next start if it still exists

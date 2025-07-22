@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://wvjrsh1bdxls"]
+[gd_scene load_steps=3 format=3 uid="uid://wvjrsh1bdxls"]
 
 [ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_0i0sf"]
+[ext_resource type="Script" uid="uid://dadtlohyfvs42" path="res://scenes/graders/string_check_grader.gd" id="1_efin1"]
 
 [node name="StringCheckGrader" type="VBoxContainer"]
 anchors_preset = 15
@@ -8,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_efin1")
 
 [node name="NameContainer" parent="." instance=ExtResource("1_0i0sf")]
 layout_mode = 2

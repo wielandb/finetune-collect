@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://biup68nmj50l8" path="res://scenes/messages_list.tscn" id="1_lyn02"]
 [ext_resource type="PackedScene" uid="uid://ducbmcevyftgv" path="res://scenes/functions_list.tscn" id="2_ii783"]
 [ext_resource type="PackedScene" uid="uid://d3c68j8erdmn8" path="res://scenes/conversation_settings.tscn" id="3_wqhly"]
-[ext_resource type="PackedScene" uid="uid://cg03wm3eel1gm" path="res://scenes/graders_list.tscn" id="4_jcdsd"]
+[ext_resource type="PackedScene" uid="uid://cg03wm3eel1gm" path="res://scenes/graders/graders_list.tscn" id="4_jcdsd"]
 
 [node name="Conversation" type="TabContainer"]
 anchors_preset = 15

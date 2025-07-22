@@ -7,43 +7,43 @@ msgstr ""
 "Project-Id-Version: Finetune-Collector\n"
 "Language: en\n"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 msgstr "Typ"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
 msgstr "String"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
 msgstr "Number"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
 msgstr "Name"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
 msgstr "Description"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Has limits"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Min."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Max."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
 msgstr "Enumeration?"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
 msgstr "Required?"
 
@@ -113,7 +113,7 @@ msgstr "API key:"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
 ""
-msgstr "Model to use for completions"
+msgstr "Model to use for completions\n"
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_REFRESH"
@@ -274,11 +274,11 @@ msgstr "Warnings"
 msgid "ANALYSIS_ERROS_TITLE"
 msgstr "Errors"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "String"
 msgstr "String"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Number"
 msgstr "Number"
 
@@ -488,7 +488,7 @@ msgstr "JSON schema:"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
 ""
-msgstr "Load JSON schema from file"
+msgstr "Load JSON schema from file\n"
 
 #: scenes/message.tscn
 msgid "JSON Schema"

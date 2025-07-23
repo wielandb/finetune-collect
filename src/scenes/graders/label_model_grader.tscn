@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://ctl1k6k56hltf"]
+[gd_scene load_steps=6 format=3 uid="uid://ctl1k6k56hltf"]
 
 [ext_resource type="PackedScene" uid="uid://clmrayf2uklte" path="res://scenes/message.tscn" id="1_ll3dp"]
 [ext_resource type="Script" uid="uid://w0bsmrp0foro" path="res://scenes/graders/label_model_grader.gd" id="1_unpji"]
 [ext_resource type="PackedScene" uid="uid://cukb0mp1ky25c" path="res://scenes/model_choice_container.tscn" id="2_nd5pe"]
+[ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="2_ouapk"]
+[ext_resource type="Texture2D" uid="uid://bd834aiah6wp2" path="res://icons/check-decagram-custom.png" id="4_ei7hj"]
 
 [node name="LabelModelGrader" type="VBoxContainer"]
 anchors_preset = 15
@@ -12,16 +14,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_unpji")
 
-[node name="NameContainer" type="HBoxContainer" parent="."]
+[node name="NameContainer" parent="." instance=ExtResource("2_ouapk")]
 layout_mode = 2
-
-[node name="NameLabel" type="Label" parent="NameContainer"]
-layout_mode = 2
-text = "Name: "
-
-[node name="NameEdit" type="LineEdit" parent="NameContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="MessagesLabel" type="Label" parent="."]
 layout_mode = 2
@@ -64,11 +58,29 @@ text = "Add"
 [node name="LabelsList" type="ItemList" parent="."]
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
-select_mode = 1
 allow_reselect = true
 item_count = 2
 item_0/text = "Test"
 item_1/text = "Test2"
 
+[node name="LabelClickingHintContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="LabelClickingHintPart1Label" type="Label" parent="LabelClickingHintContainer"]
+layout_mode = 2
+text = "LABEL_CLICKING_HINT_PART_1"
+
+[node name="LabelClickingHintIcon" type="TextureRect" parent="LabelClickingHintContainer"]
+layout_mode = 2
+texture = ExtResource("4_ei7hj")
+stretch_mode = 5
+
+[node name="LabelClickingHintPart2Label" type="Label" parent="LabelClickingHintContainer"]
+layout_mode = 2
+text = "LABEL_CLICKING_HINT_PART_1"
+
 [node name="ModelContainer" parent="." instance=ExtResource("2_nd5pe")]
 layout_mode = 2
+
+[connection signal="item_activated" from="LabelsList" to="." method="_on_labels_list_item_activated"]
+[connection signal="item_selected" from="LabelsList" to="." method="_on_labels_list_item_activated"]

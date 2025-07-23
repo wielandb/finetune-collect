@@ -1,6 +1,6 @@
 # LANGUAGE translation for finetune-collector for the following files:
 # res://available_parameter.gd
-# res://parameter.tscn
+# res://scenes/parameter.tscn
 # res://scenes/analysis_container.gd
 # res://scenes/analysis_container.tscn
 # res://scenes/available_function.gd
@@ -38,43 +38,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "String"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Number"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Has limits"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Min."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Max."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
 msgstr ""
 

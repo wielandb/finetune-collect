@@ -28,7 +28,7 @@ text = "Grader of type "
 [node name="GraderTypeOptionButton" type="OptionButton" parent="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-item_count = 5
+item_count = 6
 popup/item_0/text = "String Check Grader"
 popup/item_0/id = 0
 popup/item_1/text = "String Similarity Grader"
@@ -39,6 +39,8 @@ popup/item_3/text = "Label Model Grader"
 popup/item_3/id = 3
 popup/item_4/text = "Python Grader"
 popup/item_4/id = 4
+popup/item_5/text = "Multi Grader"
+popup/item_5/id = 5
 
 [connection signal="item_selected" from="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton" to="." method="_on_grader_type_option_button_item_selected"]
 

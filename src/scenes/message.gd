@@ -889,3 +889,30 @@ func _on_file_message_load_file_dialog_file_selected(path: String) -> void:
 
 func _on_load_pdf_file_button_pressed() -> void:
 	$FileMessageContainer/FileMessageLoadFileDialog.visible = true
+func to_openai_message():
+	var msg = to_var()
+	if msg["type"] == "Text":
+		var result = {"role": msg["role"], "content": msg["textContent"]}
+		if msg.get("userName", "") != "":
+			result["name"] = msg["userName"]
+		return result
+	elif msg["type"] == "Image":
+		var image_content = msg["imageContent"]
+		var image_url_data = ""
+		if isImageURL(image_content) or image_content.begins_with("http://") or image_content.begins_with("https://"):
+			image_url_data = image_content
+		else:
+			var ext = get_ext_from_base64(image_content)
+			image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
+		var image_detail_map = {0: "high", 1: "low", 2: "auto"}
+		return {
+			"role": msg["role"],
+			"content": [{
+				"type": "image_url",
+				"image_url": {
+					"url": image_url_data,
+					"detail": image_detail_map.get(int(msg.get("imageDetail", 0)), "high")
+				}
+			}]
+		}
+	return {}

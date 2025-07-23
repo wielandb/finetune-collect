@@ -117,6 +117,25 @@ func test_message_class():
 	assert_eq(d["tool_calls"].size(), 1, "message tool calls size")
 	assert_eq(d["tool_calls"][0]["function"]["name"], "foo", "function call name")
 
+func test_message_ui_text_roundtrip():
+	var Scene = load("res://scenes/message.tscn")
+	var node = Scene.instantiate()
+	node.from_openai_message({"role":"user","content":"hi"})
+	var out = node.to_openai_message()
+	assert_eq(out.get("content", ""), "hi", "ui text roundtrip")
+	assert_eq(out.get("role", ""), "user", "ui text role")
+	node.queue_free()
+
+func test_message_ui_image_roundtrip():
+	var Scene = load("res://scenes/message.tscn")
+	var node = Scene.instantiate()
+	node.from_openai_message({"role":"assistant","content":[{"type":"image_url","image_url":{"url":"http://example.com/pic.png","detail":"auto"}}]})
+	var out = node.to_openai_message()
+	assert_eq(out.get("role", ""), "assistant", "ui image role")
+	assert_eq(out.get("content", [])[0]["image_url"]["url"], "http://example.com/pic.png", "ui image url")
+	assert_eq(out.get("content", [])[0]["image_url"]["detail"], "auto", "ui image detail")
+	node.queue_free()
+
 func _init():
 	test_save_and_load_var()
 	test_convert_functions()
@@ -127,5 +146,7 @@ func _init():
 	test_convert_functions_list()
 	await test_convert_conversation_function_call()
 	test_message_class()
+	test_message_ui_text_roundtrip()
+	test_message_ui_image_roundtrip()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

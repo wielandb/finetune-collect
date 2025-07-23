@@ -916,3 +916,46 @@ func to_openai_message():
 			}]
 		}
 	return {}
+func from_openai_message(oai_msg: Dictionary):
+	var role = oai_msg.get("role", "user")
+	var user_name = oai_msg.get("name", "")
+	var content = oai_msg.get("content", "")
+	var msg_type := ""
+	var text_content := ""
+	var image_content := ""
+	var image_detail_idx := 0
+	var image_detail_map = {"high":0, "low":1, "auto":2}
+	if typeof(content) == TYPE_STRING:
+		msg_type = "Text"
+		text_content = content
+	elif typeof(content) == TYPE_ARRAY:
+		for piece in content:
+			if piece is Dictionary:
+				if piece.get("type", "") == "text":
+					msg_type = "Text"
+					text_content += piece.get("text", "")
+				elif piece.get("type", "") == "image_url":
+					msg_type = "Image"
+					image_content = piece["image_url"].get("url", "")
+					image_detail_idx = image_detail_map.get(piece["image_url"].get("detail", "high"), 0)
+	else:
+		return {}
+	if msg_type == "Text":
+		$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+		_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+		$TextMessageContainer/Message.text = text_content
+	elif msg_type == "Image":
+		$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Image"))
+		_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+		$ImageMessageContainer/Base64ImageEdit.text = image_content
+		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(image_detail_idx)
+		if image_content != "":
+			if isImageURL(image_content) or image_content.begins_with("http://") or image_content.begins_with("https://"):
+				load_image_container_from_url(image_content)
+			else:
+				base64_to_image($ImageMessageContainer/TextureRect, image_content)
+	else:
+		return {}
+	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, role))
+	$MessageSettingsContainer/UserNameEdit.text = user_name
+	return to_var()

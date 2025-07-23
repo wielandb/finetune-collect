@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cgski2qyhb6o6"]
+[gd_scene load_steps=4 format=3 uid="uid://cgski2qyhb6o6"]
 
+[ext_resource type="Script" uid="uid://dhjbnnkv3sacx" path="res://scenes/graders/score_model_grader.gd" id="1_wkgte"]
 [ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_xre7k"]
+[ext_resource type="PackedScene" uid="uid://cukb0mp1ky25c" path="res://scenes/model_choice_container.tscn" id="3_f2a6w"]
 
 [node name="ScoreModelGrader" type="VBoxContainer"]
 anchors_preset = 15
@@ -8,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_wkgte")
 
 [node name="NameContainer" parent="." instance=ExtResource("1_xre7k")]
 layout_mode = 2
@@ -20,16 +23,8 @@ text = "Model input/Prompt:"
 custom_minimum_size = Vector2(0, 250)
 layout_mode = 2
 
-[node name="ModelContainer" type="HBoxContainer" parent="."]
+[node name="ModelContainer" parent="." instance=ExtResource("3_f2a6w")]
 layout_mode = 2
-
-[node name="ModelLabel" type="Label" parent="ModelContainer"]
-layout_mode = 2
-text = "Model:"
-
-[node name="ModelOptionButton" type="OptionButton" parent="ModelContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="RangeContainer" type="HBoxContainer" parent="."]
 layout_mode = 2

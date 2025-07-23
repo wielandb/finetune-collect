@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://cukb0mp1ky25c"]
+
+[ext_resource type="Script" uid="uid://cu7hqyaxypkbl" path="res://scenes/model_choice_container.gd" id="1_no7ph"]
+
+[node name="ModelContainer" type="HBoxContainer"]
+script = ExtResource("1_no7ph")
+
+[node name="ModelLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Model:"
+
+[node name="ModelOptionButton" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ModelsRefreshButton" type="Button" parent="."]
+layout_mode = 2
+text = "GENERIC_REFRESH"

@@ -143,30 +143,19 @@ func create_tool_response(call_id: String, response_content: String) -> void:
 	content = [{"type":"text", "text":response_content}]
 
 func isImageURL(url: String) -> bool:
-	# Return false if the URL is empty or only whitespace.
-	if url.strip_edges() == "":
-		return false
+       # Determines if the provided string is a URL pointing to an image.
+       # We only check that the string starts with a valid URL scheme and is not
+       # a base64 data URI. Query parameters are ignored to allow URLs like
+       # `?image=file.jpg`.
+       if url.strip_edges() == "":
+               return false
 
-	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
-	var valid_schemes = ["http://", "https://"]
+       var lower_url = url.to_lower()
 
-	# Convert the URL to lowercase for case-insensitive comparisons.
-	var lower_url = url.to_lower()
+       if lower_url.begins_with("data:"):
+               return false
 
-	# Check if the URL begins with one of the valid schemes.
-	var scheme_valid = false
-	for scheme in valid_schemes:
-		if lower_url.begins_with(scheme):
-			scheme_valid = true
-			break
-	if not scheme_valid:
-		return false
-
-	# Remove any query parameters or fragment identifiers.
-	var cleaned_url = lower_url.split("?")[0].split("#")[0]
-
-		# Finally, check if the cleaned URL ends with a valid image extension.
-	return cleaned_url.ends_with(".png") or cleaned_url.ends_with(".jpg") or cleaned_url.ends_with(".jpeg")
+       return lower_url.begins_with("http://") or lower_url.begins_with("https://")
 
 # This function uses the above isJpgOrPngURL() to check if the URL is valid,
 # and if so, returns "png" if the URL ends with .png or "jpg" if it ends with .jpg.

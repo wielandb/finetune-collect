@@ -1,25 +1,23 @@
-[gd_scene load_steps=2 format=3 uid="uid://dqovavb6mlxs0"]
+[gd_scene load_steps=3 format=3 uid="uid://dqovavb6mlxs0"]
 
-[ext_resource type="Texture2D" uid="uid://d4h3rvxloygx4" path="res://icons/pen-plus-custom.png" id="1_j2kkp"]
 [ext_resource type="Script" uid="uid://7yjd12ebkydr" path="res://scenes/graders/multi_grader.gd" id="1_mulgr"]
+[ext_resource type="PackedScene" uid="uid://bxjaykkfeey4u" path="res://scenes/graders/grader_container.tscn" id="2_l8ilw"]
 
 [node name="MultiGrader" type="VBoxContainer"]
-script = ExtResource("1_mulgr")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_mulgr")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 50
 
-[node name="AddGraderAButton" type="Button" parent="MarginContainer"]
+[node name="GraderContainer" parent="MarginContainer" instance=ExtResource("2_l8ilw")]
 layout_mode = 2
-icon = ExtResource("1_j2kkp")
-icon_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
@@ -29,10 +27,8 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 50
 
-[node name="AddGraderBButton" type="Button" parent="MarginContainer2"]
+[node name="GraderContainer" parent="MarginContainer2" instance=ExtResource("2_l8ilw")]
 layout_mode = 2
-icon = ExtResource("1_j2kkp")
-icon_alignment = 1
 
 [node name="ScoreFormulaContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -44,6 +40,3 @@ text = "Score Formula:"
 [node name="ScoreFormulaEdit" type="LineEdit" parent="ScoreFormulaContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[connection signal="pressed" from="MarginContainer/AddGraderAButton" to="." method="_on_add_grader_a_button_pressed"]
-[connection signal="pressed" from="MarginContainer2/AddGraderBButton" to="." method="_on_add_grader_b_button_pressed"]

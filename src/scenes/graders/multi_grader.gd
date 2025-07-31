@@ -3,7 +3,15 @@ extends VBoxContainer
 @onready var GRADER_SCENE = preload("res://scenes/graders/grader_container.tscn")
 
 func _ready() -> void:
-	if $MarginContainer.get_child_count() == 0:
-		$MarginContainer.add_child(GRADER_SCENE.instantiate())
-	if $MarginContainer2.get_child_count() == 0:
-		$MarginContainer2.add_child(GRADER_SCENE.instantiate())
+	pass
+
+func _on_add_grader_button_pressed() -> void:
+	var wrapper := MarginContainer.new()
+	wrapper.layout_mode = 2
+	wrapper.size_flags_vertical = 3
+	wrapper.add_theme_constant_override("margin_left", 50)
+	var inst := GRADER_SCENE.instantiate()
+	wrapper.add_child(inst)
+	inst.connect("tree_exited", Callable(wrapper, "queue_free"))
+	$GradersContainer.add_child(wrapper)
+	$GradersContainer.move_child($GradersContainer/AddGraderButton, -1)

@@ -86,8 +86,8 @@ text = "LABEL_CLICKING_HINT_PART_1"
 [node name="ModelContainer" parent="." instance=ExtResource("2_nd5pe")]
 layout_mode = 2
 
-[connection signal="item_activated" from="LabelsList" to="." method="_on_labels_list_item_activated"]
-[connection signal="item_selected" from="LabelsList" to="." method="_on_labels_list_item_activated"]
-[connection signal="item_rmb_selected" from="LabelsList" to="." method="_on_labels_list_item_right_clicked"]
 [connection signal="pressed" from="MessagesContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]
 [connection signal="pressed" from="NewLabelsContainer/NewLabelButton" to="." method="_on_new_label_button_pressed"]
+[connection signal="item_activated" from="LabelsList" to="." method="_on_labels_list_item_activated"]
+[connection signal="item_clicked" from="LabelsList" to="." method="_on_labels_list_item_clicked"]
+[connection signal="item_selected" from="LabelsList" to="." method="_on_labels_list_item_activated"]

@@ -10,18 +10,18 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mulgr")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+
+[node name="GradersContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/margin_left = 50
+
+[node name="AddGraderButton" type="Button" parent="GradersContainer"]
+layout_mode = 2
+text = "Add Grader"
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
-
-[node name="MarginContainer2" type="MarginContainer" parent="."]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/margin_left = 50
 
 [node name="ScoreFormulaContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
@@ -33,3 +33,5 @@ text = "Score Formula:"
 [node name="ScoreFormulaEdit" type="LineEdit" parent="ScoreFormulaContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[connection signal="pressed" from="GradersContainer/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

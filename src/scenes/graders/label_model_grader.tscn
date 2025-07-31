@@ -40,6 +40,10 @@ theme_override_constants/margin_right = 95
 [node name="Message" parent="MessagesContainer/MarginContainer2" instance=ExtResource("1_ll3dp")]
 layout_mode = 2
 
+[node name="AddMessageButton" type="Button" parent="MessagesContainer"]
+layout_mode = 2
+text = "Add Message"
+
 [node name="NewLabelsContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 
@@ -84,3 +88,6 @@ layout_mode = 2
 
 [connection signal="item_activated" from="LabelsList" to="." method="_on_labels_list_item_activated"]
 [connection signal="item_selected" from="LabelsList" to="." method="_on_labels_list_item_activated"]
+[connection signal="item_rmb_selected" from="LabelsList" to="." method="_on_labels_list_item_right_clicked"]
+[connection signal="pressed" from="MessagesContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]
+[connection signal="pressed" from="NewLabelsContainer/NewLabelButton" to="." method="_on_new_label_button_pressed"]

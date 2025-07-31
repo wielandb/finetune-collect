@@ -19,3 +19,7 @@ func _on_grader_type_option_button_item_selected(index: int) -> void:
 	if index >= 0 and index < GRADER_SCENES.size():
 		var inst = GRADER_SCENES[index].instantiate()
 		$ActualGraderContainer.add_child(inst)
+
+
+func _on_delete_button_pressed() -> void:
+	queue_free()

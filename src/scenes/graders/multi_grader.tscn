@@ -10,11 +10,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_mulgr")
 
-
 [node name="GradersContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/margin_left = 50
 
 [node name="AddGraderButton" type="Button" parent="GradersContainer"]
 layout_mode = 2

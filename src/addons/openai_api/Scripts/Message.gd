@@ -153,7 +153,6 @@ func isImageURL(url: String) -> bool:
 
 	if lower_url.begins_with("data:"):
 		return false
-
 	return lower_url.begins_with("http://") or lower_url.begins_with("https://")
 
 # This function uses the above isJpgOrPngURL() to check if the URL is valid,

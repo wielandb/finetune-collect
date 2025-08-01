@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-const GRADER_SCENE := preload("res://scenes/graders/grader_container.tscn")
+@onready var GRADER_SCENE: PackedScene = load(get_script().resource_path.get_base_dir().path_join("grader_container.tscn"))
 
 func _ready() -> void:
 	pass

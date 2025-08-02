@@ -16,7 +16,6 @@ script = ExtResource("1_wkgte")
 [node name="NameContainer" parent="." instance=ExtResource("1_xre7k")]
 layout_mode = 2
 
-
 [node name="MessagesLabel" type="Label" parent="."]
 layout_mode = 2
 text = "Messages:"

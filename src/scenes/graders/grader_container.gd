@@ -46,6 +46,13 @@ func verify_grader() -> bool:
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)
+	var error_label := $ErrorMessageLabel
+	if response.has("error"):
+		error_label.text = response.get("error", {}).get("message", "")
+		error_label.visible = true
+	else:
+		error_label.text = ""
+		error_label.visible = false
 
 func _on_verify_timeout() -> void:
 	verify_grader()

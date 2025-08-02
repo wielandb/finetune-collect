@@ -42,6 +42,22 @@ msgstr ""
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 msgstr ""
 
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_NOT_VERIFIED_YET"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_VERIFYING"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_VERIFIED"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_VERIFICATION_ERROR"
+msgstr ""
+
 #: scenes/parameter.tscn
 msgid "String"
 msgstr ""

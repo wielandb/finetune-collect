@@ -56,7 +56,7 @@ func verify_grader() -> bool:
 		else:
 			_status_label.text = tr("GRADER_VERIFICATION_ERROR")
 			_spinner.visible = false
-		return true
+	return true
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)

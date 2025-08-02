@@ -21,6 +21,8 @@ func _ready() -> void:
 	_verify_timer.connect("timeout", Callable(self, "_on_verify_timeout"))
 	if openai and not openai.is_connected("grader_validation_completed", Callable(self, "_on_grader_validation_completed")):
 		openai.connect("grader_validation_completed", Callable(self, "_on_grader_validation_completed"))
+	$GraderSettingsContainer/Spinner.visible = false
+	$GraderSettingsContainer/GraderVerificationStatus.text = tr("GRADER_NOT_VERIFIED_YET")
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
@@ -41,18 +43,23 @@ func verify_grader() -> bool:
 		var data = grader.to_var()
 		print(data)
 		if openai:
+			$GraderSettingsContainer/Spinner.visible = true
+			$GraderSettingsContainer/GraderVerificationStatus.text = tr("GRADER_VERIFYING")
 			openai.validate_grader(data)
 	return true
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)
+	$GraderSettingsContainer/Spinner.visible = false
 	var error_label := $ErrorMessageLabel
 	if response.has("error"):
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
+		$GraderSettingsContainer/GraderVerificationStatus.text = tr("GRADER_VERIFICATION_ERROR")
 	else:
 		error_label.text = ""
 		error_label.visible = false
+		$GraderSettingsContainer/GraderVerificationStatus.text = tr("GRADER_VERIFIED")
 
 func _on_verify_timeout() -> void:
 	verify_grader()

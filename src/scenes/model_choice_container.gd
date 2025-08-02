@@ -15,9 +15,12 @@ var model_name: String:
 
 func refresh_models():
 	$ModelOptionButton.clear()
+	availablemodelslist.clear()
 	for modelname in settingsdict.get("availableModels", []):
-		$ModelOptionButton.add_item(modelname)
-		
-	
+		if not availablemodelslist.has(modelname):
+			availablemodelslist.append(modelname)
+			$ModelOptionButton.add_item(modelname)
+	settingsdict["availableModels"] = availablemodelslist
+
 func _ready() -> void:
 	refresh_models()

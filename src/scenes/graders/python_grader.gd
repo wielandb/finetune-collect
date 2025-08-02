@@ -12,3 +12,6 @@ func to_var():
 func from_var(grader_data):
 	$NameContainer.grader_name = grader_data.get("name", "")
 	$MarginContainer/PythonEdit.text = grader_data.get("source", "")
+
+func is_form_ready() -> bool:
+	return $NameContainer.grader_name != "" and $MarginContainer/PythonEdit.text != ""

@@ -37,6 +37,17 @@ func from_var(grader_data):
 			$LabelsList.add_item(label, passing_icon)
 		else:
 			$LabelsList.add_item(label)
+
+func is_form_ready() -> bool:
+	if $NameContainer.grader_name == "" or $ModelContainer.model_name == "":
+		return false
+	if $LabelsList.item_count == 0:
+		return false
+	for child in $MessagesContainer.get_children():
+		var msg = child.get_node_or_null("Message")
+		if msg:
+			return true
+	return false
 			
 
 func _on_labels_list_item_activated(index: int) -> void:

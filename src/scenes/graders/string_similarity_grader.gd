@@ -17,3 +17,11 @@ func to_var():
 	me["input"] = $InputContainer/InputEdit.text
 	me["reference"] = $ReferenceContainer/ReferenceEdit.text
 	return me
+
+func is_form_ready() -> bool:
+	return (
+		$NameContainer.grader_name != "" and
+		$InputContainer/InputEdit.text != "" and
+		$ReferenceContainer/ReferenceEdit.text != "" and
+		$EvaluationMetricContainer/EvaluationMetricOptionButton.selected >= 0
+	)

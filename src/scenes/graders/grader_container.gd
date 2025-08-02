@@ -46,17 +46,24 @@ func verify_grader() -> bool:
 	_use_button.disabled = true
 	_use_button.button_pressed = false
 	var grader = $ActualGraderContainer/GraderMarginContainer.get_child(0) if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0 else null
-	if grader and grader.has_method("to_var"):
-		var data = grader.to_var()
-		print(data)
-		if openai:
-			_spinner.visible = true
-			_status_label.text = tr("GRADER_VERIFYING")
-			openai.validate_grader(data)
-		else:
-			_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+	if grader:
+		if grader.has_method("is_form_ready") and not grader.is_form_ready():
+			_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
 			_spinner.visible = false
-		return true
+			return false
+		if grader.has_method("to_var"):
+			var data = grader.to_var()
+			print(data)
+			if openai:
+				_spinner.visible = true
+				_status_label.text = tr("GRADER_VERIFYING")
+				openai.validate_grader(data)
+			else:
+				_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+				_spinner.visible = false
+			return true
+	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
+	return false
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)

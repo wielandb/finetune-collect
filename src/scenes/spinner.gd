@@ -1,6 +1,8 @@
 @tool
 extends TextureRect
 
+@export var spin := true
+
 var textures := []
 var texture_index := 0
 const TEXTURE_DIR := "res://icons/polling"
@@ -10,7 +12,7 @@ func _ready() -> void:
 		textures.append(load("%s/reload-custom_%d.png" % [TEXTURE_DIR, i]))
 
 func _process(delta: float) -> void:
-	if visible:
+	if spin and visible:
 		texture = textures[texture_index]
 		texture_index += 1
 		if texture_index >= textures.size():

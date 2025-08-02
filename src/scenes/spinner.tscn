@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://bcc2q2aitqhiy"]
+
+[ext_resource type="Texture2D" uid="uid://wk16kstrp6in" path="res://icons/polling/reload-custom_1.png" id="1_78gc6"]
+[ext_resource type="Script" uid="uid://bgn8twhr5l2gy" path="res://scenes/spinner.gd" id="2_kry60"]
+
+[node name="Spinner" type="TextureRect"]
+texture = ExtResource("1_78gc6")
+stretch_mode = 3
+script = ExtResource("2_kry60")

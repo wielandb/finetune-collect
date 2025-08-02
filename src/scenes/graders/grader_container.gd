@@ -32,6 +32,7 @@ func _on_delete_button_pressed() -> void:
 	queue_free()
 
 func verify_grader() -> bool:
+	print("Verifying grader!")
 	return true
 
 func _on_verify_timeout() -> void:
@@ -54,4 +55,3 @@ func _connect_gui_input_signals(node: Node) -> void:
 		node.connect("child_entered_tree", Callable(self, "_on_child_entered"))
 	for child in node.get_children():
 		_connect_gui_input_signals(child)
-

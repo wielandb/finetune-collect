@@ -54,6 +54,12 @@ popup/item_5/id = 5
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="GraderMarginContainer" type="MarginContainer" parent="ActualGraderContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 5
 [node name="GraderSettingsContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 

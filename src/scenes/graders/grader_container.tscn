@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bxjaykkfeey4u"]
+[gd_scene load_steps=5 format=3 uid="uid://bxjaykkfeey4u"]
 
 [ext_resource type="Script" uid="uid://cn0tv0hrxm7bj" path="res://scenes/graders/grader_container.gd" id="1_grdc"]
+[ext_resource type="Texture2D" uid="uid://wk16kstrp6in" path="res://icons/polling/reload-custom_1.png" id="2_kgw4v"]
+[ext_resource type="Script" uid="uid://bgn8twhr5l2gy" path="res://scenes/spinner.gd" id="3_a4vgf"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_b487k"]
 color = Color(0.266575, 0.266575, 0.266575, 1)
@@ -58,6 +60,12 @@ layout_mode = 2
 [node name="GraderVerificationStatus" type="Label" parent="GraderSettingsContainer"]
 layout_mode = 2
 text = "Grader verified!"
+
+[node name="Spinner" type="TextureRect" parent="GraderSettingsContainer"]
+layout_mode = 2
+texture = ExtResource("2_kgw4v")
+stretch_mode = 3
+script = ExtResource("3_a4vgf")
 
 [node name="UseThisGraderButton" type="CheckBox" parent="GraderSettingsContainer"]
 layout_mode = 2

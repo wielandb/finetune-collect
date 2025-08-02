@@ -98,6 +98,7 @@ func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: S
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
+	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
 	for m in models:
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)
 # Called every frame. 'delta' is the elapsed time since the previous frame.

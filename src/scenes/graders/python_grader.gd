@@ -3,7 +3,7 @@ extends VBoxContainer
 func to_var():
 	var me = {}
 	me["name"] = $NameContainer.grader_name
-	me["image_tag"] = "latest"
+	me["image_tag"] = "2025-05-08"
 	me["type"] = "python"
 	me["source"] = $MarginContainer/PythonEdit.text
 	return me

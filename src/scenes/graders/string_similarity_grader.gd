@@ -8,8 +8,7 @@ func from_var(grader_data):
 	for optix in $EvaluationMetricContainer/EvaluationMetricOptionButton.item_count:
 		if $EvaluationMetricContainer/EvaluationMetricOptionButton.get_item_text() == grader_data.get("evaluation_metric", "THISWILLNEVERBETRUE"):
 			$EvaluationMetricContainer/EvaluationMetricOptionButton.select(optix)
-	
-	
+
 func to_var():
 	var me = {}
 	me["type"] = "text_similarity"

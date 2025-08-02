@@ -9,7 +9,7 @@ func to_var():
 	me["range"] = [float($RangeContainer/RangeFromEdit.text), float($RangeContainer/RangeToEdit.text)]
 	me["sampling_params"] = {
 		"temperature": float($SamplingParametersContainer/TemperatureEdit.text),
-		"top_p": float($SamplingParametersContainer/TopPEdit.tetx),
+		"top_p": float($SamplingParametersContainer/TopPEdit.text),
 		"seed": int($SamplingParametersContainer/SeedEdit.text)
 	}
 	return me

@@ -11,6 +11,7 @@ extends VBoxContainer
 
 var _verify_timer: Timer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
+var _grader: Grader
 @onready var _status_label: Label = $GraderSettingsContainer/GraderVerificationStatus
 @onready var _spinner: Control = $GraderSettingsContainer/Spinner
 @onready var _use_button: CheckBox = $GraderSettingsContainer/UseThisGraderButton
@@ -22,8 +23,9 @@ func _ready() -> void:
 	_verify_timer.wait_time = 2.0
 	add_child(_verify_timer)
 	_verify_timer.connect("timeout", Callable(self, "_on_verify_timeout"))
-	if openai and not openai.is_connected("grader_validation_completed", Callable(self, "_on_grader_validation_completed")):
-		openai.connect("grader_validation_completed", Callable(self, "_on_grader_validation_completed"))
+	if openai:
+		_grader = openai.create_grader()
+		_grader.validation_completed.connect(Callable(self, "_on_grader_validation_completed"))
 	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
 	_spinner.visible = false
 	_use_button.disabled = true
@@ -41,6 +43,10 @@ func _on_grader_type_option_button_item_selected(index: int) -> void:
 func _on_delete_button_pressed() -> void:
 	queue_free()
 
+func _exit_tree() -> void:
+	if _grader:
+		_grader.queue_free()
+
 func verify_grader() -> bool:
 	print("Verifying grader!")
 	_use_button.disabled = true
@@ -49,10 +55,10 @@ func verify_grader() -> bool:
 	if grader and grader.has_method("to_var"):
 		var data = grader.to_var()
 		print(data)
-		if openai:
+		if _grader:
 			_spinner.visible = true
 			_status_label.text = tr("GRADER_VERIFYING")
-			openai.validate_grader(data)
+			_grader.validate_grader(data)
 		else:
 			_status_label.text = tr("GRADER_VERIFICATION_ERROR")
 			_spinner.visible = false

@@ -49,6 +49,11 @@ func validate_grader(grader_obj: Dictionary, url: String = "https://api.openai.c
 
 	grader.validate_grader(grader_obj, url)
 
+func create_grader() -> Grader:
+	var g: Grader = grader_inst.instantiate()
+	add_child(g)
+	return g
+
 func get_api() -> String:
 	if openai_api_key.is_empty():
 		push_error("Insert your OpenAi api key!")

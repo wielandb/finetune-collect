@@ -177,13 +177,14 @@ func to_grader_var():
 			}
 			return gradermessage
 		if mevar["type"] == "Image":
+			var image_detail_map = {0: "high", 1: "low", 2: "auto"}
 			gradermessage = {
 				"type": "message",
 				"role": "user",
 				"content": {
 					"type": "input_image",
 					"image_url": mevar["imageContent"],
-					"detail": "auto" ## This should be changed to reflect the set detail
+					"detail": image_detail_map.get(int(mevar.get("imageDetail", 0)), "high")
 				}
 			}
 			return gradermessage
@@ -235,7 +236,39 @@ func to_grader_var():
 		}
 
 func from_grader_var(gradermessage):
-	pass
+	var role = gradermessage.get("role", "user")
+	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, role))
+	_on_role_item_selected($MessageSettingsContainer/Role.selected)
+	var content = gradermessage.get("content", {})
+	var content_type = content.get("type", "")
+	if role == "user":
+		if content_type == "input_text":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			$TextMessageContainer/Message.text = content.get("text", "")
+		elif content_type == "input_image":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Image"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			var img = content.get("image_url", "")
+			$ImageMessageContainer/Base64ImageEdit.text = img
+			var image_detail_map = {"high":0, "low":1, "auto":2}
+			$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(image_detail_map.get(content.get("detail", "high"), 0))
+			if img != "":
+				if isImageURL(img) or img.begins_with("http://") or img.begins_with("https://"):
+					load_image_container_from_url(img)
+				else:
+					base64_to_image($ImageMessageContainer/TextureRect, img)
+			maybe_upload_base64_image()
+	elif role == "system":
+		if content_type == "input_text":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			$TextMessageContainer/Message.text = content.get("text", "")
+	elif role == "assistant":
+		if content_type == "output_text":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			$TextMessageContainer/Message.text = content.get("text", "")
 
 
 

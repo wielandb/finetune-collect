@@ -10,6 +10,7 @@ extends VBoxContainer
 ]
 
 var _verify_timer: Timer
+@onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
 func _ready() -> void:
 	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
@@ -18,6 +19,8 @@ func _ready() -> void:
 	_verify_timer.wait_time = 2.0
 	add_child(_verify_timer)
 	_verify_timer.connect("timeout", Callable(self, "_on_verify_timeout"))
+	if openai and not openai.is_connected("grader_validation_completed", Callable(self, "_on_grader_validation_completed")):
+		openai.connect("grader_validation_completed", Callable(self, "_on_grader_validation_completed"))
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
@@ -37,7 +40,12 @@ func verify_grader() -> bool:
 	if grader and grader.has_method("to_var"):
 		var data = grader.to_var()
 		print(data)
+		if openai:
+			openai.validate_grader(data)
 	return true
+
+func _on_grader_validation_completed(response: Dictionary) -> void:
+	print(response)
 
 func _on_verify_timeout() -> void:
 	verify_grader()

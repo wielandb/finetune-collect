@@ -160,7 +160,86 @@ func from_var(data):
 	#	$FunctionMessageContainer.move_child(resultInstance, resultsSectionLabelIx)
 	#	resultInstance.from_var(d)
 		
-	
+
+## Functions for if the message object is part of a grader
+func to_grader_var():
+	var mevar = to_var()
+	var gradermessage = {}
+	if mevar["role"] == "user":
+		if mevar["type"] == "Text":
+			gradermessage = {
+				"type": "message",
+				"role": "user",
+				"content": {
+					"type": "input_text",
+					"text" : mevar["textContent"]
+				}
+			}
+			return gradermessage
+		if mevar["type"] == "Image":
+			gradermessage = {
+				"type": "message",
+				"role": "user",
+				"content": {
+					"type": "input_image",
+					"image_url": mevar["imageContent"],
+					"detail": "auto" ## This should be changed to reflect the set detail
+				}
+			}
+			return gradermessage
+		return {
+			"type": "message",
+			"role": "user",
+			"content": {
+				"type": "input_text",
+				"text": "[A UNSUPPORTED MESSAGE TYPE WAS OMITTED]"
+			}
+		}
+	if mevar["role"] == "system":
+		if mevar["type"] == "Text":
+			gradermessage = {
+				"type": "message",
+				"role": "system",
+				"content": {
+					"type": "input_text",
+					"text": mevar["textContent"]
+				}
+			}
+			return gradermessage
+		return {
+			"type": "message",
+			"role": "system",
+			"content": {
+				"type": "input_text",
+				"text": "[A UNSUPPORTED MESSAGE TYPE WAS OMITTED]"
+			}
+		}
+	if mevar["role"] == "assistant":
+		if mevar["type"] == "Text":
+			gradermessage = {
+				"type": "message",
+				"role": "assistant",
+				"content": {
+					"type": "output_text",
+					"text": mevar["textContent"]
+				}
+			}
+			return gradermessage
+		return {
+			"type": "message",
+			"role": "assistant",
+			"content": {
+				"type": "input_text",
+				"text": "[A UNSUPPORTED MESSAGE TYPE WAS OMITTED]"
+			}
+		}
+
+func from_grader_var(gradermessage):
+	pass
+
+
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	print("Init Message object")

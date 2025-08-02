@@ -44,7 +44,6 @@ func _on_delete_button_pressed() -> void:
 func verify_grader() -> bool:
 	print("Verifying grader!")
 	_use_button.disabled = true
-	_use_button.button_pressed = false
 	var grader = $ActualGraderContainer/GraderMarginContainer.get_child(0) if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0 else null
 	if grader and grader.has_method("to_var"):
 		var data = grader.to_var()
@@ -56,7 +55,12 @@ func verify_grader() -> bool:
 		else:
 			_status_label.text = tr("GRADER_VERIFICATION_ERROR")
 			_spinner.visible = false
+			_use_button.button_pressed = false
 		return true
+	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+	_spinner.visible = false
+	_use_button.button_pressed = false
+	return false
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)

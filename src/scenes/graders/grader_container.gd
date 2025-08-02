@@ -22,4 +22,6 @@ func _on_grader_type_option_button_item_selected(index: int) -> void:
 
 func _on_delete_button_pressed() -> void:
 	queue_free()
-
+	
+func verify_grader() -> bool:
+	return true

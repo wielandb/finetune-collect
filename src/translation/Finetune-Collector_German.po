@@ -1002,19 +1002,3 @@ msgstr "Geheimer Schlüssel"
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
 msgstr "Der geheime Schlüssel, der in der upload-image.php festgelegt wurde"
 
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_NOT_VERIFIED_YET"
-msgstr "Grader noch nicht verifiziert"
-
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_VERIFYING"
-msgstr "Grader wird verifiziert..."
-
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_VERIFIED"
-msgstr "Grader verifiziert!"
-
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_VERIFICATION_ERROR"
-msgstr "Grader-Verifizierung fehlgeschlagen"
-

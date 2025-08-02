@@ -984,19 +984,3 @@ msgstr "Secret key"
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
 msgstr "The secret key you've set in the upload-image.php file"
 
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_NOT_VERIFIED_YET"
-msgstr "Grader not verified yet"
-
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_VERIFYING"
-msgstr "Verifying grader..."
-
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_VERIFIED"
-msgstr "Grader verified!"
-
-#: scenes/graders/grader_container.tscn
-msgid "GRADER_VERIFICATION_ERROR"
-msgstr "Grader verification failed"
-

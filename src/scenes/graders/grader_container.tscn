@@ -65,13 +65,11 @@ layout_mode = 2
 
 [node name="GraderVerificationStatus" type="Label" parent="GraderSettingsContainer"]
 layout_mode = 2
-text = ""
+text = "Grader verified!"
 
 [node name="Spinner" parent="GraderSettingsContainer" instance=ExtResource("2_kgw4v")]
 visible = false
 layout_mode = 2
-visible = false
-texture = ExtResource("3_kgw4v")
 
 [node name="UseThisGraderButton" type="CheckBox" parent="GraderSettingsContainer"]
 layout_mode = 2

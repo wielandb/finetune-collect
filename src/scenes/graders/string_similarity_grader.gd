@@ -1,0 +1,20 @@
+extends VBoxContainer
+
+func from_var(grader_data):
+	$NameContainer.grader_name = grader_data.get("name", "")
+	$InputContainer/InputEdit.text = grader_data.get("input", "")
+	$ReferenceContainer/ReferenceEdit.text = grader_data.get("reference", "")
+	$EvaluationMetricContainer/EvaluationMetricOptionButton.select(-1)
+	for optix in $EvaluationMetricContainer/EvaluationMetricOptionButton.item_count:
+		if $EvaluationMetricContainer/EvaluationMetricOptionButton.get_item_text() == grader_data.get("evaluation_metric", "THISWILLNEVERBETRUE"):
+			$EvaluationMetricContainer/EvaluationMetricOptionButton.select(optix)
+	
+	
+func to_var():
+	var me = {}
+	me["type"] = "text_similarity"
+	me["name"] = $NameContainer.grader_name
+	me["evaluation_metric"] = $EvaluationMetricContainer/EvaluationMetricOptionButton.get_item_text($EvaluationMetricContainer/EvaluationMetricOptionButton.selected)
+	me["input"] = $InputContainer/InputEdit.text
+	me["reference"] = $ReferenceContainer/ReferenceEdit.text
+	return me

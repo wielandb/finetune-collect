@@ -20,6 +20,7 @@ func to_var():
 		me["labels"].append($LabelsList.get_item_text(labelix))
 		if $LabelsList.get_item_icon(labelix) != null:
 			me["passing_labels"].append($LabelsList.get_item_text(labelix))
+	return me
 	
 	
 func from_var(grader_data):

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://crrh08nwhteko"]
+[gd_scene load_steps=4 format=3 uid="uid://crrh08nwhteko"]
 
 [ext_resource type="FontFile" uid="uid://p0vkq2a410tm" path="res://themes/DarkTheme/Fonts/Ubuntu-L.ttf" id="1_ed0j7"]
+[ext_resource type="Script" uid="uid://cb1hmqqwt103i" path="res://scenes/graders/python_grader.gd" id="1_pj7ot"]
 [ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_ruql7"]
 
 [node name="PythonGrader" type="VBoxContainer"]
@@ -9,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_pj7ot")
 
 [node name="NameContainer" parent="." instance=ExtResource("1_ruql7")]
 layout_mode = 2

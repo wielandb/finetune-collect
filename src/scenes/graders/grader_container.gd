@@ -33,9 +33,9 @@ func _on_delete_button_pressed() -> void:
 
 func verify_grader() -> bool:
 	print("Verifying grader!")
-	var grader := $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0 ? $ActualGraderContainer/GraderMarginContainer.get_child(0) : null
+	var grader = $ActualGraderContainer/GraderMarginContainer.get_child(0) if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0 else null
 	if grader and grader.has_method("to_var"):
-		var data := grader.to_var()
+		var data = grader.to_var()
 		print(data)
 	return true
 

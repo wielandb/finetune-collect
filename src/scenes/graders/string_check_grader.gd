@@ -7,7 +7,8 @@ func to_var():
 	me["input"] = $GridContainer/InputEdit.text
 	me["reference"] = $GridContainer/ReferenceEdit.text
 	me["operation"] = $GridContainer/OperationOptionButton.get_item_text($GridContainer/OperationOptionButton.selected)
-		
+	return me
+	
 func from_var(grader_data):
 	$NameContainer.grader_name = grader_data.get("name", "")
 	$GridContainer/InputEdit.text = grader_data.get("input", "")

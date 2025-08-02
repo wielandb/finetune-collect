@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cn0tv0hrxm7bj" path="res://scenes/graders/grader_container.gd" id="1_grdc"]
 [ext_resource type="PackedScene" uid="uid://bcc2q2aitqhiy" path="res://scenes/spinner.tscn" id="2_kgw4v"]
-[ext_resource type="Texture2D" uid="uid://kal1hhut3mo7" path="res://icons/polling/reload-custom_9.png" id="3_kgw4v"]
+[ext_resource type="Texture2D" uid="uid://bv2y83iog2clj" path="res://icons/polling/reload-custom_29.png" id="3_kgw4v"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_b487k"]
 color = Color(0.266575, 0.266575, 0.266575, 1)

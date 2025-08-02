@@ -1,5 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://xfk2w5ctn8lg"]
+[gd_scene load_steps=3 format=3 uid="uid://xfk2w5ctn8lg"]
 
+[ext_resource type="Script" uid="uid://dug1ky6dovgcc" path="res://scenes/graders/string_similarity_grader.gd" id="1_db2gt"]
 [ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_fjscc"]
 
 [node name="StringSimilarityGrader" type="VBoxContainer"]
@@ -8,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_db2gt")
 
 [node name="NameContainer" parent="." instance=ExtResource("1_fjscc")]
 layout_mode = 2

@@ -74,6 +74,7 @@ layout_mode = 2
 [node name="UseThisGraderButton" type="CheckBox" parent="GraderSettingsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+disabled = true
 text = "GRADER_USE_THIS_GRADER"
 
 [node name="DeleteGraderButton" type="Button" parent="GraderSettingsContainer"]

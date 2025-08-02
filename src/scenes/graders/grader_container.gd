@@ -11,6 +11,8 @@ extends VBoxContainer
 
 var _verify_timer: Timer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
+@onready var _status_label: Label = $GraderSettingsContainer/GraderVerificationStatus
+@onready var _spinner: Control = $GraderSettingsContainer/Spinner
 
 func _ready() -> void:
 	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
@@ -21,6 +23,8 @@ func _ready() -> void:
 	_verify_timer.connect("timeout", Callable(self, "_on_verify_timeout"))
 	if openai and not openai.is_connected("grader_validation_completed", Callable(self, "_on_grader_validation_completed")):
 		openai.connect("grader_validation_completed", Callable(self, "_on_grader_validation_completed"))
+	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
+	_spinner.visible = false
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
@@ -41,18 +45,26 @@ func verify_grader() -> bool:
 		var data = grader.to_var()
 		print(data)
 		if openai:
+			_spinner.visible = true
+			_status_label.text = tr("GRADER_VERIFYING")
 			openai.validate_grader(data)
+		else:
+			_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+			_spinner.visible = false
 	return true
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)
 	var error_label := $ErrorMessageLabel
+	_spinner.visible = false
 	if response.has("error"):
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
+		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
 	else:
 		error_label.text = ""
 		error_label.visible = false
+		_status_label.text = tr("GRADER_VERIFIED")
 
 func _on_verify_timeout() -> void:
 	verify_grader()

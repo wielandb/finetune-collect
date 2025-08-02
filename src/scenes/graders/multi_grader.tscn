@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://dqovavb6mlxs0"]
+[gd_scene load_steps=3 format=3 uid="uid://dqovavb6mlxs0"]
 
 [ext_resource type="Script" uid="uid://7yjd12ebkydr" path="res://scenes/graders/multi_grader.gd" id="1_mulgr"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_2g3k8"]
+color = Color(0.288518, 0.288518, 0.288518, 1)
+thickness = 2
 
 [node name="MultiGrader" type="VBoxContainer"]
 anchors_preset = 15
@@ -40,6 +44,7 @@ text = "Add Grader"
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_2g3k8")
 
 [node name="ScoreFormulaContainer" type="HBoxContainer" parent="."]
 layout_mode = 2

@@ -34,4 +34,3 @@ func _on_add_grader_button_pressed() -> void:
 		inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
 		$GradersContainer.add_child(margin_wrapper)
 		$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
-

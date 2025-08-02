@@ -1,9 +1,9 @@
 [gd_scene load_steps=6 format=3 uid="uid://ctl1k6k56hltf"]
 
-[ext_resource type="PackedScene" uid="uid://clmrayf2uklte" path="res://scenes/message.tscn" id="1_ll3dp"]
 [ext_resource type="Script" uid="uid://w0bsmrp0foro" path="res://scenes/graders/label_model_grader.gd" id="1_unpji"]
 [ext_resource type="PackedScene" uid="uid://cukb0mp1ky25c" path="res://scenes/model_choice_container.tscn" id="2_nd5pe"]
 [ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="2_ouapk"]
+[ext_resource type="PackedScene" uid="uid://2kp64o3owv6d" path="res://scenes/graders/grader_message.tscn" id="3_ei7hj"]
 [ext_resource type="Texture2D" uid="uid://bd834aiah6wp2" path="res://icons/check-decagram-custom.png" id="4_ei7hj"]
 
 [node name="LabelModelGrader" type="VBoxContainer"]
@@ -29,7 +29,7 @@ layout_mode = 2
 theme_override_constants/margin_left = 90
 theme_override_constants/margin_right = 95
 
-[node name="Message" parent="MessagesContainer/MarginContainer" instance=ExtResource("1_ll3dp")]
+[node name="grader_message" parent="MessagesContainer/MarginContainer" instance=ExtResource("3_ei7hj")]
 layout_mode = 2
 
 [node name="MarginContainer2" type="MarginContainer" parent="MessagesContainer"]
@@ -37,7 +37,7 @@ layout_mode = 2
 theme_override_constants/margin_left = 90
 theme_override_constants/margin_right = 95
 
-[node name="Message" parent="MessagesContainer/MarginContainer2" instance=ExtResource("1_ll3dp")]
+[node name="grader_message" parent="MessagesContainer/MarginContainer2" instance=ExtResource("3_ei7hj")]
 layout_mode = 2
 
 [node name="AddMessageButton" type="Button" parent="MessagesContainer"]

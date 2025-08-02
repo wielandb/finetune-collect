@@ -13,6 +13,7 @@ var _verify_timer: Timer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 @onready var _status_label: Label = $GraderSettingsContainer/GraderVerificationStatus
 @onready var _spinner: Control = $GraderSettingsContainer/Spinner
+@onready var _use_button: CheckBox = $GraderSettingsContainer/UseThisGraderButton
 
 func _ready() -> void:
 	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
@@ -25,6 +26,8 @@ func _ready() -> void:
 		openai.connect("grader_validation_completed", Callable(self, "_on_grader_validation_completed"))
 	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
 	_spinner.visible = false
+	_use_button.disabled = true
+	_use_button.connect("toggled", Callable(self, "_on_use_this_grader_button_toggled"))
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
@@ -40,6 +43,8 @@ func _on_delete_button_pressed() -> void:
 
 func verify_grader() -> bool:
 	print("Verifying grader!")
+	_use_button.disabled = true
+	_use_button.button_pressed = false
 	var grader = $ActualGraderContainer/GraderMarginContainer.get_child(0) if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0 else null
 	if grader and grader.has_method("to_var"):
 		var data = grader.to_var()
@@ -51,7 +56,7 @@ func verify_grader() -> bool:
 		else:
 			_status_label.text = tr("GRADER_VERIFICATION_ERROR")
 			_spinner.visible = false
-	return true
+		return true
 
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)
@@ -61,10 +66,13 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
 		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+		_use_button.disabled = true
+		_use_button.button_pressed = false
 	else:
 		error_label.text = ""
 		error_label.visible = false
 		_status_label.text = tr("GRADER_VERIFIED")
+		_use_button.disabled = false
 
 func _on_verify_timeout() -> void:
 	verify_grader()
@@ -74,6 +82,16 @@ func _schedule_verify() -> void:
 
 func _on_any_gui_input(event: InputEvent) -> void:
 	_schedule_verify()
+
+func _on_use_this_grader_button_toggled(pressed: bool) -> void:
+	if pressed:
+		var list_container = get_parent()
+		if list_container:
+			for child in list_container.get_children():
+				if child != self:
+					var btn := child.get_node_or_null("GraderSettingsContainer/UseThisGraderButton")
+					if btn:
+						btn.button_pressed = false
 
 func _on_child_entered(child: Node) -> void:
 	_connect_gui_input_signals(child)

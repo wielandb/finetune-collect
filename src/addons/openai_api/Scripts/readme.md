@@ -8,6 +8,7 @@ This plugin integrates OpenAI's GPT and DALL-E APIs into Godot, allowing easy ac
 - DALL-E integration for image generation
 - Asynchronous API calls using Godot's HTTPRequest
 - Easy-to-use Message class for handling conversation context
+- Support for OpenAI graders API
 
 ## Installation
 

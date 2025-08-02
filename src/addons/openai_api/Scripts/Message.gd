@@ -149,6 +149,7 @@ func isImageURL(url: String) -> bool:
 	   # `?image=file.jpg`.
 	if url.strip_edges() == "":
 		return false
+
 	var lower_url = url.to_lower()
 
 	if lower_url.begins_with("data:"):

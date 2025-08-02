@@ -14,12 +14,12 @@ func _ready() -> void:
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
-	for child in $ActualGraderContainer.get_children():
+	for child in $ActualGraderContainer/GraderMarginContainer.get_children():
 		child.queue_free()
 	if index >= 0 and index < GRADER_SCENES.size():
 		var inst = GRADER_SCENES[index].instantiate()
-		$ActualGraderContainer.add_child(inst)
-
+		$ActualGraderContainer/GraderMarginContainer.add_child(inst)
 
 func _on_delete_button_pressed() -> void:
 	queue_free()
+

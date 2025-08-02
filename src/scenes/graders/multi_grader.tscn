@@ -14,7 +14,27 @@ script = ExtResource("1_mulgr")
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="AddGraderButton" type="Button" parent="GradersContainer"]
+[node name="AddGraderControls" type="HBoxContainer" parent="GradersContainer"]
+layout_mode = 2
+
+[node name="GraderTypeOptionButton" type="OptionButton" parent="GradersContainer/AddGraderControls"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 6
+popup/item_0/text = "String Check Grader"
+popup/item_0/id = 0
+popup/item_1/text = "String Similarity Grader"
+popup/item_1/id = 1
+popup/item_2/text = "Score Model Grader"
+popup/item_2/id = 2
+popup/item_3/text = "Label Model Grader"
+popup/item_3/id = 3
+popup/item_4/text = "Python Grader"
+popup/item_4/id = 4
+popup/item_5/text = "Multi Grader"
+popup/item_5/id = 5
+
+[node name="AddGraderButton" type="Button" parent="GradersContainer/AddGraderControls"]
 layout_mode = 2
 text = "Add Grader"
 
@@ -32,4 +52,4 @@ text = "Score Formula:"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[connection signal="pressed" from="GradersContainer/AddGraderButton" to="." method="_on_add_grader_button_pressed"]
+[connection signal="pressed" from="GradersContainer/AddGraderControls/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

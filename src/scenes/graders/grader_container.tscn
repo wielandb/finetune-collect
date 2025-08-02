@@ -88,9 +88,10 @@ theme_override_styles/separator = SubResource("StyleBoxLine_b487k")
 [node name="ErrorMessageLabel" type="Label" parent="."]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+visible = false
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-text = "Image inputs are not supported for grader model: gpt-4-0613. Try again with a vision model. To find out which models are vision-enabled, visit our our models documentation: https://platform.openai.com/docs/models"
+text = ""
 autowrap_mode = 2
 
 [connection signal="item_selected" from="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton" to="." method="_on_grader_type_option_button_item_selected"]

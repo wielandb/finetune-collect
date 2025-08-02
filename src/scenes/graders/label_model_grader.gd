@@ -14,6 +14,11 @@ func to_var():
 	me["type"] = "label_model"
 	me["name"] = $NameContainer.grader_name
 	me["model"] = $ModelContainer.model_name
+	me["input"] = []
+	for child in $MessagesContainer.get_children():
+		var msg = child.get_node_or_null("Message")
+		if msg:
+			me["input"].append(msg.to_grader_var())
 	me["labels"] = []
 	me["passing_labels"] = []
 	for labelix in range($LabelsList.item_count):

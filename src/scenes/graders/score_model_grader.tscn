@@ -84,6 +84,7 @@ text = "Temperature: "
 
 [node name="TemperatureEdit" type="LineEdit" parent="SamplingParametersContainer"]
 layout_mode = 2
+text = "1"
 
 [node name="TopPLabel" type="Label" parent="SamplingParametersContainer"]
 layout_mode = 2
@@ -91,6 +92,7 @@ text = "Top P:"
 
 [node name="TopPEdit" type="LineEdit" parent="SamplingParametersContainer"]
 layout_mode = 2
+text = "1"
 
 [node name="SeedLabel" type="Label" parent="SamplingParametersContainer"]
 layout_mode = 2
@@ -98,5 +100,6 @@ text = "Seed:"
 
 [node name="SeedEdit" type="LineEdit" parent="SamplingParametersContainer"]
 layout_mode = 2
+text = "42"
 
 [connection signal="pressed" from="MessagesContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]

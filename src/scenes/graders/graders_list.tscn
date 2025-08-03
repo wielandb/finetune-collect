@@ -21,4 +21,32 @@ size_flags_vertical = 3
 layout_mode = 2
 text = "GRADERS_ADD_GRADER_BUTTON_TEXT"
 
+[node name="SampleItemsContainer" type="GridContainer" parent="GradersListContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="SampleItemLabel" type="Label" parent="GradersListContainer/SampleItemsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Sample Item"
+horizontal_alignment = 1
+
+[node name="SampleModelOutputLabel" type="Label" parent="GradersListContainer/SampleItemsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Sample Model Output"
+horizontal_alignment = 1
+
+[node name="SampleItemTextEdit" type="TextEdit" parent="GradersListContainer/SampleItemsContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+text = "{
+      \"reference_answer\": \"fuzzy wuzzy was a bear\"
+    }"
+
+[node name="SampleModelOutputEdit" type="TextEdit" parent="GradersListContainer/SampleItemsContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+text = "fuzzy wuzzy was a bear"
+
 [connection signal="pressed" from="GradersListContainer/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

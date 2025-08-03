@@ -15,6 +15,7 @@ var _grader: Grader
 @onready var _status_label: Label = $GraderSettingsContainer/GraderVerificationStatus
 @onready var _spinner: Control = $GraderSettingsContainer/Spinner
 @onready var _use_button: CheckBox = $GraderSettingsContainer/UseThisGraderButton
+var _last_grader_data := {}
 
 func _ready() -> void:
 	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
@@ -26,6 +27,7 @@ func _ready() -> void:
 	if openai:
 		_grader = openai.create_grader()
 		_grader.validation_completed.connect(Callable(self, "_on_grader_validation_completed"))
+		_grader.run_completed.connect(Callable(self, "_on_grader_run_completed"))
 	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
 	_spinner.visible = false
 	_use_button.disabled = true
@@ -71,6 +73,7 @@ func verify_grader() -> bool:
 	# Daten-Serialisierung und Request
 	if grader_gui and grader_gui.has_method("to_var"):
 		var data = grader_gui.to_var()
+		_last_grader_data = data
 		print(data)
 		if _grader:
 			_spinner.visible = true
@@ -101,7 +104,44 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 	else:
 		error_label.text = ""
 		error_label.visible = false
-		_status_label.text = tr("GRADER_VERIFIED")
+		if _last_grader_data and _grader:
+			_spinner.visible = true
+			_grader.run_grader(_last_grader_data, "", {})
+		else:
+			_status_label.text = tr("GRADER_VERIFIED")
+			_use_button.disabled = false
+
+func _on_grader_run_completed(response: Dictionary) -> void:
+	print(response)
+	var error_label := $ErrorMessageLabel
+	_spinner.visible = false
+	if response.has("error"):
+		error_label.text = response.get("error", {}).get("message", "")
+		error_label.visible = true
+		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+		_use_button.disabled = true
+		_use_button.button_pressed = false
+		return
+	var errors = response.get("metadata", {}).get("errors", {})
+	var messages: Array[String] = []
+	for key in errors.keys():
+		var val = errors[key]
+		if typeof(val) == TYPE_BOOL:
+			if val:
+				messages.append(str(key))
+		elif val:
+			messages.append(str(val))
+	if messages.size() > 0:
+		error_label.text = "; ".join(messages)
+		error_label.visible = true
+		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+		_use_button.disabled = true
+		_use_button.button_pressed = false
+	else:
+		error_label.text = ""
+		error_label.visible = false
+		var reward = response.get("reward", 0)
+		_status_label.text = "%s (%.3f)" % [tr("GRADER_VERIFIED"), reward]
 		_use_button.disabled = false
 
 func _on_verify_timeout() -> void:

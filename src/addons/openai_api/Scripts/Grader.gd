@@ -18,7 +18,7 @@ func _ready():
 	add_child(http_request_validate)
 	http_request_validate.request_completed.connect(self._validate_request_completed)
 
-func run_grader(grader: Dictionary, model_sample: String, item: Dictionary = {}, url: String = "https://api.openai.com/v1/fine_tuning/alpha/graders/run"):
+func run_grader(grader: Dictionary, model_sample, item = null, url: String = "https://api.openai.com/v1/fine_tuning/alpha/graders/run"):
 	var openai_api_key = parent.get_api()
 	if !openai_api_key:
 		return
@@ -30,8 +30,15 @@ func run_grader(grader: Dictionary, model_sample: String, item: Dictionary = {},
 		"grader": grader,
 		"model_sample": model_sample
 	}
-	if !item.is_empty():
-		body["item"] = item
+	if item != null:
+		if item is String:
+			if item != "":
+				body["item"] = item
+		elif item is Dictionary:
+			if !item.is_empty():
+				body["item"] = item
+		else:
+			body["item"] = item
 	var json = JSON.new()
 	var body_json = json.stringify(body)
 	var error = http_request_run.request(url, headers, HTTPClient.METHOD_POST, body_json)

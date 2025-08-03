@@ -35,13 +35,10 @@ func prompt_dalle(prompt:String, resolution:String = "1024x1024", model: String 
 		
 	dalle.prompt_dalle(prompt,resolution,model,url)
 
-func run_grader(grader_obj: Dictionary, model_sample: String, item: Dictionary = {}, url: String = "https://api.openai.com/v1/fine_tuning/alpha/graders/run"):
-
+func run_grader(grader_obj: Dictionary, model_sample, item = null, url: String = "https://api.openai.com/v1/fine_tuning/alpha/graders/run"):
 	while !grader:
 		await get_tree().create_timer(0.2).timeout
-
 	grader.run_grader(grader_obj, model_sample, item, url)
-
 func validate_grader(grader_obj: Dictionary, url: String = "https://api.openai.com/v1/fine_tuning/alpha/graders/validate"):
 
 	while !grader:

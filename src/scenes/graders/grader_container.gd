@@ -91,6 +91,16 @@ func verify_grader() -> bool:
 	_use_button.button_pressed = false
 	return false
 
+func _parse_json_or_string(text: String):
+	var stripped = text.strip_edges()
+	if stripped == "":
+		return ""
+	var json = JSON.new()
+	var err = json.parse(stripped)
+	if err == OK:
+		return json.get_data()
+	return stripped
+
 func _on_grader_validation_completed(response: Dictionary) -> void:
 	print(response)
 	var error_label := $ErrorMessageLabel
@@ -106,7 +116,17 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 		error_label.visible = false
 		if _last_grader_data and _grader:
 			_spinner.visible = true
-			_grader.run_grader(_last_grader_data, "", {})
+			var list_container = get_parent()
+			var model_sample = ""
+			var item = null
+			if list_container:
+				var model_node = list_container.get_node_or_null("SampleItemsContainer/SampleModelOutputEdit")
+				if model_node:
+					model_sample = _parse_json_or_string(model_node.text)
+				var item_node = list_container.get_node_or_null("SampleItemsContainer/SampleItemTextEdit")
+				if item_node:
+					item = _parse_json_or_string(item_node.text)
+			_grader.run_grader(_last_grader_data, model_sample, item)
 		else:
 			_status_label.text = tr("GRADER_VERIFIED")
 			_use_button.disabled = false

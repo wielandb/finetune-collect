@@ -50,9 +50,21 @@ func _exit_tree() -> void:
 func verify_grader() -> bool:
 	print("Verifying grader!")
 	_use_button.disabled = true
-	var grader = $ActualGraderContainer/GraderMarginContainer.get_child(0) if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0 else null
-	if grader and grader.has_method("to_var"):
-		var data = grader.to_var()
+
+	var grader_gui = null
+	if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0:
+		grader_gui = $ActualGraderContainer/GraderMarginContainer.get_child(0)
+
+	# Form-Validierung, falls vorhanden
+	if grader_gui and grader_gui.has_method("is_form_ready"):
+		if not grader_gui.is_form_ready():
+			_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
+			_spinner.visible = false
+			return false
+
+	# Daten-Serialisierung und Request
+	if grader_gui and grader_gui.has_method("to_var"):
+		var data = grader_gui.to_var()
 		print(data)
 		if _grader:
 			_spinner.visible = true
@@ -63,6 +75,8 @@ func verify_grader() -> bool:
 			_spinner.visible = false
 			_use_button.button_pressed = false
 		return true
+
+	# Standard-Fehlerfall
 	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
 	_spinner.visible = false
 	_use_button.button_pressed = false

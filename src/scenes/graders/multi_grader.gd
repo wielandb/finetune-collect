@@ -74,8 +74,25 @@ func from_var(grader_data):
 			inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
 			$GradersContainer.add_child(margin_wrapper)
 			$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
-			if inst.has_method("from_var"):
+		if inst.has_method("from_var"):
 				inst.from_var(sub)
+
+func is_form_ready() -> bool:
+	var name_container = get_node_or_null("NameContainer")
+	if name_container and name_container.grader_name == "":
+		return false
+	if $ScoreFormulaContainer/ScoreFormulaEdit.text == "":
+		return false
+	var has_sub := false
+	for child in $GradersContainer.get_children():
+		if child.name == "AddGraderControls":
+			continue
+		var container = child.get_child(0)
+		var grader = container.get_child(0)
+		if grader.has_method("is_form_ready") and not grader.is_form_ready():
+			return false
+		has_sub = true
+	return has_sub
 
 func _on_add_grader_button_pressed() -> void:
 	var index := _grader_type_option_button.selected

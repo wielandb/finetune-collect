@@ -113,6 +113,9 @@ func _schedule_verify() -> void:
 func _on_any_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		return
+	if event is InputEventMouseButton:
+		if event.button_index in [MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_LEFT, MOUSE_BUTTON_WHEEL_RIGHT]:
+			return
 	_schedule_verify()
 
 func _on_use_this_grader_button_toggled(pressed: bool) -> void:

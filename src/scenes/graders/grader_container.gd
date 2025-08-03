@@ -136,3 +136,41 @@ func _connect_gui_input_signals(node: Node) -> void:
 		node.connect("child_entered_tree", Callable(self, "_on_child_entered"))
 	for child in node.get_children():
 		_connect_gui_input_signals(child)
+
+func to_var():
+	var result = {"use": _use_button.button_pressed, "grader": {}}
+	var grader_gui = null
+	if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0:
+		grader_gui = $ActualGraderContainer/GraderMarginContainer.get_child(0)
+	if grader_gui and grader_gui.has_method("to_var"):
+		result["grader"] = grader_gui.to_var()
+	return result
+
+func from_var(data):
+	_use_button.button_pressed = data.get("use", false)
+	var grader_data = data.get("grader", {})
+	var type = grader_data.get("type", "")
+	var index = 0
+	match type:
+		"string_check":
+			index = 0
+		"string_similarity":
+			index = 1
+		"score_model":
+			index = 2
+		"label_model":
+			index = 3
+		"python":
+			index = 4
+		"multi":
+			index = 5
+		_:
+			index = 0
+	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.select(index)
+	_on_grader_type_option_button_item_selected(index)
+	var grader_gui = null
+	if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0:
+		grader_gui = $ActualGraderContainer/GraderMarginContainer.get_child(0)
+	if grader_gui and grader_gui.has_method("from_var"):
+		grader_gui.from_var(grader_data)
+

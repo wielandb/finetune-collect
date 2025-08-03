@@ -20,14 +20,17 @@ func to_var():
 	me["type"] = "multi"
 	var name_container = get_node_or_null("NameContainer")
 	me["name"] = name_container.grader_name if name_container else ""
-	me["graders"] = []
+	me["graders"] = {}
 	for child in $GradersContainer.get_children():
 		if child.name == "AddGraderControls":
 			continue
 		var container = child.get_child(0)
 		var grader = container.get_child(0)
 		if grader.has_method("to_var"):
-			me["graders"].append(grader.to_var())
+			var gvar = grader.to_var()
+			var var_name = gvar.get("name", "")
+			if var_name != "":
+				me["graders"][var_name] = gvar
 	me["calculate_output"] = $ScoreFormulaContainer/ScoreFormulaEdit.text
 	return me
 
@@ -39,7 +42,10 @@ func from_var(grader_data):
 	for child in $GradersContainer.get_children():
 		if child.name != "AddGraderControls":
 			child.queue_free()
-	for sub in grader_data.get("graders", []):
+	for key in grader_data.get("graders", {}).keys():
+		var sub = grader_data["graders"][key]
+		if not sub.has("name"):
+			sub["name"] = key
 		var type = sub.get("type", "")
 		var index = -1
 		match type:
@@ -75,7 +81,7 @@ func from_var(grader_data):
 			$GradersContainer.add_child(margin_wrapper)
 			$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
 			if inst.has_method("from_var"):
-					inst.from_var(sub)
+				inst.from_var(sub)
 
 func is_form_ready() -> bool:
 	var name_container = get_node_or_null("NameContainer")

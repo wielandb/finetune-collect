@@ -20,7 +20,7 @@ func _ready() -> void:
 	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
 	_verify_timer = Timer.new()
 	_verify_timer.one_shot = true
-	_verify_timer.wait_time = 0.75
+	_verify_timer.wait_time = 2.0
 	add_child(_verify_timer)
 	_verify_timer.connect("timeout", Callable(self, "_on_verify_timeout"))
 	if openai:

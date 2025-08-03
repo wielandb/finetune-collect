@@ -73,8 +73,11 @@ func from_var(grader_data):
 			var inst := GRADER_SCENES[index].instantiate()
 			container.add_child(inst)
 			var delete_button := Button.new()
-			delete_button.text = "Delete Grader"
+			delete_button.text = tr("GRADER_DELETE_GRADER")
+			delete_button.icon = load("res://icons/trashcan_small.png")
 			delete_button.connect("pressed", Callable(margin_wrapper, "queue_free"))
+			delete_button.connect("mouse_entered", Callable(self, "_on_delete_button_mouse_entered").bind(delete_button))
+			delete_button.connect("mouse_exited", Callable(self, "_on_delete_button_mouse_exited").bind(delete_button))
 			container.add_child(delete_button)
 			margin_wrapper.add_child(container)
 			inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
@@ -112,10 +115,20 @@ func _on_add_grader_button_pressed() -> void:
 		var inst := GRADER_SCENES[index].instantiate()
 		container.add_child(inst)
 		var delete_button := Button.new()
-		delete_button.text = "Delete Grader"
+		delete_button.text = tr("GRADER_DELETE_GRADER")
+		delete_button.icon = load("res://icons/trashcan_small.png")
 		delete_button.connect("pressed", Callable(margin_wrapper, "queue_free"))
+		delete_button.connect("mouse_entered", Callable(self, "_on_delete_button_mouse_entered").bind(delete_button))
+		delete_button.connect("mouse_exited", Callable(self, "_on_delete_button_mouse_exited").bind(delete_button))
 		container.add_child(delete_button)
 		margin_wrapper.add_child(container)
 		inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
 		$GradersContainer.add_child(margin_wrapper)
 		$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
+
+
+func _on_delete_button_mouse_entered(button: Button) -> void:
+	button.icon = load("res://icons/trashcanOpen_small.png")
+
+func _on_delete_button_mouse_exited(button: Button) -> void:
+	button.icon = load("res://icons/trashcan_small.png")

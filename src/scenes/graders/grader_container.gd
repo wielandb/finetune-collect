@@ -58,7 +58,7 @@ func verify_grader() -> bool:
 	# Form-Validierung, falls vorhanden
 	if grader_gui and grader_gui.has_method("is_form_ready"):
 		if not grader_gui.is_form_ready():
-			_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
+			_status_label.text = tr("GRADER_NOT_COMPLETE")
 			_spinner.visible = false
 			return false
 

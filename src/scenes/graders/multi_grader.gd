@@ -74,8 +74,8 @@ func from_var(grader_data):
 			inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
 			$GradersContainer.add_child(margin_wrapper)
 			$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
-		if inst.has_method("from_var"):
-				inst.from_var(sub)
+			if inst.has_method("from_var"):
+					inst.from_var(sub)
 
 func is_form_ready() -> bool:
 	var name_container = get_node_or_null("NameContainer")

@@ -14,7 +14,11 @@ func from_var(grader_data):
 	$GridContainer/InputEdit.text = grader_data.get("input", "")
 	$GridContainer/ReferenceEdit.text = grader_data.get("reference")
 	$GridContainer/OperationOptionButton.select(0)
-	$GridContainer/OperationOptionButton.select($GridContainer/OperationOptionButton.get_item_index(grader_data.get("operation", "eq")))
+	var operation = grader_data.get("operation", "eq")
+	for i in range($GridContainer/OperationOptionButton.item_count):
+		if $GridContainer/OperationOptionButton.get_item_text(i) == operation:
+			$GridContainer/OperationOptionButton.select(i)
+			break
 
 func is_form_ready() -> bool:
 	return (

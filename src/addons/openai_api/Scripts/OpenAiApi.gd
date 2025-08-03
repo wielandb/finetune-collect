@@ -78,12 +78,15 @@ func _ready():
 	call_deferred("add_child", grader_inst.instantiate())
 	
 func _process(delta):
-	if dalle and chatgpt and models and grader:
+	if chatgpt and dalle and models and grader:
 		set_process(false)
-	if get_children() == []:
 		return
-
-	chatgpt = get_children()[0]
-	dalle = get_children()[1]
-	models = get_children()[2]
-	grader = get_children()[3]
+	for child in get_children():
+		if !chatgpt and child is ChatGpt:
+			chatgpt = child
+		elif !dalle and child is Dalle:
+			dalle = child
+		elif !models and child is Models:
+			models = child
+		elif !grader and child is Grader:
+			grader = child

@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://bigrkry77s622"]
+
+[ext_resource type="Script" uid="uid://bxa8lyrwid2u" path="res://scenes/graders/copy_able_data_container.gd" id="1_57in1"]
+[ext_resource type="Texture2D" uid="uid://dv8xnv7gi7nh4" path="res://icons/content-copy-custom.png" id="2_8hjov"]
+
+[node name="CopyAbleDataContainer" type="HBoxContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+script = ExtResource("1_57in1")
+
+[node name="CopyAbleDataContentLabel" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "exampleData"
+
+[node name="CopyButton" type="Button" parent="."]
+layout_mode = 2
+icon = ExtResource("2_8hjov")

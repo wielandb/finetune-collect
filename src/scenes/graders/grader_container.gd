@@ -173,4 +173,3 @@ func from_var(data):
 		grader_gui = $ActualGraderContainer/GraderMarginContainer.get_child(0)
 	if grader_gui and grader_gui.has_method("from_var"):
 		grader_gui.from_var(grader_data)
-

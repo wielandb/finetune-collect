@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://bxjaykkfeey4u"]
+[gd_scene load_steps=5 format=3 uid="uid://bxjaykkfeey4u"]
 
 [ext_resource type="Script" uid="uid://cn0tv0hrxm7bj" path="res://scenes/graders/grader_container.gd" id="1_grdc"]
 [ext_resource type="PackedScene" uid="uid://bcc2q2aitqhiy" path="res://scenes/spinner.tscn" id="2_kgw4v"]
+[ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="3_kgw4v"]
 
 [sub_resource type="StyleBoxLine" id="StyleBoxLine_b487k"]
 color = Color(0.266575, 0.266575, 0.266575, 1)
@@ -80,6 +81,7 @@ text = "GRADER_USE_THIS_GRADER"
 [node name="DeleteGraderButton" type="Button" parent="GraderSettingsContainer"]
 layout_mode = 2
 text = "GRADER_DELETE_GRADER"
+icon = ExtResource("3_kgw4v")
 
 [node name="ErrorMessageLabel" type="Label" parent="."]
 visible = false

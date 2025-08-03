@@ -20,7 +20,7 @@ func _ready() -> void:
 	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
 	_verify_timer = Timer.new()
 	_verify_timer.one_shot = true
-	_verify_timer.wait_time = 0.75
+	_verify_timer.wait_time = 2.0
 	add_child(_verify_timer)
 	_verify_timer.connect("timeout", Callable(self, "_on_verify_timeout"))
 	if openai:
@@ -113,6 +113,9 @@ func _schedule_verify() -> void:
 func _on_any_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		return
+	if event is InputEventMouseButton:
+		if event.button_index in [MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN, MOUSE_BUTTON_WHEEL_LEFT, MOUSE_BUTTON_WHEEL_RIGHT]:
+			return
 	_schedule_verify()
 
 func _on_use_this_grader_button_toggled(pressed: bool) -> void:

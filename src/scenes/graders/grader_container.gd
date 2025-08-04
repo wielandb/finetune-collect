@@ -15,6 +15,7 @@ var _grader: Grader
 @onready var _status_label: Label = $GraderSettingsContainer/GraderVerificationStatus
 @onready var _spinner: Control = $GraderSettingsContainer/Spinner
 @onready var _use_button: CheckBox = $GraderSettingsContainer/UseThisGraderButton
+@onready var _copy_button: Button = $GraderSettingsContainer/CopyGraderToClipboardButton
 var _last_grader_data := {}
 
 func _ready() -> void:
@@ -30,8 +31,9 @@ func _ready() -> void:
 		_grader.run_completed.connect(Callable(self, "_on_grader_run_completed"))
 	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
 	_spinner.visible = false
-	_use_button.disabled = true
+	_set_grader_controls_disabled(true)
 	_use_button.connect("toggled", Callable(self, "_on_use_this_grader_button_toggled"))
+	_copy_button.connect("pressed", Callable(self, "_on_copy_grader_to_clipboard_button_pressed"))
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
@@ -57,7 +59,7 @@ func _exit_tree() -> void:
 
 func verify_grader() -> bool:
 	print("Verifying grader!")
-	_use_button.disabled = true
+	_set_grader_controls_disabled(true)
 
 	var grader_gui = null
 	if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0:
@@ -108,9 +110,9 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 	if response.has("error"):
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
-		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
-		_use_button.disabled = true
-		_use_button.button_pressed = false
+	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+	_set_grader_controls_disabled(true)
+	_use_button.button_pressed = false
 	else:
 		error_label.text = ""
 		error_label.visible = false
@@ -128,8 +130,8 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 					item = _parse_json_or_string(item_node.text)
 			_grader.run_grader(_last_grader_data, model_sample, item)
 		else:
-			_status_label.text = tr("GRADER_VERIFIED")
-			_use_button.disabled = false
+		       _status_label.text = tr("GRADER_VERIFIED")
+		       _set_grader_controls_disabled(false)
 
 func _on_grader_run_completed(response: Dictionary) -> void:
 	print(response)
@@ -138,9 +140,9 @@ func _on_grader_run_completed(response: Dictionary) -> void:
 	if response.has("error"):
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
-		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
-		_use_button.disabled = true
-		_use_button.button_pressed = false
+	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+	_set_grader_controls_disabled(true)
+	_use_button.button_pressed = false
 		return
 	var errors = response.get("metadata", {}).get("errors", {})
 	var messages: Array[String] = []
@@ -154,15 +156,15 @@ func _on_grader_run_completed(response: Dictionary) -> void:
 	if messages.size() > 0:
 		error_label.text = "; ".join(messages)
 		error_label.visible = true
-		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
-		_use_button.disabled = true
-		_use_button.button_pressed = false
+	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+	_set_grader_controls_disabled(true)
+	_use_button.button_pressed = false
 	else:
 		error_label.text = ""
 		error_label.visible = false
 		var reward = response.get("reward", 0)
-		_status_label.text = "%s (%.3f)" % [tr("GRADER_VERIFIED"), reward]
-		_use_button.disabled = false
+	_status_label.text = "%s (%.3f)" % [tr("GRADER_VERIFIED"), reward]
+	_set_grader_controls_disabled(false)
 
 func _on_verify_timeout() -> void:
 	verify_grader()
@@ -198,7 +200,14 @@ func _connect_gui_input_signals(node: Node) -> void:
 	if not node.is_connected("child_entered_tree", Callable(self, "_on_child_entered")):
 		node.connect("child_entered_tree", Callable(self, "_on_child_entered"))
 	for child in node.get_children():
-		_connect_gui_input_signals(child)
+	_connect_gui_input_signals(child)
+
+func _set_grader_controls_disabled(disabled: bool) -> void:
+	_use_button.disabled = disabled
+	_copy_button.disabled = disabled
+
+func _on_copy_grader_to_clipboard_button_pressed() -> void:
+	DisplayServer.clipboard_set(JSON.stringify(to_var()))
 
 func to_var():
 	var result = {"use": _use_button.button_pressed, "grader": {}}

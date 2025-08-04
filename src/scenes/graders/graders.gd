@@ -44,8 +44,8 @@ func from_var(graders_data):
 
 func _update_copyable_data():
 	var container = $GradersListContainer/SampleItemsContainer
-	while container.get_child_count() > 4:
-		container.get_child(4).queue_free()
+	for i in range(container.get_child_count() - 1, 3, -1):
+		container.get_child(i).queue_free()
 	var item_paths = []
 	var item_text = container.get_node("SampleItemTextEdit").text
 	var json = JSON.new()

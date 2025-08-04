@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg03wm3eel1gm"]
+[gd_scene load_steps=2 format=3 uid="uid://cg03wm3eel1gm"]
 
 [ext_resource type="Script" uid="uid://dysm5yrejge2q" path="res://scenes/graders/graders.gd" id="1_q6jjh"]
 

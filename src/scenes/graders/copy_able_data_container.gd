@@ -14,3 +14,7 @@ extends HBoxContainer
 			$CopyButton.disabled = false
 		else:
 			$CopyButton.disabled = true
+
+
+func _on_copy_button_pressed() -> void:
+	DisplayServer.clipboard_set($CopyAbleDataContentLabel.text)

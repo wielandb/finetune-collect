@@ -5,8 +5,10 @@ extends ScrollContainer
 
 func _ready():
 	var container = $GradersListContainer/SampleItemsContainer
-	container/SampleItemTextEdit.text_changed.connect(_update_copyable_data)
-	container/SampleModelOutputEdit.text_changed.connect(_update_copyable_data)
+	var item_edit = container.get_node("SampleItemTextEdit")
+	var model_edit = container.get_node("SampleModelOutputEdit")
+	item_edit.text_changed.connect(_update_copyable_data)
+	model_edit.text_changed.connect(_update_copyable_data)
 	_update_copyable_data()
 
 func _on_add_grader_button_pressed() -> void:
@@ -45,13 +47,13 @@ func _update_copyable_data():
 	while container.get_child_count() > 4:
 		container.get_child(4).queue_free()
 	var item_paths = []
-	var item_text = container/SampleItemTextEdit.text
+	var item_text = container.get_node("SampleItemTextEdit").text
 	var json = JSON.new()
 	if json.parse(item_text) == OK:
 		_collect_paths("item", json.data, item_paths)
 	var model_paths = ["{{ sample.output_text }}"]
 	json = JSON.new()
-	var model_text = container/SampleModelOutputEdit.text
+	var model_text = container.get_node("SampleModelOutputEdit").text
 	if json.parse(model_text) == OK:
 		_collect_paths("sample.output_json", json.data, model_paths)
 	var max_len = max(item_paths.size(), model_paths.size())

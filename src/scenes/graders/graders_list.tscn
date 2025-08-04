@@ -1,7 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://cg03wm3eel1gm"]
 
 [ext_resource type="Script" uid="uid://dysm5yrejge2q" path="res://scenes/graders/graders.gd" id="1_q6jjh"]
-[ext_resource type="PackedScene" uid="uid://bigrkry77s622" path="res://scenes/graders/copy_able_data_container.tscn" id="2_vpvhw"]
 
 [node name="GradersList" type="ScrollContainer"]
 anchors_preset = 15
@@ -49,23 +48,5 @@ text = "{
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 text = "fuzzy wuzzy was a bear"
-
-[node name="CopyAbleDataContainer" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
-layout_mode = 2
-
-[node name="CopyAbleDataContainer2" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
-layout_mode = 2
-
-[node name="CopyAbleDataContainer3" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
-layout_mode = 2
-
-[node name="CopyAbleDataContainer4" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
-layout_mode = 2
-
-[node name="CopyAbleDataContainer5" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
-layout_mode = 2
-
-[node name="CopyAbleDataContainer6" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
-layout_mode = 2
 
 [connection signal="pressed" from="GradersListContainer/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

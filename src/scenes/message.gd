@@ -1101,6 +1101,7 @@ func to_rft_reference_item():
 			"functionUsePreText": last_message.get("functionUsePreText", "")
 		}
 	elif last_message.get("type", "") == "Text":
+		# Include the assistant's response as the reference answer when no function call is expected.
 		correct_data["ideal_function_call_data"] = []
 		correct_data["do_function_call"] = false
 		correct_data["reference_answer"] = last_message.get("textContent", "")

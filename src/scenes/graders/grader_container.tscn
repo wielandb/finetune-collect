@@ -77,9 +77,9 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 3.0
+disabled = true
 text = "GRADER_COPY_TO_CLIPBOARD"
 icon = ExtResource("3_a4vgf")
-disabled = true
 
 [node name="UseThisGraderButton" type="CheckBox" parent="GraderSettingsContainer"]
 layout_mode = 2
@@ -105,7 +105,7 @@ layout_mode = 2
 theme_override_styles/separator = SubResource("StyleBoxLine_b487k")
 
 [connection signal="item_selected" from="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton" to="." method="_on_grader_type_option_button_item_selected"]
+[connection signal="pressed" from="GraderSettingsContainer/CopyGraderToClipboardButton" to="." method="_on_copy_grader_to_clipboard_button_pressed"]
 [connection signal="mouse_entered" from="GraderSettingsContainer/DeleteGraderButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="GraderSettingsContainer/DeleteGraderButton" to="." method="_on_delete_button_mouse_exited"]
 [connection signal="pressed" from="GraderSettingsContainer/DeleteGraderButton" to="." method="_on_delete_button_pressed"]
-[connection signal="pressed" from="GraderSettingsContainer/CopyGraderToClipboardButton" to="." method="_on_copy_grader_to_clipboard_button_pressed"]

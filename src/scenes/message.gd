@@ -1105,3 +1105,6 @@ func to_rft_reference_item():
 		correct_data["do_function_call"] = false
 		correct_data["reference_answer"] = last_message.get("textContent", "")
 	return correct_data
+
+func _on_button_pressed() -> void:
+	print(to_rft_reference_item())

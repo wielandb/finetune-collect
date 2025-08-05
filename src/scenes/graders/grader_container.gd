@@ -110,9 +110,9 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 	if response.has("error"):
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
-	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
-	_set_grader_controls_disabled(true)
-	_use_button.button_pressed = false
+		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+		_set_grader_controls_disabled(true)
+		_use_button.button_pressed = false
 	else:
 		error_label.text = ""
 		error_label.visible = false
@@ -130,8 +130,8 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 					item = _parse_json_or_string(item_node.text)
 			_grader.run_grader(_last_grader_data, model_sample, item)
 		else:
-		       _status_label.text = tr("GRADER_VERIFIED")
-		       _set_grader_controls_disabled(false)
+			_status_label.text = tr("GRADER_VERIFIED")
+			_set_grader_controls_disabled(false)
 
 func _on_grader_run_completed(response: Dictionary) -> void:
 	print(response)
@@ -140,9 +140,9 @@ func _on_grader_run_completed(response: Dictionary) -> void:
 	if response.has("error"):
 		error_label.text = response.get("error", {}).get("message", "")
 		error_label.visible = true
-	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
-	_set_grader_controls_disabled(true)
-	_use_button.button_pressed = false
+		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+		_set_grader_controls_disabled(true)
+		_use_button.button_pressed = false
 		return
 	var errors = response.get("metadata", {}).get("errors", {})
 	var messages: Array[String] = []
@@ -156,15 +156,15 @@ func _on_grader_run_completed(response: Dictionary) -> void:
 	if messages.size() > 0:
 		error_label.text = "; ".join(messages)
 		error_label.visible = true
-	_status_label.text = tr("GRADER_VERIFICATION_ERROR")
-	_set_grader_controls_disabled(true)
-	_use_button.button_pressed = false
+		_status_label.text = tr("GRADER_VERIFICATION_ERROR")
+		_set_grader_controls_disabled(true)
+		_use_button.button_pressed = false
 	else:
 		error_label.text = ""
 		error_label.visible = false
 		var reward = response.get("reward", 0)
-	_status_label.text = "%s (%.3f)" % [tr("GRADER_VERIFIED"), reward]
-	_set_grader_controls_disabled(false)
+		_status_label.text = "%s (%.3f)" % [tr("GRADER_VERIFIED"), reward]
+		_set_grader_controls_disabled(false)
 
 func _on_verify_timeout() -> void:
 	verify_grader()
@@ -200,7 +200,7 @@ func _connect_gui_input_signals(node: Node) -> void:
 	if not node.is_connected("child_entered_tree", Callable(self, "_on_child_entered")):
 		node.connect("child_entered_tree", Callable(self, "_on_child_entered"))
 	for child in node.get_children():
-	_connect_gui_input_signals(child)
+		_connect_gui_input_signals(child)
 
 func _set_grader_controls_disabled(disabled: bool) -> void:
 	_use_button.disabled = disabled

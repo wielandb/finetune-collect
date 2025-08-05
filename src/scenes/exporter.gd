@@ -323,13 +323,13 @@ func convert_rft_data(ftdata):
 		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
 		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
 		var last_message = conversation.pop_back()
-		# We need to check if the message we got is assistant + either JSON Schema or function call
+		# We need to check if the message we got is assistant + either JSON Schema, function call, or plain text
 		if last_message['role'] != "assistant":
 			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")
 			print("Last message:")
 			print(last_message)
 			continue
-		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call":
+		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
 			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
 			continue
 		var correct_data = {}
@@ -345,6 +345,10 @@ func convert_rft_data(ftdata):
 				"arguments": get_parameter_values_from_function_parameter_dict(last_message["functionParameters"]),
 				"functionUsePreText": last_message["functionUsePreText"]
 			}
+		elif last_message['type'] == "Text":
+			correct_data['ideal_function_call_data'] = []
+			correct_data['do_function_call'] = false
+			correct_data['reference_answer'] = last_message.get("textContent", "")
 		else:
 			print("Something went very wrong...")
 			continue

@@ -1071,3 +1071,41 @@ func from_openai_message(oai_msg: Dictionary):
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, role))
 	$MessageSettingsContainer/UserNameEdit.text = user_name
 	return to_var()
+
+## RFT helper functions
+func get_parameter_values_from_function_parameter_dict(fpdict):
+	var parametersAndValues = {}
+	for fp in fpdict:
+		if fp.get("parameterValueChoice", "") != "":
+			parametersAndValues[fp["name"]] = fp["parameterValueChoice"]
+		elif fp.get("parameterValueText", "") != "":
+			parametersAndValues[fp["name"]] = fp["parameterValueText"]
+		else:
+			parametersAndValues[fp["name"]] = fp.get("parameterValueNumber", 0)
+	return parametersAndValues
+
+func to_rft_reference_item():
+	var last_message = to_var()
+	var correct_data = {}
+	if last_message.get("role", "") != "assistant":
+		return correct_data
+	if last_message.get("type", "") == "JSON Schema":
+		correct_data = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
+		correct_data["ideal_function_call_data"] = []
+		correct_data["do_function_call"] = false
+	elif last_message.get("type", "") == "Function Call":
+		correct_data["do_function_call"] = true
+		correct_data["ideal_function_call_data"] = {
+			"name": last_message.get("functionName", ""),
+			"arguments": get_parameter_values_from_function_parameter_dict(last_message.get("functionParameters", [])),
+			"functionUsePreText": last_message.get("functionUsePreText", "")
+		}
+	elif last_message.get("type", "") == "Text":
+		# Include the assistant's response as the reference answer when no function call is expected.
+		correct_data["ideal_function_call_data"] = []
+		correct_data["do_function_call"] = false
+		correct_data["reference_answer"] = last_message.get("textContent", "")
+	return correct_data
+
+func _on_button_pressed() -> void:
+	print(to_rft_reference_item())

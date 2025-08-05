@@ -641,9 +641,9 @@ func create_jsonl_data_for_file():
 		0:
 			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(EFINETUNEDATA)
 		1:
-			complete_jsonl_string = $Exporter.convert_dpo_data(EFINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_dpo_data(EFINETUNEDATA)
 		2:
-			complete_jsonl_string = $Exporter.convert_rft_data(EFINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_rft_data(EFINETUNEDATA)
 	return complete_jsonl_string
 
 

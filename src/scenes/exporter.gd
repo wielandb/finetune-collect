@@ -359,7 +359,8 @@ func convert_rft_data(ftdata):
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools
-		var output_entry = correct_data
+		var output_entry = {}
+		output_entry['reference_json'] = correct_data
 		output_entry['messages'] = processed_conversation
 		# Only add tools if there are function calls in the conversation
 		# TODO: Do as the settings say

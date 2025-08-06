@@ -57,4 +57,60 @@ text = "Score Formula:"
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="ScoreFormulaHelperButtonsContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+alignment = 1
+
+[node name="AddLabel" type="Label" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "Add:"
+
+[node name="HelperButton" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "+"
+
+[node name="HelperButton2" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "-"
+
+[node name="HelperButton3" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "*"
+
+[node name="HelperButton4" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "/"
+
+[node name="HelperButton5" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "^"
+
+[node name="HelperButton6" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "min()"
+
+[node name="HelperButton7" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "max()"
+
+[node name="HelperButton8" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "abs()"
+
+[node name="HelperButton9" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "floor()"
+
+[node name="HelperButton10" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "exp()"
+
+[node name="HelperButton11" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "sqrt()"
+
+[node name="HelperButton12" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
+layout_mode = 2
+text = "log()"
+
 [connection signal="pressed" from="GradersContainer/AddGraderControls/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

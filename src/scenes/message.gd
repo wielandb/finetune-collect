@@ -1088,7 +1088,7 @@ func to_rft_reference_item():
 	var last_message = to_var()
 	var correct_data = {}
 	if last_message.get("role", "") != "assistant":
-		return correct_data
+		return {"reference_json": correct_data}
 	if last_message.get("type", "") == "JSON Schema":
 		correct_data = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
 		correct_data["ideal_function_call_data"] = []
@@ -1105,7 +1105,7 @@ func to_rft_reference_item():
 		correct_data["ideal_function_call_data"] = []
 		correct_data["do_function_call"] = false
 		correct_data["reference_answer"] = last_message.get("textContent", "")
-	return correct_data
+	return {"reference_json": correct_data}
 
 func _on_button_pressed() -> void:
 	print(to_rft_reference_item())

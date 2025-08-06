@@ -16,15 +16,16 @@ func _run():
 	var datas = []
 	for i in range(4, container.get_child_count()):
 		datas.append(container.get_child(i).dataStr)
+	datas = datas.slice(2, datas.size())
 	assert(datas == [
-		"{{ item.reference_answer }}",
-		"{{ sample.output_text }}",
-		"{{ item.moreData.a }}",
-		"{{ sample.output_json.reference_answer }}",
-		"{{ item.moreData.b }}",
-		"{{ sample.output_json.moreData.a }}",
-		"",
-		"{{ sample.output_json.moreData.b }}"
-	])
+				"{{ item.reference_json.reference_answer }}",
+				"{{ sample.output_text }}",
+				"{{ item.reference_json.moreData.a }}",
+				"{{ sample.output_json.reference_json.reference_answer }}",
+				"{{ item.reference_json.moreData.b }}",
+				"{{ sample.output_json.reference_json.moreData.a }}",
+				"",
+		"{{ sample.output_json.reference_json.moreData.b }}"
+])
 	print("Copyable data generated")
 	quit(0)

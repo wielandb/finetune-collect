@@ -50,12 +50,12 @@ func _update_copyable_data():
 	var item_text = container.get_node("SampleItemTextEdit").text
 	var json = JSON.new()
 	if json.parse(item_text) == OK:
-		_collect_paths("item", json.data, item_paths)
+		_collect_paths("item.reference_json", json.data, item_paths)
 	var model_paths = ["{{ sample.output_text }}"]
 	json = JSON.new()
 	var model_text = container.get_node("SampleModelOutputEdit").text
 	if json.parse(model_text) == OK:
-		_collect_paths("sample.output_json", json.data, model_paths)
+		_collect_paths("sample.output_json.reference_json", json.data, model_paths)
 	var max_len = max(item_paths.size(), model_paths.size())
 	for i in range(max_len):
 		var item_inst = COPYABLE_SCENE.instantiate()

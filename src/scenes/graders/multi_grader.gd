@@ -1,6 +1,5 @@
 extends VBoxContainer
 
-
 @onready var GRADER_SCENES: Array[PackedScene] = [
 	preload("res://scenes/graders/string_check_grader.tscn"),
 	preload("res://scenes/graders/string_similarity_grader.tscn"),
@@ -11,9 +10,51 @@ extends VBoxContainer
 ]
 
 @onready var _grader_type_option_button: OptionButton = $GradersContainer/AddGraderControls/GraderTypeOptionButton
+@onready var _score_formula_edit: LineEdit = $ScoreFormulaContainer/ScoreFormulaEdit
+@onready var _helper_buttons_container: HBoxContainer = $ScoreFormulaHelperButtonsContainer
 
 func _ready() -> void:
-	pass
+	for child in _helper_buttons_container.get_children():
+		if child is Button:
+			child.connect("pressed", Callable(self, "_on_helper_button_pressed").bind(child))
+	_update_grader_name_buttons()
+
+func _on_helper_button_pressed(button: Button) -> void:
+	_add_to_score_formula(button.text)
+
+func _add_to_score_formula(text: String) -> void:
+	var caret := _score_formula_edit.caret_column
+	var txt := _score_formula_edit.text
+	_score_formula_edit.text = txt.substr(0, caret) + text + txt.substr(caret)
+	_score_formula_edit.caret_column = caret + text.length()
+	_score_formula_edit.grab_focus()
+
+func _update_grader_name_buttons() -> void:
+	for child in _helper_buttons_container.get_children():
+		if child.is_in_group("grader_name_button"):
+			child.queue_free()
+	for child in $GradersContainer.get_children():
+		if child.name == "AddGraderControls":
+			continue
+		var container = child.get_child(0)
+		var grader = container.get_child(0)
+		var name_container = grader.get_node_or_null("NameContainer")
+		if name_container:
+			var name := name_container.grader_name
+			if name != "":
+				var b := Button.new()
+				b.text = name
+				b.add_to_group("grader_name_button")
+				b.connect("pressed", Callable(self, "_on_helper_button_pressed").bind(b))
+				_helper_buttons_container.add_child(b)
+
+func _connect_grader_signals(grader: Node, wrapper: Node) -> void:
+	var name_container = grader.get_node_or_null("NameContainer")
+	if name_container:
+		var name_edit: LineEdit = name_container.get_node_or_null("NameEdit")
+		if name_edit and not name_edit.is_connected("text_changed", Callable(self, "_update_grader_name_buttons")):
+			name_edit.connect("text_changed", Callable(self, "_update_grader_name_buttons"))
+	wrapper.connect("tree_exited", Callable(self, "_update_grader_name_buttons"))
 
 func to_var():
 	var me = {}
@@ -81,10 +122,12 @@ func from_var(grader_data):
 			container.add_child(delete_button)
 			margin_wrapper.add_child(container)
 			inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
+			_connect_grader_signals(inst, margin_wrapper)
 			$GradersContainer.add_child(margin_wrapper)
 			$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
 			if inst.has_method("from_var"):
 				inst.from_var(sub)
+	_update_grader_name_buttons()
 
 func is_form_ready() -> bool:
 	var name_container = get_node_or_null("NameContainer")
@@ -123,9 +166,10 @@ func _on_add_grader_button_pressed() -> void:
 		container.add_child(delete_button)
 		margin_wrapper.add_child(container)
 		inst.connect("tree_exited", Callable(margin_wrapper, "queue_free"))
+		_connect_grader_signals(inst, margin_wrapper)
 		$GradersContainer.add_child(margin_wrapper)
 		$GradersContainer.move_child($GradersContainer/AddGraderControls, -1)
-
+		_update_grader_name_buttons()
 
 func _on_delete_button_mouse_entered(button: Button) -> void:
 	button.icon = load("res://icons/trashcanOpen_small.png")

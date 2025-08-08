@@ -39,9 +39,11 @@ text = "Sample Model Output"
 horizontal_alignment = 1
 
 [node name="SwitchSampleItemSrcContainer" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
+visible = false
 layout_mode = 2
 
 [node name="SwitchSampleItemSrcContainer2" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
+visible = false
 layout_mode = 2
 
 [node name="SampleItemTextEdit" type="TextEdit" parent="GradersListContainer/SampleItemsContainer"]

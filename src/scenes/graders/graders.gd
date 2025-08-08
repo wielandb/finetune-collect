@@ -16,18 +16,22 @@ func _ready():
 	_update_copyable_data()
 
 func _on_tab_changed(tab):
-	var tab_container = get_parent().get_parent()
-	if tab_container and tab == tab_container.get_tab_idx(get_parent()):
-		update_from_last_message()
+	update_from_last_message()
 
 func update_from_last_message():
 	var messages_container = get_tree().get_root().get_node_or_null("FineTune/Conversation/Messages/MessagesList/MessagesListContainer")
 	if not messages_container:
+		print("Not messages container")
 		return
 	if messages_container.get_child_count() == 0:
+		print("Not child count")
 		return
-	var last_msg = messages_container.get_child(messages_container.get_child_count() - 1)
-	if not last_msg.has_method("to_rft_reference_item"):
+	var last_msg = null
+	for mix in messages_container.get_child_count():
+		var this_msg = messages_container.get_child(mix)
+		if this_msg.has_method("to_rft_reference_item"):
+			last_msg = this_msg
+	if last_msg == null:
 		return
 	var ref_item = last_msg.to_rft_reference_item()
 	var sample = last_msg.to_model_output_sample()

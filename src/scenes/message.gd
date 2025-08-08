@@ -1108,21 +1108,29 @@ func to_rft_reference_item():
 func to_model_output_sample():
 	var msg = to_var()
 	var sample = {"output_tools": []}
-	if msg.get("type", "") == "Text":
-		sample["output_text"] = msg.get("textContent", "")
-	elif msg.get("type", "") == "Function Call":
-		sample["output_text"] = msg.get("functionUsePreText", "")
-		var args = get_parameter_values_from_function_parameter_dict(msg.get("functionParameters", []))
-		sample["output_tools"].append({
-			"id": "call_0",
-			"type": "function",
-			"function": {
-				"name": msg.get("functionName", ""),
-				"arguments": JSON.stringify(args)
-			}
-		})
-	elif msg.get("type", "") == "JSON Schema":
-		sample["output_json"] = JSON.parse_string(msg.get("jsonSchemaValue", "{}"))
+	var text := ""
+	match msg.get("type", ""):
+		"Text":
+			text = msg.get("textContent", "")
+		"Function Call":
+			text = msg.get("functionUsePreText", "")
+			var args = get_parameter_values_from_function_parameter_dict(msg.get("functionParameters", []))
+			sample["output_tools"].append({
+				"id": "call_0",
+				"type": "function",
+				"function": {
+					"name": msg.get("functionName", ""),
+					"arguments": JSON.stringify(args)
+				}
+			})
+		"JSON Schema":
+			text = msg.get("jsonSchemaValue", "")
+		_:
+			text = msg.get("textContent", "")
+	sample["output_text"] = text
+	var parsed = JSON.parse_string(text)
+	if parsed != null and (parsed is Dictionary or parsed is Array):
+		sample["output_json"] = parsed
 	return sample
 
 func _on_button_pressed() -> void:

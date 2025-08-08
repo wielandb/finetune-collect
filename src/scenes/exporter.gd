@@ -328,39 +328,38 @@ func convert_rft_data(ftdata):
 		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
 			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
 			continue
-		var correct_data = {}
+		var reference_data = {}
+		var do_function_call = false
+		var ideal_function_call_data = []
 		if last_message['type'] == "JSON Schema":
-			# Get the value, parse it and put it into correct data, append empty function data...
-			correct_data = JSON.parse_string(last_message['jsonSchemaValue'])
-			correct_data['ideal_function_call_data'] = []
-			correct_data['do_function_call'] = false
+			reference_data = JSON.parse_string(last_message['jsonSchemaValue'])
 		elif last_message['type'] == "Function Call":
-			correct_data['do_function_call'] = true
-			correct_data['ideal_function_call_data'] = {
+			do_function_call = true
+			ideal_function_call_data = {
 				"name": last_message["functionName"],
 				"arguments": get_parameter_values_from_function_parameter_dict(last_message["functionParameters"]),
 				"functionUsePreText": last_message["functionUsePreText"]
 			}
 		elif last_message['type'] == "Text":
-			correct_data['ideal_function_call_data'] = []
-			correct_data['do_function_call'] = false
-			correct_data['reference_answer'] = last_message.get("textContent", "")
+			reference_data["reference_answer"] = last_message.get("textContent", "")
 		else:
 			print("Something went very wrong...")
 			continue
-			
+		
 		
 		var processed_conversation = []
 		if system_message:
-				processed_conversation.append({
-					'role': 'system', 
-					'content': system_message
-				})
+			processed_conversation.append({
+				'role': 'system',
+				'content': system_message
+			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools
 		var output_entry = {}
-		output_entry['reference_json'] = correct_data
+		output_entry['reference_json'] = reference_data
+		output_entry['do_function_call'] = do_function_call
+		output_entry['ideal_function_call_data'] = ideal_function_call_data
 		output_entry['messages'] = processed_conversation
 		# Only add tools if there are function calls in the conversation
 		# TODO: Do as the settings say

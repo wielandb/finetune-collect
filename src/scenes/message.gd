@@ -1086,26 +1086,28 @@ func get_parameter_values_from_function_parameter_dict(fpdict):
 
 func to_rft_reference_item():
 	var last_message = to_var()
-	var correct_data = {}
+	var reference_data = {}
+	var item = {
+		"reference_json": reference_data,
+		"ideal_function_call_data": [],
+		"do_function_call": false
+	}
 	if last_message.get("role", "") != "assistant":
-		return {"reference_json": correct_data}
+		return item
 	if last_message.get("type", "") == "JSON Schema":
-		correct_data = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
-		correct_data["ideal_function_call_data"] = []
-		correct_data["do_function_call"] = false
+		reference_data = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
+		item["reference_json"] = reference_data
 	elif last_message.get("type", "") == "Function Call":
-		correct_data["do_function_call"] = true
-		correct_data["ideal_function_call_data"] = {
-			"name": last_message.get("functionName", ""),
-			"arguments": get_parameter_values_from_function_parameter_dict(last_message.get("functionParameters", [])),
-			"functionUsePreText": last_message.get("functionUsePreText", "")
-		}
+		item["do_function_call"] = true
+		item["ideal_function_call_data"] = {
+					"name": last_message.get("functionName", ""),
+					"arguments": get_parameter_values_from_function_parameter_dict(last_message.get("functionParameters", [])),
+					"functionUsePreText": last_message.get("functionUsePreText", "")
+			}
 	elif last_message.get("type", "") == "Text":
-		# Include the assistant's response as the reference answer when no function call is expected.
-		correct_data["ideal_function_call_data"] = []
-		correct_data["do_function_call"] = false
-		correct_data["reference_answer"] = last_message.get("textContent", "")
-	return {"reference_json": correct_data}
+			reference_data["reference_answer"] = last_message.get("textContent", "")
+			item["reference_json"] = reference_data
+	return item
 
 func to_model_output_sample():
 	var msg = to_var()

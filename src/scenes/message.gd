@@ -1107,5 +1107,25 @@ func to_rft_reference_item():
 		correct_data["reference_answer"] = last_message.get("textContent", "")
 	return {"reference_json": correct_data}
 
+func to_model_output_sample():
+	var msg = to_var()
+	var sample = {"tool_calls": []}
+	if msg.get("type", "") == "Text":
+		sample["sample_text"] = msg.get("textContent", "")
+	elif msg.get("type", "") == "Function Call":
+		sample["sample_text"] = msg.get("functionUsePreText", "")
+		var args = get_parameter_values_from_function_parameter_dict(msg.get("functionParameters", []))
+		sample["tool_calls"].append({
+			"id": "call_0",
+			"type": "function",
+			"function": {
+				"name": msg.get("functionName", ""),
+				"arguments": JSON.stringify(args)
+			}
+		})
+	elif msg.get("type", "") == "JSON Schema":
+		sample["output_json"] = JSON.parse_string(msg.get("jsonSchemaValue", "{}"))
+	return sample
+
 func _on_button_pressed() -> void:
 	print(to_rft_reference_item())

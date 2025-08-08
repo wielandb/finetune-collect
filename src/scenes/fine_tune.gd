@@ -216,6 +216,7 @@ func _on_item_list_item_selected(index: int) -> void:
 	print(CURRENT_EDITED_CONVO_IX)
 	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
+	$Conversation/Graders/GradersList.update_from_last_message()
 	
 
 

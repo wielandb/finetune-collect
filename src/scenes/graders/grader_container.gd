@@ -124,7 +124,11 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 			if list_container:
 				var model_node = list_container.get_node_or_null("SampleItemsContainer/SampleModelOutputEdit")
 				if model_node:
-					model_sample = str(_parse_json_or_string(model_node.text))
+					var json = JSON.new()
+					if json.parse(model_node.text) == OK and json.data is Dictionary:
+						model_sample = str(json.data.get("output_text", ""))
+					else:
+						model_sample = model_node.text
 				var item_node = list_container.get_node_or_null("SampleItemsContainer/SampleItemTextEdit")
 				if item_node:
 					item = _parse_json_or_string(item_node.text)

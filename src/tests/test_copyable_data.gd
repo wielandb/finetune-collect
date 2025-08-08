@@ -11,7 +11,7 @@ func _run():
 	var item_edit = container.get_node("SampleItemTextEdit")
 	var model_edit = container.get_node("SampleModelOutputEdit")
 	item_edit.text = '{"do_function_call": false, "ideal_function_call_data": [], "reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}'
-	model_edit.text = '{"reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}'
+	model_edit.text = '{"output_text": "fuzzy", "output_json": {"reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}, "output_tools": [{"id": "call_0", "type": "function", "function": {"name": "foo"}}]}'
 	scene._update_copyable_data()
 	var datas = []
 	for i in range(6, container.get_child_count()):

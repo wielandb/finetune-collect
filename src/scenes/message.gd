@@ -1086,17 +1086,14 @@ func get_parameter_values_from_function_parameter_dict(fpdict):
 
 func to_rft_reference_item():
 	var last_message = to_var()
-	var reference_data = {}
 	var item = {
-		"reference_json": reference_data,
 		"ideal_function_call_data": [],
 		"do_function_call": false
 	}
 	if last_message.get("role", "") != "assistant":
 		return item
 	if last_message.get("type", "") == "JSON Schema":
-		reference_data = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
-		item["reference_json"] = reference_data
+		item["reference_json"] = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
 	elif last_message.get("type", "") == "Function Call":
 		item["do_function_call"] = true
 		item["ideal_function_call_data"] = {
@@ -1105,19 +1102,18 @@ func to_rft_reference_item():
 					"functionUsePreText": last_message.get("functionUsePreText", "")
 			}
 	elif last_message.get("type", "") == "Text":
-			reference_data["reference_answer"] = last_message.get("textContent", "")
-			item["reference_json"] = reference_data
+			item["reference_answer"] = last_message.get("textContent", "")
 	return item
 
 func to_model_output_sample():
 	var msg = to_var()
-	var sample = {"tool_calls": []}
+	var sample = {"output_tools": []}
 	if msg.get("type", "") == "Text":
-		sample["sample_text"] = msg.get("textContent", "")
+		sample["output_text"] = msg.get("textContent", "")
 	elif msg.get("type", "") == "Function Call":
-		sample["sample_text"] = msg.get("functionUsePreText", "")
+		sample["output_text"] = msg.get("functionUsePreText", "")
 		var args = get_parameter_values_from_function_parameter_dict(msg.get("functionParameters", []))
-		sample["tool_calls"].append({
+		sample["output_tools"].append({
 			"id": "call_0",
 			"type": "function",
 			"function": {

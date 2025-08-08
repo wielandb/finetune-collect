@@ -328,11 +328,12 @@ func convert_rft_data(ftdata):
 		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
 			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
 			continue
-		var reference_data = {}
+		var reference_json = {}
+		var reference_answer = ""
 		var do_function_call = false
 		var ideal_function_call_data = []
 		if last_message['type'] == "JSON Schema":
-			reference_data = JSON.parse_string(last_message['jsonSchemaValue'])
+			reference_json = JSON.parse_string(last_message['jsonSchemaValue'])
 		elif last_message['type'] == "Function Call":
 			do_function_call = true
 			ideal_function_call_data = {
@@ -341,7 +342,7 @@ func convert_rft_data(ftdata):
 				"functionUsePreText": last_message["functionUsePreText"]
 			}
 		elif last_message['type'] == "Text":
-			reference_data["reference_answer"] = last_message.get("textContent", "")
+			reference_answer = last_message.get("textContent", "")
 		else:
 			print("Something went very wrong...")
 			continue
@@ -357,7 +358,8 @@ func convert_rft_data(ftdata):
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools
 		var output_entry = {}
-		output_entry['reference_json'] = reference_data
+		output_entry['reference_json'] = reference_json
+		output_entry['reference_answer'] = reference_answer
 		output_entry['do_function_call'] = do_function_call
 		output_entry['ideal_function_call_data'] = ideal_function_call_data
 		output_entry['messages'] = processed_conversation

@@ -10,7 +10,7 @@ func _run():
 	var container = scene.get_node("GradersListContainer/SampleItemsContainer")
 	var item_edit = container.get_node("SampleItemTextEdit")
 	var model_edit = container.get_node("SampleModelOutputEdit")
-	item_edit.text = '{"reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}'
+	item_edit.text = '{"do_function_call": false, "ideal_function_call_data": [], "reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}'
 	model_edit.text = '{"reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}'
 	scene._update_copyable_data()
 	var datas = []
@@ -23,8 +23,9 @@ func _run():
 	assert(datas.has("{{ sample.output_json.moreData.b }}"))
 	assert(datas.has("{{ sample.output_tools }}"))
 	assert(datas.has("{{ sample.output_tools[0].function.name }}"))
-	assert(datas.has("{{ item.reference_json.reference_answer }}"))
-	assert(datas.has("{{ item.reference_json.moreData.a }}"))
-	assert(datas.has("{{ item.reference_json.moreData.b }}"))
+	assert(datas.has("{{ item.reference_answer }}"))
+	assert(datas.has("{{ item.moreData.a }}"))
+	assert(datas.has("{{ item.moreData.b }}"))
+	assert(datas.has("{{ item.do_function_call }}"))
 	print("Copyable data generated")
 	quit(0)

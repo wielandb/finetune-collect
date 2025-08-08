@@ -128,8 +128,6 @@ func _on_grader_validation_completed(response: Dictionary) -> void:
 				var item_node = list_container.get_node_or_null("SampleItemsContainer/SampleItemTextEdit")
 				if item_node:
 					item = _parse_json_or_string(item_node.text)
-					if item is Dictionary and not item.has("reference_json"):
-						item = {"reference_json": item}
 			_grader.run_grader(_last_grader_data, model_sample, item)
 		else:
 			_status_label.text = tr("GRADER_VERIFIED")

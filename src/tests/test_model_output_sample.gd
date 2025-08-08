@@ -14,8 +14,8 @@ func test_text_message():
 	var node = Scene.instantiate()
 	node.from_var({"role":"assistant","type":"Text","textContent":"Hello"})
 	var sample = node.to_model_output_sample()
-	assert_eq(sample.get("sample_text", ""), "Hello", "sample_text")
-	assert_eq(sample.get("tool_calls", []).size(), 0, "no tool calls")
+	assert_eq(sample.get("output_text", ""), "Hello", "output_text")
+	assert_eq(sample.get("output_tools", []).size(), 0, "no tool calls")
 	node.queue_free()
 
 func test_function_call():
@@ -30,9 +30,9 @@ func test_function_call():
 		"functionResults":""
 	})
 	var sample = node.to_model_output_sample()
-	assert_eq(sample.get("tool_calls", []).size(), 1, "tool call size")
-	assert_eq(sample.get("tool_calls", [])[0]["function"]["name"], "add", "function name")
-	var args = JSON.parse_string(sample.get("tool_calls", [])[0]["function"]["arguments"])
+	assert_eq(sample.get("output_tools", []).size(), 1, "tool call size")
+	assert_eq(sample.get("output_tools", [])[0]["function"]["name"], "add", "function name")
+	var args = JSON.parse_string(sample.get("output_tools", [])[0]["function"]["arguments"])
 	assert_eq(args.get("a", ""), "2", "argument a")
 	node.queue_free()
 

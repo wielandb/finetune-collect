@@ -23,7 +23,7 @@ class OpenAiStub:
 class MessageStub:
 	extends Node
 	func to_rft_reference_item():
-		return {"reference_json": {"ideal_function_call_data": [], "do_function_call": false, "reference_answer": "fuzzy wuzzy was a bear"}}
+		return {"reference_json": {"reference_answer": "fuzzy wuzzy was a bear"}, "ideal_function_call_data": [], "do_function_call": false}
 	func to_model_output_sample():
 		return {"tool_calls": [], "sample_text": "fuzzy wuzzy was a bear"}
 	func to_var():

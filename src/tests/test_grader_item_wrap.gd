@@ -23,9 +23,9 @@ class OpenAiStub:
 class MessageStub:
 	extends Node
 	func to_rft_reference_item():
-		return {"reference_json": {"reference_answer": "fuzzy wuzzy was a bear"}, "ideal_function_call_data": [], "do_function_call": false}
+		return {"reference_answer": "fuzzy wuzzy was a bear", "ideal_function_call_data": [], "do_function_call": false}
 	func to_model_output_sample():
-		return {"tool_calls": [], "sample_text": "fuzzy wuzzy was a bear"}
+		return {"output_tools": [], "output_text": "fuzzy wuzzy was a bear"}
 	func to_var():
 		return {"type": "Text"}
 
@@ -71,6 +71,6 @@ func _run():
 	gc._last_grader_data = {"type": "string_check"}
 	gc._on_grader_validation_completed({})
 	var wrapped = openai_stub.grader_stub.last_item
-	assert(wrapped.get("reference_json", {}).get("reference_answer", "") == "fuzzy wuzzy was a bear")
-	print("Grader wraps item reference_json")
+	assert(wrapped.get("reference_answer", "") == "fuzzy wuzzy was a bear")
+	print("Grader wraps item reference answer")
 	quit(0)

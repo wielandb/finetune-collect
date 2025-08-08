@@ -88,7 +88,7 @@ func _update_copyable_data():
 	var item_text = container.get_node("SampleItemTextEdit").text
 	var json = JSON.new()
 	if json.parse(item_text) == OK:
-		_collect_paths("item.reference_json", json.data, item_paths)
+		_collect_paths("item", json.data, item_paths)
 	var model_paths = ["{{ sample.output_text }}"]
 	json = JSON.new()
 	var model_text = container.get_node("SampleModelOutputEdit").text

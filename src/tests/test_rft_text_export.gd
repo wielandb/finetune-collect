@@ -46,7 +46,7 @@ func _run():
 	var result = await exporter.convert_rft_data(ftdata)
 	var lines = result.strip_edges().split("\n")
 	var parsed1 = JSON.parse_string(lines[0])
-	assert(parsed1.get("reference_json", {}).get("reference_answer", "") == "Hello")
+	assert(parsed1.get("reference_answer", "") == "Hello")
 	assert(parsed1.get("do_function_call", true) == false)
 	var parsed2 = JSON.parse_string(lines[1])
 	assert(parsed2.get("do_function_call", false))

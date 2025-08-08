@@ -14,9 +14,8 @@ func _run():
 	model_edit.text = '{"reference_answer": "...", "moreData": {"a": "Test", "b": "Test"}}'
 	scene._update_copyable_data()
 	var datas = []
-	for i in range(4, container.get_child_count()):
+	for i in range(6, container.get_child_count()):
 		datas.append(container.get_child(i).dataStr)
-	datas = datas.slice(2, datas.size())
 	assert(datas.has("{{ sample.output_text }}"))
 	assert(datas.has("{{ sample.output_json }}"))
 	assert(datas.has("{{ sample.output_json.reference_answer }}"))

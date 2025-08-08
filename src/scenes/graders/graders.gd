@@ -9,7 +9,40 @@ func _ready():
 	var model_edit = container.get_node("SampleModelOutputEdit")
 	item_edit.text_changed.connect(_update_copyable_data)
 	model_edit.text_changed.connect(_update_copyable_data)
+	var tab_container = get_parent().get_parent()
+	if tab_container and tab_container.has_signal("tab_changed"):
+		tab_container.connect("tab_changed", Callable(self, "_on_tab_changed"))
+	update_from_last_message()
 	_update_copyable_data()
+
+func _on_tab_changed(tab):
+	var tab_container = get_parent().get_parent()
+	if tab_container and tab == tab_container.get_tab_idx(get_parent()):
+		update_from_last_message()
+
+func update_from_last_message():
+	var messages_container = get_tree().get_root().get_node_or_null("FineTune/Conversation/Messages/MessagesList/MessagesListContainer")
+	if not messages_container:
+		return
+	if messages_container.get_child_count() == 0:
+		return
+	var last_msg = messages_container.get_child(messages_container.get_child_count() - 1)
+	if not last_msg.has_method("to_rft_reference_item"):
+		return
+	var ref_item = last_msg.to_rft_reference_item()
+	var sample = last_msg.to_model_output_sample()
+	var container = $GradersListContainer/SampleItemsContainer
+	container.get_node("SampleItemTextEdit").text = JSON.stringify(ref_item)
+	container.get_node("SampleModelOutputEdit").text = JSON.stringify(sample)
+	_update_copyable_data()
+	var last_type = last_msg.to_var().get("type", "")
+	if last_type == "Function Call":
+		return
+	for child in $GradersListContainer.get_children():
+		if child.name in ["AddGraderButton", "SampleItemsContainer"]:
+			continue
+		if child.has_method("verify_grader"):
+			child.verify_grader()
 
 func _on_add_grader_button_pressed() -> void:
 	var inst = GRADER_SCENE.instantiate()

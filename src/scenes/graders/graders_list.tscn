@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cg03wm3eel1gm"]
+[gd_scene load_steps=3 format=3 uid="uid://cg03wm3eel1gm"]
 
 [ext_resource type="Script" uid="uid://dysm5yrejge2q" path="res://scenes/graders/graders.gd" id="1_q6jjh"]
+[ext_resource type="PackedScene" uid="uid://i6op0tqrn5j1" path="res://scenes/graders/switch_sample_item_src_container.tscn" id="2_vpvhw"]
 
 [node name="GradersList" type="ScrollContainer"]
 anchors_preset = 15
@@ -36,6 +37,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "Sample Model Output"
 horizontal_alignment = 1
+
+[node name="SwitchSampleItemSrcContainer" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
+layout_mode = 2
+
+[node name="SwitchSampleItemSrcContainer2" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
+layout_mode = 2
 
 [node name="SampleItemTextEdit" type="TextEdit" parent="GradersListContainer/SampleItemsContainer"]
 custom_minimum_size = Vector2(0, 120)

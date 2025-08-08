@@ -40,7 +40,7 @@ func _update_grader_name_buttons() -> void:
 		var grader = container.get_child(0)
 		var name_container = grader.get_node_or_null("NameContainer")
 		if name_container:
-			var name := name_container.grader_name
+			var name = name_container.grader_name
 			if name != "":
 				var b := Button.new()
 				b.text = name

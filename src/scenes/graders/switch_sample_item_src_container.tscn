@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://i6op0tqrn5j1"]
+
+[ext_resource type="Texture2D" uid="uid://1xlmqhyc02f" path="res://icons/comment-arrow-left-custom.png" id="1_8kupi"]
+[ext_resource type="Texture2D" uid="uid://c8h7h6xw0e47q" path="res://icons/comment-arrow-right-custom.png" id="2_p1wpk"]
+
+[node name="SwitchSampleItemSrcContainer" type="HBoxContainer"]
+size_flags_vertical = 0
+alignment = 1
+
+[node name="PreviousConvoButton" type="Button" parent="."]
+layout_mode = 2
+icon = ExtResource("1_8kupi")
+
+[node name="OptionButton" type="OptionButton" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NextConvoButton" type="Button" parent="."]
+layout_mode = 2
+icon = ExtResource("2_p1wpk")

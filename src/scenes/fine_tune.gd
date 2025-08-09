@@ -43,10 +43,10 @@ func getRandomConvoID(length: int) -> String:
 	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
-	# takes a node (OptionButton) and a String that is one of the options and returns its index
-	# TODO: Check if OptionButton
+	# Takes a node and a string that matches one of the options and returns its index
+	# Checks both item text and tooltip so it works with custom display names
 	for i in range(node.item_count):
-		if node.get_item_text(i) == string:
+		if node.get_item_text(i) == string or node.get_item_tooltip(i) == string:
 			return i
 	return -1
 
@@ -196,8 +196,9 @@ func update_available_functions_in_UI_global():
 		for f in get_available_function_names():
 			node.add_item(f)
 
-
 func _on_item_list_item_selected(index: int, save_before_switch := true) -> void:
+	if index < 0 or index >= $VBoxContainer/ConversationsList.item_count:
+		return
 	update_functions_internal()
 	print("Available Function Names:")
 	print(get_available_function_names())
@@ -218,6 +219,7 @@ func _on_item_list_item_selected(index: int, save_before_switch := true) -> void
 	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
 	$Conversation/Graders/GradersList.update_from_last_message()
+
 func save_current_conversation_to_conversations_at_index(ix: int):
 	# THERE SHOULD BE NO REASON TO USE THIS FUNCTION
 	CONVERSATIONS[ix] = $Conversation/Messages/MessagesList.to_var()

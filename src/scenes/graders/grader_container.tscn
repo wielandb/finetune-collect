@@ -19,6 +19,10 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_grdc")
 
+[node name="NextGraderSeparator" type="HSeparator" parent="."]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_b487k")
+
 [node name="GraderHeaderMarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
 theme_override_constants/margin_left = 35
@@ -100,10 +104,6 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 autowrap_mode = 2
-
-[node name="NextGraderSeparator" type="HSeparator" parent="."]
-layout_mode = 2
-theme_override_styles/separator = SubResource("StyleBoxLine_b487k")
 
 [connection signal="item_selected" from="GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton" to="." method="_on_grader_type_option_button_item_selected"]
 [connection signal="pressed" from="GraderSettingsContainer/CopyGraderToClipboardButton" to="." method="_on_copy_grader_to_clipboard_button_pressed"]

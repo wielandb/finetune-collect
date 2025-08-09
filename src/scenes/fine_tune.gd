@@ -43,10 +43,10 @@ func getRandomConvoID(length: int) -> String:
 	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
-	# takes a node (OptionButton) and a String that is one of the options and returns its index
-	# TODO: Check if OptionButton
+	# Takes a node and a string that matches one of the options and returns its index
+	# Checks both item text and tooltip so it works with custom display names
 	for i in range(node.item_count):
-		if node.get_item_text(i) == string:
+		if node.get_item_text(i) == string or node.get_item_tooltip(i) == string:
 			return i
 	return -1
 
@@ -198,6 +198,8 @@ func update_available_functions_in_UI_global():
 
 
 func _on_item_list_item_selected(index: int) -> void:
+	if index < 0 or index >= $VBoxContainer/ConversationsList.item_count:
+		return
 	update_functions_internal()
 	print("Available Function Names:")
 	print(get_available_function_names())
@@ -208,7 +210,7 @@ func _on_item_list_item_selected(index: int) -> void:
 	# Alle Nachrichten löschen
 	for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 		if message.is_in_group("message"):
-			message.queue_free()	
+			message.queue_free()
 	# Und die neuen aus der Convo laden
 	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_tooltip(index)
 	# Create conversation if it does not exist
@@ -217,8 +219,6 @@ func _on_item_list_item_selected(index: int) -> void:
 	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
 	$Conversation/Graders/GradersList.update_from_last_message()
-	
-
 
 func save_current_conversation_to_conversations_at_index(ix: int):
 	# THERE SHOULD BE NO REASON TO USE THIS FUNCTION

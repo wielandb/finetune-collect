@@ -1071,6 +1071,7 @@ msgid "Multi Grader"
 msgstr ""
 
 #: scenes/graders/grader_container.tscn
+#: scenes/graders/grader_container.gd
 msgid "GRADER_NOT_VERIFIED_YET"
 msgstr "Nicht verifiziert"
 
@@ -1400,4 +1401,20 @@ msgstr "Seed:"
 #: scenes/model_choice_container.tscn
 msgid "GRADER_MODEL_COLON"
 msgstr "Modell:"
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_NOT_COMPLETE"
+msgstr "Grader unvollständig!"
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFYING"
+msgstr "Verifiziere Grader..."
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFICATION_ERROR"
+msgstr "Verifizierungsfehler!"
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFIED"
+msgstr "Verifiziert!"
 

@@ -39,6 +39,7 @@
 # res://scenes/graders/string_similarity_grader.tscn
 # res://scenes/graders/switch_sample_item_src_container.tscn
 # res://scenes/model_choice_container.tscn
+# res://scenes/graders/grader_container.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -551,6 +552,7 @@ msgstr ""
 
 #: scenes/message.gd
 #: scenes/messages_list.gd
+#: scenes/graders/grader_container.gd
 msgid ""
 msgstr ""
 
@@ -919,15 +921,15 @@ msgid "TOOLTIP_COPY_TO_CLIPBOARD"
 msgstr ""
 
 #: scenes/graders/graders_list.tscn
-msgid "GRADERS_ADD_GRADER_BUTTON_TEXT"
-msgstr ""
-
-#: scenes/graders/graders_list.tscn
 msgid "GRADER_SAMPLE_ITEM"
 msgstr ""
 
 #: scenes/graders/graders_list.tscn
 msgid "GRADER_SAMPLE_MODEL_OUTPUT"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADERS_ADD_GRADER_BUTTON_TEXT"
 msgstr ""
 
 #: scenes/graders/grader_container.tscn
@@ -965,6 +967,7 @@ msgid "Multi Grader"
 msgstr ""
 
 #: scenes/graders/grader_container.tscn
+#: scenes/graders/grader_container.gd
 msgid "GRADER_NOT_VERIFIED_YET"
 msgstr ""
 
@@ -1202,4 +1205,20 @@ msgstr ""
 
 #: scenes/model_choice_container.tscn
 msgid "GRADER_MODEL_COLON"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_NOT_COMPLETE"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFYING"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFICATION_ERROR"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFIED"
 msgstr ""

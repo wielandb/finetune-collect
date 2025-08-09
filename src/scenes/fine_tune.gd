@@ -523,9 +523,9 @@ func load_from_json_data(jsondata: String):
 	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
 	if selected_index == -1:
 		selected_index = len(CONVERSATIONS) - 1 
-		$VBoxContainer/ConversationsList.select(selected_index)
-		_on_item_list_item_selected(selected_index, false)
-		call_deferred("_convert_base64_images_after_load")
+	$VBoxContainer/ConversationsList.select(selected_index)
+	_on_item_list_item_selected(selected_index, false)
+	call_deferred("_convert_base64_images_after_load")
 
 func make_save_json_data():
 	FINETUNEDATA = {}

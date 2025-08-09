@@ -82,6 +82,7 @@ text = "GRADER_COPY_TO_CLIPBOARD"
 icon = ExtResource("3_a4vgf")
 
 [node name="UseThisGraderButton" type="CheckBox" parent="GraderSettingsContainer"]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 disabled = true

@@ -521,6 +521,8 @@ func load_from_json_data(jsondata: String):
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+	if selected_index == -1:
+		selected_index = len(CONVERSATIONS) - 1 
 	$VBoxContainer/ConversationsList.select(selected_index)
 	_on_item_list_item_selected(selected_index)
 	call_deferred("_convert_base64_images_after_load")

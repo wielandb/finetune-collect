@@ -37,6 +37,7 @@
 # res://scenes/graders/score_model_grader.tscn
 # res://scenes/graders/string_check_grader.tscn
 # res://scenes/graders/string_similarity_grader.tscn
+# res://scenes/graders/switch_sample_item_src_container.tscn
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -986,6 +987,7 @@ msgid "GRADER_NAME_HINT"
 msgstr ""
 
 #: scenes/graders/label_model_grader.tscn
+#: scenes/graders/score_model_grader.tscn
 msgid "GRADER_MESSAGES_COLON"
 msgstr ""
 
@@ -1003,6 +1005,10 @@ msgstr ""
 
 #: scenes/graders/label_model_grader.tscn
 msgid "LABEL_CLICKING_HINT_PART_1"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "LABEL_CLICKING_HINT_PART_2"
 msgstr ""
 
 #: scenes/graders/multi_grader.tscn
@@ -1077,23 +1083,19 @@ msgid ""
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "Messages:"
-msgstr ""
-
-#: scenes/graders/score_model_grader.tscn
 msgid "GRADER_ADD_MESSAGE"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "Range: "
+msgid "GRADER_RANGE_COLON:"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "From "
+msgid "GRADER_FROM"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "to"
+msgid "GRADER_TO"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
@@ -1101,19 +1103,19 @@ msgid "1"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "Sampling parameters:"
+msgid "GRADER_SAMPLING_PARAMETERS_COLON"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "Temperature: "
+msgid "GRADER_TEMERATURE_COLON"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "Top P:"
+msgid "GRADER_TOP_P_COLON"
 msgstr ""
 
 #: scenes/graders/score_model_grader.tscn
-msgid "Seed:"
+msgid "GRADER_SEED_COLON"
 msgstr ""
 
 #: scenes/graders/string_check_grader.tscn

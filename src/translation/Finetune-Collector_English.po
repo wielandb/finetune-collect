@@ -1298,6 +1298,7 @@ msgid "GENERIC_NAME_COLON"
 msgstr "Name:"
 
 #: scenes/graders/label_model_grader.tscn
+#: scenes/graders/score_model_grader.tscn
 msgid "GRADER_MESSAGES_COLON"
 msgstr "Messages:"
 
@@ -1344,4 +1345,36 @@ msgstr "Reference:"
 #: scenes/graders/string_similarity_grader.tscn
 msgid "GRADER_EVALUATION_METRIC_COLON"
 msgstr "Evaluation metric:"
+
+#: scenes/graders/label_model_grader.tscn
+msgid "LABEL_CLICKING_HINT_PART_2"
+msgstr "are defined as passing labels."
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_RANGE_COLON:"
+msgstr "Range:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_FROM"
+msgstr "from"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TO"
+msgstr "to"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_SAMPLING_PARAMETERS_COLON"
+msgstr "Sampling parameters:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TEMERATURE_COLON"
+msgstr "Temperature:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TOP_P_COLON"
+msgstr "Top p:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_SEED_COLON"
+msgstr "Seed:"
 

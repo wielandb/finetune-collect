@@ -78,7 +78,7 @@ stretch_mode = 5
 
 [node name="LabelClickingHintPart2Label" type="Label" parent="LabelClickingHintContainer"]
 layout_mode = 2
-text = "LABEL_CLICKING_HINT_PART_1"
+text = "LABEL_CLICKING_HINT_PART_2"
 
 [node name="ModelContainer" parent="." instance=ExtResource("2_nd5pe")]
 layout_mode = 2

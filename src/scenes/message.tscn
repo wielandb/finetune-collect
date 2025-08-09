@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://beb5dnd44v53w" path="res://icons/audio_play.png" id="15_bvel6"]
 [ext_resource type="Texture2D" uid="uid://dpp6b31g3i6ro" path="res://icons/file-question-small.png" id="15_gcntp"]
 [ext_resource type="Script" uid="uid://bntf230jpxxm2" path="res://scenes/audio_message_container.gd" id="15_gt8h6"]
-[ext_resource type="Texture2D" uid="uid://c3x658d7k7h5i" path="res://icons/polling/reload-custom_17.png" id="20_kwisn"]
+[ext_resource type="Texture2D" uid="uid://4iq6da2r1rin" path="res://icons/polling/reload-custom_35.png" id="20_kwisn"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15

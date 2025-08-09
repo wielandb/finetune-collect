@@ -1115,7 +1115,7 @@ msgstr ""
 
 #: scenes/graders/label_model_grader.tscn
 msgid "LABEL_CLICKING_HINT_PART_1"
-msgstr "Label rechtsklicken, um es als \"bestehen\"-Label zu definieren. \"Bestehende\" Labels werden sind mit "
+msgstr "Label rechtsklicken, um es als \"bestehen\"-Label zu definieren. \"Bestehende\" Labels sind mit "
 
 #: scenes/graders/multi_grader.tscn
 msgid "Add Grader"
@@ -1316,6 +1316,7 @@ msgid "GENERIC_NAME_COLON"
 msgstr "Name:"
 
 #: scenes/graders/label_model_grader.tscn
+#: scenes/graders/score_model_grader.tscn
 msgid "GRADER_MESSAGES_COLON"
 msgstr "Nachrichten:"
 
@@ -1362,4 +1363,36 @@ msgstr "Referenz:"
 #: scenes/graders/string_similarity_grader.tscn
 msgid "GRADER_EVALUATION_METRIC_COLON"
 msgstr "Evaluationsmetrik:"
+
+#: scenes/graders/label_model_grader.tscn
+msgid "LABEL_CLICKING_HINT_PART_2"
+msgstr "gekennzeichnet."
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_RANGE_COLON:"
+msgstr "Bereich:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_FROM"
+msgstr "Von"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TO"
+msgstr "bis"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_SAMPLING_PARAMETERS_COLON"
+msgstr "Sampling-Parameter:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TEMERATURE_COLON"
+msgstr "Temperatur:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TOP_P_COLON"
+msgstr "Top P:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_SEED_COLON"
+msgstr "Seed:"
 

@@ -18,7 +18,7 @@ layout_mode = 2
 
 [node name="MessagesLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Messages:"
+text = "GRADER_MESSAGES_COLON"
 
 [node name="MessagesContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -51,11 +51,11 @@ layout_mode = 2
 
 [node name="RangeLabel" type="Label" parent="RangeContainer"]
 layout_mode = 2
-text = "Range: "
+text = "GRADER_RANGE_COLON:"
 
 [node name="RangeFromLabel" type="Label" parent="RangeContainer"]
 layout_mode = 2
-text = "From "
+text = "GRADER_FROM"
 
 [node name="RangeFromEdit" type="LineEdit" parent="RangeContainer"]
 layout_mode = 2
@@ -64,7 +64,7 @@ placeholder_text = "0"
 
 [node name="RangeToLabel" type="Label" parent="RangeContainer"]
 layout_mode = 2
-text = "to"
+text = "GRADER_TO"
 
 [node name="RangeToEdit" type="LineEdit" parent="RangeContainer"]
 layout_mode = 2
@@ -76,11 +76,11 @@ layout_mode = 2
 
 [node name="SamplingParametersLabel" type="Label" parent="SamplingParametersContainer"]
 layout_mode = 2
-text = "Sampling parameters:"
+text = "GRADER_SAMPLING_PARAMETERS_COLON"
 
 [node name="TemperatureLabel" type="Label" parent="SamplingParametersContainer"]
 layout_mode = 2
-text = "Temperature: "
+text = "GRADER_TEMERATURE_COLON"
 
 [node name="TemperatureEdit" type="LineEdit" parent="SamplingParametersContainer"]
 layout_mode = 2
@@ -88,7 +88,7 @@ text = "1"
 
 [node name="TopPLabel" type="Label" parent="SamplingParametersContainer"]
 layout_mode = 2
-text = "Top P:"
+text = "GRADER_TOP_P_COLON"
 
 [node name="TopPEdit" type="LineEdit" parent="SamplingParametersContainer"]
 layout_mode = 2
@@ -96,7 +96,7 @@ text = "1"
 
 [node name="SeedLabel" type="Label" parent="SamplingParametersContainer"]
 layout_mode = 2
-text = "Seed:"
+text = "GRADER_SEED_COLON"
 
 [node name="SeedEdit" type="LineEdit" parent="SamplingParametersContainer"]
 layout_mode = 2

@@ -495,7 +495,9 @@ func load_from_binary(filename):
 			$Conversation/Graders/GradersList.from_var(GRADERS)
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 			refresh_conversations_list()
-			$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+			$VBoxContainer/ConversationsList.select(selected_index)
+			_on_item_list_item_selected(selected_index)
 			call_deferred("_convert_base64_images_after_load")
 	else:
 		print("file not found")
@@ -518,7 +520,9 @@ func load_from_json_data(jsondata: String):
 	$Conversation/Graders/GradersList.from_var(GRADERS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
-	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+	$VBoxContainer/ConversationsList.select(selected_index)
+	_on_item_list_item_selected(selected_index)
 	call_deferred("_convert_base64_images_after_load")
 
 func make_save_json_data():

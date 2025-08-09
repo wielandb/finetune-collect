@@ -116,6 +116,7 @@ msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
 msgstr "Model to use for completions"
 
 #: scenes/conversation_settings.tscn
+#: scenes/model_choice_container.tscn
 msgid "GENERIC_REFRESH"
 msgstr "Refresh"
 
@@ -1377,4 +1378,8 @@ msgstr "Top p:"
 #: scenes/graders/score_model_grader.tscn
 msgid "GRADER_SEED_COLON"
 msgstr "Seed:"
+
+#: scenes/model_choice_container.tscn
+msgid "GRADER_MODEL_COLON"
+msgstr "Model:"
 

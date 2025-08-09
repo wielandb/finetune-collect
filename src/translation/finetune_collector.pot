@@ -38,6 +38,7 @@
 # res://scenes/graders/string_check_grader.tscn
 # res://scenes/graders/string_similarity_grader.tscn
 # res://scenes/graders/switch_sample_item_src_container.tscn
+# res://scenes/model_choice_container.tscn
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -331,6 +332,7 @@ msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+#: scenes/model_choice_container.tscn
 msgid "GENERIC_REFRESH"
 msgstr ""
 
@@ -1196,4 +1198,8 @@ msgstr ""
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_l"
+msgstr ""
+
+#: scenes/model_choice_container.tscn
+msgid "GRADER_MODEL_COLON"
 msgstr ""

@@ -19,7 +19,7 @@ layout_mode = 2
 
 [node name="MessagesLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Messages:"
+text = "GRADER_MESSAGES_COLON"
 
 [node name="MessagesContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -49,7 +49,7 @@ layout_mode = 2
 
 [node name="NewLabelLabel" type="Label" parent="NewLabelsContainer"]
 layout_mode = 2
-text = "New Label:"
+text = "GRADER_NEW_LABEL_COLON"
 
 [node name="NewLabelLabel2" type="LineEdit" parent="NewLabelsContainer"]
 layout_mode = 2
@@ -63,9 +63,6 @@ text = "Add"
 custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 allow_reselect = true
-item_count = 2
-item_0/text = "Test"
-item_1/text = "Test2"
 
 [node name="LabelClickingHintContainer" type="HBoxContainer" parent="."]
 layout_mode = 2

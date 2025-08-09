@@ -8,7 +8,7 @@ script = ExtResource("1_ue5ce")
 
 [node name="NameLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Name: "
+text = "GENERIC_NAME_COLON"
 
 [node name="NameHint" type="TextureRect" parent="."]
 layout_mode = 2

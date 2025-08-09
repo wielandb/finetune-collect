@@ -17,6 +17,7 @@ text = "exampleData"
 
 [node name="CopyButton" type="Button" parent="."]
 layout_mode = 2
+tooltip_text = "TOOLTIP_COPY_TO_CLIPBOARD"
 icon = ExtResource("2_8hjov")
 
 [connection signal="pressed" from="CopyButton" to="." method="_on_copy_button_pressed"]

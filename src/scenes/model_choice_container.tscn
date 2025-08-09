@@ -7,7 +7,7 @@ script = ExtResource("1_no7ph")
 
 [node name="ModelLabel" type="Label" parent="."]
 layout_mode = 2
-text = "Model:"
+text = "GRADER_MODEL_COLON"
 
 [node name="ModelOptionButton" type="OptionButton" parent="."]
 layout_mode = 2

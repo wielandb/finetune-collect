@@ -29,13 +29,13 @@ columns = 2
 [node name="SampleItemLabel" type="Label" parent="GradersListContainer/SampleItemsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Sample Item"
+text = "GRADER_SAMPLE_ITEM"
 horizontal_alignment = 1
 
 [node name="SampleModelOutputLabel" type="Label" parent="GradersListContainer/SampleItemsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Sample Model Output"
+text = "GRADER_SAMPLE_MODEL_OUTPUT"
 horizontal_alignment = 1
 
 [node name="SwitchSampleItemSrcContainer" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]

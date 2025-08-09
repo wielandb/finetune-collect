@@ -11,11 +11,11 @@ msgstr ""
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 msgstr "Typ"
 
-#: scenes/parameter.tscn
+#: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_STRING"
 msgstr "String"
 
-#: scenes/parameter.tscn
+#: parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_CHOICE_NUMBER"
 msgstr "Number"
 
@@ -113,7 +113,7 @@ msgstr "API key:"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS\n"
 ""
-msgstr "Model to use for completions\n"
+msgstr "Model to use for completions"
 
 #: scenes/conversation_settings.tscn
 msgid "GENERIC_REFRESH"
@@ -488,7 +488,7 @@ msgstr "JSON schema:"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
 ""
-msgstr "Load JSON schema from file\n"
+msgstr "Load JSON schema from file"
 
 #: scenes/message.tscn
 msgid "JSON Schema"
@@ -753,6 +753,7 @@ msgid "META_MESSAGE_TOTAL_TOKENS"
 msgstr "Total tokens"
 
 #: scenes/message.tscn
+#: scenes/graders/score_model_grader.tscn
 msgid "0"
 msgstr "0"
 
@@ -983,4 +984,364 @@ msgstr "Secret key"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
 msgstr "The secret key you've set in the upload-image.php file"
+
+#: scenes/conversation.tscn
+msgid "Graders"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "HOVER_TOOLTIP"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "HOVER_FOR_REFERENCE"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "LOL"
+msgstr ""
+
+#: scenes/graders/copy_able_data_container.tscn
+msgid "exampleData"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADERS_ADD_GRADER_BUTTON_TEXT"
+msgstr "Add grader"
+
+#: scenes/graders/graders_list.tscn
+msgid "Sample Item"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "Sample Model Output"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_TYPE"
+msgstr "Grader type"
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "String Check Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "String Similarity Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Score Model Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Label Model Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Python Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Multi Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_NOT_VERIFIED_YET"
+msgstr "Not verified"
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_COPY_TO_CLIPBOARD"
+msgstr "Copy to clipboard"
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_USE_THIS_GRADER"
+msgstr "Use this Grader"
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_DELETE_GRADER"
+msgstr "Delete Grader"
+
+#: scenes/graders/grader_name_container.tscn
+msgid "Name: "
+msgstr ""
+
+#: scenes/graders/grader_name_container.tscn
+msgid "GRADER_NAME_HINT"
+msgstr "The name of the grader. Used for your reference or as a variable in a multi-grader"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "Messages:"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "Add Message"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "New Label:"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "Add"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "Test2"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "LABEL_CLICKING_HINT_PART_1"
+msgstr "Right-click a label to define it as passing label. Labels with "
+
+#: scenes/graders/multi_grader.tscn
+msgid "Add Grader"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "Score Formula:"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "Add:"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "+"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "-"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "*"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "/"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "^"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "min()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "max()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "abs()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "floor()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "exp()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "sqrt()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "log()"
+msgstr ""
+
+#: scenes/graders/python_grader.tscn
+msgid "def grade(sample: dict, item: dict) -> float:\n"
+"    \"\"\"\n"
+"    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.\n"
+"    \"\"\"\n"
+"    output = sample.get(\"output_text\")\n"
+"    label = item.get(\"label\")\n"
+"    return 1.0 if output == label else 0.0"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "Range: "
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "From "
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "to"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "1"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "Sampling parameters:"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "Temperature: "
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "Top P:"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "Seed:"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "Input"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "Operation"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "Reference"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "eq"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "ne"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "like"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "ilike"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "Input: "
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "Reference: "
+msgstr "Reference:"
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "Evaluation metric: "
+msgstr "Evaluation metric:"
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "fuzzy_match"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "bleu"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "gleu"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "meteor"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_1"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_2"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_3"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_4"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_5"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_l"
+msgstr ""
+
+#: scenes/graders/copy_able_data_container.tscn
+msgid "TOOLTIP_COPY_TO_CLIPBOARD"
+msgstr "Copy to clipboard"
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADER_SAMPLE_ITEM"
+msgstr "Sample Item"
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADER_SAMPLE_MODEL_OUTPUT"
+msgstr "Sample Model Output"
+
+#: scenes/graders/grader_name_container.tscn
+msgid "GENERIC_NAME_COLON"
+msgstr "Name:"
+
+#: scenes/graders/label_model_grader.tscn
+msgid "GRADER_MESSAGES_COLON"
+msgstr "Messages:"
+
+#: scenes/graders/label_model_grader.tscn
+msgid "GRADER_NEW_LABEL_COLON"
+msgstr "New label:"
+
+#: scenes/graders/multi_grader.tscn
+msgid "GRADER_ADD_GRADER"
+msgstr "Add Grader"
+
+#: scenes/graders/multi_grader.tscn
+msgid "GRADER_MULTIGRADER_SCORE_FORMULA_COLON"
+msgstr "Score formula:"
+
+#: scenes/graders/multi_grader.tscn
+msgid "GENERIC_ADD_COLON"
+msgstr "Add:"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_ADD_MESSAGE"
+msgstr "Add message"
+
+#: scenes/graders/string_check_grader.tscn
+msgid "GRADER_INPIT"
+msgstr "Input"
+
+#: scenes/graders/string_check_grader.tscn
+msgid "GRADER_OPERATION"
+msgstr "Operation"
+
+#: scenes/graders/string_check_grader.tscn
+msgid "GRADER_REFERENCE"
+msgstr "Reference"
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "GRADER_INPUT_COLON"
+msgstr "Input:"
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "GRADER_REFERENCE_COLON"
+msgstr "Reference:"
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "GRADER_EVALUATION_METRIC_COLON"
+msgstr "Evaluation metric:"
 

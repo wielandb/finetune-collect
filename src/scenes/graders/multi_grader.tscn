@@ -40,7 +40,7 @@ popup/item_5/id = 5
 
 [node name="AddGraderButton" type="Button" parent="GradersContainer/AddGraderControls"]
 layout_mode = 2
-text = "Add Grader"
+text = "GRADER_ADD_GRADER"
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
@@ -51,7 +51,7 @@ layout_mode = 2
 
 [node name="ScoreFormulaLabel" type="Label" parent="ScoreFormulaContainer"]
 layout_mode = 2
-text = "Score Formula:"
+text = "GRADER_MULTIGRADER_SCORE_FORMULA_COLON"
 
 [node name="ScoreFormulaEdit" type="LineEdit" parent="ScoreFormulaContainer"]
 layout_mode = 2
@@ -63,7 +63,7 @@ alignment = 1
 
 [node name="AddLabel" type="Label" parent="ScoreFormulaHelperButtonsContainer"]
 layout_mode = 2
-text = "Add:"
+text = "GENERIC_ADD_COLON"
 
 [node name="HelperButton" type="Button" parent="ScoreFormulaHelperButtonsContainer"]
 layout_mode = 2

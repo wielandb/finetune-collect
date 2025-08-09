@@ -21,19 +21,19 @@ columns = 3
 [node name="InputLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Input"
+text = "GRADER_INPIT"
 horizontal_alignment = 1
 
 [node name="OperationLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Operation"
+text = "GRADER_OPERATION"
 horizontal_alignment = 1
 
 [node name="ReferenceLabel" type="Label" parent="GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Reference"
+text = "GRADER_REFERENCE"
 horizontal_alignment = 1
 
 [node name="InputEdit" type="LineEdit" parent="GridContainer"]

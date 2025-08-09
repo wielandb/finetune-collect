@@ -19,7 +19,7 @@ layout_mode = 2
 
 [node name="InputLabel" type="Label" parent="InputContainer"]
 layout_mode = 2
-text = "Input: "
+text = "GRADER_INPUT_COLON"
 
 [node name="InputEdit" type="LineEdit" parent="InputContainer"]
 layout_mode = 2
@@ -30,7 +30,7 @@ layout_mode = 2
 
 [node name="ReferenceLabel" type="Label" parent="ReferenceContainer"]
 layout_mode = 2
-text = "Reference: "
+text = "GRADER_REFERENCE_COLON"
 
 [node name="ReferenceEdit" type="LineEdit" parent="ReferenceContainer"]
 layout_mode = 2
@@ -41,7 +41,7 @@ layout_mode = 2
 
 [node name="EvaluationMetricLabel" type="Label" parent="EvaluationMetricContainer"]
 layout_mode = 2
-text = "Evaluation metric: "
+text = "GRADER_EVALUATION_METRIC_COLON"
 
 [node name="EvaluationMetricOptionButton" type="OptionButton" parent="EvaluationMetricContainer"]
 layout_mode = 2

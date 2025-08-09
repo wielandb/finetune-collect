@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-@onready var PARAMETER_SCENE = preload("res://parameter.tscn")
+@onready var PARAMETER_SCENE = preload("res://scenes/parameter.tscn")
 
 
 func to_var():
@@ -19,7 +19,7 @@ func to_var():
 	return me
 	
 func from_var(data):
-	PARAMETER_SCENE = load("res://parameter.tscn")
+	PARAMETER_SCENE = load("res://scenes/parameter.tscn")
 	$FunctionNameContainer/FunctionNameEdit.text = data["name"]
 	$FunctionDescriptionContainer2/FunctionDescriptionEdit.text = data["description"]
 	for parameter in data["parameters"]:

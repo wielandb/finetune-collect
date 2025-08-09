@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://crrh08nwhteko"]
+
+[ext_resource type="FontFile" uid="uid://p0vkq2a410tm" path="res://themes/DarkTheme/Fonts/Ubuntu-L.ttf" id="1_ed0j7"]
+[ext_resource type="Script" uid="uid://cb1hmqqwt103i" path="res://scenes/graders/python_grader.gd" id="1_pj7ot"]
+[ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_ruql7"]
+
+[node name="PythonGrader" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pj7ot")
+
+[node name="NameContainer" parent="." instance=ExtResource("1_ruql7")]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 5
+
+[node name="PythonEdit" type="CodeEdit" parent="MarginContainer"]
+custom_minimum_size = Vector2(0, 230)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_ed0j7")
+text = "def grade(sample: dict, item: dict) -> float:
+    \"\"\"
+    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.
+    \"\"\"
+    output = sample.get(\"output_text\")
+    label = item.get(\"label\")
+    return 1.0 if output == label else 0.0"
+placeholder_text = "def grade(sample: dict, item: dict) -> float:
+    \"\"\"
+    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.
+    \"\"\"
+    output = sample.get(\"output_text\")
+    label = item.get(\"label\")
+    return 1.0 if output == label else 0.0"
+highlight_current_line = true

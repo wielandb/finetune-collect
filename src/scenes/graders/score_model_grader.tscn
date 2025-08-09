@@ -1,0 +1,105 @@
+[gd_scene load_steps=5 format=3 uid="uid://cgski2qyhb6o6"]
+
+[ext_resource type="Script" uid="uid://dhjbnnkv3sacx" path="res://scenes/graders/score_model_grader.gd" id="1_wkgte"]
+[ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_xre7k"]
+[ext_resource type="PackedScene" uid="uid://clmrayf2uklte" path="res://scenes/message.tscn" id="2_ll3dp"]
+[ext_resource type="PackedScene" uid="uid://cukb0mp1ky25c" path="res://scenes/model_choice_container.tscn" id="3_f2a6w"]
+
+[node name="ScoreModelGrader" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_wkgte")
+
+[node name="NameContainer" parent="." instance=ExtResource("1_xre7k")]
+layout_mode = 2
+
+[node name="MessagesLabel" type="Label" parent="."]
+layout_mode = 2
+text = "GRADER_MESSAGES_COLON"
+
+[node name="MessagesContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MessagesContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 90
+theme_override_constants/margin_right = 95
+
+[node name="Message" parent="MessagesContainer/MarginContainer" instance=ExtResource("2_ll3dp")]
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="MessagesContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 90
+theme_override_constants/margin_right = 95
+
+[node name="Message" parent="MessagesContainer/MarginContainer2" instance=ExtResource("2_ll3dp")]
+layout_mode = 2
+
+[node name="AddMessageButton" type="Button" parent="MessagesContainer"]
+layout_mode = 2
+text = "GRADER_ADD_MESSAGE"
+
+[node name="ModelContainer" parent="." instance=ExtResource("3_f2a6w")]
+layout_mode = 2
+
+[node name="RangeContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="RangeLabel" type="Label" parent="RangeContainer"]
+layout_mode = 2
+text = "GRADER_RANGE_COLON:"
+
+[node name="RangeFromLabel" type="Label" parent="RangeContainer"]
+layout_mode = 2
+text = "GRADER_FROM"
+
+[node name="RangeFromEdit" type="LineEdit" parent="RangeContainer"]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="RangeToLabel" type="Label" parent="RangeContainer"]
+layout_mode = 2
+text = "GRADER_TO"
+
+[node name="RangeToEdit" type="LineEdit" parent="RangeContainer"]
+layout_mode = 2
+text = "1"
+placeholder_text = "1"
+
+[node name="SamplingParametersContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="SamplingParametersLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "GRADER_SAMPLING_PARAMETERS_COLON"
+
+[node name="TemperatureLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "GRADER_TEMERATURE_COLON"
+
+[node name="TemperatureEdit" type="LineEdit" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "1"
+
+[node name="TopPLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "GRADER_TOP_P_COLON"
+
+[node name="TopPEdit" type="LineEdit" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "1"
+
+[node name="SeedLabel" type="Label" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "GRADER_SEED_COLON"
+
+[node name="SeedEdit" type="LineEdit" parent="SamplingParametersContainer"]
+layout_mode = 2
+text = "42"
+
+[connection signal="pressed" from="MessagesContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]

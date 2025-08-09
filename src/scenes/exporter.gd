@@ -129,12 +129,8 @@ func convert_message_to_openai_format(message, function_map=null):
 		var begins_with_http = image_content.begins_with("http://") or image_content.begins_with("https://")
 
 		if getSettings().get('exportImagesHow', 0) == 0:
-			if isImageURL(image_content):
+			if begins_with_http:
 				image_url_data = image_content
-			elif begins_with_http:
-				var base64_data = await url_to_base64(image_content)
-				var ext = get_ext_from_base64(base64_data)
-				image_url_data = "data:image/%s;base64,%s" % [ext, base64_data]
 			else:
 				var ext = get_ext_from_base64(image_content)
 				image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
@@ -323,43 +319,49 @@ func convert_rft_data(ftdata):
 		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
 		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
 		var last_message = conversation.pop_back()
-		# We need to check if the message we got is assistant + either JSON Schema or function call
+		# We need to check if the message we got is assistant + either JSON Schema, function call, or plain text
 		if last_message['role'] != "assistant":
 			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")
 			print("Last message:")
 			print(last_message)
 			continue
-		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call":
+		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
 			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
 			continue
-		var correct_data = {}
+		var reference_json = {}
+		var reference_answer = ""
+		var do_function_call = false
+		var ideal_function_call_data = []
 		if last_message['type'] == "JSON Schema":
-			# Get the value, parse it and put it into correct data, append empty function data...
-			correct_data = JSON.parse_string(last_message['jsonSchemaValue'])
-			correct_data['ideal_function_call_data'] = []
-			correct_data['do_function_call'] = false
+			reference_json = JSON.parse_string(last_message['jsonSchemaValue'])
 		elif last_message['type'] == "Function Call":
-			correct_data['do_function_call'] = true
-			correct_data['ideal_function_call_data'] = {
+			do_function_call = true
+			ideal_function_call_data = {
 				"name": last_message["functionName"],
 				"arguments": get_parameter_values_from_function_parameter_dict(last_message["functionParameters"]),
 				"functionUsePreText": last_message["functionUsePreText"]
 			}
+		elif last_message['type'] == "Text":
+			reference_answer = last_message.get("textContent", "")
 		else:
 			print("Something went very wrong...")
 			continue
-			
+		
 		
 		var processed_conversation = []
 		if system_message:
-				processed_conversation.append({
-					'role': 'system', 
-					'content': system_message
-				})
+			processed_conversation.append({
+				'role': 'system',
+				'content': system_message
+			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools
-		var output_entry = correct_data
+		var output_entry = {}
+		output_entry['reference_json'] = reference_json
+		output_entry['reference_answer'] = reference_answer
+		output_entry['do_function_call'] = do_function_call
+		output_entry['ideal_function_call_data'] = ideal_function_call_data
 		output_entry['messages'] = processed_conversation
 		# Only add tools if there are function calls in the conversation
 		# TODO: Do as the settings say

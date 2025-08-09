@@ -1,0 +1,61 @@
+[gd_scene load_steps=3 format=3 uid="uid://cg03wm3eel1gm"]
+
+[ext_resource type="Script" uid="uid://dysm5yrejge2q" path="res://scenes/graders/graders.gd" id="1_q6jjh"]
+[ext_resource type="PackedScene" uid="uid://i6op0tqrn5j1" path="res://scenes/graders/switch_sample_item_src_container.tscn" id="2_vpvhw"]
+
+[node name="GradersList" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_q6jjh")
+
+[node name="GradersListContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SampleItemsContainer" type="GridContainer" parent="GradersListContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="SampleItemLabel" type="Label" parent="GradersListContainer/SampleItemsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "GRADER_SAMPLE_ITEM"
+horizontal_alignment = 1
+
+[node name="SampleModelOutputLabel" type="Label" parent="GradersListContainer/SampleItemsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "GRADER_SAMPLE_MODEL_OUTPUT"
+horizontal_alignment = 1
+
+[node name="SwitchSampleItemSrcContainer" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
+visible = false
+layout_mode = 2
+
+[node name="SwitchSampleItemSrcContainer2" parent="GradersListContainer/SampleItemsContainer" instance=ExtResource("2_vpvhw")]
+visible = false
+layout_mode = 2
+
+[node name="SampleItemTextEdit" type="TextEdit" parent="GradersListContainer/SampleItemsContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+text = "{
+      \"reference_answer\": \"fuzzy wuzzy was a bear\"
+    }"
+
+[node name="SampleModelOutputEdit" type="TextEdit" parent="GradersListContainer/SampleItemsContainer"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+text = "fuzzy wuzzy was a bear"
+
+[node name="AddGraderButton" type="Button" parent="GradersListContainer"]
+layout_mode = 2
+text = "GRADERS_ADD_GRADER_BUTTON_TEXT"
+
+[connection signal="pressed" from="GradersListContainer/AddGraderButton" to="." method="_on_add_grader_button_pressed"]

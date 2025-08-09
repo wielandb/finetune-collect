@@ -1,6 +1,6 @@
 # LANGUAGE translation for finetune-collector for the following files:
 # res://available_parameter.gd
-# res://parameter.tscn
+# res://scenes/parameter.tscn
 # res://scenes/analysis_container.gd
 # res://scenes/analysis_container.tscn
 # res://scenes/available_function.gd
@@ -27,6 +27,19 @@
 # res://scenes/used_function.tscn
 # res://scenes/exporter.gd
 # res://scenes/schema_edit_buttons_container.gd
+# res://scenes/graders/copy_able_data_container.tscn
+# res://scenes/graders/graders_list.tscn
+# res://scenes/graders/grader_container.tscn
+# res://scenes/graders/grader_name_container.tscn
+# res://scenes/graders/label_model_grader.tscn
+# res://scenes/graders/multi_grader.tscn
+# res://scenes/graders/python_grader.tscn
+# res://scenes/graders/score_model_grader.tscn
+# res://scenes/graders/string_check_grader.tscn
+# res://scenes/graders/string_similarity_grader.tscn
+# res://scenes/graders/switch_sample_item_src_container.tscn
+# res://scenes/model_choice_container.tscn
+# res://scenes/graders/grader_container.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -38,43 +51,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8-bit\n"
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_TYPE_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "String"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Number"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_NAME_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_DESCRIPTION_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Has limits"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Min."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "Max."
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_ENUMERATION_CHECKBOX_LABEL"
 msgstr ""
 
-#: parameter.tscn
+#: scenes/parameter.tscn
 msgid "FUNCTIONS_PARAMETERS_PARAMETER_REQUIRED_LABEL"
 msgstr ""
 
@@ -159,6 +172,10 @@ msgstr ""
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Settings"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Graders"
 msgstr ""
 
 #: scenes/conversation_settings.gd
@@ -316,6 +333,7 @@ msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS_TOOLTIP"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+#: scenes/model_choice_container.tscn
 msgid "GENERIC_REFRESH"
 msgstr ""
 
@@ -534,6 +552,7 @@ msgstr ""
 
 #: scenes/message.gd
 #: scenes/messages_list.gd
+#: scenes/graders/grader_container.gd
 msgid ""
 msgstr ""
 
@@ -793,6 +812,7 @@ msgid "META_MESSAGE_TOTAL_TOKENS"
 msgstr ""
 
 #: scenes/message.tscn
+#: scenes/graders/score_model_grader.tscn
 msgid "0"
 msgstr ""
 
@@ -890,4 +910,315 @@ msgstr ""
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_FUNCTION_ADD_RESULT"
+msgstr ""
+
+#: scenes/graders/copy_able_data_container.tscn
+msgid "exampleData"
+msgstr ""
+
+#: scenes/graders/copy_able_data_container.tscn
+msgid "TOOLTIP_COPY_TO_CLIPBOARD"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADER_SAMPLE_ITEM"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADER_SAMPLE_MODEL_OUTPUT"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "GRADERS_ADD_GRADER_BUTTON_TEXT"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_TYPE"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "String Check Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "String Similarity Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Score Model Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Label Model Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Python Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/multi_grader.tscn
+msgid "Multi Grader"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+#: scenes/graders/grader_container.gd
+msgid "GRADER_NOT_VERIFIED_YET"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_COPY_TO_CLIPBOARD"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_USE_THIS_GRADER"
+msgstr ""
+
+#: scenes/graders/grader_container.tscn
+msgid "GRADER_DELETE_GRADER"
+msgstr ""
+
+#: scenes/graders/grader_name_container.tscn
+msgid "GENERIC_NAME_COLON"
+msgstr ""
+
+#: scenes/graders/grader_name_container.tscn
+msgid "GRADER_NAME_HINT"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_MESSAGES_COLON"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "Add Message"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "GRADER_NEW_LABEL_COLON"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "Add"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "LABEL_CLICKING_HINT_PART_1"
+msgstr ""
+
+#: scenes/graders/label_model_grader.tscn
+msgid "LABEL_CLICKING_HINT_PART_2"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "GRADER_ADD_GRADER"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "GRADER_MULTIGRADER_SCORE_FORMULA_COLON"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "GENERIC_ADD_COLON"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "+"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "-"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "*"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "/"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "^"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "min()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "max()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "abs()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "floor()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "exp()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "sqrt()"
+msgstr ""
+
+#: scenes/graders/multi_grader.tscn
+msgid "log()"
+msgstr ""
+
+#: scenes/graders/python_grader.tscn
+msgid ""
+"def grade(sample: dict, item: dict) -> float:\n"
+"    \"\"\"\n"
+"    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.\n"
+"    \"\"\"\n"
+"    output = sample.get(\"output_text\")\n"
+"    label = item.get(\"label\")\n"
+"    return 1.0 if output == label else 0.0"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_ADD_MESSAGE"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_RANGE_COLON:"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_FROM"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TO"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "1"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_SAMPLING_PARAMETERS_COLON"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TEMERATURE_COLON"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_TOP_P_COLON"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "GRADER_SEED_COLON"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "GRADER_INPIT"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "GRADER_OPERATION"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "GRADER_REFERENCE"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "eq"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "ne"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "like"
+msgstr ""
+
+#: scenes/graders/string_check_grader.tscn
+msgid "ilike"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "GRADER_INPUT_COLON"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "GRADER_REFERENCE_COLON"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "GRADER_EVALUATION_METRIC_COLON"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "fuzzy_match"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "bleu"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "gleu"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "meteor"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_1"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_2"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_3"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_4"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_5"
+msgstr ""
+
+#: scenes/graders/string_similarity_grader.tscn
+msgid "rouge_l"
+msgstr ""
+
+#: scenes/model_choice_container.tscn
+msgid "GRADER_MODEL_COLON"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_NOT_COMPLETE"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFYING"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFICATION_ERROR"
+msgstr ""
+
+#: scenes/graders/grader_container.gd
+msgid "GRADER_VERIFIED"
 msgstr ""

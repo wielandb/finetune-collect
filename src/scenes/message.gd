@@ -160,7 +160,119 @@ func from_var(data):
 	#	$FunctionMessageContainer.move_child(resultInstance, resultsSectionLabelIx)
 	#	resultInstance.from_var(d)
 		
-	
+
+## Functions for if the message object is part of a grader
+func to_grader_var():
+	var mevar = to_var()
+	var gradermessage = {}
+	if mevar["role"] == "user":
+		if mevar["type"] == "Text":
+			gradermessage = {
+				"type": "message",
+				"role": "user",
+				"content": {
+					"type": "input_text",
+					"text" : mevar["textContent"]
+				}
+			}
+			return gradermessage
+		if mevar["type"] == "Image":
+			var image_detail_map = {0: "high", 1: "low", 2: "auto"}
+			gradermessage = {
+				"type": "message",
+				"role": "user",
+				"content": {
+					"type": "input_image",
+					"image_url": mevar["imageContent"],
+					"detail": image_detail_map.get(int(mevar.get("imageDetail", 0)), "high")
+				}
+			}
+			return gradermessage
+		return {
+			"type": "message",
+			"role": "user",
+			"content": {
+				"type": "input_text",
+				"text": "[A UNSUPPORTED MESSAGE TYPE WAS OMITTED]"
+			}
+		}
+	if mevar["role"] == "system":
+		if mevar["type"] == "Text":
+			gradermessage = {
+				"type": "message",
+				"role": "system",
+				"content": {
+					"type": "input_text",
+					"text": mevar["textContent"]
+				}
+			}
+			return gradermessage
+		return {
+			"type": "message",
+			"role": "system",
+			"content": {
+				"type": "input_text",
+				"text": "[A UNSUPPORTED MESSAGE TYPE WAS OMITTED]"
+			}
+		}
+	if mevar["role"] == "assistant":
+		if mevar["type"] == "Text":
+			gradermessage = {
+				"type": "message",
+				"role": "assistant",
+				"content": {
+					"type": "output_text",
+					"text": mevar["textContent"]
+				}
+			}
+			return gradermessage
+		return {
+			"type": "message",
+			"role": "assistant",
+			"content": {
+				"type": "input_text",
+				"text": "[A UNSUPPORTED MESSAGE TYPE WAS OMITTED]"
+			}
+		}
+
+func from_grader_var(gradermessage):
+	var role = gradermessage.get("role", "user")
+	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, role))
+	_on_role_item_selected($MessageSettingsContainer/Role.selected)
+	var content = gradermessage.get("content", {})
+	var content_type = content.get("type", "")
+	if role == "user":
+		if content_type == "input_text":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			$TextMessageContainer/Message.text = content.get("text", "")
+		elif content_type == "input_image":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Image"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			var img = content.get("image_url", "")
+			$ImageMessageContainer/Base64ImageEdit.text = img
+			var image_detail_map = {"high":0, "low":1, "auto":2}
+			$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(image_detail_map.get(content.get("detail", "high"), 0))
+			if img != "":
+				if isImageURL(img) or img.begins_with("http://") or img.begins_with("https://"):
+					load_image_container_from_url(img)
+				else:
+					base64_to_image($ImageMessageContainer/TextureRect, img)
+			maybe_upload_base64_image()
+	elif role == "system":
+		if content_type == "input_text":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			$TextMessageContainer/Message.text = content.get("text", "")
+	elif role == "assistant":
+		if content_type == "output_text":
+			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+			$TextMessageContainer/Message.text = content.get("text", "")
+
+
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	print("Init Message object")
@@ -889,3 +1001,137 @@ func _on_file_message_load_file_dialog_file_selected(path: String) -> void:
 
 func _on_load_pdf_file_button_pressed() -> void:
 	$FileMessageContainer/FileMessageLoadFileDialog.visible = true
+func to_openai_message():
+	var msg = to_var()
+	if msg["type"] == "Text":
+		var result = {"role": msg["role"], "content": msg["textContent"]}
+		if msg.get("userName", "") != "":
+			result["name"] = msg["userName"]
+		return result
+	elif msg["type"] == "Image":
+		var image_content = msg["imageContent"]
+		var image_url_data = ""
+		if isImageURL(image_content) or image_content.begins_with("http://") or image_content.begins_with("https://"):
+			image_url_data = image_content
+		else:
+			var ext = get_ext_from_base64(image_content)
+			image_url_data = "data:image/%s;base64,%s" % [ext, image_content]
+		var image_detail_map = {0: "high", 1: "low", 2: "auto"}
+		return {
+			"role": msg["role"],
+			"content": [{
+				"type": "image_url",
+				"image_url": {
+					"url": image_url_data,
+					"detail": image_detail_map.get(int(msg.get("imageDetail", 0)), "high")
+				}
+			}]
+		}
+	return {}
+func from_openai_message(oai_msg: Dictionary):
+	var role = oai_msg.get("role", "user")
+	var user_name = oai_msg.get("name", "")
+	var content = oai_msg.get("content", "")
+	var msg_type := ""
+	var text_content := ""
+	var image_content := ""
+	var image_detail_idx := 0
+	var image_detail_map = {"high":0, "low":1, "auto":2}
+	if typeof(content) == TYPE_STRING:
+		msg_type = "Text"
+		text_content = content
+	elif typeof(content) == TYPE_ARRAY:
+		for piece in content:
+			if piece is Dictionary:
+				if piece.get("type", "") == "text":
+					msg_type = "Text"
+					text_content += piece.get("text", "")
+				elif piece.get("type", "") == "image_url":
+					msg_type = "Image"
+					image_content = piece["image_url"].get("url", "")
+					image_detail_idx = image_detail_map.get(piece["image_url"].get("detail", "high"), 0)
+	else:
+		return {}
+	if msg_type == "Text":
+		$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Text"))
+		_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+		$TextMessageContainer/Message.text = text_content
+	elif msg_type == "Image":
+		$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Image"))
+		_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
+		$ImageMessageContainer/Base64ImageEdit.text = image_content
+		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(image_detail_idx)
+		if image_content != "":
+			if isImageURL(image_content) or image_content.begins_with("http://") or image_content.begins_with("https://"):
+				load_image_container_from_url(image_content)
+			else:
+				base64_to_image($ImageMessageContainer/TextureRect, image_content)
+	else:
+		return {}
+	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, role))
+	$MessageSettingsContainer/UserNameEdit.text = user_name
+	return to_var()
+
+## RFT helper functions
+func get_parameter_values_from_function_parameter_dict(fpdict):
+	var parametersAndValues = {}
+	for fp in fpdict:
+		if fp.get("parameterValueChoice", "") != "":
+			parametersAndValues[fp["name"]] = fp["parameterValueChoice"]
+		elif fp.get("parameterValueText", "") != "":
+			parametersAndValues[fp["name"]] = fp["parameterValueText"]
+		else:
+			parametersAndValues[fp["name"]] = fp.get("parameterValueNumber", 0)
+	return parametersAndValues
+
+func to_rft_reference_item():
+	var last_message = to_var()
+	var item = {
+		"ideal_function_call_data": [],
+		"do_function_call": false
+	}
+	if last_message.get("role", "") != "assistant":
+		return item
+	if last_message.get("type", "") == "JSON Schema":
+		item["reference_json"] = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
+	elif last_message.get("type", "") == "Function Call":
+		item["do_function_call"] = true
+		item["ideal_function_call_data"] = {
+					"name": last_message.get("functionName", ""),
+					"arguments": get_parameter_values_from_function_parameter_dict(last_message.get("functionParameters", [])),
+					"functionUsePreText": last_message.get("functionUsePreText", "")
+			}
+	elif last_message.get("type", "") == "Text":
+			item["reference_answer"] = last_message.get("textContent", "")
+	return item
+
+func to_model_output_sample():
+	var msg = to_var()
+	var sample = {"output_tools": []}
+	var text := ""
+	match msg.get("type", ""):
+		"Text":
+			text = msg.get("textContent", "")
+		"Function Call":
+			text = msg.get("functionUsePreText", "")
+			var args = get_parameter_values_from_function_parameter_dict(msg.get("functionParameters", []))
+			sample["output_tools"].append({
+				"id": "call_0",
+				"type": "function",
+				"function": {
+					"name": msg.get("functionName", ""),
+					"arguments": JSON.stringify(args)
+				}
+			})
+		"JSON Schema":
+			text = msg.get("jsonSchemaValue", "")
+		_:
+			text = msg.get("textContent", "")
+	sample["output_text"] = text
+	var parsed = JSON.parse_string(text)
+	if parsed != null and (parsed is Dictionary or parsed is Array):
+		sample["output_json"] = parsed
+	return sample
+
+func _on_button_pressed() -> void:
+	print(to_rft_reference_item())

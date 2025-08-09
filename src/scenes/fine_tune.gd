@@ -3,6 +3,7 @@ extends HBoxContainer
 var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
+var GRADERS = []
 var SETTINGS = {
 	"apikey": "",
 	"useGlobalSystemMessage": false,
@@ -42,10 +43,10 @@ func getRandomConvoID(length: int) -> String:
 	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
-	# takes a node (OptionButton) and a String that is one of the options and returns its index
-	# TODO: Check if OptionButton
+	# Takes a node and a string that matches one of the options and returns its index
+	# Checks both item text and tooltip so it works with custom display names
 	for i in range(node.item_count):
-		if node.get_item_text(i) == string:
+		if node.get_item_text(i) == string or node.get_item_tooltip(i) == string:
 			return i
 	return -1
 
@@ -122,6 +123,7 @@ func _process(delta: float) -> void:
 		save_current_conversation()
 		update_functions_internal()
 		update_settings_internal()
+		update_graders_internal()
 		if RUNTIME["filepath"] == "":
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 		else:
@@ -147,6 +149,10 @@ func _process(delta: float) -> void:
 
 
 func _on_save_btn_pressed() -> void:
+	save_current_conversation()
+	update_functions_internal()
+	update_settings_internal()
+	update_graders_internal()
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
@@ -163,8 +169,10 @@ func update_functions_internal():
 func update_settings_internal():
 	SETTINGS = $Conversation/Settings/ConversationSettings.to_var()
 	print("Settings: ")
-	
+
 	print(SETTINGS)
+func update_graders_internal():
+	GRADERS = $Conversation/Graders/GradersList.to_var()
 func get_available_function_names():
 	var tmpNames = []
 	for f in FUNCTIONS:
@@ -188,19 +196,21 @@ func update_available_functions_in_UI_global():
 		for f in get_available_function_names():
 			node.add_item(f)
 
-
-func _on_item_list_item_selected(index: int) -> void:
+func _on_item_list_item_selected(index: int, save_before_switch := true) -> void:
+	if index < 0 or index >= $VBoxContainer/ConversationsList.item_count:
+		return
 	update_functions_internal()
 	print("Available Function Names:")
 	print(get_available_function_names())
 	print("Functions: ")
 	print(FUNCTIONS)
 	update_available_functions_in_UI_global()
-	save_current_conversation()
+	if save_before_switch:
+		save_current_conversation()
 	# Alle Nachrichten löschen
 	for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 		if message.is_in_group("message"):
-			message.queue_free()	
+			message.queue_free()
 	# Und die neuen aus der Convo laden
 	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_tooltip(index)
 	# Create conversation if it does not exist
@@ -208,8 +218,7 @@ func _on_item_list_item_selected(index: int) -> void:
 	print(CURRENT_EDITED_CONVO_IX)
 	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
-	
-
+	$Conversation/Graders/GradersList.update_from_last_message()
 
 func save_current_conversation_to_conversations_at_index(ix: int):
 	# THERE SHOULD BE NO REASON TO USE THIS FUNCTION
@@ -413,6 +422,7 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	save_current_conversation()
 	update_functions_internal()
 	update_settings_internal()
+	update_graders_internal()
 
 
 func create_new_conversation(msgs=[]):
@@ -458,6 +468,7 @@ func save_to_binary(filename):
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
+	FINETUNEDATA["graders"] = GRADERS
 	var file = FileAccess.open(filename, FileAccess.WRITE)
 	if file:
 		file.store_var(FINETUNEDATA)
@@ -474,15 +485,19 @@ func load_from_binary(filename):
 		FUNCTIONS = FINETUNEDATA["functions"]
 		CONVERSATIONS = FINETUNEDATA["conversations"]
 		SETTINGS = FINETUNEDATA["settings"]
+		GRADERS = FINETUNEDATA.get("graders", [])
 		for i in CONVERSATIONS.keys():
 			CURRENT_EDITED_CONVO_IX = str(i)
 			$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
 			$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
 			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+			$Conversation/Graders/GradersList.from_var(GRADERS)
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 			refresh_conversations_list()
-			$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+			$VBoxContainer/ConversationsList.select(selected_index)
+			_on_item_list_item_selected(selected_index, false)
 			call_deferred("_convert_base64_images_after_load")
 	else:
 		print("file not found")
@@ -497,13 +512,19 @@ func load_from_json_data(jsondata: String):
 	FUNCTIONS = FINETUNEDATA["functions"]
 	CONVERSATIONS = FINETUNEDATA["conversations"]
 	SETTINGS = FINETUNEDATA["settings"]
+	GRADERS = FINETUNEDATA.get("graders", [])
 	for i in CONVERSATIONS.keys():
 		CURRENT_EDITED_CONVO_IX = str(i)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
+	$Conversation/Graders/GradersList.from_var(GRADERS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
-	$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
+	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+	if selected_index == -1:
+		selected_index = len(CONVERSATIONS) - 1 
+	$VBoxContainer/ConversationsList.select(selected_index)
+	_on_item_list_item_selected(selected_index, false)
 	call_deferred("_convert_base64_images_after_load")
 
 func make_save_json_data():
@@ -511,6 +532,7 @@ func make_save_json_data():
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
+	FINETUNEDATA["graders"] = GRADERS
 	var jsonstr = JSON.stringify(FINETUNEDATA, "\t", false)
 	return jsonstr
 
@@ -543,6 +565,10 @@ func load_from_appropriate_from_path(path):
 
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
+	save_current_conversation()
+	update_functions_internal()
+	update_settings_internal()
+	update_graders_internal()
 	if path.ends_with(".json"):
 		save_to_json(path)
 	elif path.ends_with(".ftproj"):
@@ -622,9 +648,9 @@ func create_jsonl_data_for_file():
 		0:
 			complete_jsonl_string = await $Exporter.convert_fine_tuning_data(EFINETUNEDATA)
 		1:
-			complete_jsonl_string = $Exporter.convert_dpo_data(EFINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_dpo_data(EFINETUNEDATA)
 		2:
-			complete_jsonl_string = $Exporter.convert_rft_data(EFINETUNEDATA)
+			complete_jsonl_string = await $Exporter.convert_rft_data(EFINETUNEDATA)
 	return complete_jsonl_string
 
 

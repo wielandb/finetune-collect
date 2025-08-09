@@ -1,6 +1,7 @@
 extends Node
 class_name ChatGpt
 var http_request: HTTPRequest
+const Message = preload("res://addons/openai_api/Scripts/Message.gd")
 ## Automaticly gets the api from the global script `OpenAi`
 
 @onready var parent = get_parent()

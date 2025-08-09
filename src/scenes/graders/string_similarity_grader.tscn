@@ -1,0 +1,69 @@
+[gd_scene load_steps=3 format=3 uid="uid://xfk2w5ctn8lg"]
+
+[ext_resource type="Script" uid="uid://dug1ky6dovgcc" path="res://scenes/graders/string_similarity_grader.gd" id="1_db2gt"]
+[ext_resource type="PackedScene" uid="uid://dawsni6j2ydhu" path="res://scenes/graders/grader_name_container.tscn" id="1_fjscc"]
+
+[node name="StringSimilarityGrader" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_db2gt")
+
+[node name="NameContainer" parent="." instance=ExtResource("1_fjscc")]
+layout_mode = 2
+
+[node name="InputContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="InputLabel" type="Label" parent="InputContainer"]
+layout_mode = 2
+text = "GRADER_INPUT_COLON"
+
+[node name="InputEdit" type="LineEdit" parent="InputContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ReferenceContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ReferenceLabel" type="Label" parent="ReferenceContainer"]
+layout_mode = 2
+text = "GRADER_REFERENCE_COLON"
+
+[node name="ReferenceEdit" type="LineEdit" parent="ReferenceContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EvaluationMetricContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="EvaluationMetricLabel" type="Label" parent="EvaluationMetricContainer"]
+layout_mode = 2
+text = "GRADER_EVALUATION_METRIC_COLON"
+
+[node name="EvaluationMetricOptionButton" type="OptionButton" parent="EvaluationMetricContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 10
+popup/item_0/text = "fuzzy_match"
+popup/item_0/id = 0
+popup/item_1/text = "bleu"
+popup/item_1/id = 1
+popup/item_2/text = "gleu"
+popup/item_2/id = 2
+popup/item_3/text = "meteor"
+popup/item_3/id = 3
+popup/item_4/text = "rouge_1"
+popup/item_4/id = 4
+popup/item_5/text = "rouge_2"
+popup/item_5/id = 5
+popup/item_6/text = "rouge_3"
+popup/item_6/id = 6
+popup/item_7/text = "rouge_4"
+popup/item_7/id = 7
+popup/item_8/text = "rouge_5"
+popup/item_8/id = 8
+popup/item_9/text = "rouge_l"
+popup/item_9/id = 9

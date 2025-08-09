@@ -196,8 +196,7 @@ func update_available_functions_in_UI_global():
 		for f in get_available_function_names():
 			node.add_item(f)
 
-
-func _on_item_list_item_selected(index: int) -> void:
+func _on_item_list_item_selected(index: int, save_before_switch := true) -> void:
 	if index < 0 or index >= $VBoxContainer/ConversationsList.item_count:
 		return
 	update_functions_internal()
@@ -206,7 +205,8 @@ func _on_item_list_item_selected(index: int) -> void:
 	print("Functions: ")
 	print(FUNCTIONS)
 	update_available_functions_in_UI_global()
-	save_current_conversation()
+	if save_before_switch:
+		save_current_conversation()
 	# Alle Nachrichten löschen
 	for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 		if message.is_in_group("message"):
@@ -497,7 +497,7 @@ func load_from_binary(filename):
 			refresh_conversations_list()
 			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
 			$VBoxContainer/ConversationsList.select(selected_index)
-			_on_item_list_item_selected(selected_index)
+			_on_item_list_item_selected(selected_index, false)
 			call_deferred("_convert_base64_images_after_load")
 	else:
 		print("file not found")
@@ -523,9 +523,9 @@ func load_from_json_data(jsondata: String):
 	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
 	if selected_index == -1:
 		selected_index = len(CONVERSATIONS) - 1 
-	$VBoxContainer/ConversationsList.select(selected_index)
-	_on_item_list_item_selected(selected_index)
-	call_deferred("_convert_base64_images_after_load")
+		$VBoxContainer/ConversationsList.select(selected_index)
+		_on_item_list_item_selected(selected_index, false)
+		call_deferred("_convert_base64_images_after_load")
 
 func make_save_json_data():
 	FINETUNEDATA = {}

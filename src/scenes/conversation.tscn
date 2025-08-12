@@ -48,3 +48,8 @@ metadata/_tab_index = 3
 
 [node name="GradersList" parent="Graders" instance=ExtResource("4_jcdsd")]
 layout_mode = 1
+
+[node name="Schemas" type="TabBar" parent="."]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 4

@@ -22,7 +22,7 @@
 [ext_resource type="Texture2D" uid="uid://beb5dnd44v53w" path="res://icons/audio_play.png" id="15_bvel6"]
 [ext_resource type="Texture2D" uid="uid://dpp6b31g3i6ro" path="res://icons/file-question-small.png" id="15_gcntp"]
 [ext_resource type="Script" uid="uid://bntf230jpxxm2" path="res://scenes/audio_message_container.gd" id="15_gt8h6"]
-[ext_resource type="Texture2D" uid="uid://c32i73bobtw7u" path="res://icons/polling/reload-custom_15.png" id="20_kwisn"]
+[ext_resource type="Texture2D" uid="uid://coo8gtlycdoa2" path="res://icons/polling/reload-custom_21.png" id="20_kwisn"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -563,6 +563,10 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
 horizontal_alignment = 1
 
+[node name="OptionButton" type="OptionButton" parent="SchemaMessageContainer"]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
 [node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
 script = ExtResource("12_wnabm")
@@ -613,8 +617,8 @@ wrap_mode = 1
 layout_mode = 2
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
-[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
@@ -636,8 +640,8 @@ layout_mode = 2
 [connection signal="file_selected" from="AudioMessageContainer/AudioLoaderFileDialog" to="." method="_on_audio_loader_file_dialog_file_selected"]
 [connection signal="finished" from="AudioMessageContainer/AudioStreamPlayer" to="." method="_on_audio_stream_player_finished"]
 [connection signal="mouse_entered" from="FunctionMessageContainer" to="." method="_on_function_message_container_mouse_entered"]
-[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="FunctionMessageContainer/function/FunctionNameChoiceButton" to="." method="_on_function_name_choice_button_item_selected"]
 [connection signal="pressed" from="FunctionMessageContainer/FunctionExecutionButton" to="." method="_on_function_execution_button_pressed"]
 [connection signal="pressed" from="FunctionMessageContainer/AddResultButton" to="." method="_on_add_result_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]

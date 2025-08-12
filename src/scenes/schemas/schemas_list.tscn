@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://22jirjovkb2u"]
+[gd_scene load_steps=2 format=3 uid="uid://22jirjovkb2u"]
+
+[ext_resource type="PackedScene" uid="uid://573wf4eeyre0" path="res://scenes/schemas/json_schema_container.tscn" id="1_s6ywv"]
 
 [node name="SchemasList" type="ScrollContainer"]
 anchors_preset = 15
@@ -11,3 +13,19 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="AddSchemaButton" type="Button" parent="SchemasListVBox"]
+layout_mode = 2
+text = "ADD_SCHEMA"
+
+[node name="JSONSchemaContainer" parent="SchemasListVBox" instance=ExtResource("1_s6ywv")]
+layout_mode = 2
+
+[node name="JSONSchemaContainer2" parent="SchemasListVBox" instance=ExtResource("1_s6ywv")]
+layout_mode = 2
+
+[node name="JSONSchemaContainer3" parent="SchemasListVBox" instance=ExtResource("1_s6ywv")]
+layout_mode = 2
+
+[node name="JSONSchemaContainer4" parent="SchemasListVBox" instance=ExtResource("1_s6ywv")]
+layout_mode = 2

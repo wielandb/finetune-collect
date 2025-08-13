@@ -504,6 +504,29 @@ layout_mode = 2
 text = "GENERIC_CHECK"
 icon = ExtResource("3_swtgl")
 
+[node name="SchemaValidatorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="SchemaValidatorURLLabel" type="Label" parent="VBoxContainer/SchemaValidatorURLContainer"]
+layout_mode = 2
+text = "SETTINGS_SCHEMA_VALIDATOR_URL"
+
+[node name="SchemaValidatorURLHint" type="TextureRect" parent="VBoxContainer/SchemaValidatorURLContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="SchemaValidatorURLEdit" type="LineEdit" parent="VBoxContainer/SchemaValidatorURLContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "https://example.com/validator.php"
+
+[node name="SchemaValidatorURLRefreshButton" type="Button" parent="VBoxContainer/SchemaValidatorURLContainer"]
+layout_mode = 2
+text = "GENERIC_CHECK"
+icon = ExtResource("3_swtgl")
+
 [node name="SchemaContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 

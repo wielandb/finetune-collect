@@ -1,0 +1,6 @@
+{
+    "require": {
+        "opis/json-schema": "^2.4",
+        "justinrainbow/json-schema": "^6.4"
+    }
+}

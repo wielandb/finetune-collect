@@ -134,3 +134,42 @@ func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	editor.text = JSON.stringify(json.data, "	")
 	_updating_from_name = false
 	_on_edit_json_schema_code_edit_text_changed()
+
+func to_var():
+	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
+	var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
+	var name := $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit.text
+	var json := JSON.new()
+	var schema = null
+	if json.parse(editor.text) == OK:
+		schema = json.data
+	var json2 := JSON.new()
+	var sanitized_schema = null
+	if json2.parse(oai_editor.text) == OK and json2.data is Dictionary:
+		var dat = json2.data
+		sanitized_schema = dat.get("schema", dat)
+		if name == "" and dat.has("name") and dat["name"] is String:
+			name = dat["name"]
+	return {"schema": schema, "sanitizedSchema": sanitized_schema, "name": name}
+
+func from_var(data):
+	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
+	var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
+	var name_edit := $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit
+	var schema = data.get("schema", null)
+	var sanitized_schema = data.get("sanitizedSchema", null)
+	var name = data.get("name", "")
+	if schema != null:
+		editor.text = JSON.stringify(schema, "\t")
+	else:
+		editor.text = ""
+	if sanitized_schema != null:
+		var envelope = {"name": name, "schema": sanitized_schema}
+		oai_editor.text = JSON.stringify(envelope, "\t")
+		_set_edit_result(true)
+		_set_oai_result(true)
+	else:
+		oai_editor.text = ""
+		_set_edit_result(false)
+		_set_oai_result(false)
+	name_edit.text = name

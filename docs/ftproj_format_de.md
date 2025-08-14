@@ -6,7 +6,9 @@ Die Datei `.ftproj` speichert ein Fine‑Tune‑Projekt in serialisierter Form. 
 {
   "functions": [],
   "conversations": {},
-  "settings": {}
+  "settings": {},
+  "graders": [],
+  "schemas": []
 }
 ```
 
@@ -16,6 +18,8 @@ Nachfolgend werden alle Bereiche sowie die Bedeutung der einzelnen Felder erläu
 - **`functions`**: Liste von Funktionsdefinitionen, die beim Export oder Testen genutzt werden.
 - **`conversations`**: Dictionary, das eine Konversations‑ID auf eine Liste von Nachrichten abbildet.
 - **`settings`**: Globale Einstellungen des Projekts.
+- **`graders`**: Array von Grader-Konfigurationen zur Bewertung von Gesprächen.
+- **`schemas`**: Liste der verfügbaren JSON-Schemata.
 
 ## Funktionsobjekte
 
@@ -116,6 +120,16 @@ Globale Konfiguration, gespeichert im Objekt `settings`.
 | `countTokensWhen` | integer | Wann die Tokenzählung erfolgt. |
 | `tokenCounts` | string | Zwischengespeicherte Tokenzahlen pro Gespräch. |
 | `countTokensModel` | integer | Modell zur Schätzung der Tokenanzahl. |
+
+## Schemas
+
+Jedes Element im Array `schemas` beschreibt ein JSON-Schema.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `name` | string | Anzeigename des Schemas. |
+| `schema` | object | Ursprüngliches, vom Benutzer eingegebenes Schema. |
+| `sanitizedSchema` | object | Bereinigte Version des Schemas für die Verwendung. |
 
 ### Binär vs. JSON
 

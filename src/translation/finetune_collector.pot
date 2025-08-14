@@ -479,6 +479,14 @@ msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
 msgstr ""
 

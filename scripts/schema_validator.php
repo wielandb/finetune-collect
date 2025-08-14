@@ -56,7 +56,7 @@ declare(strict_types=1);
 final class JsonSchemaValidator
 {
     /** @var array<string,bool> */
-    private array $supportedKeywords = [
+    private $supportedKeywords = [
         // core
         '$ref' => true, '$defs' => true, 'definitions' => true,
         // types & enums
@@ -87,9 +87,10 @@ final class JsonSchemaValidator
     ];
 
     /** @var array<string,mixed> */
-    private array $rootSchema = [];
+    private $rootSchema = [];
 
-    private int $maxDepth = 256;
+    /** @var int */
+    private $maxDepth = 256;
 
     /**
      * Validate JSON data against a schema.

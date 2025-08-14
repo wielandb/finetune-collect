@@ -35,6 +35,10 @@ horizontal_alignment = 1
 [node name="ValidatedSchemaContainer" type="HBoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
 layout_mode = 2
 
+[node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer"]
+layout_mode = 2
+text = "Edit:"
+
 [node name="Spinner" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer" instance=ExtResource("2_0i3p4")]
 visible = false
 layout_mode = 2
@@ -50,6 +54,33 @@ size_flags_horizontal = 3
 text = "SCHEMAS_SCHEMA_VALIDATED"
 
 [node name="SchemaErrorLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.776471, 0, 0, 1)
+text = "Schema needs a name!"
+horizontal_alignment = 1
+
+[node name="OAIValidatedSchemaContainer2" type="HBoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+layout_mode = 2
+
+[node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
+layout_mode = 2
+text = "OpenAI:"
+
+[node name="Spinner" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2" instance=ExtResource("2_0i3p4")]
+visible = false
+layout_mode = 2
+texture = ExtResource("3_4g7f0")
+
+[node name="SchemaValidateTextureRect" type="TextureRect" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
+layout_mode = 2
+texture = ExtResource("1_y7f3l")
+
+[node name="SchemaValidateLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "SCHEMAS_SCHEMA_VALIDATED"
+
+[node name="OAISchemaErrorLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.776471, 0, 0, 1)
 text = "Schema needs a name!"
@@ -78,9 +109,46 @@ theme_override_constants/margin_top = 45
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 25
 
-[node name="JSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2"]
+[node name="SchemasTabContainer" type="TabContainer" parent="MarginContainer2"]
+layout_mode = 2
+current_tab = 0
+
+[node name="EditSchemaTabBar" type="TabBar" parent="MarginContainer2/SchemasTabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2/SchemasTabContainer/EditSchemaTabBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="EditJSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="OAISchemaTabBar" type="TabBar" parent="MarginContainer2/SchemasTabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2/SchemasTabContainer/OAISchemaTabBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OAIJSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+editable = false
+delimiter_strings = Array[String](["\" \"", "' '"])
 
 [node name="SchemaValidatorHTTPRequest" type="HTTPRequest" parent="."]
 

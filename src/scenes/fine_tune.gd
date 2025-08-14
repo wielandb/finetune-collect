@@ -4,6 +4,7 @@ var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
 var GRADERS = []
+var SCHEMAS = []
 var SETTINGS = {
 	"apikey": "",
 	"useGlobalSystemMessage": false,
@@ -125,6 +126,7 @@ func _process(delta: float) -> void:
 		update_functions_internal()
 		update_settings_internal()
 		update_graders_internal()
+		update_schemas_internal()
 		if RUNTIME["filepath"] == "":
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 		else:
@@ -154,6 +156,7 @@ func _on_save_btn_pressed() -> void:
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
+	update_schemas_internal()
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
@@ -174,6 +177,10 @@ func update_settings_internal():
 	print(SETTINGS)
 func update_graders_internal():
 	GRADERS = $Conversation/Graders/GradersList.to_var()
+
+func update_schemas_internal():
+	SCHEMAS = $Conversation/Schemas/SchemasList.to_var()
+
 func get_available_function_names():
 	var tmpNames = []
 	for f in FUNCTIONS:
@@ -424,6 +431,7 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
+	update_schemas_internal()
 
 
 func create_new_conversation(msgs=[]):
@@ -470,6 +478,7 @@ func save_to_binary(filename):
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
+	FINETUNEDATA["schemas"] = SCHEMAS
 	var file = FileAccess.open(filename, FileAccess.WRITE)
 	if file:
 		file.store_var(FINETUNEDATA)
@@ -487,6 +496,7 @@ func load_from_binary(filename):
 		CONVERSATIONS = FINETUNEDATA["conversations"]
 		SETTINGS = FINETUNEDATA["settings"]
 		GRADERS = FINETUNEDATA.get("graders", [])
+		SCHEMAS = FINETUNEDATA.get("schemas", [])
 		for i in CONVERSATIONS.keys():
 			CURRENT_EDITED_CONVO_IX = str(i)
 			$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
@@ -494,6 +504,7 @@ func load_from_binary(filename):
 			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 			$Conversation/Graders/GradersList.from_var(GRADERS)
+			$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 			refresh_conversations_list()
 			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
@@ -514,11 +525,13 @@ func load_from_json_data(jsondata: String):
 	CONVERSATIONS = FINETUNEDATA["conversations"]
 	SETTINGS = FINETUNEDATA["settings"]
 	GRADERS = FINETUNEDATA.get("graders", [])
+	SCHEMAS = FINETUNEDATA.get("schemas", [])
 	for i in CONVERSATIONS.keys():
 		CURRENT_EDITED_CONVO_IX = str(i)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Graders/GradersList.from_var(GRADERS)
+	$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
@@ -534,6 +547,7 @@ func make_save_json_data():
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
+	FINETUNEDATA["schemas"] = SCHEMAS
 	var jsonstr = JSON.stringify(FINETUNEDATA, "\t", false)
 	return jsonstr
 
@@ -570,6 +584,7 @@ func _on_save_file_dialog_file_selected(path: String) -> void:
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
+	update_schemas_internal()
 	if path.ends_with(".json"):
 		save_to_json(path)
 	elif path.ends_with(".ftproj"):

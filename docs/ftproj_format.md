@@ -6,7 +6,9 @@ The `.ftproj` file is a serialized representation of a fine‑tune project. The 
 {
   "functions": [],
   "conversations": {},
-  "settings": {}
+  "settings": {},
+  "graders": [],
+  "schemas": []
 }
 ```
 
@@ -16,6 +18,8 @@ Each section is described below along with the meaning of every field.
 - **`functions`**: Array of function definitions used when exporting or testing conversations.
 - **`conversations`**: Dictionary mapping a conversation ID to an array of message objects.
 - **`settings`**: Global configuration options for the project.
+- **`graders`**: Array of grader configurations used to evaluate conversations.
+- **`schemas`**: Array of JSON schema entries available in the project.
 
 ## Function entries
 
@@ -116,6 +120,16 @@ Global configuration stored in the `settings` object.
 | `countTokensWhen` | integer | Specifies when token counting is performed. |
 | `tokenCounts` | string | Cached token counts per conversation. |
 | `countTokensModel` | integer | Model used to estimate token counts. |
+
+## Schemas
+
+Each item in the `schemas` array represents one JSON schema definition.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Display name for the schema. |
+| `schema` | object | Original schema as entered by the user. |
+| `sanitizedSchema` | object | Sanitized version of the schema for safe usage. |
 
 ### Binary vs JSON
 

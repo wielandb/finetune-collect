@@ -497,6 +497,14 @@ msgstr "Die URL zu einer Instanz der Schema-Editor-PHP-Datei,\n"
 "benutzt, deine Daten an einen Server vom Entwickler übertragen werden."
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL"
+msgstr "URL des Schema-Validators:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
+msgstr "URL zum PHP-Skript, das JSON-Schemas validiert"
+
+#: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
 msgstr "Prüfen"
 

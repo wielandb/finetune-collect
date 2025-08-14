@@ -479,6 +479,14 @@ msgstr "The URL where an instance of the Schema-Editor-PHP-File\n"
 "the developer's server if you use the standard endpoint."
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL"
+msgstr "URL of the schema validator:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
+msgstr "URL of the PHP script used to validate JSON schemas"
+
+#: scenes/conversation_settings.tscn
 msgid "GENERIC_CHECK"
 msgstr "Check"
 

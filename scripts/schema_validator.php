@@ -858,6 +858,15 @@ if (php_sapi_name() !== 'cli') {
         exit;
     }
 
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        http_response_code(200);
+        echo json_encode([
+            'ok' => true,
+            'usage' => 'Send POST with JSON body: {"action":"validate"|"validateSchema","schema":{...},"data":{...}}'
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         http_response_code(405);
         echo json_encode([

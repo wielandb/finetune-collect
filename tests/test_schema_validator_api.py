@@ -68,5 +68,11 @@ class SchemaValidatorAPITest(unittest.TestCase):
         self.assertEqual(result["phase"], "instance")
         self.assertGreater(len(result["errors"]), 0)
 
+    def test_usage_on_get(self):
+        with urllib.request.urlopen("http://127.0.0.1:8001/") as resp:
+            self.assertEqual(resp.status, 200)
+            data = json.load(resp)
+        self.assertIn("usage", data)
+
 if __name__ == "__main__":
     unittest.main()

@@ -6,6 +6,7 @@ func _on_add_schema_button_pressed() -> void:
 	var inst = SCHEMA_SCENE.instantiate()
 	$SchemasListVBox.add_child(inst)
 	$SchemasListVBox.move_child($SchemasListVBox/AddSchemaButton, -1)
+	get_node("/root/FineTune").update_schemas_internal()
 
 func to_var():
 	var all = []
@@ -27,3 +28,4 @@ func from_var(schemas_data):
 			if inst.has_method("from_var"):
 				inst.from_var(s)
 	$SchemasListVBox.move_child($SchemasListVBox/AddSchemaButton, -1)
+	get_node("/root/FineTune").update_schemas_internal()

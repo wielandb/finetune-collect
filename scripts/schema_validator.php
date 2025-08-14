@@ -82,6 +82,8 @@ final class JsonSchemaValidator
         // annotations (ignored at runtime, accepted in schema)
         'title' => true, 'description' => true, 'default' => true, 'examples' => true,
         'readOnly' => true, 'writeOnly' => true,
+        // permissive extensions used by upstream tools
+        'template' => true, 'watch' => true, 'options' => true,
         // $id/$schema metadata allowed (ignored)
         '$id' => true, '$schema' => true,
     ];
@@ -512,8 +514,19 @@ final class JsonSchemaValidator
 
         // string constraints
         foreach (['minLength','maxLength'] as $key) {
-            if (isset($schema[$key]) && !(is_int($schema[$key]) && $schema[$key] >= 0)) {
-                $this->err($errors, $path, $key, "\"{$key}\" must be a non-negative integer.");
+            if (array_key_exists($key, $schema)) {
+                $v = $schema[$key];
+                $valid = false;
+                if (is_int($v) && $v >= 0) {
+                    $valid = true;
+                } elseif (is_float($v) && $v >= 0 && floor($v) == $v) {
+                    $valid = true;
+                } elseif (is_string($v) && ctype_digit($v)) {
+                    $valid = true;
+                }
+                if (!$valid) {
+                    $this->err($errors, $path, $key, "\"{$key}\" must be a non-negative integer.");
+                }
             }
         }
         if (isset($schema['pattern']) && !(is_string($schema['pattern']) && $this->pregIsValid($schema['pattern']))) {

@@ -279,7 +279,11 @@ func _ready() -> void:
 	for item in get_node("/root/FineTune").get_available_function_names():
 		$FunctionMessageContainer/function/FunctionNameChoiceButton.add_item(item)
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(-1)
-	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	var ft_node = get_node("/root/FineTune")
+	if ft_node.has_method("update_available_schemas_in_UI_global"):
+		ft_node.update_available_schemas_in_UI_global()
+	$SchemaMessageContainer/OptionButton.select(-1)
+	var finetunetype = ft_node.SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		# DPO: Only User and assistant messages are available, only text
 		$MessageSettingsContainer/MessageType.set_item_disabled(1, true)

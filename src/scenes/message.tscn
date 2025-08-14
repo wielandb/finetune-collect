@@ -563,7 +563,7 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
 horizontal_alignment = 1
 
-[node name="OptionButton" type="OptionButton" parent="SchemaMessageContainer"]
+[node name="OptionButton" type="OptionButton" parent="SchemaMessageContainer" groups=["UI_needs_schema_list"]]
 custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 

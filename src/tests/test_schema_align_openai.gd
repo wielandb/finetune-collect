@@ -12,6 +12,7 @@ func assert_eq(a, b, name := ""):
 func test_sanitize():
 	var align = load("res://scenes/schemas/schema_align_openai.gd")
 	var schema = {
+		"title": "Person",
 		"type": "object",
 		"properties": {
 			"name": {"type": "string", "minLength": 1}
@@ -21,10 +22,12 @@ func test_sanitize():
 		"required": []
 	}
 	var out = align.sanitize_envelope_or_schema(schema)
-	assert_eq(out["additionalProperties"], false, "additionalProperties")
-	assert_eq(out["required"][0], "name", "required filled")
-	assert_eq(out.has("allOf"), false, "allOf removed")
-	assert_eq(out["properties"]["name"].has("minLength"), false, "minLength removed")
+	assert_eq(out["name"], "Person", "name extracted")
+	var s = out["schema"]
+	assert_eq(s["additionalProperties"], false, "additionalProperties")
+	assert_eq(s["required"][0], "name", "required filled")
+	assert_eq(s.has("allOf"), false, "allOf removed")
+	assert_eq(s["properties"]["name"].has("minLength"), false, "minLength removed")
 
 func _init():
 	test_sanitize()

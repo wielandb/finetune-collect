@@ -109,11 +109,11 @@ func _on_schema_validator_request_completed(result, response_code, headers, body
 		if json2.parse(oai_text) != OK:
 			_set_oai_result(false, "Invalid JSON")
 			return
-		_pending_schema = json2.data
+		_pending_schema = json2.data["schema"]
 		var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
 		_set_oai_pending()
 		_current_validation = "oai"
-		var body2 = {"action": "validate_schema", "schema": json2.data}
+		var body2 = {"action": "validate_schema", "schema": _pending_schema}
 		var body_json2 = JSON.stringify(body2)
 		var body_bytes2: PackedByteArray = body_json2.to_utf8_buffer()
 		_validator.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes2)

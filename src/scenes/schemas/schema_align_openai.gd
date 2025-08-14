@@ -149,8 +149,24 @@ static func sanitize_envelope_or_schema(data):
 	if typeof(data) == TYPE_DICTIONARY and not _is_schema_like(data):
 		var out = data.duplicate(true)
 		if out.has("schema"):
-			out["schema"] = sanitize_schema(out["schema"], true)
+			var schema = out["schema"]
+			if schema is Dictionary and schema.has("title") and schema["title"] is String:
+				out["name"] = schema["title"]
+			elif not out.has("name"):
+				out["name"] = ""
+			out["schema"] = sanitize_schema(schema, true)
 		if out.has("parameters"):
-			out["parameters"] = sanitize_schema(out["parameters"], true)
+			var params = out["parameters"]
+			if params is Dictionary and params.has("title") and params["title"] is String:
+				out["name"] = params["title"]
+			elif not out.has("name"):
+				out["name"] = ""
+			out["parameters"] = sanitize_schema(params, true)
+		if not out.has("name"):
+			out["name"] = ""
 		return out
-	return sanitize_schema(data, true)
+	var name := ""
+	if data is Dictionary and data.has("title") and data["title"] is String:
+		name = data["title"]
+	var sanitized = sanitize_schema(data, true)
+	return {"name": name, "schema": sanitized}

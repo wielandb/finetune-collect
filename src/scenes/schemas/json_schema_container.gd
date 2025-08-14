@@ -73,7 +73,7 @@ func _on_edit_json_schema_code_edit_text_changed() -> void:
 	_pending_schema = json.data
 	_set_edit_pending()
 	_current_validation = "edit"
-	var body = {"action": "validateSchema", "schema": json.data}
+	var body = {"action": "validate_schema", "schema": json.data}
 	var body_json = JSON.stringify(body)
 	var body_bytes: PackedByteArray = body_json.to_utf8_buffer()
 	_validator.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes)
@@ -113,7 +113,7 @@ func _on_schema_validator_request_completed(result, response_code, headers, body
 		var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
 		_set_oai_pending()
 		_current_validation = "oai"
-		var body2 = {"action": "validateSchema", "schema": json2.data}
+		var body2 = {"action": "validate_schema", "schema": json2.data}
 		var body_json2 = JSON.stringify(body2)
 		var body_bytes2: PackedByteArray = body_json2.to_utf8_buffer()
 		_validator.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes2)

@@ -68,5 +68,19 @@ class SchemaValidatorAPITest(unittest.TestCase):
         self.assertEqual(result["phase"], "instance")
         self.assertGreater(len(result["errors"]), 0)
 
+    def test_validate_schema_only(self):
+        payload = {
+            "action": "validate_schema",
+            "schema": {
+                "type": "object",
+                "properties": {"name": {"type": "string"}},
+                "required": ["name"],
+                "additionalProperties": False,
+            },
+        }
+        result = self.request(payload)
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["phase"], "schema")
+
 if __name__ == "__main__":
     unittest.main()

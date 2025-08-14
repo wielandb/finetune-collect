@@ -48,9 +48,28 @@ func test_json_schema():
 	assert_eq(sample.get("output_json", {}).get("foo", ""), "bar", "output_json")
 	node.queue_free()
 
+func test_json_schema_option_button():
+	var Scene = load("res://scenes/message.tscn")
+	var node = Scene.instantiate()
+	var ob = node.get_node("SchemaMessageContainer/OptionButton")
+	ob.add_item("opt0")
+	ob.add_item("opt1")
+	ob.select(1)
+	var saved = node.to_var()
+	assert_eq(saved.get("jsonSchemaOption", -1), 1, "json_schema_option_saved")
+	node.queue_free()
+	var node2 = Scene.instantiate()
+	var ob2 = node2.get_node("SchemaMessageContainer/OptionButton")
+	ob2.add_item("opt0")
+	ob2.add_item("opt1")
+	node2.from_var({"role":"assistant","type":"JSON Schema","jsonSchemaValue":"{}","jsonSchemaOption":1})
+	assert_eq(ob2.selected, 1, "json_schema_option_restored")
+	node2.queue_free()
+
 func _init():
 	test_text_message()
 	test_function_call()
 	test_json_schema()
+	test_json_schema_option_button()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

@@ -138,7 +138,7 @@ func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 func to_var():
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
 	var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
-	var name := $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit.text
+	var name = $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit.text
 	var json := JSON.new()
 	var schema = null
 	if json.parse(editor.text) == OK:

@@ -1404,3 +1404,11 @@ msgstr "Grader verification error!"
 msgid "GRADER_VERIFIED"
 msgstr "Verified!"
 
+#: scenes/schemas/json_schema_container.gd
+msgid "Edit JSON Schema"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+msgid "OpenAI JSON Schema"
+msgstr ""
+

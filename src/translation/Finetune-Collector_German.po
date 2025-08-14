@@ -1422,3 +1422,11 @@ msgstr "Verifizierungsfehler!"
 msgid "GRADER_VERIFIED"
 msgstr "Verifiziert!"
 
+#: scenes/schemas/json_schema_container.gd
+msgid "Edit JSON Schema"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+msgid "OpenAI JSON Schema"
+msgstr ""
+

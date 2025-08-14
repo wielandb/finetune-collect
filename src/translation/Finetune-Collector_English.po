@@ -544,6 +544,10 @@ msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
 msgstr "A valid JSON schema in the settings is needed to use that"
 
 #: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"
+msgstr "At least one schema must be defined to use that"
+
+#: scenes/message.gd
 msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
 msgstr "Direct Prefernce Optimization (DPO) only supports text"
 

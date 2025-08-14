@@ -70,6 +70,7 @@ The `conversations` dictionary stores all recorded dialogues. The key is the con
 | `functionResults` | string | Results returned by an executed function. |
 | `functionUsePreText` | string | Text prepended when executing a function. |
 | `userName` | string | Optional user display name. |
+| `jsonSchemaName` | string | Name of the selected JSON schema. |
 | `jsonSchemaValue` | string | Additional schema information. |
 | `metaData` | object | Information about the conversation itself. |
 | `audioData` | string | Base64 encoded audio data. |
@@ -114,7 +115,6 @@ Global configuration stored in the `settings` object.
 | `exportImagesHow` | integer | How image messages are exported. |
 | `useUserNames` | bool | Include user names in exported data. |
 | `schemaEditorURL` | string | URL to an external JSON schema editor. |
-| `jsonSchema` | string | Default JSON schema used for validation. |
 | `tokenCounterPath` | string | Path to an external token counting tool. |
 | `exportConvos` | integer | Determines which conversations are exported. |
 | `countTokensWhen` | integer | Specifies when token counting is performed. |

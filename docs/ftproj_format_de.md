@@ -70,6 +70,7 @@ Im Dictionary `conversations` werden alle aufgezeichneten Dialoge gespeichert. D
 | `functionResults` | string | Ergebnis einer ausgeführten Funktion. |
 | `functionUsePreText` | string | Text, der bei der Ausführung vorangestellt wird. |
 | `userName` | string | Optionaler Benutzername. |
+| `jsonSchemaName` | string | Name des ausgewählten JSON‑Schemas. |
 | `jsonSchemaValue` | string | Zusätzliche Schema‑Informationen. |
 | `metaData` | object | Informationen zur Konversation selbst. |
 | `audioData` | string | Base64‑kodierte Audiodaten. |
@@ -114,7 +115,6 @@ Globale Konfiguration, gespeichert im Objekt `settings`.
 | `exportImagesHow` | integer | Art und Weise des Bildexports. |
 | `useUserNames` | bool | Benutzernamen in exportierten Daten einbeziehen. |
 | `schemaEditorURL` | string | URL zu einem externen JSON-Schema-Editor. |
-| `jsonSchema` | string | Standard‑JSON-Schema zur Validierung. |
 | `tokenCounterPath` | string | Pfad zu einem externen Tool zur Tokenzählung. |
 | `exportConvos` | integer | Welche Gespräche exportiert werden. |
 | `countTokensWhen` | integer | Wann die Tokenzählung erfolgt. |

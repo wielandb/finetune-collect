@@ -647,6 +647,7 @@ layout_mode = 2
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_do_token_calculation_update"]
+[connection signal="item_selected" from="SchemaMessageContainer/OptionButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]

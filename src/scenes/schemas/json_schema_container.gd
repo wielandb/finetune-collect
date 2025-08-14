@@ -133,3 +133,4 @@ func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	json.data["title"] = new_text
 	editor.text = JSON.stringify(json.data, "	")
 	_updating_from_name = false
+	_on_edit_json_schema_code_edit_text_changed()

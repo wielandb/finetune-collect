@@ -29,6 +29,7 @@ layout_mode = 2
 [node name="TitleLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 20
 text = "JSON Schema"
 horizontal_alignment = 1
 

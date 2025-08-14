@@ -95,7 +95,7 @@ func _on_schema_validator_request_completed(result, response_code, headers, body
 			if not ok and res.has("errors"):
 				msg = JSON.stringify(res["errors"])
 	else:
-		msg = "HTTP error"
+		msg = "HTTP error " + str(response_code)
 	if target == "edit":
 		if not ok:
 			_set_edit_result(false, msg)

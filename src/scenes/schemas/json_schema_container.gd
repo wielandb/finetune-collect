@@ -54,6 +54,7 @@ func _set_oai_result(ok: bool, msg := "") -> void:
 
 func _on_delete_schema_button_pressed() -> void:
 	queue_free()
+	get_node("/root/FineTune").call_deferred("update_schemas_internal")
 
 func _on_edit_json_schema_code_edit_text_changed() -> void:
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
@@ -134,6 +135,7 @@ func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	editor.text = JSON.stringify(json.data, "	")
 	_updating_from_name = false
 	_on_edit_json_schema_code_edit_text_changed()
+	get_node("/root/FineTune").update_schemas_internal()
 
 func to_var():
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit

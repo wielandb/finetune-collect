@@ -27,6 +27,7 @@ message=""
 function_use_parameter=""
 function_use_result=""
 UI_needs_function_list=""
+UI_needs_schema_list=""
 
 [gui]
 

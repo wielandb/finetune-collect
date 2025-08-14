@@ -180,6 +180,21 @@ func update_graders_internal():
 
 func update_schemas_internal():
 	SCHEMAS = $Conversation/Schemas/SchemasList.to_var()
+	update_available_schemas_in_UI_global()
+func get_available_schema_names():
+	var tmpNames = []
+	for s in SCHEMAS:
+		var name = s.get("name", "")
+		if name != "":
+			tmpNames.append(name)
+	return tmpNames
+
+func update_available_schemas_in_UI_global():
+	for node in get_tree().get_nodes_in_group("UI_needs_schema_list"):
+		node.clear()
+		for s in get_available_schema_names():
+			node.add_item(s)
+
 
 func get_available_function_names():
 	var tmpNames = []

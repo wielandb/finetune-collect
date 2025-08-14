@@ -2,6 +2,7 @@ extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
 var default_schema_editor_url = "https://example.com/editor.php"
+var default_schema_validator_url = "https://example.com/validator.php"
 var schema_loader_file_access_web = FileAccessWeb.new()
 
 func to_var():
@@ -22,6 +23,7 @@ func to_var():
 	me["exportImagesHow"] = $VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.selected
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
 	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
+	me["jsonSchemaValidatorURL"] = $VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text
 	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
 	me["imageUploadSetting"] = $VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected
 	me["imageUploadServerURL"] = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text
@@ -51,6 +53,7 @@ func from_var(me):
 			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
+	$VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text = me.get("jsonSchemaValidatorURL", default_schema_validator_url)
 	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
 	_on_schema_content_editor_text_changed()
 	$VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected = me.get("imageUploadSetting", 0)

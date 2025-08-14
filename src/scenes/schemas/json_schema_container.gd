@@ -11,6 +11,9 @@ const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
 
 func _ready() -> void:
 	_validator.request_completed.connect(_on_schema_validator_request_completed)
+	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
+	tab_bar.set_tab_title(0, tr("Edit JSON Schema"))
+	tab_bar.set_tab_title(1, tr("OpenAI JSON Schema"))
 
 func _set_edit_pending() -> void:
 	var c := $MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer

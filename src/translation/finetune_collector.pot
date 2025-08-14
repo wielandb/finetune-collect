@@ -1234,3 +1234,11 @@ msgstr ""
 #: scenes/graders/grader_container.gd
 msgid "GRADER_VERIFIED"
 msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+msgid "Edit JSON Schema"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+msgid "OpenAI JSON Schema"
+msgstr ""

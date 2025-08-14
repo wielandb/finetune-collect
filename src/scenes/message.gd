@@ -43,6 +43,10 @@ func to_var():
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
+	var schema_name := ""
+	if $SchemaMessageContainer/OptionButton.selected != -1:
+		schema_name = $SchemaMessageContainer/OptionButton.get_item_text($SchemaMessageContainer/OptionButton.selected)
+	me["jsonSchemaName"] = schema_name
 	if $MetaMessageContainer.visible:
 		me["metaData"] = {}
 		me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
@@ -134,6 +138,8 @@ func from_var(data):
 			$MessageSettingsContainer/UserNameEdit.visible = true
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
+	var saved_name = data.get("jsonSchemaName", "")
+	$SchemaMessageContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/OptionButton, saved_name))
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
 	$AudioMessageContainer/TranscriptionContainer/RichTextLabel.text = data.get("audioTranscript", "")
@@ -475,11 +481,11 @@ func _on_role_item_selected(index: int) -> void:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
 					else:
 						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
-					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
-					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
-						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
-					else:
-						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"))
+				# Only enable JSON schema if at least one schema is available
+				if get_node("/root/FineTune").get_available_schema_names().size() > 0:
+					$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+				else:
+					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"))
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
@@ -696,7 +702,13 @@ func getImageType(url: String) -> String:
 
 func _on_schema_edit_button_pressed() -> void:
 	# POST the Schema and The Data we already have to the editor URL to retrieve a token
-	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
+	var schema_name := ""
+	if $SchemaMessageContainer/OptionButton.selected != -1:
+		schema_name = $SchemaMessageContainer/OptionButton.get_item_text($SchemaMessageContainer/OptionButton.selected)
+	var schema_dict = get_node("/root/FineTune").get_schema_by_name(schema_name)
+	var json_schema_string := ""
+	if schema_dict != null:
+		json_schema_string = JSON.stringify(schema_dict)
 	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
 	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
 	var data_to_send = {"json_data": existing_json_data, "json_schema": json_schema_string}

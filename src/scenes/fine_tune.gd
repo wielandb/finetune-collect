@@ -1148,3 +1148,14 @@ func conversation_from_openai_message_json(oaimsgjson):
 			i += 1
 
 	return NEWCONVO
+func get_schema_by_name(name: String):
+	for s in SCHEMAS:
+		if s.get("name", "") == name:
+			return s.get("schema", null)
+	return null
+
+func get_sanitized_schema_by_name(name: String):
+	for s in SCHEMAS:
+		if s.get("name", "") == name:
+			return s.get("sanitizedSchema", null)
+	return null

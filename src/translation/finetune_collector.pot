@@ -597,6 +597,10 @@ msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
 msgstr ""
 
 #: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"
+msgstr ""
+
+#: scenes/message.gd
 msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
 msgstr ""
 

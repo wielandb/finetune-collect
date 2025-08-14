@@ -83,7 +83,7 @@ final class JsonSchemaValidator
         'title' => true, 'description' => true, 'default' => true, 'examples' => true,
         'readOnly' => true, 'writeOnly' => true,
         // permissive extensions used by upstream tools
-        'template' => true, 'watch' => true, 'options' => true,
+        'template' => true, 'watch' => true, 'options' => true, 'headerTemplate' => true,
         // $id/$schema metadata allowed (ignored)
         '$id' => true, '$schema' => true,
     ];

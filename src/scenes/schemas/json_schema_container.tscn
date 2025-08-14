@@ -151,6 +151,6 @@ editable = false
 
 [node name="SchemaValidatorHTTPRequest" type="HTTPRequest" parent="."]
 
+[connection signal="text_changed" from="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit" to="." method="_on_schema_name_line_edit_text_changed"]
 [connection signal="pressed" from="MarginContainer/JSONSchemaControlsContainer/DeleteSchemaButton" to="." method="_on_delete_schema_button_pressed"]
 [connection signal="text_changed" from="MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit" to="." method="_on_edit_json_schema_code_edit_text_changed"]
-[connection signal="text_changed" from="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit" to="." method="_on_schema_name_line_edit_text_changed"]

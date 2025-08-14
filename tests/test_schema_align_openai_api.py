@@ -40,12 +40,14 @@ class SchemaAlignOpenAITest(unittest.TestCase):
     def test_normalization(self):
         payload = {
             "schema": {
+                "title": "Example",
                 "type": "object",
                 "properties": {"a": {"type": "string"}},
                 "additionalProperties": True,
             }
         }
         result = self.request(payload)
+        self.assertEqual(result["name"], "Example")
         schema = result["schema"]
         self.assertEqual(schema["additionalProperties"], False)
         self.assertEqual(schema["required"], ["a"])

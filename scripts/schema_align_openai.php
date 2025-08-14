@@ -296,21 +296,42 @@ function sanitize_schema($node, bool $isRoot = false) {
 }
 
 /**
- * If the input is an envelope, only sanitize schema-bearing keys with $isRoot=true.
- * Otherwise, treat the input as a root schema.
+ * If the input is an envelope, sanitize schema-bearing keys and ensure a name field.
+ * Otherwise, wrap the sanitized schema in an envelope with a name derived from the title.
  */
 function sanitize_envelope_or_schema($data) {
     if (is_array($data) && is_assoc_array($data) && !is_schema_like($data)) {
         $out = $data;
         if (array_key_exists('schema', $out)) {
-            $out['schema'] = sanitize_schema($out['schema'], true);
+            $schema = $out['schema'];
+            if (isset($schema['title']) && is_string($schema['title'])) {
+                $out['name'] = $schema['title'];
+            } elseif (!array_key_exists('name', $out)) {
+                $out['name'] = '';
+            }
+            $out['schema'] = sanitize_schema($schema, true);
         }
         if (array_key_exists('parameters', $out)) {
-            $out['parameters'] = sanitize_schema($out['parameters'], true);
+            $params = $out['parameters'];
+            if (isset($params['title']) && is_string($params['title'])) {
+                $out['name'] = $params['title'];
+            } elseif (!array_key_exists('name', $out)) {
+                $out['name'] = '';
+            }
+            $out['parameters'] = sanitize_schema($params, true);
+        }
+        if (!array_key_exists('name', $out)) {
+            $out['name'] = '';
         }
         return $out;
     }
-    return sanitize_schema($data, true);
+
+    $name = '';
+    if (is_array($data) && isset($data['title']) && is_string($data['title'])) {
+        $name = $data['title'];
+    }
+    $sanitized = sanitize_schema($data, true);
+    return ['name' => $name, 'schema' => $sanitized];
 }
 
 $result = sanitize_envelope_or_schema($input);

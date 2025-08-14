@@ -66,7 +66,7 @@ func _on_edit_json_schema_code_edit_text_changed() -> void:
 	if err != OK:
 		_set_edit_result(false, "Invalid JSON")
 		return
-var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
+	var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
 	if validator_url == "":
 		_set_edit_result(false, "No validator URL")
 		return
@@ -108,7 +108,7 @@ func _on_schema_validator_request_completed(result, response_code, headers, body
 			_set_oai_result(false, "Invalid JSON")
 			return
 		_pending_schema = json2.data
-var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
+		var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
 		_set_oai_pending()
 		_current_validation = "oai"
 		var body2 = {"action": "validateSchema", "schema": json2.data}

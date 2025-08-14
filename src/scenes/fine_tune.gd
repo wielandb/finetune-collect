@@ -9,8 +9,9 @@ var SETTINGS = {
 	"useGlobalSystemMessage": false,
 	"globalSystemMessage": "",
 	"modelChoice": "gpt-4o",
-	"availableModels": []
-	}
+	"availableModels": [],
+	"schemaValidationURL": ""
+}
 
 var RUNTIME = {"filepath": ""}
 

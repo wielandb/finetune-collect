@@ -1,17 +1,14 @@
 extends HBoxContainer
 
 const SchemaAlignOpenAI := preload("res://scenes/schemas/schema_align_openai.gd")
+const JsonSchemaValidator := preload("res://json_schema_validator.gd")
 
 var _updating_from_name := false
-@onready var _validator := $SchemaValidatorHTTPRequest
-var _pending_schema = null
-var _current_validation := ""
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
 var _validate_timer: Timer
 
 func _ready() -> void:
-	_validator.request_completed.connect(_on_schema_validator_request_completed)
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Edit JSON Schema"))
 	tab_bar.set_tab_title(1, tr("OpenAI JSON Schema"))
@@ -79,62 +76,30 @@ func _on_validate_timeout() -> void:
 	if err != OK:
 		_set_edit_result(false, "Invalid JSON")
 		return
-	var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
-	if validator_url == "":
-		_set_edit_result(false, "No validator URL")
-		return
-	_pending_schema = json.data
 	_set_edit_pending()
-	_current_validation = "edit"
-	var body = {"action": "validate_schema", "schema": json.data}
-	var body_json = JSON.stringify(body)
-	var body_bytes: PackedByteArray = body_json.to_utf8_buffer()
-	_validator.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes)
+	var res = JsonSchemaValidator.validate_schema(json.data)
+	if not res["ok"]:
+		_set_edit_result(false, JSON.stringify(res["errors"]))
+		return
+	_set_edit_result(true)
+	var sanitized = SchemaAlignOpenAI.sanitize_envelope_or_schema(json.data)
+	var oai_text = JSON.stringify(sanitized, "      ")
+	oai_editor.text = oai_text
+	var json2 := JSON.new()
+	if json2.parse(oai_text) != OK:
+		_set_oai_result(false, "Invalid JSON")
+		return
+	var pending_schema = json2.data["schema"]
+	_set_oai_pending()
+	var res2 = JsonSchemaValidator.validate_schema(pending_schema)
+	if res2["ok"]:
+		_set_oai_result(true)
+	else:
+		_set_oai_result(false, JSON.stringify(res2["errors"]))
 	if not _updating_from_name and json.data is Dictionary and json.data.has("title"):
 		var title = json.data["title"]
 		if title is String:
 			name_edit.text = title
-
-func _on_schema_validator_request_completed(result, response_code, headers, body):
-	var target := _current_validation
-	_current_validation = ""
-	var text = body.get_string_from_utf8()
-	var ok = false
-	var msg = ""
-	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
-		var res = JSON.parse_string(text)
-		if res is Dictionary:
-			ok = res.get("ok", false)
-			if not ok and res.has("errors"):
-				msg = JSON.stringify(res["errors"])
-	else:
-		msg = "HTTP error " + str(response_code)
-	if target == "edit":
-		if not ok:
-			_set_edit_result(false, msg)
-			return
-		_set_edit_result(true)
-		var sanitized = SchemaAlignOpenAI.sanitize_envelope_or_schema(_pending_schema)
-		var oai_text = JSON.stringify(sanitized, "	")
-		var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
-		oai_editor.text = oai_text
-		var json2 := JSON.new()
-		if json2.parse(oai_text) != OK:
-			_set_oai_result(false, "Invalid JSON")
-			return
-		_pending_schema = json2.data["schema"]
-		var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
-		_set_oai_pending()
-		_current_validation = "oai"
-		var body2 = {"action": "validate_schema", "schema": _pending_schema}
-		var body_json2 = JSON.stringify(body2)
-		var body_bytes2: PackedByteArray = body_json2.to_utf8_buffer()
-		_validator.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes2)
-	elif target == "oai":
-		if not ok:
-			_set_oai_result(false, msg)
-			return
-		_set_oai_result(true)
 
 func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit

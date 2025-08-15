@@ -9,8 +9,26 @@ var _current_validation := ""
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
 var _validate_timer: Timer
+var _id: String = ""
+
+func _generate_id(length := 8) -> String:
+	var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	var res := ""
+	for i in range(length):
+		res += chars[randi() % chars.length()]
+	return res
+
+func _ensure_id() -> void:
+	if _id != "":
+		return
+	var fine := get_node_or_null("/root/FineTune")
+	if fine != null and fine.has_method("getRandomSchemaID"):
+		_id = fine.getRandomSchemaID(4)
+	else:
+		_id = _generate_id(8)
 
 func _ready() -> void:
+	_ensure_id()
 	_validator.request_completed.connect(_on_schema_validator_request_completed)
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Edit JSON Schema"))
@@ -79,7 +97,14 @@ func _on_validate_timeout() -> void:
 	if err != OK:
 		_set_edit_result(false, "Invalid JSON")
 		return
-	var validator_url = get_node("/root/FineTune").SETTINGS.get("schemaValidatorURL", "")
+	if not _updating_from_name and json.data is Dictionary and json.data.has("title"):
+		var title = json.data["title"]
+		if title is String:
+			name_edit.text = title
+	var fine := get_node_or_null("/root/FineTune")
+	var validator_url = ""
+	if fine != null:
+		validator_url = fine.SETTINGS.get("schemaValidatorURL", "")
 	if validator_url == "":
 		_set_edit_result(false, "No validator URL")
 		return
@@ -90,10 +115,6 @@ func _on_validate_timeout() -> void:
 	var body_json = JSON.stringify(body)
 	var body_bytes: PackedByteArray = body_json.to_utf8_buffer()
 	_validator.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes)
-	if not _updating_from_name and json.data is Dictionary and json.data.has("title"):
-		var title = json.data["title"]
-		if title is String:
-			name_edit.text = title
 
 func _on_schema_validator_request_completed(result, response_code, headers, body):
 	var target := _current_validation
@@ -150,6 +171,7 @@ func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	get_node("/root/FineTune").update_schemas_internal()
 
 func to_var():
+	_ensure_id()
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
 	var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
 	var name = $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit.text
@@ -164,12 +186,14 @@ func to_var():
 		sanitized_schema = dat.get("schema", dat)
 		if name == "" and dat.has("name") and dat["name"] is String:
 			name = dat["name"]
-	return {"schema": schema, "sanitizedSchema": sanitized_schema, "name": name}
+	return {"id": _id, "schema": schema, "sanitizedSchema": sanitized_schema, "name": name}
 
 func from_var(data):
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
 	var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
 	var name_edit := $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit
+	_ensure_id()
+	_id = data.get("id", _id)
 	var schema = data.get("schema", null)
 	var sanitized_schema = data.get("sanitizedSchema", null)
 	var name = data.get("name", "")

@@ -47,10 +47,10 @@ func to_var():
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
-	var schema_name := ""
+	var schema_id = ""
 	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected != -1:
-		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
-	me["jsonSchemaName"] = schema_name
+		schema_id = str($SchemaMessageContainer/HBoxContainer/OptionButton.get_item_metadata($SchemaMessageContainer/HBoxContainer/OptionButton.selected))
+	me["jsonSchemaId"] = schema_id
 	if $MetaMessageContainer.visible:
 		me["metaData"] = {}
 		me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
@@ -142,8 +142,15 @@ func from_var(data):
 			$MessageSettingsContainer/UserNameEdit.visible = true
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
-	var saved_name = data.get("jsonSchemaName", "")
-	$SchemaMessageContainer/HBoxContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/HBoxContainer/OptionButton, saved_name))
+	var saved_id = str(data.get("jsonSchemaId", ""))
+	var opt = $SchemaMessageContainer/HBoxContainer/OptionButton
+	var idx = -1
+	for i in range(opt.item_count):
+		if str(opt.get_item_metadata(i)) == saved_id:
+			idx = i
+			break
+	if idx != -1:
+		opt.select(idx)
 	_validate_schema_message()
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
@@ -597,12 +604,8 @@ func _validate_schema_message() -> void:
 		_set_schema_validation_result(false, "Invalid JSON")
 		return
 	var fine = get_node("/root/FineTune")
-	var schema_name = option.get_item_text(option.selected)
-	var schema = null
-	for s in fine.SCHEMAS:
-		if s.get("name", "") == schema_name:
-			schema = s.get("sanitizedSchema", null)
-			break
+	var schema_id = str(option.get_item_metadata(option.selected))
+	var schema = fine.get_sanitized_schema_by_id(schema_id)
 	if schema == null:
 		_set_schema_validation_result(false, "No schema")
 		return
@@ -796,10 +799,10 @@ func getImageType(url: String) -> String:
 
 func _on_schema_edit_button_pressed() -> void:
 	# POST the Schema and The Data we already have to the editor URL to retrieve a token
-	var schema_name := ""
+	var schema_id = ""
 	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected != -1:
-		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
-	var schema_dict = get_node("/root/FineTune").get_schema_by_name(schema_name)
+		schema_id = str($SchemaMessageContainer/HBoxContainer/OptionButton.get_item_metadata($SchemaMessageContainer/HBoxContainer/OptionButton.selected))
+	var schema_dict = get_node("/root/FineTune").get_schema_by_id(schema_id)
 	var json_schema_string := ""
 	if schema_dict != null:
 		json_schema_string = JSON.stringify(schema_dict)

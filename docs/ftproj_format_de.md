@@ -70,7 +70,7 @@ Im Dictionary `conversations` werden alle aufgezeichneten Dialoge gespeichert. D
 | `functionResults` | string | Ergebnis einer ausgeführten Funktion. |
 | `functionUsePreText` | string | Text, der bei der Ausführung vorangestellt wird. |
 | `userName` | string | Optionaler Benutzername. |
-| `jsonSchemaName` | string | Name des ausgewählten JSON‑Schemas. |
+| `jsonSchemaId` | string | Kennung des ausgewählten JSON‑Schemas. |
 | `jsonSchemaValue` | string | Zusätzliche Schema‑Informationen. |
 | `metaData` | object | Informationen zur Konversation selbst. |
 | `audioData` | string | Base64‑kodierte Audiodaten. |
@@ -127,6 +127,7 @@ Jedes Element im Array `schemas` beschreibt ein JSON-Schema.
 
 | Feld | Typ | Beschreibung |
 | --- | --- | --- |
+| `id` | string | Eindeutige Kennung des Schemas. |
 | `name` | string | Anzeigename des Schemas. |
 | `schema` | object | Ursprüngliches, vom Benutzer eingegebenes Schema. |
 | `sanitizedSchema` | object | Bereinigte Version des Schemas für die Verwendung. |

@@ -189,18 +189,51 @@ func get_available_schema_names():
 			tmpNames.append(name)
 	return tmpNames
 
+func get_available_schemas():
+	return SCHEMAS
+
+func get_schema_by_id(id: String):
+	for s in SCHEMAS:
+		if s.get("id", "") == id:
+			return s.get("schema", null)
+	return null
+
+func get_sanitized_schema_by_id(id: String):
+	for s in SCHEMAS:
+		if s.get("id", "") == id:
+			return s.get("sanitizedSchema", null)
+	return null
+
+func getRandomSchemaID(length: int) -> String:
+	var ascii_letters_and_digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	while true:
+		var result = ""
+		for i in range(length):
+			result += ascii_letters_and_digits[randi() % ascii_letters_and_digits.length()]
+		var exists = false
+		for s in SCHEMAS:
+			if s.get("id", "") == result:
+				exists = true
+				break
+		if not exists:
+			return result
+	return "----"
+
 func update_available_schemas_in_UI_global():
 	for node in get_tree().get_nodes_in_group("UI_needs_schema_list"):
-		var selected_text := ""
+		var selected_id = ""
 		if node.selected != -1:
-			selected_text = node.get_item_text(node.selected)
+			selected_id = str(node.get_item_metadata(node.selected))
 		node.clear()
-		for s in get_available_schema_names():
-			node.add_item(s)
-		if selected_text != "":
-			var idx := -1
+		for s in SCHEMAS:
+			var name = s.get("name", "")
+			var id = s.get("id", "")
+			node.add_item(name)
+			node.set_item_metadata(node.item_count - 1, id)
+		if selected_id != "":
+			var idx = -1
 			for i in range(node.item_count):
-				if node.get_item_text(i) == selected_text:
+				if str(node.get_item_metadata(i)) == selected_id:
 					idx = i
 					break
 			node.select(idx)
@@ -1156,14 +1189,3 @@ func conversation_from_openai_message_json(oaimsgjson):
 			i += 1
 
 	return NEWCONVO
-func get_schema_by_name(name: String):
-	for s in SCHEMAS:
-		if s.get("name", "") == name:
-			return s.get("schema", null)
-	return null
-
-func get_sanitized_schema_by_name(name: String):
-	for s in SCHEMAS:
-		if s.get("name", "") == name:
-			return s.get("sanitizedSchema", null)
-	return null

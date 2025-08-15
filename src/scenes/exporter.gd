@@ -366,11 +366,15 @@ func convert_rft_data(ftdata):
 		var processed_conversation = []
 		if system_message:
 			processed_conversation.append({
-				'role': 'system',
+				'role': 'developer',
 				'content': system_message
 			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		# Replace system messages with developer role for reinforcement fine tuning
+		for msg in processed_conversation:
+			if msg.get('role', '') == 'system':
+				msg['role'] = 'developer'
 		# Write to JSONL, optionally including tools
 		var output_entry = {}
 		output_entry['reference_json'] = reference_json
@@ -502,6 +506,10 @@ func convert_fine_tuning_data(ftdata):
 			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		# Replace system messages with developer role for reinforcement fine tuning
+		for msg in processed_conversation:
+			if msg.get('role', '') == 'system':
+				msg['role'] = 'developer'
 		# Write to JSONL, optionally including tools
 		var output_entry = {
 			'messages': processed_conversation

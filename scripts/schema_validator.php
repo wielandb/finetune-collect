@@ -760,25 +760,45 @@ final class JsonSchemaValidator
     private function matchesType($data, string $type): bool
     {
         switch ($type) {
-            case 'null': return $data === null;
-            case 'boolean': return is_bool($data);
-            case 'integer': return is_int($data);
-            case 'number': return is_int($data) || is_float($data);
-            case 'string': return is_string($data);
-            case 'array': return is_array($data) && $this->isList($data);
-            case 'object': return is_array($data) && $this->isAssoc($data);
-            default: return false;
+            case 'null':
+                return $data === null;
+            case 'boolean':
+                return is_bool($data);
+            case 'integer':
+                return is_int($data) || (is_float($data) && floor($data) == $data);
+            case 'number':
+                return is_int($data) || is_float($data);
+            case 'string':
+                return is_string($data);
+            case 'array':
+                return is_array($data) && $this->isList($data);
+            case 'object':
+                return is_array($data) && $this->isAssoc($data);
+            default:
+                return false;
         }
     }
 
     private function typeOf($data): string
     {
-        if ($data === null) return 'null';
-        if (is_bool($data)) return 'boolean';
-        if (is_int($data)) return 'integer';
-        if (is_float($data)) return 'number';
-        if (is_string($data)) return 'string';
-        if (is_array($data)) return $this->isList($data) ? 'array' : 'object';
+        if ($data === null) {
+            return 'null';
+        }
+        if (is_bool($data)) {
+            return 'boolean';
+        }
+        if (is_int($data)) {
+            return 'integer';
+        }
+        if (is_float($data)) {
+            return floor($data) == $data ? 'integer' : 'number';
+        }
+        if (is_string($data)) {
+            return 'string';
+        }
+        if (is_array($data)) {
+            return $this->isList($data) ? 'array' : 'object';
+        }
         return 'unknown';
     }
 

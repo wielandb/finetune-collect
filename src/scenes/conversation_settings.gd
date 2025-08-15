@@ -218,3 +218,21 @@ func _on_image_upload_server_url_edit_text_changed(new_text: String) -> void:
 
 func _on_image_uplaod_setting_option_button_item_selected(index: int) -> void:
 	update_settings_global()
+
+func _on_image_upload_server_test_button_pressed() -> void:
+	var upload_url = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text
+	var upload_key = $VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text
+	if upload_url == "" or upload_key == "":
+		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-negative.png")
+		return
+	var test_url = upload_url + "?test=1&key=" + upload_key
+	var err = $ImageUploadServerTestRequest.request(test_url)
+	if err != OK:
+		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-negative.png")
+
+func _on_image_upload_server_test_request_completed(result, response_code, headers, body):
+	var txt = body.get_string_from_utf8().strip_edges()
+	if response_code == 200 and txt == "ok":
+		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-positive.png")
+	else:
+		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-negative.png")

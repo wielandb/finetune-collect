@@ -56,6 +56,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['test'])) {
+       $key = $_GET['key'] ?? '';
+       if ($key !== $SECRET_KEY) {
+               http_response_code(403);
+               echo 'invalid key';
+       } else {
+               echo 'ok';
+       }
+       exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['image'])) {
 	$file = basename($_GET['image']);
 	$path = $UPLOAD_DIR . '/' . $file;

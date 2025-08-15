@@ -328,6 +328,10 @@ msgstr "Das Modell das für Vervollständigungen genutzt werden soll.\n"
 msgid "FINETUNE_EXPORT"
 msgstr "Exportiere Fine-Tune"
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_EXPORTING"
+msgstr "Exportiere"
+
 #: scenes/fine_tune.tscn
 msgid "GENERIC_SAVE"
 msgstr "Speichern"

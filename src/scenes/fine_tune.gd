@@ -23,6 +23,7 @@ const LAST_PROJECT_DATA_FILE := "user://last_project_data.json"
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 
 var file_access_web = FileAccessWeb.new()
+var EXPORT_BTN_ORIG_TEXT = ""
 # FINETUNEDATA = 
 # { functions: [],
 #   settings: {
@@ -112,11 +113,13 @@ func _ready() -> void:
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
 	load_last_project_on_start()
-
+	
 	var tab_bar = $Conversation.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Messages"))
 	tab_bar.set_tab_title(1, tr("Functions"))
 	tab_bar.set_tab_title(2, tr("Settings"))
+	$Exporter.export_progress.connect(_on_export_progress)
+	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -693,20 +696,39 @@ func create_jsonl_data_for_file():
 	return complete_jsonl_string
 
 
+func _start_export_progress():
+	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
+	$VBoxContainer/ExportBtn.disabled = true
+	$VBoxContainer/ExportBtn.text = tr("FINETUNE_EXPORTING")
+
+
+func _end_export_progress():
+	$VBoxContainer/ExportBtn.disabled = false
+	$VBoxContainer/ExportBtn.text = EXPORT_BTN_ORIG_TEXT
+
+
+func _on_export_progress(current: int, total: int) -> void:
+	$VBoxContainer/ExportBtn.text = "%s %d/%d" % [tr("FINETUNE_EXPORTING"), current, total]
+
+
 func _on_export_btn_pressed() -> void:
 	# If we are on the web, different things need to happen
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
 			$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
 		"Web":
+			_start_export_progress()
 			# When we are on web, we need to download the file directly
 			var complete_jsonl_string = await create_jsonl_data_for_file()
+			_end_export_progress()
 			var byte_array = complete_jsonl_string.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
 	
 
 func _on_export_file_dialog_file_selected(path: String) -> void:
+	_start_export_progress()
 	var complete_jsonl_string = await create_jsonl_data_for_file()
+	_end_export_progress()
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()

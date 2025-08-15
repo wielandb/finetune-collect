@@ -113,6 +113,15 @@ func load_available_fine_tuning_models_from_file():
 	var costs = JSON.parse_string(cost_json)
 	return costs["available_models"]
 
+func validate_is_json(testtext) -> bool:
+	if testtext == "":
+		return false
+	var json = JSON.new()
+	var err = json.parse(testtext)
+	if err == OK:
+		return true
+	return false
+
 
 func _on_model_choice_refresh_button_pressed() -> void:
 	openai.get_models()

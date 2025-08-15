@@ -191,11 +191,19 @@ func get_available_schema_names():
 
 func update_available_schemas_in_UI_global():
 	for node in get_tree().get_nodes_in_group("UI_needs_schema_list"):
+		var selected_text := ""
+		if node.selected != -1:
+			selected_text = node.get_item_text(node.selected)
 		node.clear()
 		for s in get_available_schema_names():
 			node.add_item(s)
-
-
+		if selected_text != "":
+			var idx := -1
+			for i in range(node.item_count):
+				if node.get_item_text(i) == selected_text:
+					idx = i
+					break
+			node.select(idx)
 func get_available_function_names():
 	var tmpNames = []
 	for f in FUNCTIONS:

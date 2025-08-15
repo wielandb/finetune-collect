@@ -1,6 +1,9 @@
 extends Node
 
-signal export_progress(current: int, total: int)
+signal export_progress(current: int, total: int, extra_text: String)
+
+var _current_idx: int = 0
+var _current_total: int = 0
 
 
 # Called when the node enters the scene tree for the first time.
@@ -13,17 +16,20 @@ func _process(delta: float) -> void:
 	pass
 
 func url_to_base64(url: String):
+	emit_signal("export_progress", _current_idx, _current_total, tr("FINETUNE_EXPORTING_IMAGE_DOWNLOAD"))
 	var httpreqObj := HTTPRequest.new()
 	add_child(httpreqObj)
 	var err := httpreqObj.request(url)
 	if err != OK:
 		push_error("Failed to request URL: " + url)
 		httpreqObj.queue_free()
+		emit_signal("export_progress", _current_idx, _current_total, "")
 		return ""
 	var response = await httpreqObj.request_completed
 	httpreqObj.queue_free()
 	var body = response[3]
 	var base_64_data = Marshalls.raw_to_base64(body)
+	emit_signal("export_progress", _current_idx, _current_total, "")
 	return base_64_data
 	
 
@@ -321,7 +327,9 @@ func convert_rft_data(ftdata):
 	var idx = 0
 	for conversation_key in conversations:
 		idx += 1
-		emit_signal("export_progress", idx, total)
+		_current_idx = idx
+		_current_total = total
+		emit_signal("export_progress", idx, total, "")
 		await get_tree().process_frame
 		var conversation = conversations[conversation_key].duplicate(true)
 		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
@@ -407,7 +415,9 @@ func convert_dpo_data(ftdata):
 
 	for convo_key in conversations:
 		idx += 1
-		emit_signal("export_progress", idx, total)
+		_current_idx = idx
+		_current_total = total
+		emit_signal("export_progress", idx, total, "")
 		await get_tree().process_frame
 		var conversation = conversations[convo_key]
 		
@@ -479,7 +489,9 @@ func convert_fine_tuning_data(ftdata):
 	var idx = 0
 	for conversation_key in conversations:
 		idx += 1
-		emit_signal("export_progress", idx, total)
+		_current_idx = idx
+		_current_total = total
+		emit_signal("export_progress", idx, total, "")
 		await get_tree().process_frame
 		var conversation = conversations[conversation_key]
 		var processed_conversation = []

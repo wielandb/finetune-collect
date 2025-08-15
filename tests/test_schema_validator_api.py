@@ -82,6 +82,21 @@ class SchemaValidatorAPITest(unittest.TestCase):
         self.assertTrue(result["ok"])
         self.assertEqual(result["phase"], "schema")
 
+    def test_integer_accepts_float_equivalent(self):
+        payload = {
+            "action": "validate",
+            "schema": {
+                "type": "object",
+                "properties": {"age": {"type": "integer"}},
+                "required": ["age"],
+                "additionalProperties": False,
+            },
+            "data": {"age": 67.0},
+        }
+        result = self.request(payload)
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["phase"], "instance")
+
     def test_schema_with_extras(self):
         schema = {
             "title": "Person",

@@ -8,12 +8,18 @@ var _pending_schema = null
 var _current_validation := ""
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
+var _validate_timer: Timer
 
 func _ready() -> void:
 	_validator.request_completed.connect(_on_schema_validator_request_completed)
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Edit JSON Schema"))
 	tab_bar.set_tab_title(1, tr("OpenAI JSON Schema"))
+	_validate_timer = Timer.new()
+	_validate_timer.one_shot = true
+	_validate_timer.wait_time = 2.0
+	add_child(_validate_timer)
+	_validate_timer.connect("timeout", Callable(self, "_on_validate_timeout"))
 
 func _set_edit_pending() -> void:
 	var c := $MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer
@@ -60,6 +66,9 @@ func _on_delete_schema_button_pressed() -> void:
 	get_node("/root/FineTune").call_deferred("update_schemas_internal")
 
 func _on_edit_json_schema_code_edit_text_changed() -> void:
+	_validate_timer.start()
+
+func _on_validate_timeout() -> void:
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
 	var oai_editor := $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
 	var name_edit := $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit

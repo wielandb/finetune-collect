@@ -316,6 +316,10 @@ msgstr "The model that should be used for completions. Note that although all mo
 msgid "FINETUNE_EXPORT"
 msgstr "Export Fine-Tune"
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_EXPORTING"
+msgstr "Exporting"
+
 #: scenes/fine_tune.tscn
 msgid "GENERIC_SAVE"
 msgstr "Save"

@@ -1,5 +1,7 @@
 extends Node
 
+signal export_progress(current: int, total: int)
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -313,10 +315,15 @@ func convert_rft_data(ftdata):
 		# replace conversations map with expanded version
 		ftdata['conversations'] = expanded
 	## End of convo expanding
-	print("Expanded conversations:")
 	print(ftdata['conversations'])
-	for conversation_key in ftdata['conversations']:
-		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
+	var conversations = ftdata['conversations']
+	var total = conversations.size()
+	var idx = 0
+	for conversation_key in conversations:
+		idx += 1
+		emit_signal("export_progress", idx, total)
+		await get_tree().process_frame
+		var conversation = conversations[conversation_key].duplicate(true)
 		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
 		var last_message = conversation.pop_back()
 		# We need to check if the message we got is assistant + either JSON Schema, function call, or plain text
@@ -395,8 +402,13 @@ func convert_rft_data(ftdata):
 func convert_dpo_data(ftdata):
 	var jsonl_file_string = ""
 	var conversations = ftdata.get("conversations", {})
-	
+	var total = conversations.size()
+	var idx = 0
+
 	for convo_key in conversations:
+		idx += 1
+		emit_signal("export_progress", idx, total)
+		await get_tree().process_frame
 		var conversation = conversations[convo_key]
 		
 		# We only train on one-turn conversations where:
@@ -456,20 +468,26 @@ func convert_fine_tuning_data(ftdata):
 	### Needs to be converted from scripts
 	## function_map = {func['name']: func for func in data.get('functions', [])}
 	var function_map = {}
-	for funcDef in ftdata.get('functions', []):
+	for funcDef in ftdata.get("functions", []):
 		function_map[funcDef["name"]] = funcDef
-	var tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+	var tools = convert_functions_to_openai_format(ftdata.get("functions", []))
 	var system_message = null
-	if ftdata['settings'].get('useGlobalSystemMessage', false):
-		system_message = ftdata['settings'].get('globalSystemMessage', '')
-	for conversation_key in ftdata['conversations']:
-		var conversation = ftdata['conversations'][conversation_key]
+	if ftdata["settings"].get("useGlobalSystemMessage", false):
+		system_message = ftdata["settings"].get("globalSystemMessage", "")
+	var conversations = ftdata["conversations"]
+	var total = conversations.size()
+	var idx = 0
+	for conversation_key in conversations:
+		idx += 1
+		emit_signal("export_progress", idx, total)
+		await get_tree().process_frame
+		var conversation = conversations[conversation_key]
 		var processed_conversation = []
 		if system_message:
-				processed_conversation.append({
-					'role': 'system', 
-					'content': system_message
-				})
+			processed_conversation.append({
+				'role': "system",
+				'content': system_message
+			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
 		# Write to JSONL, optionally including tools

@@ -523,6 +523,10 @@ msgstr ""
 msgid "FINETUNE_EXPORT"
 msgstr ""
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_EXPORTING"
+msgstr ""
+
 #: scenes/fine_tune.tscn
 msgid "OpenAI fine-tuning file"
 msgstr ""

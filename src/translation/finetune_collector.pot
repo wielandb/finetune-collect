@@ -40,6 +40,11 @@
 # res://scenes/graders/switch_sample_item_src_container.tscn
 # res://scenes/model_choice_container.tscn
 # res://scenes/graders/grader_container.gd
+# res://scenes/schemas/json_schema_container.gd
+# res://scenes/schemas/json_schema_container.tscn
+# res://scenes/schemas/schemas.gd
+# res://scenes/schemas/schemas_list.tscn
+# res://scenes/schemas/schema_align_openai.gd
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
@@ -176,6 +181,10 @@ msgstr ""
 
 #: scenes/conversation.tscn
 msgid "Graders"
+msgstr ""
+
+#: scenes/conversation.tscn
+msgid "Schemas"
 msgstr ""
 
 #: scenes/conversation_settings.gd
@@ -479,23 +488,15 @@ msgid "SETTINGS_SCHEMA_EDITOR_URL_HINT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "GENERIC_CHECK"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_VALIDATOR_URL"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "GENERIC_CHECK"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "SETTINGS_SCHEMA"
-msgstr ""
-
-#: scenes/conversation_settings.tscn
-msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
 msgstr ""
 
 #: scenes/fine_tune.tscn
@@ -561,6 +562,7 @@ msgstr ""
 #: scenes/message.gd
 #: scenes/messages_list.gd
 #: scenes/graders/grader_container.gd
+#: scenes/schemas/json_schema_container.gd
 msgid ""
 msgstr ""
 
@@ -590,10 +592,6 @@ msgstr ""
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"
-msgstr ""
-
-#: scenes/message.gd
-msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
 msgstr ""
 
 #: scenes/message.gd
@@ -666,6 +664,7 @@ msgid "Function Call"
 msgstr ""
 
 #: scenes/message.tscn
+#: scenes/schemas/json_schema_container.tscn
 msgid "JSON Schema"
 msgstr ""
 
@@ -678,6 +677,7 @@ msgid "PDF File"
 msgstr ""
 
 #: scenes/message.tscn
+#: scenes/schemas/json_schema_container.tscn
 msgid "GENERIC_DELETE"
 msgstr ""
 
@@ -869,6 +869,7 @@ msgid "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
 msgstr ""
 
 #: scenes/messages_list.gd
+#: scenes/graders/grader_container.gd
 msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
 msgstr ""
 
@@ -1241,4 +1242,41 @@ msgstr ""
 
 #: scenes/schemas/json_schema_container.gd
 msgid "OpenAI JSON Schema"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+#: scenes/schemas/json_schema_container.tscn
+msgid "SCHEMAS_SCHEMA_VALIDATED"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+msgid "SCHEMAS_SCHEMA_INVALID"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "Edit:"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "Schema needs a name!"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "OpenAI:"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "SCHEMA_NAME_COLON"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "EditSchemaTabBar"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "OAISchemaTabBar"
+msgstr ""
+
+#: scenes/schemas/schemas_list.tscn
+msgid "ADD_SCHEMA"
 msgstr ""

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=25 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
@@ -22,7 +22,8 @@
 [ext_resource type="Texture2D" uid="uid://beb5dnd44v53w" path="res://icons/audio_play.png" id="15_bvel6"]
 [ext_resource type="Texture2D" uid="uid://dpp6b31g3i6ro" path="res://icons/file-question-small.png" id="15_gcntp"]
 [ext_resource type="Script" uid="uid://bntf230jpxxm2" path="res://scenes/audio_message_container.gd" id="15_gt8h6"]
-[ext_resource type="Texture2D" uid="uid://4iq6da2r1rin" path="res://icons/polling/reload-custom_35.png" id="20_kwisn"]
+[ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="19_fe45w"]
+[ext_resource type="Texture2D" uid="uid://lkxjtpwllhmr" path="res://icons/polling/reload-custom_22.png" id="21_fe45w"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -563,9 +564,21 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
 horizontal_alignment = 1
 
-[node name="OptionButton" type="OptionButton" parent="SchemaMessageContainer" groups=["UI_needs_schema_list"]]
+[node name="HBoxContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
+layout_mode = 2
+
+[node name="SchemaValidationTextureRect" type="TextureRect" parent="SchemaMessageContainer/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("19_fe45w")
+stretch_mode = 3
+
+[node name="SchemaValidationErrorLabel" type="Label" parent="SchemaMessageContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="OptionButton" type="OptionButton" parent="SchemaMessageContainer/HBoxContainer" groups=["UI_needs_schema_list"]]
 custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
@@ -584,7 +597,7 @@ alignment = 1
 
 [node name="SchemaMessagePollingAnimator" type="TextureRect" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
-texture = ExtResource("20_kwisn")
+texture = ExtResource("21_fe45w")
 expand_mode = 2
 script = ExtResource("12_iorou")
 
@@ -648,7 +661,7 @@ layout_mode = 2
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_do_token_calculation_update"]
-[connection signal="item_selected" from="SchemaMessageContainer/OptionButton" to="." method="_on_something_int_changed"]
+[connection signal="item_selected" from="SchemaMessageContainer/HBoxContainer/OptionButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]

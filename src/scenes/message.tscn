@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://clmrayf2uklte"]
+[gd_scene load_steps=27 format=3 uid="uid://clmrayf2uklte"]
 
 [ext_resource type="Texture2D" uid="uid://u3qbsgof3nv" path="res://icons/wrench.png" id="1_1kcao"]
 [ext_resource type="Script" uid="uid://ylhdkmfed75d" path="res://scenes/message.gd" id="1_lafvt"]
@@ -23,7 +23,9 @@
 [ext_resource type="Texture2D" uid="uid://dpp6b31g3i6ro" path="res://icons/file-question-small.png" id="15_gcntp"]
 [ext_resource type="Script" uid="uid://bntf230jpxxm2" path="res://scenes/audio_message_container.gd" id="15_gt8h6"]
 [ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="19_fe45w"]
-[ext_resource type="Texture2D" uid="uid://lkxjtpwllhmr" path="res://icons/polling/reload-custom_22.png" id="21_fe45w"]
+[ext_resource type="PackedScene" uid="uid://bcc2q2aitqhiy" path="res://scenes/spinner.tscn" id="19_g66g3"]
+[ext_resource type="Texture2D" uid="uid://b7noaeeiviiq5" path="res://icons/polling/reload-custom_34.png" id="20_g2wwg"]
+[ext_resource type="Texture2D" uid="uid://dyft8rl27bm40" path="res://icons/polling/reload-custom_26.png" id="20_kwisn"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -554,7 +556,6 @@ text = "Test Token Count"
 layout_mode = 2
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
-visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -566,6 +567,11 @@ horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
+
+[node name="Spinner" parent="SchemaMessageContainer/HBoxContainer" instance=ExtResource("19_g66g3")]
+visible = false
+layout_mode = 2
+texture = ExtResource("20_g2wwg")
 
 [node name="SchemaValidationTextureRect" type="TextureRect" parent="SchemaMessageContainer/HBoxContainer"]
 layout_mode = 2
@@ -579,6 +585,8 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="SchemaValidationHTTPRequest" type="HTTPRequest" parent="SchemaMessageContainer/HBoxContainer"]
 
 [node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
@@ -597,7 +605,7 @@ alignment = 1
 
 [node name="SchemaMessagePollingAnimator" type="TextureRect" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
-texture = ExtResource("21_fe45w")
+texture = ExtResource("20_kwisn")
 expand_mode = 2
 script = ExtResource("12_iorou")
 

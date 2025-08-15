@@ -10,6 +10,7 @@ var last_base64_to_upload = ""
 
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
+var _schema_validate_timer: Timer
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -311,6 +312,11 @@ func _ready() -> void:
 	$SchemaMessageContainer/SchemaEdit.text_changed.connect(_on_schema_edit_text_changed)
 	$SchemaMessageContainer/HBoxContainer/SchemaValidationHTTPRequest.request_completed.connect(_on_schema_validation_http_request_completed)
 	$SchemaMessageContainer/HBoxContainer/OptionButton.item_selected.connect(_on_schema_option_selected)
+	_schema_validate_timer = Timer.new()
+	_schema_validate_timer.one_shot = true
+	_schema_validate_timer.wait_time = 2.0
+	add_child(_schema_validate_timer)
+	_schema_validate_timer.connect("timeout", Callable(self, "_on_schema_validate_timeout"))
 	_set_schema_validation_idle()
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
@@ -625,9 +631,15 @@ func _on_schema_validation_http_request_completed(result, response_code, headers
 
 func _on_schema_edit_text_changed() -> void:
 	update_messages_global()
-	_validate_schema_message()
+	_schedule_schema_validate()
 
 func _on_schema_option_selected(index: int) -> void:
+	_schedule_schema_validate()
+
+func _schedule_schema_validate() -> void:
+	_schema_validate_timer.start()
+
+func _on_schema_validate_timeout() -> void:
 	_validate_schema_message()
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert
 

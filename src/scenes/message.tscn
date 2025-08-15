@@ -25,7 +25,7 @@
 [ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="19_fe45w"]
 [ext_resource type="PackedScene" uid="uid://bcc2q2aitqhiy" path="res://scenes/spinner.tscn" id="19_g66g3"]
 [ext_resource type="Texture2D" uid="uid://b7noaeeiviiq5" path="res://icons/polling/reload-custom_34.png" id="20_g2wwg"]
-[ext_resource type="Texture2D" uid="uid://dyft8rl27bm40" path="res://icons/polling/reload-custom_26.png" id="20_kwisn"]
+[ext_resource type="Texture2D" uid="uid://bf4l332x6f066" path="res://icons/polling/reload-custom_7.png" id="23_g66g3"]
 
 [node name="Message" type="HBoxContainer" groups=["message"]]
 anchors_preset = 15
@@ -556,6 +556,7 @@ text = "Test Token Count"
 layout_mode = 2
 
 [node name="SchemaMessageContainer" type="VBoxContainer" parent="."]
+visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -605,7 +606,7 @@ alignment = 1
 
 [node name="SchemaMessagePollingAnimator" type="TextureRect" parent="SchemaMessageContainer/SchemaMessagePolling"]
 layout_mode = 2
-texture = ExtResource("20_kwisn")
+texture = ExtResource("23_g66g3")
 expand_mode = 2
 script = ExtResource("12_iorou")
 
@@ -641,12 +642,12 @@ layout_mode = 2
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/Role" to="." method="_on_role_item_selected"]
-[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_message_type_item_selected"]
+[connection signal="item_selected" from="MessageSettingsContainer/MessageType" to="." method="_on_something_int_changed"]
 [connection signal="mouse_entered" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_entered"]
 [connection signal="mouse_exited" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_mouse_exited"]
-[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
 [connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]

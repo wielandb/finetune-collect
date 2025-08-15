@@ -312,7 +312,6 @@ func _ready() -> void:
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = ""
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = false
 	$SchemaMessageContainer/SchemaEdit.text_changed.connect(_on_schema_edit_text_changed)
-	$SchemaMessageContainer/HBoxContainer/SchemaValidationHTTPRequest.request_completed.connect(_on_schema_validation_http_request_completed)
 	$SchemaMessageContainer/HBoxContainer/OptionButton.item_selected.connect(_on_schema_option_selected)
 	_schema_validate_timer = Timer.new()
 	_schema_validate_timer.one_shot = true

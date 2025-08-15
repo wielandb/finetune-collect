@@ -10,6 +10,7 @@ var last_base64_to_upload = ""
 
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
+const JsonSchemaValidator := preload("res://json_schema_validator.gd")
 var _schema_validate_timer: Timer
 
 func selectionStringToIndex(node, string):
@@ -606,30 +607,13 @@ func _validate_schema_message() -> void:
 	if schema == null:
 		_set_schema_validation_result(false, "No schema")
 		return
-	var validator_url = fine.SETTINGS.get("schemaValidatorURL", "")
-	if validator_url == "":
-		_set_schema_validation_result(false, "No validator URL")
-		return
+
 	_set_schema_validation_pending()
-	var body = {"action": "validate", "schema": schema, "data": json.data}
-	var body_json = JSON.stringify(body)
-	var body_bytes: PackedByteArray = body_json.to_utf8_buffer()
-	var req := $SchemaMessageContainer/HBoxContainer/SchemaValidationHTTPRequest
-	req.request_raw(validator_url, ["Content-Type: application/json"], HTTPClient.METHOD_POST, body_bytes)
-
-func _on_schema_validation_http_request_completed(result, response_code, headers, body) -> void:
-	var ok := false
-	var msg := ""
-	if result == HTTPRequest.RESULT_SUCCESS and response_code == 200:
-		var res = JSON.parse_string(body.get_string_from_utf8())
-		if res is Dictionary:
-			ok = res.get("ok", false)
-			if not ok and res.has("errors"):
-				msg = JSON.stringify(res["errors"])
+	var res = JsonSchemaValidator.validate(json.data, schema)
+	if res["ok"]:
+		_set_schema_validation_result(true)
 	else:
-		msg = "HTTP error " + str(response_code)
-	_set_schema_validation_result(ok, msg)
-
+		_set_schema_validation_result(false, JSON.stringify(res["errors"]))
 func _on_schema_edit_text_changed() -> void:
 	update_messages_global()
 	_schedule_schema_validate()

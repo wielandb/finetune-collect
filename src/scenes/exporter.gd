@@ -332,8 +332,14 @@ func convert_rft_data(ftdata):
 		emit_signal("export_progress", idx, total, "")
 		await get_tree().process_frame
 		var conversation = conversations[conversation_key].duplicate(true)
-		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
+		# For reinforcement fine tuning, convert the final assistant message to reference data and ensure
+		# the conversation ends with the user's last turn.
 		var last_message = conversation.pop_back()
+		while conversation.size() > 0 and conversation.back().get("role", "") != "user":
+			conversation.pop_back()
+		if conversation.size() == 0 or conversation.back().get("role", "") != "user":
+			print("No valid user message found in conversation " + conversation_key + ", skipping...")
+			continue
 		# We need to check if the message we got is assistant + either JSON Schema, function call, or plain text
 		if last_message['role'] != "assistant":
 			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")

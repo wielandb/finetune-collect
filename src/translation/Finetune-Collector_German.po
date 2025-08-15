@@ -332,6 +332,10 @@ msgstr "Exportiere Fine-Tune"
 msgid "FINETUNE_EXPORTING"
 msgstr "Exportiere"
 
+#: scenes/exporter.gd
+msgid "FINETUNE_EXPORTING_IMAGE_DOWNLOAD"
+msgstr "Bild wird heruntergeladen..."
+
 #: scenes/fine_tune.tscn
 msgid "GENERIC_SAVE"
 msgstr "Speichern"

@@ -707,8 +707,11 @@ func _end_export_progress():
 	$VBoxContainer/ExportBtn.text = EXPORT_BTN_ORIG_TEXT
 
 
-func _on_export_progress(current: int, total: int) -> void:
-	$VBoxContainer/ExportBtn.text = "%s %d/%d" % [tr("FINETUNE_EXPORTING"), current, total]
+func _on_export_progress(current: int, total: int, text: String = "") -> void:
+	var base_text = tr("FINETUNE_EXPORTING")
+	if text != "":
+		base_text += " " + text
+	$VBoxContainer/ExportBtn.text = "%s %d/%d" % [base_text, current, total]
 
 
 func _on_export_btn_pressed() -> void:

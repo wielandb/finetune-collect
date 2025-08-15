@@ -217,7 +217,8 @@ func _set_grader_controls_disabled(disabled: bool) -> void:
 	_copy_button.disabled = disabled
 
 func _on_copy_grader_to_clipboard_button_pressed() -> void:
-	DisplayServer.clipboard_set(JSON.stringify(to_var()))
+	var data = to_var().get("grader", {})
+	DisplayServer.clipboard_set(JSON.stringify(data))
 
 func to_var():
 	var result = {"use": _use_button.button_pressed, "grader": {}}

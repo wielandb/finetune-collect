@@ -144,6 +144,7 @@ func from_var(data):
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	var saved_name = data.get("jsonSchemaName", "")
 	$SchemaMessageContainer/HBoxContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/HBoxContainer/OptionButton, saved_name))
+	_validate_schema_message()
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
 	$AudioMessageContainer/TranscriptionContainer/RichTextLabel.text = data.get("audioTranscript", "")
@@ -861,6 +862,8 @@ func _on_poll_for_completion_request_completed(result: int, response_code: int, 
 			$SchemaMessageContainer/SchemaMessagePolling.visible = false
 			$SchemaMessageContainer/SchemaEdit.visible = true
 			$SchemaMessageContainer/SchemaEditButtonsContainer.visible = true
+			update_messages_global()
+			_validate_schema_message()
 
 
 func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:

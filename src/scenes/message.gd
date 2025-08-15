@@ -481,11 +481,11 @@ func _on_role_item_selected(index: int) -> void:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
 					else:
 						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
-				# Only enable JSON schema if at least one schema is available
-				if get_node("/root/FineTune").get_available_schema_names().size() > 0:
-					$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
-				else:
-					$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"))
+					# Only enable JSON schema if at least one schema is available
+					if get_node("/root/FineTune").get_available_schema_names().size() > 0:
+						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
+					else:
+						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"))
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)

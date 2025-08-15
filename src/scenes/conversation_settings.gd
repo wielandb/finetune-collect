@@ -87,7 +87,8 @@ func _ready() -> void:
 			$VBoxContainer/BatchCreatonContainer/BatchCreationButton.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
 			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.disabled = true
 			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
-				$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.disabled = true
+			$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.disabled = true
+
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()

@@ -280,6 +280,18 @@ func get_parameter_values_from_function_parameter_dict(fpdict):
 			parametersAndValues[fp['name']] = fp["parameterValueNumber"]
 	return parametersAndValues
 
+func enforce_single_developer_message(messages: Array) -> void:
+	var developer_seen = false
+	for msg in messages:
+		var role = msg.get('role', '')
+		if role == "system" or role == "developer":
+			if developer_seen:
+				msg['role'] = "user"
+			else:
+				msg['role'] = "developer"
+				developer_seen = true
+
+
 func create_conversation_parts(conversation: Array) -> Array:
 	# Return full prefixes up to each non-final assistant Function Call
 	var parts: Array = []
@@ -371,10 +383,8 @@ func convert_rft_data(ftdata):
 			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
-		# Replace system messages with developer role for reinforcement fine tuning
-		for msg in processed_conversation:
-			if msg.get('role', '') == 'system':
-				msg['role'] = 'developer'
+		# Replace system messages with developer role and enforce a single developer message
+		enforce_single_developer_message(processed_conversation)
 		# Write to JSONL, optionally including tools
 		var output_entry = {}
 		output_entry['reference_json'] = reference_json

@@ -44,8 +44,8 @@ func to_var():
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
 	var schema_name := ""
-	if $SchemaMessageContainer/OptionButton.selected != -1:
-		schema_name = $SchemaMessageContainer/OptionButton.get_item_text($SchemaMessageContainer/OptionButton.selected)
+	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected != -1:
+		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
 	me["jsonSchemaName"] = schema_name
 	if $MetaMessageContainer.visible:
 		me["metaData"] = {}
@@ -139,7 +139,7 @@ func from_var(data):
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	var saved_name = data.get("jsonSchemaName", "")
-	$SchemaMessageContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/OptionButton, saved_name))
+	$SchemaMessageContainer/HBoxContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/HBoxContainer/OptionButton, saved_name))
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
 	$AudioMessageContainer/TranscriptionContainer/RichTextLabel.text = data.get("audioTranscript", "")
@@ -288,7 +288,7 @@ func _ready() -> void:
 	var ft_node = get_node("/root/FineTune")
 	if ft_node.has_method("update_available_schemas_in_UI_global"):
 		ft_node.update_available_schemas_in_UI_global()
-	$SchemaMessageContainer/OptionButton.select(-1)
+	$SchemaMessageContainer/HBoxContainer/OptionButton.select(-1)
 	var finetunetype = ft_node.SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		# DPO: Only User and assistant messages are available, only text
@@ -703,8 +703,8 @@ func getImageType(url: String) -> String:
 func _on_schema_edit_button_pressed() -> void:
 	# POST the Schema and The Data we already have to the editor URL to retrieve a token
 	var schema_name := ""
-	if $SchemaMessageContainer/OptionButton.selected != -1:
-		schema_name = $SchemaMessageContainer/OptionButton.get_item_text($SchemaMessageContainer/OptionButton.selected)
+	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected != -1:
+		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
 	var schema_dict = get_node("/root/FineTune").get_schema_by_name(schema_name)
 	var json_schema_string := ""
 	if schema_dict != null:

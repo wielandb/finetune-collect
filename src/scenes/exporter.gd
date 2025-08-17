@@ -208,7 +208,7 @@ func convert_message_to_openai_format(message, function_map=null):
 			}
 			return [tool_call, tool_response]
 		return tool_call
-	elif message['type'] == 'JSON':
+	elif message['type'] == 'JSON' or message['type'] == 'JSON Schema':
 		var toAddDict = {
 			'role': message['role'],
 			'content': message['jsonSchemaValue']
@@ -512,6 +512,8 @@ func convert_fine_tuning_data(ftdata):
 			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		print("Processed conversation:")
+		print(str(processed_conversation))
 		# Write to JSONL, optionally including tools
 		var output_entry = {
 			'messages': processed_conversation

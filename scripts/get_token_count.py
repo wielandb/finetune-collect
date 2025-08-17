@@ -1,8 +1,7 @@
+#!/usr/bin/env python3
+
 import tiktoken, sys, json
 encoding = tiktoken.encoding_for_model("gpt-4o")
-
-
-#!/usr/bin/env python3
 
 """
 Example script to calculate token usage for fine-tuning data (text + optional images + optional functions).
@@ -14,8 +13,6 @@ Output:
     Example: {'FtC1': 1, 'd4yI': 1, 'duJa': 398, 'PP60': 208226, '4bGq': 3595636, 'I9Pt': 707, 'QiTc': 577039, 'BSLs': 658948, '9ZHo': 157}
 """
 
-import sys
-import json
 import base64
 import math
 import requests
@@ -27,7 +24,6 @@ except ImportError:
     #print("Please install Pillow (pip install Pillow) to handle images.")
     Image = None
 
-import tiktoken
 
 # -----------------------------------------------------------------------------
 # 1. Image token calculation (based on example from OpenAI Vision pricing doc)
@@ -112,15 +108,18 @@ def get_functions():
 def get_token_count_for_text_message(message_dict):
     # Get the fine tuning type from the settings
     finetune_type = get_setting("finetuneType")
-    if finetune_type == 0:
+    if finetune_type in (0, None):
         return get_token_count_for_string(message_dict["textContent"])
     elif finetune_type == 1:
         return get_token_count_for_string(message_dict["preferredTextContent"] + message_dict["unpreferredTextContent"])
     elif finetune_type == 2:
         return 0
 
-def get_token_count_for_json_schema_message(message_dict):
+def get_token_count_for_json_message(message_dict):
     return get_token_count_for_string(message_dict["jsonSchemaValue"])
+
+# Backward compatibility
+get_token_count_for_json_schema_message = get_token_count_for_json_message
 
 def get_token_count_for_image_message(message_dict):
     # image_detail: 0 = high detail, 1 = low detail, (consider 2 to be also high detail)
@@ -232,8 +231,8 @@ def get_token_count_for_conversation(convoIx):
             this_message_tokens = get_token_count_for_image_message(message)
         if message["type"] == "Function Call":
             this_message_tokens = get_token_count_for_function_call_message(message)
-        if message["type"] == "JSON Schema":
-            this_message_tokens = get_token_count_for_json_schema_message(message)
+        if message["type"] in ("JSON", "JSON Schema"):
+            this_message_tokens = get_token_count_for_json_message(message)
         # If its a user message or function call, we need to add the token count for the available functions
         if message["role"] == "user" or message["type"] == "Function Call":
             this_message_tokens += token_count_for_available_functions(convoIx)

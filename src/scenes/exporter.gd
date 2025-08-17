@@ -200,7 +200,7 @@ func convert_message_to_openai_format(message, function_map=null):
 			}
 			return [tool_call, tool_response]
 		return tool_call
-	elif message['type'] == 'JSON Schema':
+	elif message['type'] == 'JSON':
 		var toAddDict = {
 			'role': message['role'],
 			'content': message['jsonSchemaValue']
@@ -319,20 +319,20 @@ func convert_rft_data(ftdata):
 		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
 		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
 		var last_message = conversation.pop_back()
-		# We need to check if the message we got is assistant + either JSON Schema, function call, or plain text
+		# We need to check if the message we got is assistant + either JSON, function call, or plain text
 		if last_message['role'] != "assistant":
 			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")
 			print("Last message:")
 			print(last_message)
 			continue
-		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
+		if last_message['type'] != "JSON" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
 			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
 			continue
 		var reference_json = {}
 		var reference_answer = ""
 		var do_function_call = false
 		var ideal_function_call_data = []
-		if last_message['type'] == "JSON Schema":
+		if last_message['type'] == "JSON":
 			reference_json = JSON.parse_string(last_message['jsonSchemaValue'])
 		elif last_message['type'] == "Function Call":
 			do_function_call = true

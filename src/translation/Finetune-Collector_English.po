@@ -492,8 +492,8 @@ msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
 msgstr "Load JSON schema from file"
 
 #: scenes/message.tscn
-msgid "JSON Schema"
-msgstr ""
+msgid "JSON"
+msgstr "JSON"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
@@ -924,7 +924,7 @@ msgstr "Create RFT-Subconversations"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
-msgstr "In RFT, only the last Function Call or JSON Schema message\n"
+msgstr "In RFT, only the last Function Call or JSON message\n"
 "is actually trained upon. If you want to teach your (agentic)\n"
 "model to correctly make every function call in a long\n"
 "conversation, every function call needs to exist as the last\n"

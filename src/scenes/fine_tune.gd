@@ -347,10 +347,10 @@ func check_is_conversation_problematic(idx: String):
 			return true
 		return false
 	elif finetunetype == 2:
-		# Check that the last message is assistant and JSON Schema or Function Call
+		# Check that the last message is assistant and JSON or Function Call
 		if thisconvo[-1]["role"] != "assistant":
 			return true
-		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON Schema":
+		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON":
 			return true
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
@@ -484,6 +484,7 @@ func load_from_binary(filename):
 		file.close()
 		FUNCTIONS = FINETUNEDATA["functions"]
 		CONVERSATIONS = FINETUNEDATA["conversations"]
+		_convert_legacy_json_messages()
 		SETTINGS = FINETUNEDATA["settings"]
 		GRADERS = FINETUNEDATA.get("graders", [])
 		for i in CONVERSATIONS.keys():
@@ -511,6 +512,7 @@ func load_from_json_data(jsondata: String):
 	FINETUNEDATA = json_as_dict
 	FUNCTIONS = FINETUNEDATA["functions"]
 	CONVERSATIONS = FINETUNEDATA["conversations"]
+	_convert_legacy_json_messages()
 	SETTINGS = FINETUNEDATA["settings"]
 	GRADERS = FINETUNEDATA.get("graders", [])
 	for i in CONVERSATIONS.keys():
@@ -780,6 +782,13 @@ func convert_base64_images_in_all_conversations() -> void:
 
 func _convert_base64_images_after_load() -> void:
 	await convert_base64_images_in_all_conversations()
+
+func _convert_legacy_json_messages() -> void:
+	for convo_key in CONVERSATIONS.keys():
+		var convo = CONVERSATIONS[convo_key]
+		for i in range(convo.size()):
+			if convo[i].get("type", "") == "JSON Schema":
+				CONVERSATIONS[convo_key][i]["type"] = "JSON"
 
 # Helper to create a Finetune-Collect function call message and ensure the
 # function definition exists in the global FUNCTIONS array.
@@ -1088,7 +1097,7 @@ func conversation_from_openai_message_json(oaimsgjson):
 							if _validate_is_json(a_text):
 									NEWCONVO.append({
 											"role": "assistant",
-											"type": "JSON Schema",
+											"type": "JSON",
 											"textContent": "",
 											"unpreferredTextContent": "",
 											"preferredTextContent": "",

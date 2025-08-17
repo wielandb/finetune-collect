@@ -39,7 +39,7 @@ func _run():
 			],
 			"c3": [
 				{"role": "user", "type": "Text", "textContent": "Schema"},
-				{"role": "assistant", "type": "JSON Schema", "jsonSchemaValue": "{\"foo\": \"bar\"}"}
+				{"role": "assistant", "type": "JSON", "jsonSchemaValue": "{\"foo\": \"bar\"}"}
 			]
 		}
 	}

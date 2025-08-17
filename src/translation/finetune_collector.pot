@@ -673,7 +673,7 @@ msgstr ""
 
 #: scenes/message.tscn
 #: scenes/schemas/json_schema_container.tscn
-msgid "JSON Schema"
+msgid "JSON"
 msgstr ""
 
 #: scenes/message.tscn
@@ -1245,11 +1245,11 @@ msgid "GRADER_VERIFIED"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd
-msgid "Edit JSON Schema"
+msgid "Edit JSON"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd
-msgid "OpenAI JSON Schema"
+msgid "OpenAI JSON"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd

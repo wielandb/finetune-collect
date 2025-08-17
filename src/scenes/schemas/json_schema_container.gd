@@ -10,8 +10,8 @@ var _validate_timer: Timer
 
 func _ready() -> void:
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
-	tab_bar.set_tab_title(0, tr("Edit JSON Schema"))
-	tab_bar.set_tab_title(1, tr("OpenAI JSON Schema"))
+	tab_bar.set_tab_title(0, tr("Edit JSON"))
+	tab_bar.set_tab_title(1, tr("OpenAI JSON"))
 	_validate_timer = Timer.new()
 	_validate_timer.one_shot = true
 	_validate_timer.wait_time = 2.0

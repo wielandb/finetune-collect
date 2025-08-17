@@ -502,7 +502,7 @@ msgstr "Load JSON schema from file"
 
 #: scenes/message.tscn
 #: scenes/schemas/json_schema_container.tscn
-msgid "JSON Schema"
+msgid "JSON"
 msgstr ""
 
 #: scenes/message.tscn
@@ -935,7 +935,7 @@ msgstr "Create RFT-Subconversations"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_RFT_SPLIT_CONVERSATIONS_HINT"
-msgstr "In RFT, only the last Function Call or JSON Schema message\n"
+msgstr "In RFT, only the last Function Call or JSON message\n"
 "is actually trained upon. If you want to teach your (agentic)\n"
 "model to correctly make every function call in a long\n"
 "conversation, every function call needs to exist as the last\n"
@@ -1432,11 +1432,11 @@ msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"
 msgstr "At least one schema must be set in the schemas tab"
 
 #: scenes/schemas/json_schema_container.gd
-msgid "Edit JSON Schema"
+msgid "Edit JSON"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd
-msgid "OpenAI JSON Schema"
+msgid "OpenAI JSON"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd

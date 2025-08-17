@@ -141,7 +141,7 @@ func from_var(data):
 	if data.get("role", "user") == "user":
 		if useUserNames:
 			$MessageSettingsContainer/UserNameEdit.visible = true
-	# JSON Schema
+	# JSON
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	var saved_name = data.get("jsonSchemaName", "")
 	if saved_name == "":
@@ -1190,7 +1190,7 @@ func to_rft_reference_item():
 	}
 	if last_message.get("role", "") != "assistant":
 		return item
-	if last_message.get("type", "") == "JSON Schema":
+	if last_message.get("type", "") == "JSON":
 		item["reference_json"] = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
 	elif last_message.get("type", "") == "Function Call":
 		item["do_function_call"] = true
@@ -1221,7 +1221,7 @@ func to_model_output_sample():
 					"arguments": JSON.stringify(args)
 				}
 			})
-		"JSON Schema":
+		"JSON":
 			text = msg.get("jsonSchemaValue", "")
 		_:
 			text = msg.get("textContent", "")

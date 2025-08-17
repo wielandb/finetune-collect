@@ -82,11 +82,7 @@ func from_var(data):
 		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
-	var msg_type = data.get("type", "Text")
-	if msg_type == "JSON Schema":
-		msg_type = "JSON"
-		data["type"] = "JSON"
-	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, msg_type))
+	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data.get("type", "Text")))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
 	$TextMessageContainer/Message.text = data.get("textContent", "")
 	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data.get("unpreferredTextContent", "")
@@ -136,7 +132,7 @@ func from_var(data):
 	if data.get("role", "user") == "user":
 		if useUserNames:
 			$MessageSettingsContainer/UserNameEdit.visible = true
-	# JSON
+	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
@@ -1096,7 +1092,7 @@ func to_rft_reference_item():
 	}
 	if last_message.get("role", "") != "assistant":
 		return item
-	if last_message.get("type", "") == "JSON":
+	if last_message.get("type", "") == "JSON Schema":
 		item["reference_json"] = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
 	elif last_message.get("type", "") == "Function Call":
 		item["do_function_call"] = true
@@ -1127,7 +1123,7 @@ func to_model_output_sample():
 					"arguments": JSON.stringify(args)
 				}
 			})
-		"JSON":
+		"JSON Schema":
 			text = msg.get("jsonSchemaValue", "")
 		_:
 			text = msg.get("textContent", "")

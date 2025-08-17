@@ -3,10 +3,6 @@ extends SceneTree
 var tests_run := 0
 var tests_failed := 0
 
-class DummyFineTune:
-	extends Node
-	var SETTINGS = {}
-
 func assert_eq(a, b, name := ""):
 	tests_run += 1
 	if a != b:
@@ -40,19 +36,7 @@ func test_function_call():
 	assert_eq(args.get("a", ""), "2", "argument a")
 	node.queue_free()
 
-func test_json_message():
-	var Scene = load("res://scenes/message.tscn")
-	var node = Scene.instantiate()
-	node.from_var({
-		"role":"assistant",
-		"type":"JSON",
-		"jsonSchemaValue":"{\"foo\":\"bar\"}"
-	})
-	var sample = node.to_model_output_sample()
-	assert_eq(sample.get("output_json", {}).get("foo", ""), "bar", "output_json")
-	node.queue_free()
-
-func test_json_schema_backward_compat():
+func test_json_schema():
 	var Scene = load("res://scenes/message.tscn")
 	var node = Scene.instantiate()
 	node.from_var({
@@ -61,17 +45,12 @@ func test_json_schema_backward_compat():
 		"jsonSchemaValue":"{\"foo\":\"bar\"}"
 	})
 	var sample = node.to_model_output_sample()
-	assert_eq(sample.get("output_json", {}).get("foo", ""), "bar", "compat_output_json")
-	assert_eq(node.to_var().get("type", ""), "JSON", "converted_type")
+	assert_eq(sample.get("output_json", {}).get("foo", ""), "bar", "output_json")
 	node.queue_free()
 
 func _init():
-	var ft = DummyFineTune.new()
-	ft.name = "FineTune"
-	get_root().add_child(ft)
 	test_text_message()
 	test_function_call()
-	test_json_message()
-	test_json_schema_backward_compat()
+	test_json_schema()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

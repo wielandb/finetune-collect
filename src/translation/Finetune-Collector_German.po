@@ -520,8 +520,8 @@ msgstr "JSON-Schema aus Datei laden"
 
 #: scenes/message.tscn
 #: scenes/schemas/json_schema_container.tscn
-msgid "JSON Schema"
-msgstr "JSON Schema"
+msgid "JSON"
+msgstr "JSON"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
@@ -557,7 +557,7 @@ msgstr "Nur der Assistent kann Funktionen benutzen"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
-msgstr "Nur der Assistent kann in JSON Schema antworten"
+msgstr "Nur der Assistent kann in JSON antworten"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
@@ -569,7 +569,7 @@ msgstr "Mindestens eine Funktion muss definiert sein um das benutzen zu können"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
-msgstr "Ein valides JSON Schema muss in den Einstellungen hinterlegt werden um das benutzen zu können"
+msgstr "Ein valides JSON muss in den Einstellungen hinterlegt werden um das benutzen zu können"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
@@ -1450,11 +1450,11 @@ msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"
 msgstr "Mindestens ein Schema muss im Schema-Tab definiert werden"
 
 #: scenes/schemas/json_schema_container.gd
-msgid "Edit JSON Schema"
+msgid "Edit JSON"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd
-msgid "OpenAI JSON Schema"
+msgid "OpenAI JSON"
 msgstr ""
 
 #: scenes/schemas/json_schema_container.gd

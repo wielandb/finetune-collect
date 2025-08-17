@@ -384,10 +384,10 @@ func check_is_conversation_problematic(idx: String):
 			return true
 		return false
 	elif finetunetype == 2:
-		# Check that the last message is assistant and JSON Schema or Function Call
+		# Check that the last message is assistant and JSON or Function Call
 		if thisconvo[-1]["role"] != "assistant":
 			return true
-		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON Schema":
+		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON":
 			return true
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
@@ -1155,7 +1155,7 @@ func conversation_from_openai_message_json(oaimsgjson):
 							if _validate_is_json(a_text):
 									NEWCONVO.append({
 											"role": "assistant",
-											"type": "JSON Schema",
+											"type": "JSON",
 											"textContent": "",
 											"unpreferredTextContent": "",
 											"preferredTextContent": "",

@@ -36,12 +36,12 @@ func test_function_call():
 	assert_eq(args.get("a", ""), "2", "argument a")
 	node.queue_free()
 
-func test_json_schema():
+func test_json():
 	var Scene = load("res://scenes/message.tscn")
 	var node = Scene.instantiate()
 	node.from_var({
 		"role":"assistant",
-		"type":"JSON Schema",
+		"type":"JSON",
 		"jsonSchemaValue":"{\"foo\":\"bar\"}"
 	})
 	var sample = node.to_model_output_sample()
@@ -51,6 +51,6 @@ func test_json_schema():
 func _init():
 	test_text_message()
 	test_function_call()
-	test_json_schema()
+	test_json()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

@@ -119,8 +119,11 @@ def get_token_count_for_text_message(message_dict):
     elif finetune_type == 2:
         return 0
 
-def get_token_count_for_json_schema_message(message_dict):
+def get_token_count_for_json_message(message_dict):
     return get_token_count_for_string(message_dict["jsonSchemaValue"])
+
+# Backward compatibility
+get_token_count_for_json_schema_message = get_token_count_for_json_message
 
 def get_token_count_for_image_message(message_dict):
     # image_detail: 0 = high detail, 1 = low detail, (consider 2 to be also high detail)
@@ -232,8 +235,8 @@ def get_token_count_for_conversation(convoIx):
             this_message_tokens = get_token_count_for_image_message(message)
         if message["type"] == "Function Call":
             this_message_tokens = get_token_count_for_function_call_message(message)
-        if message["type"] == "JSON Schema":
-            this_message_tokens = get_token_count_for_json_schema_message(message)
+        if message["type"] in ("JSON", "JSON Schema"):
+            this_message_tokens = get_token_count_for_json_message(message)
         # If its a user message or function call, we need to add the token count for the available functions
         if message["role"] == "user" or message["type"] == "Function Call":
             this_message_tokens += token_count_for_available_functions(convoIx)

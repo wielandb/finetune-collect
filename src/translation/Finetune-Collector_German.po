@@ -510,8 +510,8 @@ msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
 msgstr "JSON-Schema aus Datei laden"
 
 #: scenes/message.tscn
-msgid "JSON Schema"
-msgstr "JSON Schema"
+msgid "JSON"
+msgstr "JSON"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
@@ -547,7 +547,7 @@ msgstr "Nur der Assistent kann Funktionen benutzen"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
-msgstr "Nur der Assistent kann in JSON Schema antworten"
+msgstr "Nur der Assistent kann in JSON antworten"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"

@@ -352,7 +352,7 @@ func convert_rft_data(ftdata):
 		var reference_json = {}
 		var reference_answer = ""
 		var do_function_call = false
-		var ideal_function_call_data = []
+		var ideal_function_call_data = {}
 		if last_message['type'] == "JSON":
 			reference_json = JSON.parse_string(last_message['jsonSchemaValue'])
 		elif last_message['type'] == "Function Call":

@@ -1189,7 +1189,7 @@ func get_parameter_values_from_function_parameter_dict(fpdict):
 func to_rft_reference_item():
 	var last_message = to_var()
 	var item = {
-		"ideal_function_call_data": [],
+		"ideal_function_call_data": {},
 		"do_function_call": false
 	}
 	if last_message.get("role", "") != "assistant":

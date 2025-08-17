@@ -503,7 +503,7 @@ func convert_fine_tuning_data(ftdata):
 		_current_total = total
 		emit_signal("export_progress", idx, total, "")
 		await get_tree().process_frame
-		var conversation = conversations[conversation_key]
+		var conversation = conversations[conversation_key].duplicate(true)
 		var processed_conversation = []
 		if system_message:
 			processed_conversation.append({
@@ -512,10 +512,6 @@ func convert_fine_tuning_data(ftdata):
 			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
-		# Replace system messages with developer role for reinforcement fine tuning
-		for msg in processed_conversation:
-			if msg.get('role', '') == 'system':
-				msg['role'] = 'developer'
 		# Write to JSONL, optionally including tools
 		var output_entry = {
 			'messages': processed_conversation

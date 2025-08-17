@@ -198,6 +198,7 @@ func update_available_schemas_in_UI_global():
 		if node.selected != -1:
 			selected_text = node.get_item_text(node.selected)
 		node.clear()
+		node.add_item(tr("ONLY_JSON_NO_SCHEMA"))
 		for s in get_available_schema_names():
 			node.add_item(s)
 		if selected_text != "":
@@ -207,6 +208,8 @@ func update_available_schemas_in_UI_global():
 					idx = i
 					break
 			node.select(idx)
+		else:
+			node.select(0)
 func get_available_function_names():
 	var tmpNames = []
 	for f in FUNCTIONS:

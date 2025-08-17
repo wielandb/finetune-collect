@@ -1494,3 +1494,7 @@ msgstr ""
 msgid "ADD_SCHEMA"
 msgstr "Schema hinzufügen"
 
+#: scenes/fine_tune.gd
+msgid "ONLY_JSON_NO_SCHEMA"
+msgstr "Nur JSON, kein Schema"
+

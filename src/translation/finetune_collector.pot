@@ -1288,3 +1288,7 @@ msgstr ""
 #: scenes/schemas/schemas_list.tscn
 msgid "ADD_SCHEMA"
 msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "ONLY_JSON_NO_SCHEMA"
+msgstr ""

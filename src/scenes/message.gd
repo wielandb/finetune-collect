@@ -49,7 +49,7 @@ func to_var():
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
 	var schema_name := ""
-	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected != -1:
+	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected > 0:
 		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
 	me["jsonSchemaName"] = schema_name
 	if $MetaMessageContainer.visible:
@@ -144,7 +144,10 @@ func from_var(data):
 	# JSON Schema
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
 	var saved_name = data.get("jsonSchemaName", "")
-	$SchemaMessageContainer/HBoxContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/HBoxContainer/OptionButton, saved_name))
+	if saved_name == "":
+		$SchemaMessageContainer/HBoxContainer/OptionButton.select(0)
+	else:
+		$SchemaMessageContainer/HBoxContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/HBoxContainer/OptionButton, saved_name))
 	_validate_schema_message()
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
@@ -495,11 +498,8 @@ func _on_role_item_selected(index: int) -> void:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
 					else:
 						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
-					# Only enable JSON schema if at least one schema is available
-					if get_node("/root/FineTune").get_available_schema_names().size() > 0:
-						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
-					else:
-						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"))
+					# JSON schema messages are always available
+					$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
@@ -595,6 +595,9 @@ func _validate_schema_message() -> void:
 	var err := json.parse($SchemaMessageContainer/SchemaEdit.text)
 	if err != OK:
 		_set_schema_validation_result(false, "Invalid JSON")
+		return
+	if option.selected == 0:
+		_set_schema_validation_result(true)
 		return
 	var fine = get_node("/root/FineTune")
 	var schema_name = option.get_item_text(option.selected)

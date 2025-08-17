@@ -70,7 +70,7 @@ The `conversations` dictionary stores all recorded dialogues. The key is the con
 | `functionResults` | string | Results returned by an executed function. |
 | `functionUsePreText` | string | Text prepended when executing a function. |
 | `userName` | string | Optional user display name. |
-| `jsonSchemaName` | string | Name of the selected JSON schema. |
+| `jsonSchemaName` | string | Name of the selected JSON schema. Leave empty to only validate JSON. |
 | `jsonSchemaValue` | string | Additional schema information. |
 | `metaData` | object | Information about the conversation itself. |
 | `audioData` | string | Base64 encoded audio data. |

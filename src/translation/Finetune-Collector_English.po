@@ -997,6 +997,10 @@ msgstr "Secret key"
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
 msgstr "The secret key you've set in the upload-image.php file"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
+msgstr "Test upload server"
+
 #: scenes/conversation.tscn
 msgid "Graders"
 msgstr ""

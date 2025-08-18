@@ -488,7 +488,6 @@ text = "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
 
 [node name="ImageUploadServerTestResultImg" type="TextureRect" parent="VBoxContainer/ImageUploadServerTestContainer"]
 layout_mode = 2
-texture = ExtResource("6_uqjdu")
 stretch_mode = 3
 
 [node name="SchemaSettingsSeparator" type="HSeparator" parent="VBoxContainer"]

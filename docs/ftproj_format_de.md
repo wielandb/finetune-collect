@@ -6,7 +6,9 @@ Die Datei `.ftproj` speichert ein Fine‑Tune‑Projekt in serialisierter Form. 
 {
   "functions": [],
   "conversations": {},
-  "settings": {}
+  "settings": {},
+  "graders": [],
+  "schemas": []
 }
 ```
 
@@ -16,6 +18,8 @@ Nachfolgend werden alle Bereiche sowie die Bedeutung der einzelnen Felder erläu
 - **`functions`**: Liste von Funktionsdefinitionen, die beim Export oder Testen genutzt werden.
 - **`conversations`**: Dictionary, das eine Konversations‑ID auf eine Liste von Nachrichten abbildet.
 - **`settings`**: Globale Einstellungen des Projekts.
+- **`graders`**: Array von Grader-Konfigurationen zur Bewertung von Gesprächen.
+- **`schemas`**: Liste der verfügbaren JSON-Schemata.
 
 ## Funktionsobjekte
 
@@ -66,6 +70,7 @@ Im Dictionary `conversations` werden alle aufgezeichneten Dialoge gespeichert. D
 | `functionResults` | string | Ergebnis einer ausgeführten Funktion. |
 | `functionUsePreText` | string | Text, der bei der Ausführung vorangestellt wird. |
 | `userName` | string | Optionaler Benutzername. |
+| `jsonSchemaName` | string | Name des ausgewählten JSON‑Schemas. Leer lassen, um nur JSON zu validieren. |
 | `jsonSchemaValue` | string | Zusätzliche Schema‑Informationen. |
 | `metaData` | object | Informationen zur Konversation selbst. |
 | `audioData` | string | Base64‑kodierte Audiodaten. |
@@ -110,12 +115,21 @@ Globale Konfiguration, gespeichert im Objekt `settings`.
 | `exportImagesHow` | integer | Art und Weise des Bildexports. |
 | `useUserNames` | bool | Benutzernamen in exportierten Daten einbeziehen. |
 | `schemaEditorURL` | string | URL zu einem externen JSON-Schema-Editor. |
-| `jsonSchema` | string | Standard‑JSON-Schema zur Validierung. |
 | `tokenCounterPath` | string | Pfad zu einem externen Tool zur Tokenzählung. |
 | `exportConvos` | integer | Welche Gespräche exportiert werden. |
 | `countTokensWhen` | integer | Wann die Tokenzählung erfolgt. |
 | `tokenCounts` | string | Zwischengespeicherte Tokenzahlen pro Gespräch. |
 | `countTokensModel` | integer | Modell zur Schätzung der Tokenanzahl. |
+
+## Schemas
+
+Jedes Element im Array `schemas` beschreibt ein JSON-Schema.
+
+| Feld | Typ | Beschreibung |
+| --- | --- | --- |
+| `name` | string | Anzeigename des Schemas. |
+| `schema` | object | Ursprüngliches, vom Benutzer eingegebenes Schema. |
+| `sanitizedSchema` | object | Bereinigte Version des Schemas für die Verwendung. |
 
 ### Binär vs. JSON
 

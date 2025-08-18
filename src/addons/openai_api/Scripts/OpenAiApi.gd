@@ -55,7 +55,7 @@ func get_api() -> String:
 	if openai_api_key.is_empty():
 		push_error("Insert your OpenAi api key!")
 	return openai_api_key
-	
+
 func set_api(api:String) -> void:
 	openai_api_key = api
 

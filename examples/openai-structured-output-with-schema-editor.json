@@ -54,7 +54,7 @@
 			},
 			{
 				"role": "assistant",
-				"type": "JSON Schema",
+				"type": "JSON",
 				"textContent": "",
 				"unpreferredTextContent": "",
 				"preferredTextContent": "",
@@ -121,7 +121,7 @@
 			},
 			{
 				"role": "assistant",
-				"type": "JSON Schema",
+				"type": "JSON",
 				"textContent": "",
 				"unpreferredTextContent": "",
 				"preferredTextContent": "",

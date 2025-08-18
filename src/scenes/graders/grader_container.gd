@@ -59,6 +59,12 @@ func _exit_tree() -> void:
 
 func verify_grader() -> bool:
 	print("Verifying grader!")
+	var api_key = get_node("/root/FineTune").SETTINGS.get("apikey", "")
+	if api_key == "":
+		_status_label.text = tr("DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY")
+		_spinner.visible = false
+		_use_button.button_pressed = false
+		return false
 	_set_grader_controls_disabled(true)
 
 	var grader_gui = null

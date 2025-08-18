@@ -232,7 +232,7 @@ def get_token_count_for_conversation(convoIx):
             this_message_tokens = get_token_count_for_image_message(message)
         if message["type"] == "Function Call":
             this_message_tokens = get_token_count_for_function_call_message(message)
-        if message["type"] == "JSON Schema":
+        if message["type"] == "JSON":
             this_message_tokens = get_token_count_for_json_schema_message(message)
         # If its a user message or function call, we need to add the token count for the available functions
         if message["role"] == "user" or message["type"] == "Function Call":

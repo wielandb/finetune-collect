@@ -2,7 +2,7 @@ extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 
 var default_schema_editor_url = "https://example.com/editor.php"
-var schema_loader_file_access_web = FileAccessWeb.new()
+var default_schema_validator_url = ""
 
 func to_var():
 	var me = {}
@@ -22,7 +22,7 @@ func to_var():
 	me["exportImagesHow"] = $VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.selected
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
 	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
-	me["jsonSchema"] = $VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text
+	me["schemaValidatorURL"] = $VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text
 	me["imageUploadSetting"] = $VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected
 	me["imageUploadServerURL"] = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text
 	me["imageUploadServerKey"] = $VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text
@@ -51,8 +51,7 @@ func from_var(me):
 			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
-	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = me.get("jsonSchema", "")
-	_on_schema_content_editor_text_changed()
+	$VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text = me.get("schemaValidatorURL", default_schema_validator_url)
 	$VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected = me.get("imageUploadSetting", 0)
 	$VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text = me.get("imageUploadServerURL", "")
 	$VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text = me.get("imageUploadServerKey", "")
@@ -80,8 +79,6 @@ func _ready() -> void:
 		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
 	# TODO: This should only be called if an OpenAI API key is set
 	openai.get_models()
-	schema_loader_file_access_web.loaded.connect(_on_schema_file_loaded)
-	#schema_loader_file_access_web.progress.connect(_on_file_access_web_progress)
 	print("OSNAME")
 	print(OS.get_name())
 	match OS.get_name():
@@ -91,10 +88,6 @@ func _ready() -> void:
 			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.disabled = true
 			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
 			$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.disabled = true
-func _on_schema_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
-	var txtdata = Marshalls.base64_to_utf8(base64_data)
-	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = txtdata
-	update_valid_json_for_schema_checker()
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
@@ -120,46 +113,19 @@ func load_available_fine_tuning_models_from_file():
 	var costs = JSON.parse_string(cost_json)
 	return costs["available_models"]
 
-
-func _on_model_choice_refresh_button_pressed() -> void:
-	openai.get_models()
-
-
-func _on_schema_content_load_from_file_btn_pressed() -> void:
-	match OS.get_name():
-		"Web":
-			schema_loader_file_access_web.open(".json, .txt, .jsonschema, .schema")
-		_:
-			$VBoxContainer/SchemaContainer/LoadSchemaFileDialog.visible = true
-
-
-func _on_load_schema_file_dialog_file_selected(path: String) -> void:
-	var json_as_text = FileAccess.get_file_as_string(path)
-	$VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text = json_as_text
-	update_valid_json_for_schema_checker()
-	
-
 func validate_is_json(testtext) -> bool:
 	if testtext == "":
 		return false
 	var json = JSON.new()
-	var error = json.parse(testtext)
-	if error == OK:
+	var err = json.parse(testtext)
+	if err == OK:
 		return true
-	else:
-		return false
-		
-func update_valid_json_for_schema_checker() -> bool:
-	# The return value is not used in the function below, but it is when called externally by the message object
-	if validate_is_json($VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor.text):
-		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-positive.png")
-		return true
-	else:
-		$VBoxContainer/SchemaContainer/SchemaValidCheckImg.texture = load("res://icons/code-json-check-negative.png")
-		return false
+	return false
 
-func _on_schema_content_editor_text_changed() -> void:
-	update_valid_json_for_schema_checker()
+
+func _on_model_choice_refresh_button_pressed() -> void:
+	openai.get_models()
+
 
 # Batch Creation
 func create_image_message_dict_from_path(path):

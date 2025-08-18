@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://d3c68j8erdmn8"]
+[gd_scene load_steps=9 format=3 uid="uid://d3c68j8erdmn8"]
 
 [ext_resource type="Script" uid="uid://blnyvfloajj2y" path="res://scenes/conversation_settings.gd" id="1_efb5c"]
 [ext_resource type="Texture2D" uid="uid://ddwylhoqb77rg" path="res://icons/message-cog-custom.png" id="2_fd7a4"]
@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://bxxyp65j3tavt" path="res://icons/help-circle-outline-custom (1).png" id="3_kcvkw"]
 [ext_resource type="Texture2D" uid="uid://cq6q4oktrlqsh" path="res://icons/cloud-refresh-variant-custom.png" id="3_swtgl"]
 [ext_resource type="Texture2D" uid="uid://qkmj583k362u" path="res://icons/export.png" id="6_3r4bh"]
-[ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="6_uqjdu"]
 [ext_resource type="Texture2D" uid="uid://clt2r8je0okr1" path="res://icons/clipboard-file-outline-custom.png" id="7_a2kuo"]
 
 [sub_resource type="GDScript" id="GDScript_qyukn"]
@@ -518,40 +517,22 @@ layout_mode = 2
 text = "GENERIC_CHECK"
 icon = ExtResource("3_swtgl")
 
-[node name="SchemaContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="SchemaValidatorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="SchemaLabel" type="Label" parent="VBoxContainer/SchemaContainer"]
+[node name="SchemaValidatorURLLabel" type="Label" parent="VBoxContainer/SchemaValidatorURLContainer"]
 layout_mode = 2
-text = "SETTINGS_SCHEMA"
+text = "SETTINGS_SCHEMA_VALIDATOR_URL"
 
-[node name="SchemaValidCheckImg" type="TextureRect" parent="VBoxContainer/SchemaContainer"]
+[node name="SchemaValidatorURLHint" type="TextureRect" parent="VBoxContainer/SchemaValidatorURLContainer"]
 layout_mode = 2
-texture = ExtResource("6_uqjdu")
-stretch_mode = 3
+tooltip_text = "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
 
-[node name="SchemaContentContainer" type="VBoxContainer" parent="VBoxContainer/SchemaContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="SchemaContentLoadFromFileBtn" type="Button" parent="VBoxContainer/SchemaContainer/SchemaContentContainer"]
-layout_mode = 2
-text = "SETTINGS_SCHEMA_LOAD_FILE
-"
-icon = ExtResource("6_3r4bh")
-
-[node name="SchemaContentEditor" type="CodeEdit" parent="VBoxContainer/SchemaContainer/SchemaContentContainer"]
-custom_minimum_size = Vector2(0, 400)
+[node name="SchemaValidatorURLEdit" type="LineEdit" parent="VBoxContainer/SchemaValidatorURLContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-wrap_mode = 1
-
-[node name="LoadSchemaFileDialog" type="FileDialog" parent="VBoxContainer/SchemaContainer"]
-title = "Open a File"
-ok_button_text = "Open"
-file_mode = 0
-access = 2
-use_native_dialog = true
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox" to="." method="update_settings_global"]
 [connection signal="text_changed" from="VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit" to="." method="update_settings_global"]

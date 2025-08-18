@@ -202,6 +202,7 @@ msgid "Function Call"
 msgstr ""
 
 #: scenes/message.tscn
+#: scenes/schemas/json_schema_container.tscn
 msgid "GENERIC_DELETE"
 msgstr "Löschen"
 
@@ -326,6 +327,14 @@ msgstr "Das Modell das für Vervollständigungen genutzt werden soll.\n"
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_EXPORT"
 msgstr "Exportiere Fine-Tune"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_EXPORTING"
+msgstr "Exportiere"
+
+#: scenes/exporter.gd
+msgid "FINETUNE_EXPORTING_IMAGE_DOWNLOAD"
+msgstr "Bild wird heruntergeladen..."
 
 #: scenes/fine_tune.tscn
 msgid "GENERIC_SAVE"
@@ -510,8 +519,9 @@ msgid "SETTINGS_SCHEMA_LOAD_FILE\n"
 msgstr "JSON-Schema aus Datei laden"
 
 #: scenes/message.tscn
-msgid "JSON Schema"
-msgstr "JSON Schema"
+#: scenes/schemas/json_schema_container.tscn
+msgid "JSON"
+msgstr "JSON"
 
 #: scenes/message.tscn
 msgid "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
@@ -547,7 +557,7 @@ msgstr "Nur der Assistent kann Funktionen benutzen"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ONLY_ASSISTANT_CAN_RESPOND_IN_SCHEMA"
-msgstr "Nur der Assistent kann in JSON Schema antworten"
+msgstr "Nur der Assistent kann in JSON antworten"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_ASSISTANT_CANT_SEND_IMAGES"
@@ -559,13 +569,14 @@ msgstr "Mindestens eine Funktion muss definiert sein um das benutzen zu können"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"
-msgstr "Ein valides JSON Schema muss in den Einstellungen hinterlegt werden um das benutzen zu können"
+msgstr "Ein valides JSON muss in den Einstellungen hinterlegt werden um das benutzen zu können"
 
 #: scenes/message.gd
 msgid "DISABLED_EXPLANATION_DPO_ONLY_SUPPORTS_TEXT"
 msgstr "Direct Preference Optimization (DPO) unterstüzt nur Text"
 
 #: scenes/messages_list.gd
+#: scenes/graders/grader_container.gd
 msgid "DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"
 msgstr "Ein OpenAI API Key muss in den Einstellungen hinterlegt werden"
 
@@ -1421,4 +1432,73 @@ msgstr "Verifizierungsfehler!"
 #: scenes/graders/grader_container.gd
 msgid "GRADER_VERIFIED"
 msgstr "Verifiziert!"
+
+#: scenes/conversation.tscn
+msgid "Schemas"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL"
+msgstr "Schema validator URL:"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_SCHEMA_VALIDATOR_URL_HINT"
+msgstr "Die URL zu einer irgendwo gehosteten Instanz der \n"
+"Datei schema_validator.php aus dem scripts/-Ordner \n"
+"im Repository. Der Entwickler stellt eine Instanz zur \n"
+"Verfügung, aber bedenke dass alle Schemata an diese\n"
+" URL übertragen werden."
+
+#: scenes/message.gd
+msgid "DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_SCHEMA"
+msgstr "Mindestens ein Schema muss im Schema-Tab definiert werden"
+
+#: scenes/schemas/json_schema_container.gd
+msgid "Edit JSON"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+msgid "OpenAI JSON"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.gd
+#: scenes/schemas/json_schema_container.tscn
+msgid "SCHEMAS_SCHEMA_VALIDATED"
+msgstr "Schema valide!"
+
+#: scenes/schemas/json_schema_container.gd
+msgid "SCHEMAS_SCHEMA_INVALID"
+msgstr "Schema invalid!"
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "Edit:"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "Schema needs a name!"
+msgstr "Schema needs a name!"
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "OpenAI:"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "SCHEMA_NAME_COLON"
+msgstr "Name:"
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "EditSchemaTabBar"
+msgstr ""
+
+#: scenes/schemas/json_schema_container.tscn
+msgid "OAISchemaTabBar"
+msgstr ""
+
+#: scenes/schemas/schemas_list.tscn
+msgid "ADD_SCHEMA"
+msgstr "Schema hinzufügen"
+
+#: scenes/fine_tune.gd
+msgid "ONLY_JSON_NO_SCHEMA"
+msgstr "Nur JSON, kein Schema"
 

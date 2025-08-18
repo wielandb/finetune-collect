@@ -93,7 +93,6 @@ size_flags_stretch_ratio = 4.0
 
 [node name="OpenAi" type="Node" parent="."]
 script = ExtResource("4_slp0e")
-openai_api_key = null
 
 [node name="Exporter" type="Node" parent="."]
 script = ExtResource("10_ido41")

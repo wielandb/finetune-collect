@@ -8,6 +8,11 @@ var token = "" # The token for the schema editor for this message
 var edit_message_url = ""
 var last_base64_to_upload = ""
 
+const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
+const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
+const JsonSchemaValidator := preload("res://json_schema_validator.gd")
+var _schema_validate_timer: Timer
+
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
 	# TODO: Check if OptionButton
@@ -20,6 +25,8 @@ func to_var():
 	var me = {}
 	me["role"] = $MessageSettingsContainer/Role.get_item_text($MessageSettingsContainer/Role.selected)
 	me["type"] = $MessageSettingsContainer/MessageType.get_item_text($MessageSettingsContainer/MessageType.selected)
+	if me["type"] == "JSON Schema":
+		me["type"] = "JSON"
 	me["textContent"] = $TextMessageContainer/Message.text
 	me["unpreferredTextContent"] = $TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text
 	me["preferredTextContent"] = $TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text
@@ -43,6 +50,10 @@ func to_var():
 	me["functionUsePreText"] = $FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text
 	me["userName"] = $MessageSettingsContainer/UserNameEdit.text
 	me["jsonSchemaValue"] = $SchemaMessageContainer/SchemaEdit.text
+	var schema_name := ""
+	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected > 0:
+		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
+	me["jsonSchemaName"] = schema_name
 	if $MetaMessageContainer.visible:
 		me["metaData"] = {}
 		me["metaData"]["ready"] = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed
@@ -82,7 +93,11 @@ func from_var(data):
 		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
-	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, data.get("type", "Text")))
+	var msg_type = data.get("type", "Text")
+	if msg_type == "JSON Schema":
+		msg_type = "JSON"
+		data["type"] = "JSON"
+	$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, msg_type))
 	_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
 	$TextMessageContainer/Message.text = data.get("textContent", "")
 	$TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text = data.get("unpreferredTextContent", "")
@@ -132,8 +147,14 @@ func from_var(data):
 	if data.get("role", "user") == "user":
 		if useUserNames:
 			$MessageSettingsContainer/UserNameEdit.visible = true
-	# JSON Schema
+	# JSON
 	$SchemaMessageContainer/SchemaEdit.text = data.get("jsonSchemaValue", "{}")
+	var saved_name = data.get("jsonSchemaName", "")
+	if saved_name == "":
+		$SchemaMessageContainer/HBoxContainer/OptionButton.select(0)
+	else:
+		$SchemaMessageContainer/HBoxContainer/OptionButton.select(selectionStringToIndex($SchemaMessageContainer/HBoxContainer/OptionButton, saved_name))
+	_validate_schema_message()
 	# Audio Message
 	$AudioMessageContainer/Base64AudioEdit.text = data.get("audioData", "")
 	$AudioMessageContainer/TranscriptionContainer/RichTextLabel.text = data.get("audioTranscript", "")
@@ -279,7 +300,11 @@ func _ready() -> void:
 	for item in get_node("/root/FineTune").get_available_function_names():
 		$FunctionMessageContainer/function/FunctionNameChoiceButton.add_item(item)
 	$FunctionMessageContainer/function/FunctionNameChoiceButton.select(-1)
-	var finetunetype = get_node("/root/FineTune").SETTINGS.get("finetuneType", 0)
+	var ft_node = get_node("/root/FineTune")
+	if ft_node.has_method("update_available_schemas_in_UI_global"):
+		ft_node.update_available_schemas_in_UI_global()
+	$SchemaMessageContainer/HBoxContainer/OptionButton.select(-1)
+	var finetunetype = ft_node.SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		# DPO: Only User and assistant messages are available, only text
 		$MessageSettingsContainer/MessageType.set_item_disabled(1, true)
@@ -295,6 +320,14 @@ func _ready() -> void:
 	else:
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = ""
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = false
+	$SchemaMessageContainer/SchemaEdit.text_changed.connect(_on_schema_edit_text_changed)
+	$SchemaMessageContainer/HBoxContainer/OptionButton.item_selected.connect(_on_schema_option_selected)
+	_schema_validate_timer = Timer.new()
+	_schema_validate_timer.one_shot = true
+	_schema_validate_timer.wait_time = 2.0
+	add_child(_schema_validate_timer)
+	_schema_validate_timer.connect("timeout", Callable(self, "_on_schema_validate_timeout"))
+	_set_schema_validation_idle()
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
@@ -471,11 +504,8 @@ func _on_role_item_selected(index: int) -> void:
 						$MessageSettingsContainer/MessageType.set_item_disabled(2, false)
 					else:
 						$MessageSettingsContainer/MessageType.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NEEDS_AT_LEAST_ONE_FUNCTION"))
-					# Only enable JSON schema if the Schema in the Settings is... well not valid, but at least a valid JSON (so not empty etc.)
-					if get_node("/root/FineTune/Conversation/Settings/ConversationSettings").update_valid_json_for_schema_checker():
-						$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
-					else:
-						$MessageSettingsContainer/MessageType.set_item_tooltip(3, tr("DISABLED_EXPLANATION_NEEDS_VALID_JSON_IN_SETTINGS"))
+					# JSON schema messages are always available
+					$MessageSettingsContainer/MessageType.set_item_disabled(3, false)
 		1:
 			# In DPO, there is only text messages
 			$MessageSettingsContainer/MessageType.set_item_disabled(0, false)
@@ -538,6 +568,72 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 	check_if_function_button_should_be_visible_or_disabled()
 	print("-------------------")
 
+func _set_schema_validation_idle() -> void:
+	var c := $SchemaMessageContainer/HBoxContainer
+	c.get_node("Spinner").visible = false
+	c.get_node("SchemaValidationTextureRect").visible = false
+	c.get_node("SchemaValidationErrorLabel").visible = false
+
+func _set_schema_validation_pending() -> void:
+	var c := $SchemaMessageContainer/HBoxContainer
+	c.get_node("Spinner").visible = true
+	c.get_node("SchemaValidationTextureRect").visible = false
+	c.get_node("SchemaValidationErrorLabel").visible = false
+
+func _set_schema_validation_result(ok: bool, msg := "") -> void:
+	var c := $SchemaMessageContainer/HBoxContainer
+	c.get_node("Spinner").visible = false
+	c.get_node("SchemaValidationTextureRect").visible = true
+	if ok:
+		c.get_node("SchemaValidationTextureRect").texture = load(VALID_ICON_OK)
+		c.get_node("SchemaValidationErrorLabel").visible = false
+	else:
+		c.get_node("SchemaValidationTextureRect").texture = load(VALID_ICON_BAD)
+		c.get_node("SchemaValidationErrorLabel").visible = true
+		c.get_node("SchemaValidationErrorLabel").text = msg
+
+func _validate_schema_message() -> void:
+	var option := $SchemaMessageContainer/HBoxContainer/OptionButton
+	if option.selected == -1:
+		_set_schema_validation_idle()
+		return
+	var json := JSON.new()
+	var err := json.parse($SchemaMessageContainer/SchemaEdit.text)
+	if err != OK:
+		_set_schema_validation_result(false, "Invalid JSON")
+		return
+	if option.selected == 0:
+		_set_schema_validation_result(true)
+		return
+	var fine = get_node("/root/FineTune")
+	var schema_name = option.get_item_text(option.selected)
+	var schema = null
+	for s in fine.SCHEMAS:
+		if s.get("name", "") == schema_name:
+			schema = s.get("sanitizedSchema", null)
+			break
+	if schema == null:
+		_set_schema_validation_result(false, "No schema")
+		return
+
+	_set_schema_validation_pending()
+	var res = JsonSchemaValidator.validate(json.data, schema)
+	if res["ok"]:
+		_set_schema_validation_result(true)
+	else:
+		_set_schema_validation_result(false, JSON.stringify(res["errors"]))
+func _on_schema_edit_text_changed() -> void:
+	update_messages_global()
+	_schedule_schema_validate()
+
+func _on_schema_option_selected(index: int) -> void:
+	_schedule_schema_validate()
+
+func _schedule_schema_validate() -> void:
+	_schema_validate_timer.start()
+
+func _on_schema_validate_timeout() -> void:
+	_validate_schema_message()
 ## Funktionen, die den nachrichtenverlauf speichern wenn etwas passiert
 
 func update_messages_global():
@@ -692,7 +788,13 @@ func getImageType(url: String) -> String:
 
 func _on_schema_edit_button_pressed() -> void:
 	# POST the Schema and The Data we already have to the editor URL to retrieve a token
-	var json_schema_string = get_node("/root/FineTune").SETTINGS.get("jsonSchema", "")
+	var schema_name := ""
+	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected != -1:
+		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
+	var schema_dict = get_node("/root/FineTune").get_schema_by_name(schema_name)
+	var json_schema_string := ""
+	if schema_dict != null:
+		json_schema_string = JSON.stringify(schema_dict)
 	var editor_url = get_node("/root/FineTune").SETTINGS.get("schemaEditorURL", "https://www.haukauntrie.de/online/api/schema-editor/")
 	var existing_json_data = $SchemaMessageContainer/SchemaEdit.text
 	var data_to_send = {"json_data": existing_json_data, "json_schema": json_schema_string}
@@ -752,6 +854,8 @@ func _on_poll_for_completion_request_completed(result: int, response_code: int, 
 			$SchemaMessageContainer/SchemaMessagePolling.visible = false
 			$SchemaMessageContainer/SchemaEdit.visible = true
 			$SchemaMessageContainer/SchemaEditButtonsContainer.visible = true
+			update_messages_global()
+			_validate_schema_message()
 
 
 func _on_schema_message_polling_reopen_browser_btn_pressed() -> void:
@@ -1087,12 +1191,12 @@ func get_parameter_values_from_function_parameter_dict(fpdict):
 func to_rft_reference_item():
 	var last_message = to_var()
 	var item = {
-		"ideal_function_call_data": [],
+		"ideal_function_call_data": {},
 		"do_function_call": false
 	}
 	if last_message.get("role", "") != "assistant":
 		return item
-	if last_message.get("type", "") == "JSON Schema":
+	if last_message.get("type", "") == "JSON":
 		item["reference_json"] = JSON.parse_string(last_message.get("jsonSchemaValue", "{}"))
 	elif last_message.get("type", "") == "Function Call":
 		item["do_function_call"] = true
@@ -1123,7 +1227,7 @@ func to_model_output_sample():
 					"arguments": JSON.stringify(args)
 				}
 			})
-		"JSON Schema":
+		"JSON":
 			text = msg.get("jsonSchemaValue", "")
 		_:
 			text = msg.get("textContent", "")

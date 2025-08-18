@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://22jirjovkb2u"]
+
+[ext_resource type="Script" uid="uid://bn3ghm0q1i8bk" path="res://scenes/schemas/schemas.gd" id="1_qdfv2"]
+
+[node name="SchemasList" type="ScrollContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qdfv2")
+
+[node name="SchemasListVBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="AddSchemaButton" type="Button" parent="SchemasListVBox"]
+layout_mode = 2
+text = "ADD_SCHEMA"
+
+[connection signal="pressed" from="SchemasListVBox/AddSchemaButton" to="." method="_on_add_schema_button_pressed"]

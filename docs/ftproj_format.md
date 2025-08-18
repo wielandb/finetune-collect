@@ -6,7 +6,9 @@ The `.ftproj` file is a serialized representation of a fine‑tune project. The 
 {
   "functions": [],
   "conversations": {},
-  "settings": {}
+  "settings": {},
+  "graders": [],
+  "schemas": []
 }
 ```
 
@@ -16,6 +18,8 @@ Each section is described below along with the meaning of every field.
 - **`functions`**: Array of function definitions used when exporting or testing conversations.
 - **`conversations`**: Dictionary mapping a conversation ID to an array of message objects.
 - **`settings`**: Global configuration options for the project.
+- **`graders`**: Array of grader configurations used to evaluate conversations.
+- **`schemas`**: Array of JSON schema entries available in the project.
 
 ## Function entries
 
@@ -66,6 +70,7 @@ The `conversations` dictionary stores all recorded dialogues. The key is the con
 | `functionResults` | string | Results returned by an executed function. |
 | `functionUsePreText` | string | Text prepended when executing a function. |
 | `userName` | string | Optional user display name. |
+| `jsonSchemaName` | string | Name of the selected JSON schema. Leave empty to only validate JSON. |
 | `jsonSchemaValue` | string | Additional schema information. |
 | `metaData` | object | Information about the conversation itself. |
 | `audioData` | string | Base64 encoded audio data. |
@@ -110,12 +115,21 @@ Global configuration stored in the `settings` object.
 | `exportImagesHow` | integer | How image messages are exported. |
 | `useUserNames` | bool | Include user names in exported data. |
 | `schemaEditorURL` | string | URL to an external JSON schema editor. |
-| `jsonSchema` | string | Default JSON schema used for validation. |
 | `tokenCounterPath` | string | Path to an external token counting tool. |
 | `exportConvos` | integer | Determines which conversations are exported. |
 | `countTokensWhen` | integer | Specifies when token counting is performed. |
 | `tokenCounts` | string | Cached token counts per conversation. |
 | `countTokensModel` | integer | Model used to estimate token counts. |
+
+## Schemas
+
+Each item in the `schemas` array represents one JSON schema definition.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | string | Display name for the schema. |
+| `schema` | object | Original schema as entered by the user. |
+| `sanitizedSchema` | object | Sanitized version of the schema for safe usage. |
 
 ### Binary vs JSON
 

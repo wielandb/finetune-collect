@@ -4,13 +4,15 @@ var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
 var GRADERS = []
+var SCHEMAS = []
 var SETTINGS = {
 	"apikey": "",
 	"useGlobalSystemMessage": false,
 	"globalSystemMessage": "",
 	"modelChoice": "gpt-4o",
-	"availableModels": []
-	}
+	"availableModels": [],
+"schemaValidatorURL": ""
+}
 
 var RUNTIME = {"filepath": ""}
 
@@ -21,6 +23,7 @@ const LAST_PROJECT_DATA_FILE := "user://last_project_data.json"
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 
 var file_access_web = FileAccessWeb.new()
+var EXPORT_BTN_ORIG_TEXT = ""
 # FINETUNEDATA = 
 # { functions: [],
 #   settings: {
@@ -110,11 +113,13 @@ func _ready() -> void:
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
 	load_last_project_on_start()
-
+	
 	var tab_bar = $Conversation.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Messages"))
 	tab_bar.set_tab_title(1, tr("Functions"))
 	tab_bar.set_tab_title(2, tr("Settings"))
+	$Exporter.export_progress.connect(_on_export_progress)
+	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -124,6 +129,7 @@ func _process(delta: float) -> void:
 		update_functions_internal()
 		update_settings_internal()
 		update_graders_internal()
+		update_schemas_internal()
 		if RUNTIME["filepath"] == "":
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
 		else:
@@ -153,6 +159,7 @@ func _on_save_btn_pressed() -> void:
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
+	update_schemas_internal()
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
 			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
@@ -173,6 +180,36 @@ func update_settings_internal():
 	print(SETTINGS)
 func update_graders_internal():
 	GRADERS = $Conversation/Graders/GradersList.to_var()
+
+func update_schemas_internal():
+	SCHEMAS = $Conversation/Schemas/SchemasList.to_var()
+	update_available_schemas_in_UI_global()
+func get_available_schema_names():
+	var tmpNames = []
+	for s in SCHEMAS:
+		var name = s.get("name", "")
+		if name != "":
+			tmpNames.append(name)
+	return tmpNames
+
+func update_available_schemas_in_UI_global():
+	for node in get_tree().get_nodes_in_group("UI_needs_schema_list"):
+		var selected_text := ""
+		if node.selected != -1:
+			selected_text = node.get_item_text(node.selected)
+		node.clear()
+		node.add_item(tr("ONLY_JSON_NO_SCHEMA"))
+		for s in get_available_schema_names():
+			node.add_item(s)
+		if selected_text != "":
+			var idx := -1
+			for i in range(node.item_count):
+				if node.get_item_text(i) == selected_text:
+					idx = i
+					break
+			node.select(idx)
+		else:
+			node.select(0)
 func get_available_function_names():
 	var tmpNames = []
 	for f in FUNCTIONS:
@@ -347,10 +384,10 @@ func check_is_conversation_problematic(idx: String):
 			return true
 		return false
 	elif finetunetype == 2:
-		# Check that the last message is assistant and JSON Schema or Function Call
+		# Check that the last message is assistant and JSON or Function Call
 		if thisconvo[-1]["role"] != "assistant":
 			return true
-		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON Schema":
+		if thisconvo[-1]["type"] != "Function Call" and thisconvo[-1]["type"] != "JSON":
 			return true
 	# Check if at least two messages exist
 	if len(thisconvo) < 2:
@@ -423,6 +460,7 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
+	update_schemas_internal()
 
 
 func create_new_conversation(msgs=[]):
@@ -469,6 +507,7 @@ func save_to_binary(filename):
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
+	FINETUNEDATA["schemas"] = SCHEMAS
 	var file = FileAccess.open(filename, FileAccess.WRITE)
 	if file:
 		file.store_var(FINETUNEDATA)
@@ -486,6 +525,7 @@ func load_from_binary(filename):
 		CONVERSATIONS = FINETUNEDATA["conversations"]
 		SETTINGS = FINETUNEDATA["settings"]
 		GRADERS = FINETUNEDATA.get("graders", [])
+		SCHEMAS = FINETUNEDATA.get("schemas", [])
 		for i in CONVERSATIONS.keys():
 			CURRENT_EDITED_CONVO_IX = str(i)
 			$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
@@ -493,6 +533,7 @@ func load_from_binary(filename):
 			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 			$Conversation/Graders/GradersList.from_var(GRADERS)
+			$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 			refresh_conversations_list()
 			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
@@ -513,11 +554,13 @@ func load_from_json_data(jsondata: String):
 	CONVERSATIONS = FINETUNEDATA["conversations"]
 	SETTINGS = FINETUNEDATA["settings"]
 	GRADERS = FINETUNEDATA.get("graders", [])
+	SCHEMAS = FINETUNEDATA.get("schemas", [])
 	for i in CONVERSATIONS.keys():
 		CURRENT_EDITED_CONVO_IX = str(i)
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Graders/GradersList.from_var(GRADERS)
+	$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
@@ -533,6 +576,7 @@ func make_save_json_data():
 	FINETUNEDATA["conversations"] = CONVERSATIONS
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
+	FINETUNEDATA["schemas"] = SCHEMAS
 	var jsonstr = JSON.stringify(FINETUNEDATA, "\t", false)
 	return jsonstr
 
@@ -569,6 +613,7 @@ func _on_save_file_dialog_file_selected(path: String) -> void:
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
+	update_schemas_internal()
 	if path.ends_with(".json"):
 		save_to_json(path)
 	elif path.ends_with(".ftproj"):
@@ -654,20 +699,42 @@ func create_jsonl_data_for_file():
 	return complete_jsonl_string
 
 
+func _start_export_progress():
+	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
+	$VBoxContainer/ExportBtn.disabled = true
+	$VBoxContainer/ExportBtn.text = tr("FINETUNE_EXPORTING")
+
+
+func _end_export_progress():
+	$VBoxContainer/ExportBtn.disabled = false
+	$VBoxContainer/ExportBtn.text = EXPORT_BTN_ORIG_TEXT
+
+
+func _on_export_progress(current: int, total: int, text: String = "") -> void:
+	var base_text = tr("FINETUNE_EXPORTING")
+	if text != "":
+		base_text += " " + text
+	$VBoxContainer/ExportBtn.text = "%s %d/%d" % [base_text, current, total]
+
+
 func _on_export_btn_pressed() -> void:
 	# If we are on the web, different things need to happen
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
 			$VBoxContainer/ExportBtn/ExportFileDialog.visible = true
 		"Web":
+			_start_export_progress()
 			# When we are on web, we need to download the file directly
 			var complete_jsonl_string = await create_jsonl_data_for_file()
+			_end_export_progress()
 			var byte_array = complete_jsonl_string.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune.jsonl", "text/plain")
 	
 
 func _on_export_file_dialog_file_selected(path: String) -> void:
+	_start_export_progress()
 	var complete_jsonl_string = await create_jsonl_data_for_file()
+	_end_export_progress()
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(complete_jsonl_string)
 	file.close()
@@ -1088,7 +1155,7 @@ func conversation_from_openai_message_json(oaimsgjson):
 							if _validate_is_json(a_text):
 									NEWCONVO.append({
 											"role": "assistant",
-											"type": "JSON Schema",
+											"type": "JSON",
 											"textContent": "",
 											"unpreferredTextContent": "",
 											"preferredTextContent": "",
@@ -1117,3 +1184,14 @@ func conversation_from_openai_message_json(oaimsgjson):
 			i += 1
 
 	return NEWCONVO
+func get_schema_by_name(name: String):
+	for s in SCHEMAS:
+		if s.get("name", "") == name:
+			return s.get("schema", null)
+	return null
+
+func get_sanitized_schema_by_name(name: String):
+	for s in SCHEMAS:
+		if s.get("name", "") == name:
+			return s.get("sanitizedSchema", null)
+	return null

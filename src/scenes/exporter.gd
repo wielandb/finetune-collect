@@ -1,5 +1,10 @@
 extends Node
 
+signal export_progress(current: int, total: int, extra_text: String)
+
+var _current_idx: int = 0
+var _current_total: int = 0
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -11,17 +16,20 @@ func _process(delta: float) -> void:
 	pass
 
 func url_to_base64(url: String):
+	emit_signal("export_progress", _current_idx, _current_total, tr("FINETUNE_EXPORTING_IMAGE_DOWNLOAD"))
 	var httpreqObj := HTTPRequest.new()
 	add_child(httpreqObj)
 	var err := httpreqObj.request(url)
 	if err != OK:
 		push_error("Failed to request URL: " + url)
 		httpreqObj.queue_free()
+		emit_signal("export_progress", _current_idx, _current_total, "")
 		return ""
 	var response = await httpreqObj.request_completed
 	httpreqObj.queue_free()
 	var body = response[3]
 	var base_64_data = Marshalls.raw_to_base64(body)
+	emit_signal("export_progress", _current_idx, _current_total, "")
 	return base_64_data
 	
 
@@ -200,7 +208,7 @@ func convert_message_to_openai_format(message, function_map=null):
 			}
 			return [tool_call, tool_response]
 		return tool_call
-	elif message['type'] == 'JSON Schema':
+	elif message['type'] == 'JSON' or message['type'] == 'JSON Schema':
 		var toAddDict = {
 			'role': message['role'],
 			'content': message['jsonSchemaValue']
@@ -313,26 +321,39 @@ func convert_rft_data(ftdata):
 		# replace conversations map with expanded version
 		ftdata['conversations'] = expanded
 	## End of convo expanding
-	print("Expanded conversations:")
 	print(ftdata['conversations'])
-	for conversation_key in ftdata['conversations']:
-		var conversation = ftdata['conversations'][conversation_key].duplicate(true)
-		# For reinforcement fine tuning, we need to remove the last assistant message/function call, because we need to convert it to "correct data"
+	var conversations = ftdata['conversations']
+	var total = conversations.size()
+	var idx = 0
+	for conversation_key in conversations:
+		idx += 1
+		_current_idx = idx
+		_current_total = total
+		emit_signal("export_progress", idx, total, "")
+		await get_tree().process_frame
+		var conversation = conversations[conversation_key].duplicate(true)
+		# For reinforcement fine tuning, convert the final assistant message to reference data and ensure
+		# the conversation ends with the user's last turn.
 		var last_message = conversation.pop_back()
-		# We need to check if the message we got is assistant + either JSON Schema, function call, or plain text
+		while conversation.size() > 0 and conversation.back().get("role", "") != "user":
+			conversation.pop_back()
+		if conversation.size() == 0 or conversation.back().get("role", "") != "user":
+			print("No valid user message found in conversation " + conversation_key + ", skipping...")
+			continue
+		# We need to check if the message we got is assistant + either JSON, function call, or plain text
 		if last_message['role'] != "assistant":
 			print("Invalid role in last message in conversation " + conversation_key + ", skipping...")
 			print("Last message:")
 			print(last_message)
 			continue
-		if last_message['type'] != "JSON Schema" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
+		if last_message['type'] != "JSON" and last_message['type'] != "Function Call" and last_message['type'] != "Text":
 			print("Invalid type in last message in conversation " + conversation_key + ", skipping...")
 			continue
 		var reference_json = {}
 		var reference_answer = ""
 		var do_function_call = false
-		var ideal_function_call_data = []
-		if last_message['type'] == "JSON Schema":
+		var ideal_function_call_data = {}
+		if last_message['type'] == "JSON":
 			reference_json = JSON.parse_string(last_message['jsonSchemaValue'])
 		elif last_message['type'] == "Function Call":
 			do_function_call = true
@@ -351,11 +372,15 @@ func convert_rft_data(ftdata):
 		var processed_conversation = []
 		if system_message:
 			processed_conversation.append({
-				'role': 'system',
+				'role': 'developer',
 				'content': system_message
 			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		# Replace system messages with developer role for reinforcement fine tuning
+		for msg in processed_conversation:
+			if msg.get('role', '') == 'system':
+				msg['role'] = 'developer'
 		# Write to JSONL, optionally including tools
 		var output_entry = {}
 		output_entry['reference_json'] = reference_json
@@ -395,8 +420,15 @@ func convert_rft_data(ftdata):
 func convert_dpo_data(ftdata):
 	var jsonl_file_string = ""
 	var conversations = ftdata.get("conversations", {})
-	
+	var total = conversations.size()
+	var idx = 0
+
 	for convo_key in conversations:
+		idx += 1
+		_current_idx = idx
+		_current_total = total
+		emit_signal("export_progress", idx, total, "")
+		await get_tree().process_frame
 		var conversation = conversations[convo_key]
 		
 		# We only train on one-turn conversations where:
@@ -456,22 +488,32 @@ func convert_fine_tuning_data(ftdata):
 	### Needs to be converted from scripts
 	## function_map = {func['name']: func for func in data.get('functions', [])}
 	var function_map = {}
-	for funcDef in ftdata.get('functions', []):
+	for funcDef in ftdata.get("functions", []):
 		function_map[funcDef["name"]] = funcDef
-	var tools = convert_functions_to_openai_format(ftdata.get('functions', []))
+	var tools = convert_functions_to_openai_format(ftdata.get("functions", []))
 	var system_message = null
-	if ftdata['settings'].get('useGlobalSystemMessage', false):
-		system_message = ftdata['settings'].get('globalSystemMessage', '')
-	for conversation_key in ftdata['conversations']:
-		var conversation = ftdata['conversations'][conversation_key]
+	if ftdata["settings"].get("useGlobalSystemMessage", false):
+		system_message = ftdata["settings"].get("globalSystemMessage", "")
+	var conversations = ftdata["conversations"]
+	var total = conversations.size()
+	var idx = 0
+	for conversation_key in conversations:
+		idx += 1
+		_current_idx = idx
+		_current_total = total
+		emit_signal("export_progress", idx, total, "")
+		await get_tree().process_frame
+		var conversation = conversations[conversation_key].duplicate(true)
 		var processed_conversation = []
 		if system_message:
-				processed_conversation.append({
-					'role': 'system', 
-					'content': system_message
-				})
+			processed_conversation.append({
+				'role': "system",
+				'content': system_message
+			})
 		# Convert conversation
 		processed_conversation += await convert_conversation_to_openai_format(conversation, function_map)
+		print("Processed conversation:")
+		print(str(processed_conversation))
 		# Write to JSONL, optionally including tools
 		var output_entry = {
 			'messages': processed_conversation

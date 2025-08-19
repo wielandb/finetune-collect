@@ -42,8 +42,10 @@ func add_image_content(image_base64: String, detail: String) -> void:
 	if isImageURL(image_base64):
 		image_url_data = image_base64
 	else:
-		# TODO: Check if it is really jpeg or a png
-		image_url_data = "data:image/jpeg;base64," + image_base64
+		if image_base64.begins_with("iVBOR"):
+			image_url_data = "data:image/png;base64," + image_base64
+		else:
+			image_url_data = "data:image/jpeg;base64," + image_base64
 	content.append({
 		"type": "image_url",
 		"image_url": {

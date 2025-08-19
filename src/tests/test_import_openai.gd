@@ -71,6 +71,7 @@ func test_image_utils():
 	assert_eq(ex.getImageType("https://example.com/pic.jpg?x=1"), "jpg", "getImageType jpg")
 	assert_eq(ex.isImageURL("https://example.com/pic.jpeg"), true, "isImageURL jpeg")
 	assert_eq(ex.getImageType("https://example.com/pic.jpeg"), "jpeg", "getImageType jpeg")
+	assert_eq(ex.getImageType("https://example.com/pic.png"), "png", "getImageType png")
 
 
 func test_convert_text_message():

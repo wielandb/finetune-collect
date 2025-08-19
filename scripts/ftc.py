@@ -2,6 +2,20 @@ import json
 import copy
 import sys
 import argparse
+import base64
+import binascii
+
+
+def get_ext_from_base64(b64: str) -> str:
+    try:
+        raw = base64.b64decode(b64[:24], validate=False)
+    except binascii.Error:
+        return "jpeg"
+    if raw.startswith(b"\x89PNG"):
+        return "png"
+    if raw.startswith(b"\xFF\xD8\xFF"):
+        return "jpeg"
+    return "jpeg"
 
 def convert_parameter_to_openai_format(param):
     """
@@ -67,13 +81,19 @@ def convert_message_to_openai_format(message, function_map=None):
     
     # Image message
     elif message['type'] == 'Image':
+        image_content = message['imageContent']
+        if image_content.startswith('http://') or image_content.startswith('https://'):
+            url = image_content
+        else:
+            ext = get_ext_from_base64(image_content)
+            url = f"data:image/{ext};base64,{image_content}"
         return {
             'role': message['role'],
             'content': [
                 {
                     'type': 'image_url',
                     'image_url': {
-                        'url': "data:image/jpeg;base64," + message['imageContent']
+                        'url': url
                     }
                 }
             ]

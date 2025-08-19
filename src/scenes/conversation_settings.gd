@@ -157,7 +157,7 @@ func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> 
 	var userSelection = $VBoxContainer/BatchCreatonContainer/BatchCreationRoleChoiceBox.selected
 	var modeSelection = $VBoxContainer/BatchCreatonContainer/BatchCreationModeChoiceBox.selected
 	for file in paths:
-		if file.ends_with(".jpg") or file.ends_with(".jpeg"):
+		if file.ends_with(".jpg") or file.ends_with(".jpeg") or file.ends_with(".png"):
 			first_messages.append(create_image_message_dict_from_path(file))
 		if file.ends_with(".txt") or file.ends_with(".json"):
 			first_messages.append(create_text_message_dict_from_path(file))

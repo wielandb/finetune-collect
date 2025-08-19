@@ -445,7 +445,7 @@ func maybe_upload_base64_image():
 func _on_load_image_button_pressed() -> void:
 	match OS.get_name():
 		"Web":
-			image_access_web.open(".jpg, .jpeg")
+			image_access_web.open(".png, .jpg, .jpeg")
 		_:
 			$ImageMessageContainer/FileDialog.visible = true
 
@@ -741,7 +741,7 @@ func isImageURL(url: String) -> bool:
 
 	# Check path part first (before query string).
 	var path_part = no_fragment.split("?")[0]
-	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
+	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg") or path_part.ends_with(".png"):
 		return true
 
 	# Check query parameters for an 'image' parameter with a jpg/jpeg extension.
@@ -753,7 +753,7 @@ func isImageURL(url: String) -> bool:
 			var kv = param.split("=")
 			if kv.size() == 2 and kv[0] == "image":
 				var value = kv[1]
-				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
+				if value.ends_with(".jpg") or value.ends_with(".jpeg") or value.ends_with(".png"):
 					return true
 
 	return false
@@ -769,6 +769,8 @@ func getImageType(url: String) -> String:
 	var no_fragment = lower_url.split("#")[0]
 	var path_part = no_fragment.split("?")[0]
 
+	if path_part.ends_with(".png"):
+		return "png"
 	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
 		return "jpg"
 
@@ -780,6 +782,8 @@ func getImageType(url: String) -> String:
 			var kv = param.split("=")
 			if kv.size() == 2 and kv[0] == "image":
 				var value = kv[1]
+				if value.ends_with(".png"):
+					return "png"
 				if value.ends_with(".jpg") or value.ends_with(".jpeg"):
 					return "jpg"
 

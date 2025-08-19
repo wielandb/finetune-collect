@@ -55,7 +55,7 @@ def image_token_count(image_data, low_res=False):
     if image_data.startswith("http"):
         from_base64 = False
     if from_base64:
-        # decode base64, "data:image/jpeg;base64," +
+        # decode base64, "data:image/jpeg;base64," or "data:image/png;base64," +
         if "," in image_data:
             image_data = image_data.split(",")[1]
         img_bytes = base64.b64decode(image_data)

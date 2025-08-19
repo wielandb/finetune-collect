@@ -1016,9 +1016,9 @@ func conversation_from_openai_message_json(oaimsgjson):
 														var url = piece["image_url"].get("url", "")
 														var detail = image_detail_map.get(piece["image_url"].get("detail", "high"), 0)
 														if url.begins_with("data:image/jpeg;base64,"):
-																url = url.replace("data:image/jpeg;base64,", "")
-																elif url.begins_with("data:image/png;base64,"):
-																	url = url.replace("data:image/png;base64,", "")
+															url = url.replace("data:image/jpeg;base64,", "")
+														elif url.begins_with("data:image/png;base64,"):
+															url = url.replace("data:image/png;base64,", "")
 														NEWCONVO.append({
 														"role": "user",
 														"type": "Image",

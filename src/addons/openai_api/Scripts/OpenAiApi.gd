@@ -5,11 +5,13 @@ var chatgpt_inst = preload("res://addons/openai_api/Scenes/ChatGpt.tscn")
 var dalle_inst = preload("res://addons/openai_api/Scenes/Dalle.tscn")
 var models_inst = preload("res://addons/openai_api/Scenes/Models.tscn")
 var grader_inst = preload("res://addons/openai_api/Scenes/Grader.tscn")
+var embeddings_inst = preload("res://addons/openai_api/Scenes/Embeddings.tscn")
 
 @export var dalle :Dalle = null
 @export var chatgpt :ChatGpt = null
 @export var models: Models = null
 @export var grader: Grader = null
+@export var embeddings: Embeddings = null
 
 @export var openai_api_key = ""
 
@@ -18,6 +20,7 @@ signal dalle_response_completed(texture:ImageTexture)
 signal models_received(models: Array[String])
 signal grader_run_completed(response: Dictionary)
 signal grader_validation_completed(response: Dictionary)
+signal embedding_received(embedding: Array, response: Dictionary)
 
 ##Makes an api call to open ai chatgpt, and returns a class `Message` that contains `{"role":role,"content":content}`
 func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4o-mini", url:String="https://api.openai.com/v1/chat/completions", tools:Array = []):
@@ -34,6 +37,12 @@ func prompt_dalle(prompt:String, resolution:String = "1024x1024", model: String 
 		await get_tree().create_timer(0.2).timeout
 		
 	dalle.prompt_dalle(prompt,resolution,model,url)
+
+##Makes an api call to open ai embeddings, and returns the embedding array
+func get_embedding(input_text:String, model:String = "text-embedding-3-small", url:String="https://api.openai.com/v1/embeddings"):
+	while !embeddings:
+		await get_tree().create_timer(0.2).timeout
+	embeddings.get_embedding(input_text, model, url)
 
 func run_grader(grader_obj: Dictionary, model_sample, item = null, url: String = "https://api.openai.com/v1/fine_tuning/alpha/graders/run"):
 	while !grader:
@@ -55,7 +64,7 @@ func get_api() -> String:
 	if openai_api_key.is_empty():
 		push_error("Insert your OpenAi api key!")
 	return openai_api_key
-
+	
 func set_api(api:String) -> void:
 	openai_api_key = api
 
@@ -66,16 +75,17 @@ func get_models() -> void:
 	models.get_available_models()
 
 func _ready():
-	if chatgpt and dalle and models and grader:
+	if chatgpt and dalle and models and grader and embeddings:
 		return
 
 	call_deferred("add_child", chatgpt_inst.instantiate())
 	call_deferred("add_child", dalle_inst.instantiate())
 	call_deferred("add_child", models_inst.instantiate())
 	call_deferred("add_child", grader_inst.instantiate())
+	call_deferred("add_child", embeddings_inst.instantiate())
 	
 func _process(delta):
-	if chatgpt and dalle and models and grader:
+	if chatgpt and dalle and models and grader and embeddings:
 		set_process(false)
 		return
 	for child in get_children():
@@ -87,3 +97,5 @@ func _process(delta):
 			models = child
 		elif !grader and child is Grader:
 			grader = child
+		elif !embeddings and child is Embeddings:
+			embeddings = child

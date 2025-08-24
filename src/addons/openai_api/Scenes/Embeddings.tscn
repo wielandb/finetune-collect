@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://wjg88llb5guh"]
+
+[ext_resource type="Script" uid="uid://oaxzxc5kho61" path="res://addons/openai_api/Scripts/Embeddings.gd" id="1_21edb"]
+
+[node name="Embeddings" type="Node"]
+script = ExtResource("1_21edb")

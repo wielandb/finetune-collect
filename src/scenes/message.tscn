@@ -589,15 +589,18 @@ size_flags_horizontal = 3
 
 [node name="SchemaValidationHTTPRequest" type="HTTPRequest" parent="SchemaMessageContainer/HBoxContainer"]
 
-[node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
+[node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer/HBoxContainer"]
 layout_mode = 2
 script = ExtResource("12_wnabm")
 
-[node name="SchemaEditButton" type="Button" parent="SchemaMessageContainer/SchemaEditButtonsContainer"]
+[node name="SchemaEditButton" type="Button" parent="SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer"]
+custom_minimum_size = Vector2(45, 45)
 layout_mode = 2
-size_flags_horizontal = 3
-text = "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
-icon = ExtResource("5_j80gg")
+flat = true
+text = ""
+tooltip_text = "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
+icon = ExtResource("13_gakvq")
+expand_icon = true
 
 [node name="SchemaMessagePolling" type="HBoxContainer" parent="SchemaMessageContainer"]
 visible = false
@@ -623,7 +626,47 @@ layout_mode = 2
 text = "MESSAGES_JSON_SCHEMA_REOPEN_BROWSER"
 icon = ExtResource("13_gakvq")
 
-[node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer"]
+[node name="SchemaEditTabs" type="TabContainer" parent="SchemaMessageContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+current_tab = 0
+
+[node name="SchemaFormTab" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+metadata/_tab_index = 0
+
+[node name="SchemaFormVBox" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SchemaFormHintLabel" type="Label" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox"]
+layout_mode = 2
+autowrap_mode = 1
+text = "MESSAGES_JSON_SCHEMA_FORM_HINT"
+
+[node name="SchemaFormScroll" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SchemaFormRoot" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SchemaRawTab" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+metadata/_tab_index = 1
+
+[node name="SchemaRawVBox" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
@@ -671,7 +714,7 @@ layout_mode = 2
 [connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_do_token_calculation_update"]
 [connection signal="item_selected" from="SchemaMessageContainer/HBoxContainer/OptionButton" to="." method="_on_something_int_changed"]
-[connection signal="pressed" from="SchemaMessageContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
+[connection signal="pressed" from="SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]
 [connection signal="request_completed" from="SchemaMessageContainer/InitEditingRequestToken" to="." method="_on_init_editing_request_token_request_completed"]
 [connection signal="request_completed" from="SchemaMessageContainer/PollForCompletion" to="." method="_on_poll_for_completion_request_completed"]

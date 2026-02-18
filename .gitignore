@@ -6,3 +6,4 @@ scripts/output_finetune.jsonl
 scripts/data.json
 /scripts/uploaded_images
 /godot-runtime
+docs/schema_examples.md

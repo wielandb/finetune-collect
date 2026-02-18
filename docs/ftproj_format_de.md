@@ -70,8 +70,8 @@ Im Dictionary `conversations` werden alle aufgezeichneten Dialoge gespeichert. D
 | `functionResults` | string | Ergebnis einer ausgeführten Funktion. |
 | `functionUsePreText` | string | Text, der bei der Ausführung vorangestellt wird. |
 | `userName` | string | Optionaler Benutzername. |
-| `jsonSchemaName` | string | Name des ausgewählten JSON‑Schemas. Leer lassen, um nur JSON zu validieren. |
-| `jsonSchemaValue` | string | Zusätzliche Schema‑Informationen. |
+| `jsonSchemaName` | string | Name des ausgewählten JSON‑Schemas für strukturierte JSON‑Nachrichten. Leer lassen, um reines JSON ohne schemagebundene Formulare zu speichern. |
+| `jsonSchemaValue` | string | Der JSON-Inhalt der Nachricht (als serialisierter Text), nicht die Schema-Definition selbst. |
 | `metaData` | object | Informationen zur Konversation selbst. |
 | `audioData` | string | Base64‑kodierte Audiodaten. |
 | `audioTranscript` | string | Transkription des Audios. |

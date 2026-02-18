@@ -1484,3 +1484,54 @@ msgstr "Add Schema"
 msgid "ONLY_JSON_NO_SCHEMA"
 msgstr "Only JSON, no schema"
 
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_TAB"
+msgstr "Form"
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_RAW_TAB"
+msgstr "Raw JSON"
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_HINT"
+msgstr "Fill values using the schema-generated form."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA"
+msgstr "Select a schema to enable the generated form editor."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK"
+msgstr "Some schema parts use embedded raw JSON editors."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_DISABLED"
+msgstr "External schema editor disabled because no URL is configured."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED"
+msgstr "Open external schema editor (optional fallback)."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_USE_NULL"
+msgstr "Use null"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_INCLUDE"
+msgstr "Include"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM"
+msgstr "Add item"
+
+#: scenes/schema_runtime/widgets/schema_array_item_row.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"
+msgstr "Delete"
+
+#: scenes/schema_runtime/widgets/schema_array_item_row.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_ITEM"
+msgstr "Item"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
+msgstr "No properties in this object schema."

@@ -1292,3 +1292,48 @@ msgstr ""
 #: scenes/fine_tune.gd
 msgid "ONLY_JSON_NO_SCHEMA"
 msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_FORM_TAB"
+msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_RAW_TAB"
+msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_FORM_HINT"
+msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA"
+msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK"
+msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_DISABLED"
+msgstr ""
+
+msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_USE_NULL"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_INCLUDE"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_array_item_row.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_array_item_row.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_ITEM"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
+msgstr ""

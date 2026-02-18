@@ -21,4 +21,11 @@ jobs:
         run: |
           godot --headless --path src -s res://tests/test_import_openai.gd && \
           godot --headless --path src -s res://tests/test_application_start.gd && \
-          godot --headless --path src -s res://tests/test_load_examples.gd
+          godot --headless --path src -s res://tests/test_load_examples.gd && \
+          godot --headless --path src -s res://tests/test_schema_title_sync.gd && \
+          godot --headless --path src -s res://tests/test_schema_validator_request.gd && \
+          godot --headless --path src -s res://tests/test_schema_align_openai.gd && \
+          godot --headless --path src -s res://tests/test_schema_form_roundtrip.gd && \
+          godot --headless --path src -s res://tests/test_schema_form_array_enum.gd && \
+          godot --headless --path src -s res://tests/test_schema_form_union_and_fallback.gd && \
+          godot --headless --path src -s res://tests/test_json_schema_validator_extended.gd

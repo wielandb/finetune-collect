@@ -8,13 +8,26 @@ const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
 var _validate_timer: Timer
 
+func _get_fine_tune_node():
+	if not is_inside_tree():
+		return null
+	var tree = get_tree()
+	if tree == null:
+		return null
+	return tree.root.get_node_or_null("FineTune")
+
+func _request_schemas_refresh() -> void:
+	var ft_node = _get_fine_tune_node()
+	if ft_node != null and ft_node.has_method("update_schemas_internal"):
+		ft_node.update_schemas_internal()
+
 func _ready() -> void:
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Edit JSON"))
 	tab_bar.set_tab_title(1, tr("OpenAI JSON"))
 	_validate_timer = Timer.new()
 	_validate_timer.one_shot = true
-	_validate_timer.wait_time = 2.0
+	_validate_timer.wait_time = 0.5
 	add_child(_validate_timer)
 	_validate_timer.connect("timeout", Callable(self, "_on_validate_timeout"))
 
@@ -89,17 +102,23 @@ func _on_validate_timeout() -> void:
 	if json2.parse(oai_text) != OK:
 		_set_oai_result(false, "Invalid JSON")
 		return
-	var pending_schema = json2.data["schema"]
-	_set_oai_pending()
-	var res2 = JsonSchemaValidator.validate_schema(pending_schema)
-	if res2["ok"]:
-		_set_oai_result(true)
+	var pending_schema = null
+	if json2.data is Dictionary:
+		pending_schema = json2.data.get("schema", null)
+	if pending_schema is Dictionary:
+		_set_oai_pending()
+		var res2 = JsonSchemaValidator.validate_schema(pending_schema)
+		if res2["ok"]:
+			_set_oai_result(true)
+		else:
+			_set_oai_result(false, JSON.stringify(res2["errors"]))
 	else:
-		_set_oai_result(false, JSON.stringify(res2["errors"]))
+		_set_oai_result(false, "Missing schema")
 	if not _updating_from_name and json.data is Dictionary and json.data.has("title"):
 		var title = json.data["title"]
 		if title is String:
 			name_edit.text = title
+	_request_schemas_refresh()
 
 func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	var editor := $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit

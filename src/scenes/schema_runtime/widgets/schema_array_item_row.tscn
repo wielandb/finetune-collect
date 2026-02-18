@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/schema_runtime/widgets/schema_array_item_row.gd" id="1_fvsm6"]
+
+[node name="SchemaArrayItemRow" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_fvsm6")
+
+[node name="Header" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="ItemLabel" type="Label" parent="Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Item 1"
+
+[node name="DeleteButton" type="Button" parent="Header"]
+layout_mode = 2
+text = "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"
+
+[node name="ContentContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Separator" type="HSeparator" parent="."]
+layout_mode = 2

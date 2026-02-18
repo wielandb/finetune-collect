@@ -1502,3 +1502,54 @@ msgstr "Schema hinzufügen"
 msgid "ONLY_JSON_NO_SCHEMA"
 msgstr "Nur JSON, kein Schema"
 
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_TAB"
+msgstr "Formular"
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_RAW_TAB"
+msgstr "Rohes JSON"
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_HINT"
+msgstr "Werte direkt im aus dem Schema erzeugten Formular eingeben."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA"
+msgstr "WÃ¤hle ein Schema aus, um den Formular-Editor zu aktivieren."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK"
+msgstr "Einige Schema-Teile verwenden eingebettete Raw-JSON-Editoren."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_DISABLED"
+msgstr "Externer Schema-Editor deaktiviert, da keine URL konfiguriert ist."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED"
+msgstr "Externen Schema-Editor Ã¶ffnen (optionaler Fallback)."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_USE_NULL"
+msgstr "Null verwenden"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_INCLUDE"
+msgstr "Einbeziehen"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM"
+msgstr "Eintrag hinzufügen"
+
+#: scenes/schema_runtime/widgets/schema_array_item_row.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"
+msgstr "Löschen"
+
+#: scenes/schema_runtime/widgets/schema_array_item_row.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_ITEM"
+msgstr "Element"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
+msgstr "Dieses Objekt-Schema hat keine Properties."

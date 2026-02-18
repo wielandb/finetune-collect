@@ -1014,18 +1014,32 @@ func _do_token_calculation_update() -> void:
 		return
 	var arguments_list = [token_counter_path, own_savefile_path]
 	var exit_code = OS.execute("python", arguments_list, output)
-	var outputstring = output[0].strip_edges()
-	print(outputstring)
+	if exit_code != 0:
+		push_warning("Token counter failed with exit code %s" % str(exit_code))
+		return
+	if output.size() == 0:
+		push_warning("Token counter returned no output")
+		return
+	var outputstring = str(output[0]).strip_edges()
+	if outputstring == "":
+		push_warning("Token counter returned empty output")
+		return
 	var conversation_token_counts = JSON.parse_string(outputstring)
+	if typeof(conversation_token_counts) != TYPE_DICTIONARY:
+		push_warning("Token counter returned invalid JSON output")
+		return
 	var my_convo_ix = get_node("/root/FineTune").CURRENT_EDITED_CONVO_IX
+	if not conversation_token_counts.has(my_convo_ix):
+		push_warning("Token counter result has no data for conversation %s" % str(my_convo_ix))
+		return
 	$MetaMessageContainer/InfoLabelsGridContainer/ThisConversationTotalTokens.text = str(int(conversation_token_counts[my_convo_ix]["total"]))
 	var all_tokens = 0
 	for convoKey in conversation_token_counts:
-		all_tokens += conversation_token_counts[convoKey]["total"]
+		var convo_data = conversation_token_counts[convoKey]
+		if typeof(convo_data) == TYPE_DICTIONARY and convo_data.has("total"):
+			all_tokens += int(convo_data["total"])
 	$MetaMessageContainer/InfoLabelsGridContainer/WholeFineTuneTotalTokens.text = str(int(all_tokens))
 	get_node("/root/FineTune/Conversation/Settings/ConversationSettings/VBoxContainer/TokenCountPathContainer/TokenCountValueHolder").text = str(conversation_token_counts)
-	print("Token counts")
-	print(conversation_token_counts)
 	update_token_costs(conversation_token_counts)
 
 

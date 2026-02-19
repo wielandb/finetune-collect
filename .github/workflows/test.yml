@@ -18,7 +18,7 @@ jobs:
           use-dotnet: false
           include-templates: false
       - name: Import project resources
-        run: godot -e --headless --path src --quit-after 2
+        run: godot --headless --path src --import
       - name: Run tests
         run: |
           godot --headless --path src -s res://tests/test_import_openai.gd && \

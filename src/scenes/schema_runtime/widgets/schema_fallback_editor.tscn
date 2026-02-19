@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/schema_runtime/widgets/schema_fallback_editor.gd" id="1_40b23"]
+
+[node name="SchemaFallbackEditor" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_40b23")
+
+[node name="FallbackTitle" type="Label" parent="."]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Partial Raw JSON"
+
+[node name="FallbackDescription" type="Label" parent="."]
+layout_mode = 2
+autowrap_mode = 2
+text = "Unsupported schema node."
+
+[node name="FallbackJSONEdit" type="CodeEdit" parent="."]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+wrap_mode = 1
+
+[node name="FallbackError" type="Label" parent="."]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.776471, 0, 0, 1)
+text = "Invalid JSON"

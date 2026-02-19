@@ -137,6 +137,21 @@ func test_message_ui_image_roundtrip():
 	assert_eq(out.get("content", [])[0]["image_url"]["detail"], "auto", "ui image detail")
 	node.queue_free()
 
+func test_openai_import_filters_non_dictionary_items():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var messages = [
+		{"role":"system","content":"System instruction"},
+		"invalid-message",
+		["also-invalid"],
+		{"role":"user","content":[{"type":"text","text":"Hello there"}]}
+	]
+	var convo = ft.conversation_from_openai_message_json(messages)
+	assert_eq(convo.size(), 2, "import keeps only dictionary messages")
+	assert_eq(convo[0]["role"], "system", "imported system role")
+	assert_eq(convo[1]["role"], "user", "imported user role")
+	assert_eq(convo[1]["textContent"], "Hello there", "imported user text")
+
 func _init():
 	test_save_and_load_var()
 	test_convert_functions()
@@ -149,5 +164,6 @@ func _init():
 	test_message_class()
 	test_message_ui_text_roundtrip()
 	test_message_ui_image_roundtrip()
+	test_openai_import_filters_non_dictionary_items()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

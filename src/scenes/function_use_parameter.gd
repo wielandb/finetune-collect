@@ -12,6 +12,14 @@ func myParentFunction() -> String:
 	var functionChooseBox = get_node("../function/FunctionNameChoiceButton")
 	return functionChooseBox.get_item_text(functionChooseBox.selected)
 
+func _get_fine_tune_node():
+	if not is_inside_tree():
+		return null
+	var tree = get_tree()
+	if tree == null:
+		return null
+	return tree.root.get_node_or_null("FineTune")
+
 func to_var():
 	var me = {}
 	me["name"] = $ParameterName.text
@@ -30,18 +38,24 @@ func to_var():
 func from_var(me):
 	print("Use_Parameter from var:")
 	print(me)
-	$ParameterName.text = me["name"]
-	var my_parameter_name = me["name"]
-	$FunctionUseParameterNumberEdit.value = me["parameterValueNumber"]
+	$ParameterName.text = str(me.get("name", ""))
+	var my_parameter_name = str(me.get("name", ""))
+	$FunctionUseParameterNumberEdit.value = float(me.get("parameterValueNumber", 0))
 	var my_function_name = myParentFunction()
-	var my_function_def = get_node("/root/FineTune").get_function_definition(my_function_name)
-	var my_parameter_def = get_node("/root/FineTune").get_parameter_def(my_function_name, my_parameter_name)	
+	$FunctionUseParameterIsUsedCheckbox.button_pressed = bool(me.get("isUsed", false))
+	$FunctionUseParameterEdit.text = str(me.get("parameterValueText", ""))
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		$FunctionUseParameterEdit.visible = true
+		$FunctionUseParameterChoice.visible = false
+		$FunctionUseParameterNumberEdit.visible = false
+		return
+	var my_parameter_def = ft_node.get_parameter_def(my_function_name, my_parameter_name)	
 	# Falls der Paramter required ist, checkbox auf ja setzen und disablen
-	var isUsedFunctionEnum = get_node("/root/FineTune").is_function_parameter_enum(my_function_name, my_parameter_name)
-	var usedParameterEnumOptions = get_node("/root/FineTune").get_function_parameter_enums(my_function_name, my_parameter_name)
-	var isUsedParameterRequired = get_node("/root/FineTune").is_function_parameter_required(my_function_name, my_parameter_name)
-	var usedParameterType = get_node("/root/FineTune").get_function_parameter_type(my_function_name, my_parameter_name)
-	$FunctionUseParameterIsUsedCheckbox.button_pressed = me["isUsed"]
+	var isUsedFunctionEnum = ft_node.is_function_parameter_enum(my_function_name, my_parameter_name)
+	var usedParameterEnumOptions = ft_node.get_function_parameter_enums(my_function_name, my_parameter_name)
+	var isUsedParameterRequired = ft_node.is_function_parameter_required(my_function_name, my_parameter_name)
+	var usedParameterType = ft_node.get_function_parameter_type(my_function_name, my_parameter_name)
 	print("Is used parameter required?")
 	print(isUsedParameterRequired)
 	print("Is function parameter enum?")

@@ -17,5 +17,7 @@ Dieses Verzeichnis enthält verschiedene kleine Fine-Tuning Projekte, die die un
 | `openai-image-json-schema-sample.json` | Kombiniert ein Bild mit einer JSON-Antwort. |
 | `openai-image-function-call-json-schema-sample.json` | Vereint Bild, Funktionsaufruf und JSON-Schema-Ausgabe. |
 | `openai-user-names-sample.json` | Mehrere Nutzer listen etwas auf; der Assistent nennt, wer was gesagt hat. |
+| `temperature_example.json` | Wetter-Beispielprojekt mit mehreren Konversationen, Funktionsaufrufen und Antworten. |
+| `temperature_example.ftproj` | Dasselbe Wetter-Beispiel als `ftproj`-Datei. |
 
 Die beinhalteten Nachrichten sind absichtlich kurz gehalten und sollen lediglich als Ausgangspunkt für eigene Experimente dienen.

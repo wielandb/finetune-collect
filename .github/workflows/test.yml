@@ -14,9 +14,11 @@ jobs:
       - name: Set up Godot
         uses: chickensoft-games/setup-godot@v2
         with:
-          version: 4.4.1
+          version: 4.6.1
           use-dotnet: false
           include-templates: false
+      - name: Import project resources
+        run: godot -e --headless --path src --quit-after 2
       - name: Run tests
         run: |
           godot --headless --path src -s res://tests/test_import_openai.gd && \

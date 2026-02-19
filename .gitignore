@@ -7,3 +7,5 @@ scripts/data.json
 /scripts/uploaded_images
 /godot-runtime
 docs/schema_examples.md
+export/windows/finetune-collector.exe
+export/windows/finetune-collector.console.exe

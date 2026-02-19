@@ -1535,3 +1535,151 @@ msgstr "Item"
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
 msgstr "No properties in this object schema."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN"
+msgstr "Validation error."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_SCHEMA_EDITOR_MISSING"
+msgstr "Schema editor is not available."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_INVALID_JSON"
+msgstr "Invalid JSON."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NO_SCHEMA"
+msgstr "No schema selected."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ONE_OF_EXACTLY_ONE"
+msgstr "Exactly one oneOf branch must match."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ANY_OF_NONE"
+msgstr "No anyOf branch matched."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TYPE_MISMATCH"
+msgstr "Type mismatch."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_OBJECT"
+msgstr "Expected object."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_ARRAY"
+msgstr "Expected array."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_STRING"
+msgstr "Expected string."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_NUMBER"
+msgstr "Expected number."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_INTEGER"
+msgstr "Expected integer."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_BOOLEAN"
+msgstr "Expected boolean."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY"
+msgstr "Additional property is not allowed by schema."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY_NOT_ALLOWED"
+msgstr "Additional property is not allowed."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_MISSING_PROPERTY"
+msgstr "Missing required property."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_MISSING_REQUIRED_PROPERTY"
+msgstr "Missing required property."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ITEMS"
+msgstr "Too few array items."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ITEMS"
+msgstr "Too many array items."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ARRAY_ITEMS"
+msgstr "Too few array items."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ARRAY_ITEMS"
+msgstr "Too many array items."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_DUPLICATE_ITEM"
+msgstr "Duplicate array item."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_VALUE_NOT_IN_ENUM"
+msgstr "Value is not in enum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_CONST_MISMATCH"
+msgstr "Value does not match const."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_MINIMUM"
+msgstr "Number is below minimum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_MAXIMUM"
+msgstr "Number is above maximum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_OR_EQUAL_EXCLUSIVE_MINIMUM"
+msgstr "Number must be greater than exclusive minimum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_OR_EQUAL_EXCLUSIVE_MAXIMUM"
+msgstr "Number must be less than exclusive maximum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_NOT_MULTIPLE_OF"
+msgstr "Number is not a valid multiple."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_MIN_LENGTH"
+msgstr "String is shorter than minLength."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_MAX_LENGTH"
+msgstr "String is longer than maxLength."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_INVALID_PATTERN"
+msgstr "Schema pattern is invalid."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_PATTERN_MISMATCH"
+msgstr "String does not match pattern."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NO_UNION_BRANCH"
+msgstr "No matching union branch."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NULL_NOT_ALLOWED"
+msgstr "Value must not be null."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_FORMAT_MISMATCH"
+msgstr "String does not match format: {format}."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
+msgstr "Path: {path}"

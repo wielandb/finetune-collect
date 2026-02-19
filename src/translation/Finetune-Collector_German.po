@@ -1516,7 +1516,7 @@ msgstr "Werte direkt im aus dem Schema erzeugten Formular eingeben."
 
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA"
-msgstr "WÃ¤hle ein Schema aus, um den Formular-Editor zu aktivieren."
+msgstr "Wähle ein Schema aus, um den Formular-Editor zu aktivieren."
 
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK"
@@ -1553,3 +1553,151 @@ msgstr "Element"
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
 msgstr "Dieses Objekt-Schema hat keine Properties."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN"
+msgstr "Validierungsfehler."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_SCHEMA_EDITOR_MISSING"
+msgstr "Schema-Editor ist nicht verfügbar."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_INVALID_JSON"
+msgstr "Ungültiges JSON."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NO_SCHEMA"
+msgstr "Kein Schema ausgewählt."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ONE_OF_EXACTLY_ONE"
+msgstr "Genau ein oneOf-Zweig muss passen."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ANY_OF_NONE"
+msgstr "Kein anyOf-Zweig passt."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TYPE_MISMATCH"
+msgstr "Typ passt nicht."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_OBJECT"
+msgstr "Objekt erwartet."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_ARRAY"
+msgstr "Array erwartet."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_STRING"
+msgstr "String erwartet."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_NUMBER"
+msgstr "Zahl erwartet."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_INTEGER"
+msgstr "Ganzzahl erwartet."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_BOOLEAN"
+msgstr "Boolescher Wert erwartet."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY"
+msgstr "Zusätzliches Feld ist laut Schema nicht erlaubt."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY_NOT_ALLOWED"
+msgstr "Zusätzliches Feld ist nicht erlaubt."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_MISSING_PROPERTY"
+msgstr "Pflichtfeld fehlt."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_MISSING_REQUIRED_PROPERTY"
+msgstr "Pflichtfeld fehlt."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ITEMS"
+msgstr "Zu wenige Array-Einträge."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ITEMS"
+msgstr "Zu viele Array-Einträge."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ARRAY_ITEMS"
+msgstr "Zu wenige Array-Einträge."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ARRAY_ITEMS"
+msgstr "Zu viele Array-Einträge."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_DUPLICATE_ITEM"
+msgstr "Doppelter Array-Eintrag."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_VALUE_NOT_IN_ENUM"
+msgstr "Wert ist nicht im Enum enthalten."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_CONST_MISMATCH"
+msgstr "Wert passt nicht zur const-Vorgabe."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_MINIMUM"
+msgstr "Zahl liegt unter dem Minimum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_MAXIMUM"
+msgstr "Zahl liegt über dem Maximum."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_OR_EQUAL_EXCLUSIVE_MINIMUM"
+msgstr "Zahl muss größer als exclusiveMinimum sein."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_OR_EQUAL_EXCLUSIVE_MAXIMUM"
+msgstr "Zahl muss kleiner als exclusiveMaximum sein."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_NOT_MULTIPLE_OF"
+msgstr "Zahl ist kein gültiges Vielfaches."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_MIN_LENGTH"
+msgstr "String ist kürzer als minLength."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_MAX_LENGTH"
+msgstr "String ist länger als maxLength."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_INVALID_PATTERN"
+msgstr "Pattern im Schema ist ungültig."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_PATTERN_MISMATCH"
+msgstr "String passt nicht zum Pattern."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NO_UNION_BRANCH"
+msgstr "Kein passender Union-Zweig."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NULL_NOT_ALLOWED"
+msgstr "Wert darf nicht null sein."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_FORMAT_MISMATCH"
+msgstr "String passt nicht zum Format: {format}."
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
+msgstr "Pfad: {path}"

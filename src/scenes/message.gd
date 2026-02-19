@@ -682,29 +682,199 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 	check_if_function_button_should_be_visible_or_disabled()
 	print("-------------------")
 
+func _schema_validation_row_node():
+	return $SchemaMessageContainer/HBoxContainer
+
+func _schema_validation_error_container_node():
+	return $SchemaMessageContainer/SchemaValidationErrorsContainer
+
+func _clear_schema_validation_error_rows() -> void:
+	var container = _schema_validation_error_container_node()
+	for child in container.get_children():
+		child.queue_free()
+
 func _set_schema_validation_idle() -> void:
-	var c = $SchemaMessageContainer/HBoxContainer
-	c.get_node("Spinner").visible = false
-	c.get_node("SchemaValidationTextureRect").visible = false
-	c.get_node("SchemaValidationErrorLabel").visible = false
+	var row = _schema_validation_row_node()
+	var error_container = _schema_validation_error_container_node()
+	row.get_node("Spinner").visible = false
+	row.get_node("SchemaValidationTextureRect").visible = false
+	_clear_schema_validation_error_rows()
+	error_container.visible = false
 
 func _set_schema_validation_pending() -> void:
-	var c = $SchemaMessageContainer/HBoxContainer
-	c.get_node("Spinner").visible = true
-	c.get_node("SchemaValidationTextureRect").visible = false
-	c.get_node("SchemaValidationErrorLabel").visible = false
+	var row = _schema_validation_row_node()
+	var error_container = _schema_validation_error_container_node()
+	row.get_node("Spinner").visible = true
+	row.get_node("SchemaValidationTextureRect").visible = false
+	_clear_schema_validation_error_rows()
+	error_container.visible = false
 
 func _set_schema_validation_result(ok: bool, msg: String = "") -> void:
-	var c = $SchemaMessageContainer/HBoxContainer
-	c.get_node("Spinner").visible = false
-	c.get_node("SchemaValidationTextureRect").visible = true
+	var row = _schema_validation_row_node()
+	var error_container = _schema_validation_error_container_node()
+	row.get_node("Spinner").visible = false
+	row.get_node("SchemaValidationTextureRect").visible = true
 	if ok:
-		c.get_node("SchemaValidationTextureRect").texture = load(VALID_ICON_OK)
-		c.get_node("SchemaValidationErrorLabel").visible = false
+		row.get_node("SchemaValidationTextureRect").texture = load(VALID_ICON_OK)
+		_clear_schema_validation_error_rows()
+		error_container.visible = false
 	else:
-		c.get_node("SchemaValidationTextureRect").texture = load(VALID_ICON_BAD)
-		c.get_node("SchemaValidationErrorLabel").visible = true
-		c.get_node("SchemaValidationErrorLabel").text = msg
+		row.get_node("SchemaValidationTextureRect").texture = load(VALID_ICON_BAD)
+		_render_schema_validation_errors(msg)
+
+func _render_schema_validation_errors(msg: String) -> void:
+	var container = _schema_validation_error_container_node()
+	_clear_schema_validation_error_rows()
+	var entries = _parse_schema_validation_errors(msg)
+	for i in range(entries.size()):
+		var entry = entries[i]
+		var row = HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 8)
+		container.add_child(row)
+		var message_label = Label.new()
+		message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		message_label.autowrap_mode = 0
+		message_label.add_theme_font_size_override("font_size", 15)
+		message_label.text = str(entry.get("message", tr("MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN")))
+		row.add_child(message_label)
+		var path_label = Label.new()
+		path_label.autowrap_mode = 0
+		path_label.horizontal_alignment = 2
+		path_label.add_theme_font_size_override("font_size", 11)
+		path_label.text = tr("MESSAGES_JSON_SCHEMA_ERROR_PATH").replace("{path}", str(entry.get("path", "/")))
+		row.add_child(path_label)
+		if i < entries.size() - 1:
+			var separator = HSeparator.new()
+			separator.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			container.add_child(separator)
+	container.visible = true
+
+func _parse_schema_validation_errors(msg: String) -> Array:
+	var entries = []
+	var normalized = msg.strip_edges()
+	if normalized == "":
+		entries.append(_make_schema_validation_error_entry("/", tr("MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN")))
+		return entries
+	var parsed = JSON.parse_string(normalized)
+	if parsed is Array:
+		_append_schema_validation_error_entries_from_array(entries, parsed)
+	elif parsed is Dictionary:
+		if parsed.has("errors") and parsed["errors"] is Array:
+			_append_schema_validation_error_entries_from_array(entries, parsed["errors"])
+		elif parsed.has("message"):
+			_append_schema_validation_error_entry(entries, str(parsed.get("path", "/")), str(parsed.get("message", "")))
+		else:
+			_append_schema_validation_error_entry(entries, "/", normalized)
+	else:
+		_append_schema_validation_error_entry(entries, "/", normalized)
+	if entries.is_empty():
+		entries.append(_make_schema_validation_error_entry("/", tr("MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN")))
+	return entries
+
+func _append_schema_validation_error_entries_from_array(output: Array, entries: Array) -> void:
+	for entry in entries:
+		if entry is Dictionary:
+			if entry.has("errors") and entry["errors"] is Array:
+				_append_schema_validation_error_entries_from_array(output, entry["errors"])
+			else:
+				_append_schema_validation_error_entry(output, str(entry.get("path", "/")), str(entry.get("message", "")))
+		else:
+			_append_schema_validation_error_entry(output, "/", str(entry))
+
+func _append_schema_validation_error_entry(output: Array, path: String, message: String) -> void:
+	var normalized_path = path.strip_edges()
+	if normalized_path == "":
+		normalized_path = "/"
+	if not normalized_path.begins_with("/"):
+		normalized_path = "/" + normalized_path
+	var translated_message = _translate_schema_error_message(message)
+	if translated_message.strip_edges() == "":
+		translated_message = tr("MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN")
+	output.append(_make_schema_validation_error_entry(normalized_path, translated_message))
+
+func _make_schema_validation_error_entry(path: String, message: String) -> Dictionary:
+	return {
+		"path": path,
+		"message": message
+	}
+
+func _translate_schema_error_message(message: String) -> String:
+	var normalized = message.strip_edges()
+	match normalized:
+		"Schema editor missing":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_SCHEMA_EDITOR_MISSING")
+		"Invalid JSON":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_INVALID_JSON")
+		"No schema":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NO_SCHEMA")
+		"exactly one oneOf branch must match":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_ONE_OF_EXACTLY_ONE")
+		"no anyOf branch matched":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_ANY_OF_NONE")
+		"type mismatch":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_TYPE_MISMATCH")
+		"expected object", "Expected object":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_OBJECT")
+		"expected array", "Expected array":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_ARRAY")
+		"expected string", "Expected string":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_STRING")
+		"expected number", "Expected number":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_NUMBER")
+		"expected integer", "Expected integer":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_INTEGER")
+		"expected boolean", "Expected boolean":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_BOOLEAN")
+		"additional property":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY")
+		"Additional property not allowed":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY_NOT_ALLOWED")
+		"missing property":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_MISSING_PROPERTY")
+		"Missing required property":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_MISSING_REQUIRED_PROPERTY")
+		"too few items":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ITEMS")
+		"too many items":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ITEMS")
+		"Too few array items":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ARRAY_ITEMS")
+		"Too many array items":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ARRAY_ITEMS")
+		"duplicate item":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_DUPLICATE_ITEM")
+		"value not in enum", "Value not in enum":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_VALUE_NOT_IN_ENUM")
+		"value does not match const", "Value does not match const":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_CONST_MISMATCH")
+		"number below minimum":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_MINIMUM")
+		"number above maximum":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_MAXIMUM")
+		"number below or equal exclusiveMinimum":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_OR_EQUAL_EXCLUSIVE_MINIMUM")
+		"number above or equal exclusiveMaximum":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_OR_EQUAL_EXCLUSIVE_MAXIMUM")
+		"number not multipleOf":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NUMBER_NOT_MULTIPLE_OF")
+		"string shorter than minLength":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_STRING_MIN_LENGTH")
+		"string longer than maxLength":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_STRING_MAX_LENGTH")
+		"invalid pattern":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_INVALID_PATTERN")
+		"string does not match pattern":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_STRING_PATTERN_MISMATCH")
+		"No union branch matches value":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NO_UNION_BRANCH")
+		"Value must not be null":
+			return tr("MESSAGES_JSON_SCHEMA_ERROR_NULL_NOT_ALLOWED")
+	if normalized.begins_with("string does not match format "):
+		var prefix = "string does not match format "
+		var format_name = normalized.substr(prefix.length())
+		return tr("MESSAGES_JSON_SCHEMA_ERROR_STRING_FORMAT_MISMATCH").replace("{format}", format_name)
+	return normalized
 
 func _clear_schema_form_root() -> void:
 	var form_root = _schema_form_root_node()
@@ -786,7 +956,7 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
 		return
 	if schema_hint != null:
-		schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_HINT")
+		schema_hint.text = ""
 	_schema_form_controller.load_schema(selected_schema)
 	var schema_changed = selected_schema_name != _schema_last_selected_name
 	_schema_last_selected_name = selected_schema_name

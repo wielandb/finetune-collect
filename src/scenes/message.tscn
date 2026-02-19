@@ -579,9 +579,6 @@ layout_mode = 2
 texture = ExtResource("19_fe45w")
 stretch_mode = 3
 
-[node name="SchemaValidationErrorLabel" type="Label" parent="SchemaMessageContainer/HBoxContainer"]
-layout_mode = 2
-
 [node name="OptionButton" type="OptionButton" parent="SchemaMessageContainer/HBoxContainer" groups=["UI_needs_schema_list"]]
 custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
@@ -601,6 +598,12 @@ text = ""
 tooltip_text = "MESSAGES_JSON_SCHEMA_EDIT_BUTTON"
 icon = ExtResource("13_gakvq")
 expand_icon = true
+
+[node name="SchemaValidationErrorsContainer" type="VBoxContainer" parent="SchemaMessageContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 3
 
 [node name="SchemaMessagePolling" type="HBoxContainer" parent="SchemaMessageContainer"]
 visible = false

@@ -1337,3 +1337,151 @@ msgstr ""
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
 msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_SCHEMA_EDITOR_MISSING"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_INVALID_JSON"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NO_SCHEMA"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ONE_OF_EXACTLY_ONE"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ANY_OF_NONE"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TYPE_MISMATCH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_OBJECT"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_ARRAY"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_STRING"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_NUMBER"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_INTEGER"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_EXPECTED_BOOLEAN"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_ADDITIONAL_PROPERTY_NOT_ALLOWED"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_MISSING_PROPERTY"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_MISSING_REQUIRED_PROPERTY"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ITEMS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ITEMS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_FEW_ARRAY_ITEMS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_TOO_MANY_ARRAY_ITEMS"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_DUPLICATE_ITEM"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_VALUE_NOT_IN_ENUM"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_CONST_MISMATCH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_MINIMUM"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_MAXIMUM"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_BELOW_OR_EQUAL_EXCLUSIVE_MINIMUM"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_ABOVE_OR_EQUAL_EXCLUSIVE_MAXIMUM"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NUMBER_NOT_MULTIPLE_OF"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_MIN_LENGTH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_MAX_LENGTH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_INVALID_PATTERN"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_PATTERN_MISMATCH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NO_UNION_BRANCH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_NULL_NOT_ALLOWED"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_STRING_FORMAT_MISMATCH"
+msgstr ""
+
+#: scenes/message.gd
+msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
+msgstr ""

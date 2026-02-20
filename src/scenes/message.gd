@@ -19,6 +19,8 @@ const SchemaRefResolver = preload("res://scenes/schema_runtime/schema_ref_resolv
 const SchemaRemoteRefLoader = preload("res://scenes/schema_runtime/schema_remote_ref_loader.gd")
 const DESKTOP_MESSAGE_TITLE_FONT_SIZE = 36
 const COMPACT_MESSAGE_TITLE_FONT_SIZE = 24
+const DESKTOP_META_INFO_GRID_COLUMNS = 3
+const COMPACT_META_INFO_GRID_COLUMNS = 1
 var _schema_validate_timer: Timer
 var _schema_form_controller = SchemaFormController.new()
 var _schema_sync_guard = false
@@ -28,6 +30,8 @@ var _schema_is_loading_external = false
 var _schema_loading_serial = 0
 var _schema_runtime_cache = {}
 var _compact_layout_enabled = false
+var _compact_meta_control_defaults = {}
+var _compact_image_control_defaults = {}
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -96,15 +100,164 @@ func _configure_message_settings_row(enabled: bool) -> void:
 	var delete_button = $MessageSettingsContainer/DeleteButton
 	var user_name_edit = $MessageSettingsContainer/UserNameEdit
 	if enabled:
+		role_button.fit_to_longest_item = false
+		type_button.fit_to_longest_item = false
 		role_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		type_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		user_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		role_button.custom_minimum_size.x = 0
+		type_button.custom_minimum_size.x = 0
+		delete_button.custom_minimum_size.x = 0
+		user_name_edit.custom_minimum_size.x = 0
+		delete_button.text = ""
+		delete_button.tooltip_text = tr("GENERIC_DELETE")
 	else:
+		role_button.fit_to_longest_item = true
+		type_button.fit_to_longest_item = true
 		role_button.size_flags_horizontal = 0
 		type_button.size_flags_horizontal = 0
 		delete_button.size_flags_horizontal = 0
 		user_name_edit.size_flags_horizontal = 0
+		delete_button.text = tr("GENERIC_DELETE")
+		delete_button.tooltip_text = ""
+
+func _remember_image_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_image_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size,
+		"visible": control.visible
+	}
+	if control is OptionButton:
+		defaults["fit_to_longest_item"] = control.fit_to_longest_item
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+		if control.has_method("get_text_overrun_behavior"):
+			defaults["text_overrun_behavior"] = control.call("get_text_overrun_behavior")
+	if control is LineEdit:
+		defaults["expand_to_text_length"] = control.expand_to_text_length
+	_compact_image_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_image_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_image_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var minimum_size = control.custom_minimum_size
+		minimum_size.x = 0
+		control.custom_minimum_size = minimum_size
+		if control is OptionButton:
+			control.fit_to_longest_item = false
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+			if control.has_method("set_text_overrun_behavior"):
+				control.call("set_text_overrun_behavior", TextServer.OVERRUN_TRIM_ELLIPSIS)
+		if control is LineEdit:
+			control.expand_to_text_length = false
+		if control is TextureRect and control.name.find("Hint") != -1:
+			control.visible = false
+	else:
+		if not _compact_image_control_defaults.has(rel_path):
+			return
+		var defaults = _compact_image_control_defaults[rel_path]
+		control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+		control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+		control.visible = bool(defaults.get("visible", control.visible))
+		if control is OptionButton and defaults.has("fit_to_longest_item"):
+			control.fit_to_longest_item = bool(defaults["fit_to_longest_item"])
+		if control is Label and defaults.has("autowrap_mode"):
+			control.autowrap_mode = int(defaults["autowrap_mode"])
+		if control is BaseButton:
+			if defaults.has("clip_text"):
+				control.clip_text = bool(defaults["clip_text"])
+			if defaults.has("text_overrun_behavior") and control.has_method("set_text_overrun_behavior"):
+				control.call("set_text_overrun_behavior", int(defaults["text_overrun_behavior"]))
+		if control is LineEdit and defaults.has("expand_to_text_length"):
+			control.expand_to_text_length = bool(defaults["expand_to_text_length"])
+
+func _apply_compact_to_image_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_image_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_image_controls_recursive(child, enabled)
+
+func _configure_image_layout(enabled: bool) -> void:
+	$ImageMessageContainer.clip_contents = enabled
+	_apply_compact_to_image_controls_recursive($ImageMessageContainer, enabled)
+
+func _remember_meta_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_meta_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size,
+		"visible": control.visible
+	}
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+	_compact_meta_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_meta_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_meta_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var minimum_size = control.custom_minimum_size
+		minimum_size.x = 0
+		control.custom_minimum_size = minimum_size
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+		if control is TextureRect and control.name.find("Hint") != -1:
+			control.visible = false
+	else:
+		if not _compact_meta_control_defaults.has(rel_path):
+			return
+		var defaults = _compact_meta_control_defaults[rel_path]
+		control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+		control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+		control.visible = bool(defaults.get("visible", control.visible))
+		if control is Label and defaults.has("autowrap_mode"):
+			control.autowrap_mode = int(defaults["autowrap_mode"])
+		if control is BaseButton and defaults.has("clip_text"):
+			control.clip_text = bool(defaults["clip_text"])
+
+func _apply_compact_to_meta_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_meta_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_meta_controls_recursive(child, enabled)
+
+func _configure_meta_layout(enabled: bool) -> void:
+	var info_grid = $MetaMessageContainer/InfoLabelsGridContainer
+	if enabled:
+		info_grid.columns = COMPACT_META_INFO_GRID_COLUMNS
+		$MetaMessageContainer.clip_contents = true
+		$MetaMessageContainer/InfoLabelsGridContainer.clip_contents = true
+	else:
+		info_grid.columns = DESKTOP_META_INFO_GRID_COLUMNS
+		$MetaMessageContainer.clip_contents = false
+		$MetaMessageContainer/InfoLabelsGridContainer.clip_contents = false
+	_apply_compact_to_meta_controls_recursive($MetaMessageContainer, enabled)
 
 func _apply_compact_layout_to_nested_rows() -> void:
 	for child in $FunctionMessageContainer.get_children():
@@ -118,6 +271,7 @@ func set_compact_layout(enabled: bool) -> void:
 	_set_box_vertical("TextMessageContainer/DPOMessagesContainer", enabled)
 	_set_box_vertical("ImageMessageContainer/HBoxContainer", enabled)
 	_set_box_vertical("ImageMessageContainer/LoadButtonsContainer", enabled)
+	_configure_image_layout(enabled)
 	_set_box_vertical("FileMessageContainer/FileSelectorContainer", enabled)
 	_set_box_vertical("AudioMessageContainer/AudioMediaPlayerContainer", enabled)
 	_set_box_vertical("AudioMessageContainer/TranscriptionContainer", enabled)
@@ -125,6 +279,7 @@ func set_compact_layout(enabled: bool) -> void:
 	_set_box_vertical("FunctionMessageContainer/function", enabled)
 	_set_box_vertical("MetaMessageContainer/ConversationNameContainer", enabled)
 	_set_box_vertical("MetaMessageContainer/ConversationReadyContainer", enabled)
+	_configure_meta_layout(enabled)
 	_set_box_vertical("SchemaMessageContainer/HBoxContainer", enabled)
 	_set_box_vertical("SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer", enabled)
 	_set_box_vertical("SchemaMessageContainer/SchemaMessagePolling", enabled)

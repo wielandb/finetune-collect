@@ -22,7 +22,7 @@ func _run():
 	var scene = load("res://scenes/schemas/json_schema_container.tscn").instantiate()
 	get_root().add_child(scene)
 	await create_timer(0).timeout
-	var editor = scene.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit")
+	var editor = scene.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit")
 	var name_edit = scene.get_node("MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit")
 	editor.text = '{"title": "My Title"}'
 	await scene._on_validate_timeout()

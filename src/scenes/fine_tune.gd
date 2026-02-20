@@ -2,7 +2,11 @@ extends HBoxContainer
 
 signal compact_layout_changed(enabled: bool)
 
-const COMPACT_LAYOUT_MAX_WIDTH = 720
+const COMPACT_LAYOUT_MIN_ASPECT_RATIO = 1.3
+const MOBILE_LAYOUT_REFERENCE_WIDTH = 360.0
+const MOBILE_LAYOUT_COMFORT_MULTIPLIER = 2.3
+const MOBILE_LAYOUT_MIN_SCALE = 1.0
+const MOBILE_LAYOUT_MAX_SCALE = 4.0
 
 var FINETUNEDATA = {}
 var FUNCTIONS = []
@@ -29,6 +33,9 @@ var _compact_layout_enabled = false
 var _desktop_sidebar_collapsed = false
 var _compact_sidebar_visible = false
 var _schemas_list_default_min_size = Vector2(0, 0)
+var _desktop_content_scale_factor = 1.0
+var _mobile_content_scale_factor = 1.0
+var _is_applying_content_scale = false
 
 var file_access_web = FileAccessWeb.new()
 var EXPORT_BTN_ORIG_TEXT = ""
@@ -113,9 +120,47 @@ func load_last_project_on_start() -> void:
 func is_compact_layout_enabled() -> bool:
 	return _compact_layout_enabled
 
-func _compute_should_use_compact_layout() -> bool:
-	var viewport_size = get_viewport_rect().size
-	return int(viewport_size.x) <= COMPACT_LAYOUT_MAX_WIDTH and viewport_size.y > viewport_size.x
+func get_compact_layout_scale_factor() -> float:
+	if _compact_layout_enabled:
+		return _mobile_content_scale_factor
+	return _desktop_content_scale_factor
+
+func _get_layout_window_size() -> Vector2:
+	var native_size = DisplayServer.window_get_size()
+	if native_size.x > 0 and native_size.y > 0:
+		return Vector2(native_size.x, native_size.y)
+	return get_viewport_rect().size
+
+func _compute_should_use_compact_layout(viewport_size: Vector2) -> bool:
+	if viewport_size.x <= 0:
+		return false
+	var aspect_ratio = viewport_size.y / viewport_size.x
+	return aspect_ratio >= COMPACT_LAYOUT_MIN_ASPECT_RATIO
+
+func _compute_mobile_layout_scale(viewport_size: Vector2) -> float:
+	if viewport_size.x <= 0:
+		return 1.0
+	var screen_scale = DisplayServer.screen_get_scale()
+	if screen_scale <= 0.0:
+		screen_scale = 1.0
+	var logical_width = viewport_size.x / screen_scale
+	var width_scale = (logical_width / MOBILE_LAYOUT_REFERENCE_WIDTH) * MOBILE_LAYOUT_COMFORT_MULTIPLIER
+	return clampf(width_scale, MOBILE_LAYOUT_MIN_SCALE, MOBILE_LAYOUT_MAX_SCALE)
+
+func _apply_content_scale_for_layout(compact_enabled: bool, viewport_size: Vector2) -> void:
+	var target_scale = _desktop_content_scale_factor
+	if compact_enabled:
+		target_scale = _compute_mobile_layout_scale(viewport_size)
+		_mobile_content_scale_factor = target_scale
+	else:
+		_mobile_content_scale_factor = 1.0
+	if _is_applying_content_scale:
+		return
+	var root_window = get_tree().root
+	if not is_equal_approx(root_window.content_scale_factor, target_scale):
+		_is_applying_content_scale = true
+		root_window.content_scale_factor = target_scale
+		_is_applying_content_scale = false
 
 func _set_sidebar_and_main_visibility(sidebar_visible: bool, collapsed_menu_visible: bool, conversation_visible: bool) -> void:
 	$VBoxContainer.visible = sidebar_visible
@@ -144,7 +189,9 @@ func _apply_compact_layout_to_ui() -> void:
 	_apply_compact_layout_to_node(self)
 
 func _apply_compact_layout_state(force_mobile_main: bool = false) -> void:
-	var should_enable_compact = _compute_should_use_compact_layout()
+	var viewport_size = _get_layout_window_size()
+	var should_enable_compact = _compute_should_use_compact_layout(viewport_size)
+	_apply_content_scale_for_layout(should_enable_compact, viewport_size)
 	if _compact_layout_enabled == should_enable_compact and not force_mobile_main:
 		return
 	var previous_state = _compact_layout_enabled
@@ -184,6 +231,8 @@ func _ready() -> void:
 	$Exporter.export_progress.connect(_on_export_progress)
 	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
 	_schemas_list_default_min_size = $Conversation/Schemas/SchemasList.custom_minimum_size
+	_desktop_content_scale_factor = get_tree().root.content_scale_factor
+	_mobile_content_scale_factor = 1.0
 	if not get_viewport().is_connected("size_changed", Callable(self, "_on_viewport_size_changed")):
 		get_viewport().connect("size_changed", Callable(self, "_on_viewport_size_changed"))
 	_apply_compact_layout_state(true)

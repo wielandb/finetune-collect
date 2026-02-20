@@ -6,6 +6,63 @@ var default_schema_validator_url = ""
 const DESKTOP_SETTINGS_TITLE_FONT_SIZE = 29
 const COMPACT_SETTINGS_TITLE_FONT_SIZE = 22
 var _compact_layout_enabled = false
+var _compact_control_defaults = {}
+
+func _remember_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size,
+		"visible": control.visible
+	}
+	if control is OptionButton:
+		defaults["fit_to_longest_item"] = control.fit_to_longest_item
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+	_compact_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var min_size = control.custom_minimum_size
+		min_size.x = 0
+		control.custom_minimum_size = min_size
+		if control is OptionButton:
+			control.fit_to_longest_item = false
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+		if control is TextureRect and control.name.find("Hint") != -1:
+			control.visible = false
+	else:
+		if _compact_control_defaults.has(rel_path):
+			var defaults = _compact_control_defaults[rel_path]
+			control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+			control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+			control.visible = bool(defaults.get("visible", control.visible))
+			if control is OptionButton and defaults.has("fit_to_longest_item"):
+				control.fit_to_longest_item = bool(defaults["fit_to_longest_item"])
+			if control is Label and defaults.has("autowrap_mode"):
+				control.autowrap_mode = int(defaults["autowrap_mode"])
+			if control is BaseButton and defaults.has("clip_text"):
+				control.clip_text = bool(defaults["clip_text"])
+
+func _apply_compact_to_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_controls_recursive(child, enabled)
 
 func set_compact_layout(enabled: bool) -> void:
 	_compact_layout_enabled = enabled
@@ -35,6 +92,9 @@ func set_compact_layout(enabled: bool) -> void:
 		var row = get_node_or_null("VBoxContainer/" + row_name)
 		if row is BoxContainer:
 			row.vertical = enabled
+	_apply_compact_to_controls_recursive($VBoxContainer, enabled)
+	if enabled:
+		scroll_horizontal = 0
 	if enabled:
 		$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextLabel.add_theme_font_size_override("font_size", COMPACT_SETTINGS_TITLE_FONT_SIZE)
 	else:
@@ -106,6 +166,7 @@ func from_var(me):
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	clip_contents = true
 	# Explain why some things are disabled
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))

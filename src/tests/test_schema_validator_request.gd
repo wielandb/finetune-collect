@@ -24,7 +24,7 @@ func _run():
 	get_root().add_child(scene)
 	await create_timer(0).timeout
 
-	var editor = scene.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit")
+	var editor = scene.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit")
 	var schema = {
 		"type": "object",
 		"properties": {"name": {"type": "string"}},

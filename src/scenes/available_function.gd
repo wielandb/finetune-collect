@@ -8,14 +8,82 @@ const COMPACT_PARAMETERS_TITLE_FONT_SIZE = 20
 const DESKTOP_EXPLANATION_MIN_SIZE = Vector2(300, 0)
 const COMPACT_EXPLANATION_MIN_SIZE = Vector2(0, 0)
 var _compact_layout_enabled = false
+var _compact_control_defaults = {}
+
+func _remember_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size
+	}
+	if control is OptionButton:
+		defaults["fit_to_longest_item"] = control.fit_to_longest_item
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+	if control is LineEdit:
+		defaults["expand_to_text_length"] = control.expand_to_text_length
+	if control.has_method("get_text_overrun_behavior"):
+		defaults["text_overrun_behavior"] = control.call("get_text_overrun_behavior")
+	_compact_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var min_size = control.custom_minimum_size
+		min_size.x = 0
+		control.custom_minimum_size = min_size
+		if control is OptionButton:
+			control.fit_to_longest_item = false
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+		if control is LineEdit:
+			control.expand_to_text_length = false
+		if control.has_method("set_text_overrun_behavior"):
+			control.call("set_text_overrun_behavior", TextServer.OVERRUN_TRIM_ELLIPSIS)
+	else:
+		if not _compact_control_defaults.has(rel_path):
+			return
+		var defaults = _compact_control_defaults[rel_path]
+		control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+		control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+		if control is OptionButton and defaults.has("fit_to_longest_item"):
+			control.fit_to_longest_item = bool(defaults["fit_to_longest_item"])
+		if control is Label and defaults.has("autowrap_mode"):
+			control.autowrap_mode = int(defaults["autowrap_mode"])
+		if control is BaseButton and defaults.has("clip_text"):
+			control.clip_text = bool(defaults["clip_text"])
+		if control is LineEdit and defaults.has("expand_to_text_length"):
+			control.expand_to_text_length = bool(defaults["expand_to_text_length"])
+		if control.has_method("set_text_overrun_behavior") and defaults.has("text_overrun_behavior"):
+			control.call("set_text_overrun_behavior", int(defaults["text_overrun_behavior"]))
+
+func _apply_compact_to_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_controls_recursive(child, enabled)
 
 func set_compact_layout(enabled: bool) -> void:
 	_compact_layout_enabled = enabled
+	clip_contents = enabled
 	$FunctionNameContainer.vertical = enabled
 	$FunctionDescriptionContainer2.vertical = enabled
 	$FunctionExecutionSettings.vertical = enabled
 	$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer.vertical = enabled
 	$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersContainer.vertical = enabled
+	_apply_compact_to_controls_recursive(self, enabled)
 	if enabled:
 		$functionlabel.add_theme_font_size_override("font_size", COMPACT_FUNCTION_TITLE_FONT_SIZE)
 		$parameterslabel.add_theme_font_size_override("font_size", COMPACT_PARAMETERS_TITLE_FONT_SIZE)

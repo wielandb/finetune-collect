@@ -112,6 +112,9 @@ func _run() -> void:
 	_check(message.vertical, "message root should be vertical in compact layout")
 	_check(not message.get_node("MessageSettingsContainer").vertical, "message actions should be horizontal in compact layout")
 	_check(message.get_node("TextMessageContainer/TextnachrichtLabel").get_theme_font_size("font_size") == 24, "message title should use compact font size")
+	_check(message.get_node("ImageMessageContainer/HBoxContainer").vertical, "image detail row should stack in compact layout")
+	_check(not message.get_node("ImageMessageContainer/HBoxContainer/ImageDetailOptionButton").fit_to_longest_item, "image detail selector should not expand to longest item in compact layout")
+	_check(message.get_node("ImageMessageContainer/LoadButtonsContainer/LoadImageButton").size_flags_horizontal == Control.SIZE_EXPAND_FILL, "image load button should expand within compact width")
 	message.set_compact_layout(false)
 	_check(not message.vertical, "message root should return to desktop horizontal layout")
 	_check(message.get_node("MessageSettingsContainer").vertical, "message actions should return to vertical in desktop layout")
@@ -132,6 +135,11 @@ func _run() -> void:
 	_check(schema_container.vertical, "json schema container should stack controls over editor in compact layout")
 	_check(schema_container.get_node("MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer").vertical, "schema name row should stack in compact layout")
 	_check(schema_container.get_node("MarginContainer/JSONSchemaControlsContainer/TitleLabel").get_theme_font_size("font_size") == 18, "schema title should use compact font size")
+	var schema_tabs = schema_container.get_node("MarginContainer2/SchemasTabContainer")
+	_check(schema_tabs.get_tab_count() == 2, "schema tabs should expose edit and openai pages")
+	schema_tabs.current_tab = 1
+	await process_frame
+	_check(schema_tabs.current_tab == 1, "schema tabs should switch to openai page")
 	schema_container.set_compact_layout(false)
 	_check(not schema_container.vertical, "json schema container should return to desktop row layout")
 	_check(schema_container.get_node("MarginContainer/JSONSchemaControlsContainer/TitleLabel").get_theme_font_size("font_size") == 20, "schema title should return to desktop font size")

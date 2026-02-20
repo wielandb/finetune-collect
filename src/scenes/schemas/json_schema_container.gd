@@ -6,12 +6,17 @@ const SchemaRefResolver = preload("res://scenes/schema_runtime/schema_ref_resolv
 const SchemaRemoteRefLoader = preload("res://scenes/schema_runtime/schema_remote_ref_loader.gd")
 const DESKTOP_SCHEMA_TITLE_FONT_SIZE = 20
 const COMPACT_SCHEMA_TITLE_FONT_SIZE = 18
+const COMPACT_SCHEMA_EDITOR_MIN_HEIGHT = 180
 
 var _updating_from_name = false
 var _last_resolved_schema = null
 var _last_external_errors = []
 var _validation_serial = 0
 var _compact_layout_enabled = false
+var _edit_code_default_min_size = Vector2(0, 0)
+var _oai_code_default_min_size = Vector2(0, 0)
+var _margin2_default_size_flags_vertical = 0
+var _tabs_default_size_flags_vertical = 0
 
 const VALID_ICON_OK = "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD = "res://icons/code-json-check-negative.png"
@@ -33,9 +38,13 @@ func _request_schemas_refresh() -> void:
 func set_compact_layout(enabled: bool) -> void:
 	_compact_layout_enabled = enabled
 	vertical = enabled
-	$MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer.vertical = enabled
-	$MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2.vertical = enabled
+	$MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer.vertical = false
+	$MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2.vertical = false
 	$MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer.vertical = enabled
+	$MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	$MarginContainer/JSONSchemaControlsContainer/DeleteSchemaButton.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var edit_code = $MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit
+	var oai_code = $MarginContainer2/SchemasTabContainer/OAISchemaTab/OAIJSONSchemaCodeEdit
 	if enabled:
 		$MarginContainer/JSONSchemaControlsContainer/TitleLabel.add_theme_font_size_override("font_size", COMPACT_SCHEMA_TITLE_FONT_SIZE)
 		$MarginContainer.add_theme_constant_override("margin_left", 8)
@@ -44,6 +53,10 @@ func set_compact_layout(enabled: bool) -> void:
 		$MarginContainer2.add_theme_constant_override("margin_top", 8)
 		$MarginContainer2.add_theme_constant_override("margin_right", 8)
 		$MarginContainer2.add_theme_constant_override("margin_bottom", 8)
+		$MarginContainer2.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		$MarginContainer2/SchemasTabContainer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		edit_code.custom_minimum_size.y = COMPACT_SCHEMA_EDITOR_MIN_HEIGHT
+		oai_code.custom_minimum_size.y = COMPACT_SCHEMA_EDITOR_MIN_HEIGHT
 	else:
 		$MarginContainer/JSONSchemaControlsContainer/TitleLabel.add_theme_font_size_override("font_size", DESKTOP_SCHEMA_TITLE_FONT_SIZE)
 		$MarginContainer.add_theme_constant_override("margin_left", 20)
@@ -52,8 +65,17 @@ func set_compact_layout(enabled: bool) -> void:
 		$MarginContainer2.add_theme_constant_override("margin_top", 45)
 		$MarginContainer2.add_theme_constant_override("margin_right", 40)
 		$MarginContainer2.add_theme_constant_override("margin_bottom", 25)
+		$MarginContainer2.size_flags_vertical = _margin2_default_size_flags_vertical
+		$MarginContainer2/SchemasTabContainer.size_flags_vertical = _tabs_default_size_flags_vertical
+		edit_code.custom_minimum_size = _edit_code_default_min_size
+		oai_code.custom_minimum_size = _oai_code_default_min_size
 
 func _ready() -> void:
+	clip_contents = true
+	_edit_code_default_min_size = $MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit.custom_minimum_size
+	_oai_code_default_min_size = $MarginContainer2/SchemasTabContainer/OAISchemaTab/OAIJSONSchemaCodeEdit.custom_minimum_size
+	_margin2_default_size_flags_vertical = $MarginContainer2.size_flags_vertical
+	_tabs_default_size_flags_vertical = $MarginContainer2/SchemasTabContainer.size_flags_vertical
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Edit JSON"))
 	tab_bar.set_tab_title(1, tr("OpenAI JSON"))
@@ -135,8 +157,8 @@ func _on_edit_json_schema_code_edit_text_changed() -> void:
 func _on_validate_timeout() -> void:
 	_validation_serial += 1
 	var serial = _validation_serial
-	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
-	var oai_editor = $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
+	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit
+	var oai_editor = $MarginContainer2/SchemasTabContainer/OAISchemaTab/OAIJSONSchemaCodeEdit
 	var name_edit = $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit
 	oai_editor.text = ""
 	_set_oai_result(false)
@@ -261,7 +283,7 @@ func _format_error_messages(raw_errors) -> String:
 	return str(raw_errors)
 
 func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
-	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
+	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit
 	var json = JSON.new()
 	var err = json.parse(editor.text)
 	if err != OK or not (json.data is Dictionary):
@@ -274,8 +296,8 @@ func _on_schema_name_line_edit_text_changed(new_text: String) -> void:
 	get_node("/root/FineTune").update_schemas_internal()
 
 func to_var():
-	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
-	var oai_editor = $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
+	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit
+	var oai_editor = $MarginContainer2/SchemasTabContainer/OAISchemaTab/OAIJSONSchemaCodeEdit
 	var name = $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit.text
 	var json = JSON.new()
 	var schema = null
@@ -302,8 +324,8 @@ func to_var():
 	}
 
 func from_var(data):
-	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit
-	var oai_editor = $MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer/OAIJSONSchemaCodeEdit
+	var editor = $MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit
+	var oai_editor = $MarginContainer2/SchemasTabContainer/OAISchemaTab/OAIJSONSchemaCodeEdit
 	var name_edit = $MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit
 	var schema = data.get("schema", null)
 	var resolved_schema = data.get("resolvedSchema", null)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://573wf4eeyre0"]
+[gd_scene format=3 uid="uid://573wf4eeyre0"]
 
 [ext_resource type="Script" uid="uid://dhtsadne0qe6" path="res://scenes/schemas/json_schema_container.gd" id="1_1npom"]
 [ext_resource type="Texture2D" uid="uid://7xf40bbg2wx1" path="res://icons/code-json-check-negative.png" id="1_y7f3l"]
@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="2_dtbvj"]
 [ext_resource type="Texture2D" uid="uid://bc884138utehs" path="res://icons/polling/reload-custom_18.png" id="3_4g7f0"]
 
-[node name="JSONSchemaContainer" type="BoxContainer"]
+[node name="JSONSchemaContainer" type="BoxContainer" unique_id=1536752267]
 custom_minimum_size = Vector2(0, 350)
 anchors_preset = 15
 anchor_right = 1.0
@@ -15,7 +15,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_1npom")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=523603179]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.4
@@ -23,141 +23,129 @@ theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 25
 theme_override_constants/margin_right = 15
 
-[node name="JSONSchemaControlsContainer" type="VBoxContainer" parent="MarginContainer"]
+[node name="JSONSchemaControlsContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1929001601]
 layout_mode = 2
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="TitleLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=638407973]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 20
 text = "JSON"
 horizontal_alignment = 1
 
-[node name="ValidatedSchemaContainer" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="ValidatedSchemaContainer" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=1842002644]
 layout_mode = 2
 
-[node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer"]
+[node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer" unique_id=360983887]
 layout_mode = 2
 text = "Edit:"
 
-[node name="Spinner" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer" instance=ExtResource("2_0i3p4")]
+[node name="Spinner" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer" unique_id=1702334705 instance=ExtResource("2_0i3p4")]
 visible = false
 layout_mode = 2
 texture = ExtResource("3_4g7f0")
 
-[node name="SchemaValidateTextureRect" type="TextureRect" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer"]
+[node name="SchemaValidateTextureRect" type="TextureRect" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer" unique_id=693289056]
 layout_mode = 2
 texture = ExtResource("1_y7f3l")
 
-[node name="SchemaValidateLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer"]
+[node name="SchemaValidateLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer" unique_id=746249732]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SCHEMAS_SCHEMA_VALIDATED"
 
-[node name="SchemaErrorLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="SchemaErrorLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=887998579]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.776471, 0, 0, 1)
 text = "Schema needs a name!"
-horizontal_alignment = 0
 autowrap_mode = 1
 
-[node name="OAIValidatedSchemaContainer2" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="OAIValidatedSchemaContainer2" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=1335565635]
 layout_mode = 2
 
-[node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
+[node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2" unique_id=1885684083]
 layout_mode = 2
 text = "OpenAI:"
 
-[node name="Spinner" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2" instance=ExtResource("2_0i3p4")]
+[node name="Spinner" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2" unique_id=1800214582 instance=ExtResource("2_0i3p4")]
 visible = false
 layout_mode = 2
 texture = ExtResource("3_4g7f0")
 
-[node name="SchemaValidateTextureRect" type="TextureRect" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
+[node name="SchemaValidateTextureRect" type="TextureRect" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2" unique_id=1241080781]
 layout_mode = 2
 texture = ExtResource("1_y7f3l")
 
-[node name="SchemaValidateLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
+[node name="SchemaValidateLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2" unique_id=1994846991]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "SCHEMAS_SCHEMA_VALIDATED"
 
-[node name="OAISchemaErrorLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="OAISchemaErrorLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=2010147870]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.776471, 0, 0, 1)
 text = "Schema needs a name!"
-horizontal_alignment = 0
 autowrap_mode = 1
 
-[node name="SchemaNameContainer" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="SchemaNameContainer" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=1460342076]
 layout_mode = 2
 
-[node name="SchemaNameLabelContainer" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer"]
+[node name="SchemaNameLabelContainer" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer" unique_id=702100023]
 layout_mode = 2
 text = "SCHEMA_NAME_COLON"
 
-[node name="LineEdit" type="LineEdit" parent="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer"]
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer" unique_id=195743224]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="DeleteSchemaButton" type="Button" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="DeleteSchemaButton" type="Button" parent="MarginContainer/JSONSchemaControlsContainer" unique_id=1301058205]
 layout_mode = 2
 text = "GENERIC_DELETE"
 icon = ExtResource("2_dtbvj")
 
-[node name="MarginContainer2" type="MarginContainer" parent="."]
+[node name="MarginContainer2" type="MarginContainer" parent="." unique_id=540308932]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/margin_top = 45
 theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 25
 
-[node name="SchemasTabContainer" type="TabContainer" parent="MarginContainer2"]
+[node name="SchemasTabContainer" type="TabContainer" parent="MarginContainer2" unique_id=1011591200]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 current_tab = 0
 
-[node name="EditSchemaTabBar" type="TabBar" parent="MarginContainer2/SchemasTabContainer"]
+[node name="EditSchemaTab" type="VBoxContainer" parent="MarginContainer2/SchemasTabContainer" unique_id=227426]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 metadata/_tab_index = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2/SchemasTabContainer/EditSchemaTabBar"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="EditJSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer"]
+[node name="EditJSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2/SchemasTabContainer/EditSchemaTab" unique_id=1997381167]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="OAISchemaTabBar" type="TabBar" parent="MarginContainer2/SchemasTabContainer"]
+[node name="OAISchemaTab" type="VBoxContainer" parent="MarginContainer2/SchemasTabContainer" unique_id=1691339860]
 visible = false
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 metadata/_tab_index = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer2/SchemasTabContainer/OAISchemaTabBar"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="OAIJSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2/SchemasTabContainer/OAISchemaTabBar/VBoxContainer"]
+[node name="OAIJSONSchemaCodeEdit" type="CodeEdit" parent="MarginContainer2/SchemasTabContainer/OAISchemaTab" unique_id=1458427061]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 editable = false
 
-[node name="SchemaValidatorHTTPRequest" type="HTTPRequest" parent="."]
+[node name="SchemaValidatorHTTPRequest" type="HTTPRequest" parent="." unique_id=1553047435]
 
 [connection signal="text_changed" from="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit" to="." method="_on_schema_name_line_edit_text_changed"]
 [connection signal="mouse_entered" from="MarginContainer/JSONSchemaControlsContainer/DeleteSchemaButton" to="." method="_on_delete_schema_button_mouse_entered"]
 [connection signal="mouse_exited" from="MarginContainer/JSONSchemaControlsContainer/DeleteSchemaButton" to="." method="_on_delete_schema_button_mouse_exited"]
 [connection signal="pressed" from="MarginContainer/JSONSchemaControlsContainer/DeleteSchemaButton" to="." method="_on_delete_schema_button_pressed"]
-[connection signal="text_changed" from="MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit" to="." method="_on_edit_json_schema_code_edit_text_changed"]
+[connection signal="text_changed" from="MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit" to="." method="_on_edit_json_schema_code_edit_text_changed"]

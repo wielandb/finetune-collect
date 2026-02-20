@@ -35,6 +35,7 @@ func _run() -> void:
 
 	await _set_window_size(360, 640)
 	_check(scene.is_compact_layout_enabled(), "compact layout should be enabled for 360x640")
+	var scale_for_360 = scene.get_compact_layout_scale_factor()
 	_check(scene.get_node("Conversation").visible, "mobile start should show main conversation")
 	_check(not scene.get_node("VBoxContainer").visible, "mobile start should hide sidebar list")
 	_check(scene.get_node("CollapsedMenu").visible, "mobile start should show collapsed menu button")
@@ -50,6 +51,12 @@ func _run() -> void:
 	_check(not scene.get_node("VBoxContainer").visible, "mobile collapse should hide sidebar again")
 	_check(scene.get_node("Conversation").visible, "mobile collapse should show main content again")
 	_check(scene.get_node("CollapsedMenu").visible, "mobile collapse should show collapsed menu button")
+
+	await _set_window_size(1080, 1920)
+	_check(scene.is_compact_layout_enabled(), "compact layout should be enabled for portrait aspect ratios independent of absolute pixels")
+	var scale_for_1080 = scene.get_compact_layout_scale_factor()
+	_check(scale_for_1080 >= 1.0 and scale_for_1080 <= 4.0, "mobile layout scale should stay in allowed range")
+	_check(scale_for_1080 >= scale_for_360, "mobile layout scale should not shrink for wider portrait screens")
 
 	await _set_window_size(1280, 720)
 	_check(not scene.is_compact_layout_enabled(), "compact layout should be disabled for 1280x720")

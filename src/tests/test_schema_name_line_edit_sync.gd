@@ -20,7 +20,7 @@ func _run() -> void:
 	root.add_child(schema_container)
 
 	var name_edit = schema_container.get_node("MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit")
-	var edit_code = schema_container.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit")
+	var edit_code = schema_container.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTab/EditJSONSchemaCodeEdit")
 	assert_true(name_edit is LineEdit, "name line edit exists")
 	assert_true(edit_code is CodeEdit, "schema code edit exists")
 	if not (name_edit is LineEdit) or not (edit_code is CodeEdit):

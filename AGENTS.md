@@ -12,3 +12,5 @@ godot --headless --path src --script tests/test_schema_title_sync.gd
 Du kannst eine Instanz im Projektordner headless ausführen, um deinen Code zu testen. Schreibe gerne auch so einfach tests die die Funktionalität von Klassen etc testen. Nutze immer die Version 4.6.1 um alles zu testen.
 
 Nutze den Godot MCP Server um die Godot Dokumentation abzurufen und nutze den OpenAI MCP Server um die OpenAI Dokumentation abzurufen.
+
+Wenn du temporäre Tests/Skripte anlegst denke daran sie und ihre .uuid Dateien zu entfernen wenn du fertig bist.

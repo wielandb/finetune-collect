@@ -22,9 +22,9 @@ var _union_selection = {}
 func bind_form_root(root: Control) -> void:
 	_form_root = root
 
-func load_schema(schema: Dictionary) -> void:
+func load_schema(schema: Dictionary, external_schemas: Dictionary = {}) -> void:
 	_schema = schema.duplicate(true)
-	var resolved = SchemaRefResolver.resolve_schema(_schema)
+	var resolved = SchemaRefResolver.resolve_schema(_schema, external_schemas)
 	var compiled = _compiler.compile_schema(resolved.get("schema", {}))
 	_descriptor = compiled.get("descriptor", _create_empty_fallback("No schema descriptor"))
 	_has_partial_fallback = bool(compiled.get("has_partial_fallback", false))

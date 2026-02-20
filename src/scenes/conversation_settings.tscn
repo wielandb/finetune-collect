@@ -35,7 +35,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
@@ -73,7 +73,7 @@ placeholder_text = "STANDARD_GLOBAL_SYSTEM_MESSAGE"
 layout_mode = 2
 text = "SETTINGS_USE_USER_NAMES"
 
-[node name="MinimalImageHeightContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="MinimalImageHeightContainer" type="BoxContainer" parent="VBoxContainer"]
 visible = false
 layout_mode = 2
 size_flags_vertical = 6
@@ -93,7 +93,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "??? px"
 
-[node name="FineTuningTypeSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="FineTuningTypeSettingContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="FineTuningTypeSettingLabel" type="Label" parent="VBoxContainer/FineTuningTypeSettingContainer"]
@@ -121,7 +121,7 @@ popup/item_2/id = 2
 [node name="ExportSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="RFTSplitConversationsSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="RFTSplitConversationsSettingContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="RFTSplitConvoLabel" type="Label" parent="VBoxContainer/RFTSplitConversationsSettingContainer"]
@@ -147,7 +147,7 @@ popup/item_1/id = 1
 [node name="RFTSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="ExportImagesHowContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ExportImagesHowContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ExportImagesHowLabel" type="Label" parent="VBoxContainer/ExportImagesHowContainer"]
@@ -173,7 +173,7 @@ popup/item_2/text = "SETTINGS_EXPORT_IMAGES_HOW_OPTION_URL"
 popup/item_2/id = 2
 popup/item_2/disabled = true
 
-[node name="AlwaysIncludeFunctionsSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="AlwaysIncludeFunctionsSettingContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="AlwaysIncludeFunctionsSettingLabel" type="Label" parent="VBoxContainer/AlwaysIncludeFunctionsSettingContainer"]
@@ -200,7 +200,7 @@ popup/item_2/id = 2
 popup/item_3/text = "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALL_IF_AT_LEAST_ONE_USED_IN_CONVO"
 popup/item_3/id = 3
 
-[node name="ExportWhatConvoContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ExportWhatConvoContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ExportWhatConvosLabel" type="Label" parent="VBoxContainer/ExportWhatConvoContainer"]
@@ -228,7 +228,7 @@ popup/item_2/id = 2
 [node name="APISettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="APIKeySettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="APIKeySettingContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="APIKeyLabel" type="Label" parent="VBoxContainer/APIKeySettingContainer"]
@@ -246,7 +246,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 secret = true
 
-[node name="ModelChoiceContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ModelChoiceContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ModelChoiceLabel" type="Label" parent="VBoxContainer/ModelChoiceContainer"]
@@ -271,7 +271,7 @@ icon = ExtResource("3_swtgl")
 [node name="BatchCreationSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="BatchCreatonContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="BatchCreatonContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="BatchCreationLabel" type="Label" parent="VBoxContainer/BatchCreatonContainer"]
@@ -321,7 +321,7 @@ file_mode = 1
 access = 2
 use_native_dialog = true
 
-[node name="FromClipboardJSONCreationContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="FromClipboardJSONCreationContainer" type="BoxContainer" parent="VBoxContainer"]
 visible = false
 layout_mode = 2
 
@@ -344,7 +344,7 @@ icon = ExtResource("7_a2kuo")
 [node name="TokenCounterSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="TokenCountPathContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="TokenCountPathContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="TokenCounterPathLabel" type="Label" parent="VBoxContainer/TokenCountPathContainer"]
@@ -378,7 +378,7 @@ icon = ExtResource("6_3r4bh")
 visible = false
 layout_mode = 2
 
-[node name="TokenCountWhenContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="TokenCountWhenContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="TokenCounterWhenLabel" type="Label" parent="VBoxContainer/TokenCountWhenContainer"]
@@ -401,7 +401,7 @@ popup/item_0/id = 0
 popup/item_1/text = "SETTINGS_TOKEN_COUNT_WHEN_OPTION_NEVER"
 popup/item_1/id = 1
 
-[node name="TokenCountModelChoiceContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="TokenCountModelChoiceContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="TokenCountModelChoiceLabel" type="Label" parent="VBoxContainer/TokenCountModelChoiceContainer"]
@@ -421,7 +421,7 @@ size_flags_horizontal = 3
 [node name="ImageUploadServerSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="ImageUplaodSettingContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ImageUplaodSettingContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ImageUplaodSettingLabel" type="Label" parent="VBoxContainer/ImageUplaodSettingContainer"]
@@ -444,7 +444,7 @@ popup/item_0/id = 0
 popup/item_1/text = "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_ALWAYS"
 popup/item_1/id = 1
 
-[node name="ImageUploadServerURLContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ImageUploadServerURLContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ImageUploadServerURLLabel" type="Label" parent="VBoxContainer/ImageUploadServerURLContainer"]
@@ -461,7 +461,7 @@ expand_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ImageUploadServerKeyContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ImageUploadServerKeyContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ImageUploadServerKeyLabel" type="Label" parent="VBoxContainer/ImageUploadServerKeyContainer"]
@@ -479,7 +479,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 secret = true
 
-[node name="ImageUploadServerTestContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="ImageUploadServerTestContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="ImageUploadServerTestButton" type="Button" parent="VBoxContainer/ImageUploadServerTestContainer"]
@@ -493,7 +493,7 @@ stretch_mode = 3
 [node name="SchemaSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
-[node name="SchemaEditorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="SchemaEditorURLContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="SchemaEditorURLLabel" type="Label" parent="VBoxContainer/SchemaEditorURLContainer"]
@@ -516,7 +516,7 @@ layout_mode = 2
 text = "GENERIC_CHECK"
 icon = ExtResource("3_swtgl")
 
-[node name="SchemaValidatorURLContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="SchemaValidatorURLContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
 [node name="SchemaValidatorURLLabel" type="Label" parent="VBoxContainer/SchemaValidatorURLContainer"]

@@ -1,4 +1,4 @@
-extends HBoxContainer
+extends BoxContainer
 
 @onready var settingsdict = get_node("/root/FineTune").SETTINGS
 var availablemodelslist = []
@@ -24,3 +24,6 @@ func refresh_models():
 
 func _ready() -> void:
 	refresh_models()
+
+func set_compact_layout(enabled: bool) -> void:
+	vertical = enabled

@@ -1,4 +1,10 @@
-extends HBoxContainer
+extends BoxContainer
+
+var _compact_layout_enabled = false
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	vertical = enabled
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index

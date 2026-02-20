@@ -1,10 +1,22 @@
 extends ScrollContainer
 
 @onready var available_function_scene = preload("res://scenes/available_function.tscn")
+var _compact_layout_enabled = false
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	for function_container in $FunctionsListContainer.get_children():
+		if function_container.is_in_group("available_function") and function_container.has_method("set_compact_layout"):
+			function_container.set_compact_layout(enabled)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 func to_var():
 	var me = []
@@ -19,6 +31,8 @@ func from_var(data):
 		var availableFunctionInstance = available_function_scene.instantiate()
 		var addButton = $FunctionsListContainer/AddFunctionButton
 		$FunctionsListContainer.add_child(availableFunctionInstance)
+		if availableFunctionInstance.has_method("set_compact_layout"):
+			availableFunctionInstance.set_compact_layout(_compact_layout_enabled)
 		availableFunctionInstance.from_var(f)
 		$FunctionsListContainer.move_child(addButton, -1)
 
@@ -99,6 +113,8 @@ func _process(delta: float) -> void:
 func _on_add_function_button_pressed() -> void:
 	var newInst = available_function_scene.instantiate()
 	$FunctionsListContainer.add_child(newInst)
+	if newInst.has_method("set_compact_layout"):
+		newInst.set_compact_layout(_compact_layout_enabled)
 	var newBtn = $FunctionsListContainer/AddFunctionButton
 	$FunctionsListContainer.move_child(newBtn, -1)
 	print(self.to_var())

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://barwdybr46fmw" path="res://scenes/function_use_parameter.gd" id="1_yrmbv"]
 
-[node name="FunctionUseParameter" type="HBoxContainer" groups=["function_use_parameter"]]
+[node name="FunctionUseParameter" type="BoxContainer" groups=["function_use_parameter"]]
 alignment = 1
 script = ExtResource("1_yrmbv")
 

@@ -1,4 +1,4 @@
-extends HBoxContainer
+extends BoxContainer
 const RESULT_PARAMETERS_SCENE = preload("res://scenes/function_call_results_parameter.tscn")
 const FUNCTION_USE_PARAMETERS_SCENE = preload("res://scenes/function_use_parameter.tscn")
 @onready var schema_edit = $SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit
@@ -15,10 +15,23 @@ const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
 const JsonSchemaValidator := preload("res://json_schema_validator.gd")
 const SchemaFormController = preload("res://scenes/schema_runtime/schema_form_controller.gd")
+const SchemaRefResolver = preload("res://scenes/schema_runtime/schema_ref_resolver.gd")
+const SchemaRemoteRefLoader = preload("res://scenes/schema_runtime/schema_remote_ref_loader.gd")
+const DESKTOP_MESSAGE_TITLE_FONT_SIZE = 36
+const COMPACT_MESSAGE_TITLE_FONT_SIZE = 24
+const DESKTOP_META_INFO_GRID_COLUMNS = 3
+const COMPACT_META_INFO_GRID_COLUMNS = 1
 var _schema_validate_timer: Timer
 var _schema_form_controller = SchemaFormController.new()
 var _schema_sync_guard = false
 var _schema_last_selected_name = ""
+var _schema_resolve_serial = 0
+var _schema_is_loading_external = false
+var _schema_loading_serial = 0
+var _schema_runtime_cache = {}
+var _compact_layout_enabled = false
+var _compact_meta_control_defaults = {}
+var _compact_image_control_defaults = {}
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -60,6 +73,222 @@ func _get_fine_tune_node():
 	if tree == null:
 		return null
 	return tree.root.get_node_or_null("FineTune")
+
+func _set_box_vertical(node_path: String, enabled: bool) -> void:
+	var box = get_node_or_null(node_path)
+	if box is BoxContainer:
+		box.vertical = enabled
+
+func _set_title_font_sizes(font_size: int) -> void:
+	var title_paths = [
+		"TextMessageContainer/TextnachrichtLabel",
+		"ImageMessageContainer/BildNachrichtLabel",
+		"FileMessageContainer/BildNachrichtLabel",
+		"AudioMessageContainer/BildNachrichtLabel",
+		"FunctionMessageContainer/Label",
+		"MetaMessageContainer/ConversationNameLabel",
+		"SchemaMessageContainer/SchemaMessageLabel"
+	]
+	for title_path in title_paths:
+		var title_label = get_node_or_null(title_path)
+		if title_label is Label:
+			title_label.add_theme_font_size_override("font_size", font_size)
+
+func _configure_message_settings_row(enabled: bool) -> void:
+	var role_button = $MessageSettingsContainer/Role
+	var type_button = $MessageSettingsContainer/MessageType
+	var delete_button = $MessageSettingsContainer/DeleteButton
+	var user_name_edit = $MessageSettingsContainer/UserNameEdit
+	if enabled:
+		role_button.fit_to_longest_item = false
+		type_button.fit_to_longest_item = false
+		role_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		type_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		user_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		role_button.custom_minimum_size.x = 0
+		type_button.custom_minimum_size.x = 0
+		delete_button.custom_minimum_size.x = 0
+		user_name_edit.custom_minimum_size.x = 0
+		delete_button.text = ""
+		delete_button.tooltip_text = tr("GENERIC_DELETE")
+	else:
+		role_button.fit_to_longest_item = true
+		type_button.fit_to_longest_item = true
+		role_button.size_flags_horizontal = 0
+		type_button.size_flags_horizontal = 0
+		delete_button.size_flags_horizontal = 0
+		user_name_edit.size_flags_horizontal = 0
+		delete_button.text = tr("GENERIC_DELETE")
+		delete_button.tooltip_text = ""
+
+func _remember_image_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_image_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size,
+		"visible": control.visible
+	}
+	if control is OptionButton:
+		defaults["fit_to_longest_item"] = control.fit_to_longest_item
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+		if control.has_method("get_text_overrun_behavior"):
+			defaults["text_overrun_behavior"] = control.call("get_text_overrun_behavior")
+	if control is LineEdit:
+		defaults["expand_to_text_length"] = control.expand_to_text_length
+	_compact_image_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_image_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_image_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var minimum_size = control.custom_minimum_size
+		minimum_size.x = 0
+		control.custom_minimum_size = minimum_size
+		if control is OptionButton:
+			control.fit_to_longest_item = false
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+			if control.has_method("set_text_overrun_behavior"):
+				control.call("set_text_overrun_behavior", TextServer.OVERRUN_TRIM_ELLIPSIS)
+		if control is LineEdit:
+			control.expand_to_text_length = false
+		if control is TextureRect and control.name.find("Hint") != -1:
+			control.visible = false
+	else:
+		if not _compact_image_control_defaults.has(rel_path):
+			return
+		var defaults = _compact_image_control_defaults[rel_path]
+		control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+		control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+		control.visible = bool(defaults.get("visible", control.visible))
+		if control is OptionButton and defaults.has("fit_to_longest_item"):
+			control.fit_to_longest_item = bool(defaults["fit_to_longest_item"])
+		if control is Label and defaults.has("autowrap_mode"):
+			control.autowrap_mode = int(defaults["autowrap_mode"])
+		if control is BaseButton:
+			if defaults.has("clip_text"):
+				control.clip_text = bool(defaults["clip_text"])
+			if defaults.has("text_overrun_behavior") and control.has_method("set_text_overrun_behavior"):
+				control.call("set_text_overrun_behavior", int(defaults["text_overrun_behavior"]))
+		if control is LineEdit and defaults.has("expand_to_text_length"):
+			control.expand_to_text_length = bool(defaults["expand_to_text_length"])
+
+func _apply_compact_to_image_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_image_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_image_controls_recursive(child, enabled)
+
+func _configure_image_layout(enabled: bool) -> void:
+	$ImageMessageContainer.clip_contents = enabled
+	_apply_compact_to_image_controls_recursive($ImageMessageContainer, enabled)
+
+func _remember_meta_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_meta_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size,
+		"visible": control.visible
+	}
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+	_compact_meta_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_meta_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_meta_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var minimum_size = control.custom_minimum_size
+		minimum_size.x = 0
+		control.custom_minimum_size = minimum_size
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+		if control is TextureRect and control.name.find("Hint") != -1:
+			control.visible = false
+	else:
+		if not _compact_meta_control_defaults.has(rel_path):
+			return
+		var defaults = _compact_meta_control_defaults[rel_path]
+		control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+		control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+		control.visible = bool(defaults.get("visible", control.visible))
+		if control is Label and defaults.has("autowrap_mode"):
+			control.autowrap_mode = int(defaults["autowrap_mode"])
+		if control is BaseButton and defaults.has("clip_text"):
+			control.clip_text = bool(defaults["clip_text"])
+
+func _apply_compact_to_meta_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_meta_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_meta_controls_recursive(child, enabled)
+
+func _configure_meta_layout(enabled: bool) -> void:
+	var info_grid = $MetaMessageContainer/InfoLabelsGridContainer
+	if enabled:
+		info_grid.columns = COMPACT_META_INFO_GRID_COLUMNS
+		$MetaMessageContainer.clip_contents = true
+		$MetaMessageContainer/InfoLabelsGridContainer.clip_contents = true
+	else:
+		info_grid.columns = DESKTOP_META_INFO_GRID_COLUMNS
+		$MetaMessageContainer.clip_contents = false
+		$MetaMessageContainer/InfoLabelsGridContainer.clip_contents = false
+	_apply_compact_to_meta_controls_recursive($MetaMessageContainer, enabled)
+
+func _apply_compact_layout_to_nested_rows() -> void:
+	for child in $FunctionMessageContainer.get_children():
+		if child.has_method("set_compact_layout"):
+			child.set_compact_layout(_compact_layout_enabled)
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	vertical = enabled
+	_set_box_vertical("MessageSettingsContainer", not enabled)
+	_set_box_vertical("TextMessageContainer/DPOMessagesContainer", enabled)
+	_set_box_vertical("ImageMessageContainer/HBoxContainer", enabled)
+	_set_box_vertical("ImageMessageContainer/LoadButtonsContainer", enabled)
+	_configure_image_layout(enabled)
+	_set_box_vertical("FileMessageContainer/FileSelectorContainer", enabled)
+	_set_box_vertical("AudioMessageContainer/AudioMediaPlayerContainer", enabled)
+	_set_box_vertical("AudioMessageContainer/TranscriptionContainer", enabled)
+	_set_box_vertical("FunctionMessageContainer/preFunctionCallTextContainer", enabled)
+	_set_box_vertical("FunctionMessageContainer/function", enabled)
+	_set_box_vertical("MetaMessageContainer/ConversationNameContainer", enabled)
+	_set_box_vertical("MetaMessageContainer/ConversationReadyContainer", enabled)
+	_configure_meta_layout(enabled)
+	_set_box_vertical("SchemaMessageContainer/HBoxContainer", enabled)
+	_set_box_vertical("SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer", enabled)
+	_set_box_vertical("SchemaMessageContainer/SchemaMessagePolling", enabled)
+	_configure_message_settings_row(enabled)
+	if enabled:
+		_set_title_font_sizes(COMPACT_MESSAGE_TITLE_FONT_SIZE)
+	else:
+		_set_title_font_sizes(DESKTOP_MESSAGE_TITLE_FONT_SIZE)
+	_apply_compact_layout_to_nested_rows()
 
 func to_var():
 	var me = {}
@@ -189,6 +418,8 @@ func from_var(data):
 		$FunctionMessageContainer.add_child(parameterInstance)
 		var parameterSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel.get_index()
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
+		if parameterInstance.has_method("set_compact_layout"):
+			parameterInstance.set_compact_layout(_compact_layout_enabled)
 		parameterInstance.from_var(d)
 	$FunctionMessageContainer/FunctionUseResultText.text = str(data.get("functionResults", ""))
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
@@ -420,6 +651,10 @@ func _ready() -> void:
 	var schema_hint = _schema_form_hint_label_node()
 	if schema_hint != null:
 		schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
@@ -562,6 +797,8 @@ func _on_delete_button_pressed() -> void:
 func _on_add_result_button_pressed() -> void:
 	var newResultParameter = RESULT_PARAMETERS_SCENE.instantiate()
 	$FunctionMessageContainer.add_child(newResultParameter)
+	if newResultParameter.has_method("set_compact_layout"):
+		newResultParameter.set_compact_layout(_compact_layout_enabled)
 	var addResultButton = $FunctionMessageContainer/AddResultButton
 	$FunctionMessageContainer.move_child(addResultButton, -1)
 
@@ -644,6 +881,8 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 		print("Adding " + p)
 		var newScene = FUNCTION_USE_PARAMETERS_SCENE.instantiate()
 		$FunctionMessageContainer.add_child(newScene)
+		if newScene.has_method("set_compact_layout"):
+			newScene.set_compact_layout(_compact_layout_enabled)
 		newScene.get_node("ParameterName").text = p
 		$FunctionMessageContainer.move_child(newScene, pix + 1)
 		# Falls der Paramter required ist, checkbox auf ja setzen und disablen
@@ -730,17 +969,20 @@ func _render_schema_validation_errors(msg: String) -> void:
 		var entry = entries[i]
 		var row = HBoxContainer.new()
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.custom_minimum_size = Vector2(0, 22)
 		row.add_theme_constant_override("separation", 8)
 		container.add_child(row)
 		var message_label = Label.new()
 		message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		message_label.autowrap_mode = 0
+		message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		message_label.add_theme_font_size_override("font_size", 15)
 		message_label.text = str(entry.get("message", tr("MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN")))
 		row.add_child(message_label)
 		var path_label = Label.new()
-		path_label.autowrap_mode = 0
-		path_label.horizontal_alignment = 2
+		path_label.custom_minimum_size = Vector2(170, 0)
+		path_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		path_label.clip_text = true
+		path_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		path_label.add_theme_font_size_override("font_size", 11)
 		path_label.text = tr("MESSAGES_JSON_SCHEMA_ERROR_PATH").replace("{path}", str(entry.get("path", "/")))
 		row.add_child(path_label)
@@ -918,6 +1160,83 @@ func _get_selected_schema_data():
 			return schema_entry
 	return null
 
+func _get_schema_name_from_data(schema_data, fallback_name: String = "") -> String:
+	if schema_data is Dictionary:
+		var schema_name = str(schema_data.get("name", "")).strip_edges()
+		if schema_name != "":
+			return schema_name
+	return fallback_name
+
+func _get_runtime_schema_from_data(schema_data, schema_name: String):
+	if schema_name != "" and _schema_runtime_cache.has(schema_name):
+		return _schema_runtime_cache[schema_name]
+	if not (schema_data is Dictionary):
+		return null
+	var resolved_schema = schema_data.get("resolvedSchema", null)
+	if resolved_schema is Dictionary:
+		if schema_name != "":
+			_schema_runtime_cache[schema_name] = resolved_schema
+		return resolved_schema
+	var source_schema = schema_data.get("schema", null)
+	if source_schema is Dictionary:
+		return source_schema
+	var sanitized_schema = schema_data.get("sanitizedSchema", null)
+	if sanitized_schema is Dictionary:
+		return sanitized_schema
+	return null
+
+func _cache_runtime_schema(schema_name: String, resolved_schema: Dictionary) -> void:
+	if schema_name == "":
+		return
+	var cached_copy = resolved_schema.duplicate(true)
+	_schema_runtime_cache[schema_name] = cached_copy
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		return
+	for i in range(ft_node.SCHEMAS.size()):
+		var entry = ft_node.SCHEMAS[i]
+		if not (entry is Dictionary):
+			continue
+		if str(entry.get("name", "")) != schema_name:
+			continue
+		entry["resolvedSchema"] = cached_copy.duplicate(true)
+		ft_node.SCHEMAS[i] = entry
+		break
+
+func _resolve_runtime_schema_if_needed(schema_data, schema_name: String, serial: int):
+	var runtime_schema = _get_runtime_schema_from_data(schema_data, schema_name)
+	if not (runtime_schema is Dictionary):
+		return {"schema": null, "aborted": false, "external_failed": false}
+	if schema_data is Dictionary:
+		var stored_resolved = schema_data.get("resolvedSchema", null)
+		if stored_resolved is Dictionary:
+			var stored_state = SchemaRefResolver.resolve_schema(stored_resolved)
+			if not bool(stored_state.get("has_external_ref", false)):
+				return {"schema": stored_resolved, "aborted": false, "external_failed": false}
+	var base_schema = runtime_schema
+	if schema_data is Dictionary and schema_data.get("schema", null) is Dictionary:
+		base_schema = schema_data["schema"]
+	if not SchemaRefResolver.has_external_document_ref(base_schema):
+		return {"schema": runtime_schema, "aborted": false, "external_failed": false}
+	_schema_is_loading_external = true
+	_schema_loading_serial = serial
+	var resolved_result = await SchemaRemoteRefLoader.resolve_schema_with_remote(self, base_schema)
+	if serial != _schema_resolve_serial:
+		if _schema_loading_serial == serial:
+			_schema_is_loading_external = false
+		return {"schema": null, "aborted": true, "external_failed": false}
+	if _schema_loading_serial == serial:
+		_schema_is_loading_external = false
+	var resolved_schema = resolved_result.get("schema", runtime_schema)
+	var external_failed = bool(resolved_result.get("has_external_ref", false))
+	if resolved_schema is Dictionary:
+		runtime_schema = resolved_schema
+		_cache_runtime_schema(schema_name, runtime_schema)
+	var external_errors = resolved_result.get("external_errors", [])
+	if external_failed and external_errors is Array and external_errors.size() > 0:
+		print("External schema load issues: " + JSON.stringify(external_errors))
+	return {"schema": runtime_schema, "aborted": false, "external_failed": external_failed}
+
 func _update_external_schema_editor_button_state() -> void:
 	var schema_button = $SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer/SchemaEditButton
 	var editor_url = ""
@@ -932,6 +1251,9 @@ func _update_external_schema_editor_button_state() -> void:
 		schema_button.tooltip_text = tr("MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED")
 
 func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> void:
+	_schema_resolve_serial += 1
+	var serial = _schema_resolve_serial
+	_schema_is_loading_external = false
 	_ensure_schema_form_bound()
 	var schema_hint = _schema_form_hint_label_node()
 	var schema_edit_node = _schema_edit_node()
@@ -946,9 +1268,11 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 		if schema_hint != null:
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
 		return
-	var selected_schema = schema_data.get("schema", null)
-	if not (selected_schema is Dictionary):
-		selected_schema = schema_data.get("sanitizedSchema", null)
+	var runtime_schema_name = _get_schema_name_from_data(schema_data, selected_schema_name)
+	var resolve_info = await _resolve_runtime_schema_if_needed(schema_data, runtime_schema_name, serial)
+	if bool(resolve_info.get("aborted", false)):
+		return
+	var selected_schema = resolve_info.get("schema", null)
 	if not (selected_schema is Dictionary):
 		_schema_last_selected_name = ""
 		_clear_schema_form_root()
@@ -956,7 +1280,10 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
 		return
 	if schema_hint != null:
-		schema_hint.text = ""
+		if bool(resolve_info.get("external_failed", false)):
+			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK")
+		else:
+			schema_hint.text = ""
 	_schema_form_controller.load_schema(selected_schema)
 	var schema_changed = selected_schema_name != _schema_last_selected_name
 	_schema_last_selected_name = selected_schema_name
@@ -1012,6 +1339,10 @@ func _validate_schema_message() -> void:
 	if _is_only_json_selection(option):
 		_set_schema_validation_result(true)
 		return
+	if _schema_is_loading_external:
+		_set_schema_validation_pending()
+		_schedule_schema_validate()
+		return
 	var local_form_errors = _schema_form_controller.get_errors()
 	if local_form_errors.size() > 0:
 		_set_schema_validation_result(false, JSON.stringify(local_form_errors))
@@ -1020,9 +1351,9 @@ func _validate_schema_message() -> void:
 	if schema_data == null:
 		_set_schema_validation_result(false, "No schema")
 		return
-	var selected_schema = schema_data.get("schema", null)
-	if not (selected_schema is Dictionary):
-		selected_schema = schema_data.get("sanitizedSchema", null)
+	var selected_name = option.get_item_text(option.selected)
+	var runtime_schema_name = _get_schema_name_from_data(schema_data, selected_name)
+	var selected_schema = _get_runtime_schema_from_data(schema_data, runtime_schema_name)
 	if not (selected_schema is Dictionary):
 		_set_schema_validation_result(false, "No schema")
 		return
@@ -1093,10 +1424,14 @@ func _on_check_what_text_message_should_be_visisble() -> void:
 	$TextMessageContainer/DPOMessagesContainer.visible = false
 
 func _on_delete_button_mouse_entered() -> void:
+	if $MessageSettingsContainer/DeleteButton.disabled:
+		return
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcanOpen.png")
 
 
 func _on_delete_button_mouse_exited() -> void:
+	if $MessageSettingsContainer/DeleteButton.disabled:
+		return
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcan.png")
 
 

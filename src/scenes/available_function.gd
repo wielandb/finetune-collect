@@ -1,6 +1,100 @@
 extends VBoxContainer
 
 @onready var PARAMETER_SCENE = preload("res://scenes/parameter.tscn")
+const DESKTOP_FUNCTION_TITLE_FONT_SIZE = 46
+const DESKTOP_PARAMETERS_TITLE_FONT_SIZE = 26
+const COMPACT_FUNCTION_TITLE_FONT_SIZE = 30
+const COMPACT_PARAMETERS_TITLE_FONT_SIZE = 20
+const DESKTOP_EXPLANATION_MIN_SIZE = Vector2(300, 0)
+const COMPACT_EXPLANATION_MIN_SIZE = Vector2(0, 0)
+var _compact_layout_enabled = false
+var _compact_control_defaults = {}
+
+func _remember_control_defaults(control: Control) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	if _compact_control_defaults.has(rel_path):
+		return
+	var defaults = {
+		"size_flags_horizontal": control.size_flags_horizontal,
+		"custom_minimum_size": control.custom_minimum_size
+	}
+	if control is OptionButton:
+		defaults["fit_to_longest_item"] = control.fit_to_longest_item
+	if control is Label:
+		defaults["autowrap_mode"] = control.autowrap_mode
+	if control is BaseButton:
+		defaults["clip_text"] = control.clip_text
+	if control is LineEdit:
+		defaults["expand_to_text_length"] = control.expand_to_text_length
+	if control.has_method("get_text_overrun_behavior"):
+		defaults["text_overrun_behavior"] = control.call("get_text_overrun_behavior")
+	_compact_control_defaults[rel_path] = defaults
+
+func _apply_compact_to_control(control: Control, enabled: bool) -> void:
+	if not is_instance_valid(control):
+		return
+	var rel_path = get_path_to(control)
+	_remember_control_defaults(control)
+	if enabled:
+		control.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		var min_size = control.custom_minimum_size
+		min_size.x = 0
+		control.custom_minimum_size = min_size
+		if control is OptionButton:
+			control.fit_to_longest_item = false
+		if control is Label:
+			control.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		if control is BaseButton:
+			control.clip_text = true
+		if control is LineEdit:
+			control.expand_to_text_length = false
+		if control.has_method("set_text_overrun_behavior"):
+			control.call("set_text_overrun_behavior", TextServer.OVERRUN_TRIM_ELLIPSIS)
+	else:
+		if not _compact_control_defaults.has(rel_path):
+			return
+		var defaults = _compact_control_defaults[rel_path]
+		control.size_flags_horizontal = int(defaults.get("size_flags_horizontal", control.size_flags_horizontal))
+		control.custom_minimum_size = defaults.get("custom_minimum_size", control.custom_minimum_size)
+		if control is OptionButton and defaults.has("fit_to_longest_item"):
+			control.fit_to_longest_item = bool(defaults["fit_to_longest_item"])
+		if control is Label and defaults.has("autowrap_mode"):
+			control.autowrap_mode = int(defaults["autowrap_mode"])
+		if control is BaseButton and defaults.has("clip_text"):
+			control.clip_text = bool(defaults["clip_text"])
+		if control is LineEdit and defaults.has("expand_to_text_length"):
+			control.expand_to_text_length = bool(defaults["expand_to_text_length"])
+		if control.has_method("set_text_overrun_behavior") and defaults.has("text_overrun_behavior"):
+			control.call("set_text_overrun_behavior", int(defaults["text_overrun_behavior"]))
+
+func _apply_compact_to_controls_recursive(node: Node, enabled: bool) -> void:
+	if node is Control:
+		_apply_compact_to_control(node, enabled)
+	for child in node.get_children():
+		_apply_compact_to_controls_recursive(child, enabled)
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	clip_contents = enabled
+	$FunctionNameContainer.vertical = enabled
+	$FunctionDescriptionContainer2.vertical = enabled
+	$FunctionExecutionSettings.vertical = enabled
+	$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer.vertical = enabled
+	$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersContainer.vertical = enabled
+	_apply_compact_to_controls_recursive(self, enabled)
+	if enabled:
+		$functionlabel.add_theme_font_size_override("font_size", COMPACT_FUNCTION_TITLE_FONT_SIZE)
+		$parameterslabel.add_theme_font_size_override("font_size", COMPACT_PARAMETERS_TITLE_FONT_SIZE)
+		$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersExplanationLabel.custom_minimum_size = COMPACT_EXPLANATION_MIN_SIZE
+	else:
+		$functionlabel.add_theme_font_size_override("font_size", DESKTOP_FUNCTION_TITLE_FONT_SIZE)
+		$parameterslabel.add_theme_font_size_override("font_size", DESKTOP_PARAMETERS_TITLE_FONT_SIZE)
+		$FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersExplanationLabel.custom_minimum_size = DESKTOP_EXPLANATION_MIN_SIZE
+	for parameter in get_children():
+		if parameter.has_method("set_compact_layout"):
+			parameter.set_compact_layout(enabled)
 
 
 func to_var():
@@ -27,6 +121,8 @@ func from_var(data):
 		var parametersLabelIx = $parameterslabel.get_index()
 		add_child(parameter_instance)
 		parameter_instance.add_to_group("available_parameter")
+		if parameter_instance.has_method("set_compact_layout"):
+			parameter_instance.set_compact_layout(_compact_layout_enabled)
 		parameter_instance.from_var(parameter)
 		move_child(parameter_instance, parametersLabelIx + 1)
 	$FunctionExecutionSettings/FunctionExecutionEnabled.button_pressed = data.get("functionExecutionEnabled", false)
@@ -36,7 +132,11 @@ func from_var(data):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -51,6 +151,8 @@ func _on_add_parameter_button_pressed() -> void:
 	var newParameter = PARAMETER_SCENE.instantiate()
 	newParameter.add_to_group("available_parameter")
 	add_child(newParameter)
+	if newParameter.has_method("set_compact_layout"):
+		newParameter.set_compact_layout(_compact_layout_enabled)
 	move_child(DelteFnBtn, -1)
 	move_child(fesettings, -2)
 	move_child(AddParameterButton, -3)
@@ -59,6 +161,16 @@ func _on_add_parameter_button_pressed() -> void:
 
 func _on_delete_function_button_pressed() -> void:
 	queue_free()
+
+func _on_delete_function_button_mouse_entered() -> void:
+	if $DeleteFunctionButton.disabled:
+		return
+	$DeleteFunctionButton.icon = load("res://icons/trashcanOpen_small.png")
+
+func _on_delete_function_button_mouse_exited() -> void:
+	if $DeleteFunctionButton.disabled:
+		return
+	$DeleteFunctionButton.icon = load("res://icons/trashcan_small.png")
 
 
 func update_available_functions_global():

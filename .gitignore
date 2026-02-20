@@ -9,3 +9,7 @@ scripts/data.json
 docs/schema_examples.md
 export/windows/finetune-collector.exe
 export/windows/finetune-collector.console.exe
+/export/windows
+export/windows.zip
+export/web.zip
+export/linux.zip

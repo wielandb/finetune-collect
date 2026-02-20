@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cu7hqyaxypkbl" path="res://scenes/model_choice_container.gd" id="1_no7ph"]
 
-[node name="ModelContainer" type="HBoxContainer"]
+[node name="ModelContainer" type="BoxContainer"]
 script = ExtResource("1_no7ph")
 
 [node name="ModelLabel" type="Label" parent="."]

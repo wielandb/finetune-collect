@@ -22,7 +22,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 20
 
-[node name="AddButtonsContainer" type="HBoxContainer" parent="MessagesListContainer"]
+[node name="AddButtonsContainer" type="BoxContainer" parent="MessagesListContainer"]
 layout_mode = 2
 size_flags_vertical = 10
 

@@ -1,5 +1,22 @@
 extends VBoxContainer
 
+var _compact_layout_enabled = false
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	$InputContainer.vertical = enabled
+	$ReferenceContainer.vertical = enabled
+	$EvaluationMetricContainer.vertical = enabled
+	if $NameContainer.has_method("set_compact_layout"):
+		$NameContainer.set_compact_layout(enabled)
+
+func _ready() -> void:
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
+
 func from_var(grader_data):
 	$NameContainer.grader_name = grader_data.get("name", "")
 	$InputContainer/InputEdit.text = grader_data.get("input", "")

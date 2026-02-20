@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scenes/schema_runtime/widgets/schema_array_item_row.gd" id="1_fvsm6"]
+[ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="2_hgk53"]
 
 [node name="SchemaArrayItemRow" type="VBoxContainer"]
 size_flags_horizontal = 3
@@ -17,6 +18,7 @@ text = "Item 1"
 [node name="DeleteButton" type="Button" parent="Header"]
 layout_mode = 2
 text = "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"
+icon = ExtResource("2_hgk53")
 
 [node name="ContentContainer" type="VBoxContainer" parent="."]
 layout_mode = 2

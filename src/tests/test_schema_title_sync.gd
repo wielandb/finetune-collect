@@ -25,7 +25,7 @@ func _run():
 	var editor = scene.get_node("MarginContainer2/SchemasTabContainer/EditSchemaTabBar/VBoxContainer/EditJSONSchemaCodeEdit")
 	var name_edit = scene.get_node("MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer/LineEdit")
 	editor.text = '{"title": "My Title"}'
-	scene._on_validate_timeout()
+	await scene._on_validate_timeout()
 	_check(name_edit.text == "My Title", "Title should sync from schema to name field")
 	name_edit.text = "Other"
 	scene._on_schema_name_line_edit_text_changed("Other")

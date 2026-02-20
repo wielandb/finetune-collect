@@ -1554,6 +1554,222 @@ msgstr "Element"
 msgid "MESSAGES_JSON_SCHEMA_FORM_NO_PROPERTIES"
 msgstr "Dieses Objekt-Schema hat keine Properties."
 
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_PLACEHOLDER"
+msgstr "YYYY-MM-DD"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_OPEN"
+msgstr "Datum..."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_CLEAR"
+msgstr "Leeren"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_TITLE"
+msgstr "Datum wählen"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_ACTION_CLEAR"
+msgstr "LEEREN"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_ACTION_CANCEL"
+msgstr "ABBRECHEN"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_ACTION_SET"
+msgstr "SETZEN"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LABEL_PATTERN"
+msgstr "{month} {year}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_HEADER_LABEL_PATTERN"
+msgstr "{weekday}, {day}. {month}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_MON"
+msgstr "Mo"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_TUE"
+msgstr "Di"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_WED"
+msgstr "Mi"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_THU"
+msgstr "Do"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_FRI"
+msgstr "Fr"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_SAT"
+msgstr "Sa"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_HEADER_SUN"
+msgstr "So"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_MON"
+msgstr "Mo"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_TUE"
+msgstr "Di"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_WED"
+msgstr "Mi"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_THU"
+msgstr "Do"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_FRI"
+msgstr "Fr"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_SAT"
+msgstr "Sa"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_SHORT_SUN"
+msgstr "So"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_MON"
+msgstr "Montag"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_TUE"
+msgstr "Dienstag"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_WED"
+msgstr "Mittwoch"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_THU"
+msgstr "Donnerstag"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_FRI"
+msgstr "Freitag"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_SAT"
+msgstr "Samstag"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_WEEKDAY_LONG_SUN"
+msgstr "Sonntag"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_JAN"
+msgstr "Januar"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_FEB"
+msgstr "Februar"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_MAR"
+msgstr "März"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_APR"
+msgstr "April"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_MAY"
+msgstr "Mai"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_JUN"
+msgstr "Juni"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_JUL"
+msgstr "Juli"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_AUG"
+msgstr "August"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_SEP"
+msgstr "September"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_OCT"
+msgstr "Oktober"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_NOV"
+msgstr "November"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_LONG_DEC"
+msgstr "Dezember"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_JAN"
+msgstr "Jan"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_FEB"
+msgstr "Feb"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_MAR"
+msgstr "Mär"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_APR"
+msgstr "Apr"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_MAY"
+msgstr "Mai"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_JUN"
+msgstr "Jun"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_JUL"
+msgstr "Jul"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_AUG"
+msgstr "Aug"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_SEP"
+msgstr "Sep"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_OCT"
+msgstr "Okt"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_NOV"
+msgstr "Nov"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_DEC"
+msgstr "Dez"
+
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN"
 msgstr "Validierungsfehler."

@@ -47,10 +47,29 @@ class SchemaAlignOpenAITest(unittest.TestCase):
             }
         }
         result = self.request(payload)
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["errors"], [])
         self.assertEqual(result["name"], "Example")
         schema = result["schema"]
         self.assertEqual(schema["additionalProperties"], False)
         self.assertEqual(schema["required"], ["a"])
+
+    def test_too_many_enum_values_error(self):
+        enum_values = [f"v{i}" for i in range(1001)]
+        payload = {
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "choice": {
+                        "type": "string",
+                        "enum": enum_values,
+                    }
+                }
+            }
+        }
+        result = self.request(payload)
+        self.assertFalse(result["ok"])
+        self.assertTrue(any(err.get("code") == "too_many_enum_values" for err in result["errors"]))
 
 if __name__ == "__main__":
     unittest.main()

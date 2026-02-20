@@ -60,6 +60,16 @@ func _on_add_parameter_button_pressed() -> void:
 func _on_delete_function_button_pressed() -> void:
 	queue_free()
 
+func _on_delete_function_button_mouse_entered() -> void:
+	if $DeleteFunctionButton.disabled:
+		return
+	$DeleteFunctionButton.icon = load("res://icons/trashcanOpen_small.png")
+
+func _on_delete_function_button_mouse_exited() -> void:
+	if $DeleteFunctionButton.disabled:
+		return
+	$DeleteFunctionButton.icon = load("res://icons/trashcan_small.png")
+
 
 func update_available_functions_global():
 	get_node("/root/FineTune").update_functions_internal()

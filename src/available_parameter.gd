@@ -117,8 +117,12 @@ func _on_parameter_name_edit_text_changed(new_text: String) -> void:
 
 
 func _on_delete_button_mouse_entered() -> void:
+	if $DeleteButton.disabled:
+		return
 	$DeleteButton.icon = load("res://icons/trashcanOpen_small.png")
 
 
 func _on_delete_button_mouse_exited() -> void:
+	if $DeleteButton.disabled:
+		return
 	$DeleteButton.icon = load("res://icons/trashcan_small.png")

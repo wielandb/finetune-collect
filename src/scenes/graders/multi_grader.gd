@@ -172,7 +172,11 @@ func _on_add_grader_button_pressed() -> void:
 		_update_grader_name_buttons()
 
 func _on_delete_button_mouse_entered(button: Button) -> void:
+	if button.disabled:
+		return
 	button.icon = load("res://icons/trashcanOpen_small.png")
 
 func _on_delete_button_mouse_exited(button: Button) -> void:
+	if button.disabled:
+		return
 	button.icon = load("res://icons/trashcan_small.png")

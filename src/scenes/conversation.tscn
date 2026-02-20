@@ -22,7 +22,7 @@ layout_mode = 2
 metadata/_tab_index = 0
 
 [node name="MessagesList" parent="Messages" instance=ExtResource("1_lyn02")]
-clip_contents = false
+clip_contents = true
 layout_mode = 1
 offset_right = 0.0
 offset_bottom = 0.0

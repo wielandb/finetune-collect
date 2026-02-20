@@ -24,6 +24,8 @@ func from_var(data):
 		$MessagesListContainer.move_child(buttonsContainer, -1)	
 
 func _ready() -> void:
+	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	clip_contents = true
 	openai.connect("gpt_response_completed", gpt_response_completed)
 	openai.connect("models_received", models_received)
 	openai.get_models()

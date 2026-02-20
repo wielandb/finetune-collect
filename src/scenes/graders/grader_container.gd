@@ -48,9 +48,13 @@ func _on_delete_button_pressed() -> void:
 	queue_free()
 
 func _on_delete_button_mouse_entered() -> void:
+	if $GraderSettingsContainer/DeleteGraderButton.disabled:
+		return
 	$GraderSettingsContainer/DeleteGraderButton.icon = load("res://icons/trashcanOpen_small.png")
 
 func _on_delete_button_mouse_exited() -> void:
+	if $GraderSettingsContainer/DeleteGraderButton.disabled:
+		return
 	$GraderSettingsContainer/DeleteGraderButton.icon = load("res://icons/trashcan_small.png")
 
 func _exit_tree() -> void:

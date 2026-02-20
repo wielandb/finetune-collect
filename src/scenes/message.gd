@@ -15,10 +15,16 @@ const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
 const JsonSchemaValidator := preload("res://json_schema_validator.gd")
 const SchemaFormController = preload("res://scenes/schema_runtime/schema_form_controller.gd")
+const SchemaRefResolver = preload("res://scenes/schema_runtime/schema_ref_resolver.gd")
+const SchemaRemoteRefLoader = preload("res://scenes/schema_runtime/schema_remote_ref_loader.gd")
 var _schema_validate_timer: Timer
 var _schema_form_controller = SchemaFormController.new()
 var _schema_sync_guard = false
 var _schema_last_selected_name = ""
+var _schema_resolve_serial = 0
+var _schema_is_loading_external = false
+var _schema_loading_serial = 0
+var _schema_runtime_cache = {}
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -730,17 +736,20 @@ func _render_schema_validation_errors(msg: String) -> void:
 		var entry = entries[i]
 		var row = HBoxContainer.new()
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.custom_minimum_size = Vector2(0, 22)
 		row.add_theme_constant_override("separation", 8)
 		container.add_child(row)
 		var message_label = Label.new()
 		message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		message_label.autowrap_mode = 0
+		message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		message_label.add_theme_font_size_override("font_size", 15)
 		message_label.text = str(entry.get("message", tr("MESSAGES_JSON_SCHEMA_ERROR_UNKNOWN")))
 		row.add_child(message_label)
 		var path_label = Label.new()
-		path_label.autowrap_mode = 0
-		path_label.horizontal_alignment = 2
+		path_label.custom_minimum_size = Vector2(170, 0)
+		path_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		path_label.clip_text = true
+		path_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		path_label.add_theme_font_size_override("font_size", 11)
 		path_label.text = tr("MESSAGES_JSON_SCHEMA_ERROR_PATH").replace("{path}", str(entry.get("path", "/")))
 		row.add_child(path_label)
@@ -918,6 +927,83 @@ func _get_selected_schema_data():
 			return schema_entry
 	return null
 
+func _get_schema_name_from_data(schema_data, fallback_name: String = "") -> String:
+	if schema_data is Dictionary:
+		var schema_name = str(schema_data.get("name", "")).strip_edges()
+		if schema_name != "":
+			return schema_name
+	return fallback_name
+
+func _get_runtime_schema_from_data(schema_data, schema_name: String):
+	if schema_name != "" and _schema_runtime_cache.has(schema_name):
+		return _schema_runtime_cache[schema_name]
+	if not (schema_data is Dictionary):
+		return null
+	var resolved_schema = schema_data.get("resolvedSchema", null)
+	if resolved_schema is Dictionary:
+		if schema_name != "":
+			_schema_runtime_cache[schema_name] = resolved_schema
+		return resolved_schema
+	var source_schema = schema_data.get("schema", null)
+	if source_schema is Dictionary:
+		return source_schema
+	var sanitized_schema = schema_data.get("sanitizedSchema", null)
+	if sanitized_schema is Dictionary:
+		return sanitized_schema
+	return null
+
+func _cache_runtime_schema(schema_name: String, resolved_schema: Dictionary) -> void:
+	if schema_name == "":
+		return
+	var cached_copy = resolved_schema.duplicate(true)
+	_schema_runtime_cache[schema_name] = cached_copy
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		return
+	for i in range(ft_node.SCHEMAS.size()):
+		var entry = ft_node.SCHEMAS[i]
+		if not (entry is Dictionary):
+			continue
+		if str(entry.get("name", "")) != schema_name:
+			continue
+		entry["resolvedSchema"] = cached_copy.duplicate(true)
+		ft_node.SCHEMAS[i] = entry
+		break
+
+func _resolve_runtime_schema_if_needed(schema_data, schema_name: String, serial: int):
+	var runtime_schema = _get_runtime_schema_from_data(schema_data, schema_name)
+	if not (runtime_schema is Dictionary):
+		return {"schema": null, "aborted": false, "external_failed": false}
+	if schema_data is Dictionary:
+		var stored_resolved = schema_data.get("resolvedSchema", null)
+		if stored_resolved is Dictionary:
+			var stored_state = SchemaRefResolver.resolve_schema(stored_resolved)
+			if not bool(stored_state.get("has_external_ref", false)):
+				return {"schema": stored_resolved, "aborted": false, "external_failed": false}
+	var base_schema = runtime_schema
+	if schema_data is Dictionary and schema_data.get("schema", null) is Dictionary:
+		base_schema = schema_data["schema"]
+	if not SchemaRefResolver.has_external_document_ref(base_schema):
+		return {"schema": runtime_schema, "aborted": false, "external_failed": false}
+	_schema_is_loading_external = true
+	_schema_loading_serial = serial
+	var resolved_result = await SchemaRemoteRefLoader.resolve_schema_with_remote(self, base_schema)
+	if serial != _schema_resolve_serial:
+		if _schema_loading_serial == serial:
+			_schema_is_loading_external = false
+		return {"schema": null, "aborted": true, "external_failed": false}
+	if _schema_loading_serial == serial:
+		_schema_is_loading_external = false
+	var resolved_schema = resolved_result.get("schema", runtime_schema)
+	var external_failed = bool(resolved_result.get("has_external_ref", false))
+	if resolved_schema is Dictionary:
+		runtime_schema = resolved_schema
+		_cache_runtime_schema(schema_name, runtime_schema)
+	var external_errors = resolved_result.get("external_errors", [])
+	if external_failed and external_errors is Array and external_errors.size() > 0:
+		print("External schema load issues: " + JSON.stringify(external_errors))
+	return {"schema": runtime_schema, "aborted": false, "external_failed": external_failed}
+
 func _update_external_schema_editor_button_state() -> void:
 	var schema_button = $SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer/SchemaEditButton
 	var editor_url = ""
@@ -932,6 +1018,9 @@ func _update_external_schema_editor_button_state() -> void:
 		schema_button.tooltip_text = tr("MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED")
 
 func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> void:
+	_schema_resolve_serial += 1
+	var serial = _schema_resolve_serial
+	_schema_is_loading_external = false
 	_ensure_schema_form_bound()
 	var schema_hint = _schema_form_hint_label_node()
 	var schema_edit_node = _schema_edit_node()
@@ -946,9 +1035,11 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 		if schema_hint != null:
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
 		return
-	var selected_schema = schema_data.get("schema", null)
-	if not (selected_schema is Dictionary):
-		selected_schema = schema_data.get("sanitizedSchema", null)
+	var runtime_schema_name = _get_schema_name_from_data(schema_data, selected_schema_name)
+	var resolve_info = await _resolve_runtime_schema_if_needed(schema_data, runtime_schema_name, serial)
+	if bool(resolve_info.get("aborted", false)):
+		return
+	var selected_schema = resolve_info.get("schema", null)
 	if not (selected_schema is Dictionary):
 		_schema_last_selected_name = ""
 		_clear_schema_form_root()
@@ -956,7 +1047,10 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
 		return
 	if schema_hint != null:
-		schema_hint.text = ""
+		if bool(resolve_info.get("external_failed", false)):
+			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK")
+		else:
+			schema_hint.text = ""
 	_schema_form_controller.load_schema(selected_schema)
 	var schema_changed = selected_schema_name != _schema_last_selected_name
 	_schema_last_selected_name = selected_schema_name
@@ -1012,6 +1106,10 @@ func _validate_schema_message() -> void:
 	if _is_only_json_selection(option):
 		_set_schema_validation_result(true)
 		return
+	if _schema_is_loading_external:
+		_set_schema_validation_pending()
+		_schedule_schema_validate()
+		return
 	var local_form_errors = _schema_form_controller.get_errors()
 	if local_form_errors.size() > 0:
 		_set_schema_validation_result(false, JSON.stringify(local_form_errors))
@@ -1020,9 +1118,9 @@ func _validate_schema_message() -> void:
 	if schema_data == null:
 		_set_schema_validation_result(false, "No schema")
 		return
-	var selected_schema = schema_data.get("schema", null)
-	if not (selected_schema is Dictionary):
-		selected_schema = schema_data.get("sanitizedSchema", null)
+	var selected_name = option.get_item_text(option.selected)
+	var runtime_schema_name = _get_schema_name_from_data(schema_data, selected_name)
+	var selected_schema = _get_runtime_schema_from_data(schema_data, runtime_schema_name)
 	if not (selected_schema is Dictionary):
 		_set_schema_validation_result(false, "No schema")
 		return
@@ -1093,10 +1191,14 @@ func _on_check_what_text_message_should_be_visisble() -> void:
 	$TextMessageContainer/DPOMessagesContainer.visible = false
 
 func _on_delete_button_mouse_entered() -> void:
+	if $MessageSettingsContainer/DeleteButton.disabled:
+		return
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcanOpen.png")
 
 
 func _on_delete_button_mouse_exited() -> void:
+	if $MessageSettingsContainer/DeleteButton.disabled:
+		return
 	$MessageSettingsContainer/DeleteButton.icon = load("res://icons/trashcan.png")
 
 

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dvv3gj718m2b4"]
+[gd_scene load_steps=3 format=3 uid="uid://dvv3gj718m2b4"]
 
 [ext_resource type="Script" uid="uid://bkhd4eaqnuse3" path="res://scenes/function_call_results_parameter.gd" id="1_1t4v6"]
+[ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="2_txv6j"]
 
 [node name="Results" type="HBoxContainer" groups=["function_use_result"]]
 script = ExtResource("1_1t4v6")
@@ -17,6 +18,9 @@ placeholder_text = "Parameter Value"
 
 [node name="DeleteButton" type="Button" parent="."]
 layout_mode = 2
-text = "X"
+text = "GENERIC_DELETE"
+icon = ExtResource("2_txv6j")
 
+[connection signal="mouse_entered" from="DeleteButton" to="." method="_on_delete_button_mouse_entered"]
+[connection signal="mouse_exited" from="DeleteButton" to="." method="_on_delete_button_mouse_exited"]
 [connection signal="pressed" from="DeleteButton" to="." method="_on_delete_button_pressed"]

@@ -14,7 +14,7 @@ script = ExtResource("1_db2gt")
 [node name="NameContainer" parent="." instance=ExtResource("1_fjscc")]
 layout_mode = 2
 
-[node name="InputContainer" type="HBoxContainer" parent="."]
+[node name="InputContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="InputLabel" type="Label" parent="InputContainer"]
@@ -25,7 +25,7 @@ text = "GRADER_INPUT_COLON"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ReferenceContainer" type="HBoxContainer" parent="."]
+[node name="ReferenceContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="ReferenceLabel" type="Label" parent="ReferenceContainer"]
@@ -36,7 +36,7 @@ text = "GRADER_REFERENCE_COLON"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="EvaluationMetricContainer" type="HBoxContainer" parent="."]
+[node name="EvaluationMetricContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="EvaluationMetricLabel" type="Label" parent="EvaluationMetricContainer"]

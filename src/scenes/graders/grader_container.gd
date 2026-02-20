@@ -17,9 +17,25 @@ var _grader: Grader
 @onready var _use_button: CheckBox = $GraderSettingsContainer/UseThisGraderButton
 @onready var _copy_button: Button = $GraderSettingsContainer/CopyGraderToClipboardButton
 var _last_grader_data := {}
+var _compact_layout_enabled = false
+
+func _apply_compact_layout_to_current_grader() -> void:
+	var grader_gui = null
+	if $ActualGraderContainer/GraderMarginContainer.get_child_count() > 0:
+		grader_gui = $ActualGraderContainer/GraderMarginContainer.get_child(0)
+	if grader_gui != null and grader_gui.has_method("set_compact_layout"):
+		grader_gui.set_compact_layout(_compact_layout_enabled)
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer.vertical = enabled
+	$GraderSettingsContainer.vertical = enabled
+	_apply_compact_layout_to_current_grader()
 
 func _ready() -> void:
-	$GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.connect("item_selected", _on_grader_type_option_button_item_selected)
+	var grader_type_option_button = $GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton
+	if not grader_type_option_button.is_connected("item_selected", Callable(self, "_on_grader_type_option_button_item_selected")):
+		grader_type_option_button.connect("item_selected", _on_grader_type_option_button_item_selected)
 	_verify_timer = Timer.new()
 	_verify_timer.one_shot = true
 	_verify_timer.wait_time = 2.0
@@ -32,9 +48,16 @@ func _ready() -> void:
 	_status_label.text = tr("GRADER_NOT_VERIFIED_YET")
 	_spinner.visible = false
 	_set_grader_controls_disabled(true)
-	_use_button.connect("toggled", Callable(self, "_on_use_this_grader_button_toggled"))
-	_copy_button.connect("pressed", Callable(self, "_on_copy_grader_to_clipboard_button_pressed"))
+	if not _use_button.is_connected("toggled", Callable(self, "_on_use_this_grader_button_toggled")):
+		_use_button.connect("toggled", Callable(self, "_on_use_this_grader_button_toggled"))
+	if not _copy_button.is_connected("pressed", Callable(self, "_on_copy_grader_to_clipboard_button_pressed")):
+		_copy_button.connect("pressed", Callable(self, "_on_copy_grader_to_clipboard_button_pressed"))
 	_on_grader_type_option_button_item_selected($GraderHeaderMarginContainer/LabelAndChoiceBoxContainer/GraderTypeOptionButton.selected)
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 func _on_grader_type_option_button_item_selected(index: int) -> void:
 	for child in $ActualGraderContainer/GraderMarginContainer.get_children():
@@ -42,6 +65,8 @@ func _on_grader_type_option_button_item_selected(index: int) -> void:
 	if index >= 0 and index < GRADER_SCENES.size():
 		var inst = GRADER_SCENES[index].instantiate()
 		$ActualGraderContainer/GraderMarginContainer.add_child(inst)
+		if inst.has_method("set_compact_layout"):
+			inst.set_compact_layout(_compact_layout_enabled)
 		_connect_gui_input_signals(inst)
 
 func _on_delete_button_pressed() -> void:
@@ -259,3 +284,4 @@ func from_var(data):
 		grader_gui = $ActualGraderContainer/GraderMarginContainer.get_child(0)
 	if grader_gui and grader_gui.has_method("from_var"):
 		grader_gui.from_var(grader_data)
+	_apply_compact_layout_to_current_grader()

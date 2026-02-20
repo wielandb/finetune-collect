@@ -3,6 +3,18 @@ extends ScrollContainer
 @onready var MESSAGE_SCENE = preload("res://scenes/message.tscn")
 # Called when the node enters the scene tree for the first time.
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
+var _compact_layout_enabled = false
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	$MessagesListContainer/AddButtonsContainer.vertical = enabled
+	for child in $MessagesListContainer.get_children():
+		if child.is_in_group("message") and child.has_method("set_compact_layout"):
+			child.set_compact_layout(enabled)
+
+func _apply_compact_layout_to_message(message_instance) -> void:
+	if message_instance != null and message_instance.has_method("set_compact_layout"):
+		message_instance.set_compact_layout(_compact_layout_enabled)
 
 func to_var():
 	var me = []
@@ -19,6 +31,7 @@ func from_var(data):
 		#var addButton = $MessagesListContainer/AddMessageButton
 		var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 		$MessagesListContainer.add_child(MessageInstance)
+		_apply_compact_layout_to_message(MessageInstance)
 		MessageInstance.from_var(m)
 		#$MessagesListContainer.move_child(addButton, -1)
 		$MessagesListContainer.move_child(buttonsContainer, -1)	
@@ -30,6 +43,11 @@ func _ready() -> void:
 	openai.connect("models_received", models_received)
 	openai.get_models()
 	get_viewport().files_dropped.connect(on_dropped_files)
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -61,6 +79,7 @@ func _on_add_message_button_pressed() -> void:
 	var last_message_role = get_last_message_role()
 	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
+	_apply_compact_layout_to_message(MessageInstance)
 	#$MessagesListContainer.move_child(addAIButton, -1)
 	#$MessagesListContainer.move_child(addButton, -1)
 	$MessagesListContainer.move_child(buttonsContainer, -1)
@@ -129,6 +148,7 @@ func gpt_response_completed(message: Message, response:Dictionary):
 	#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
 	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
+	_apply_compact_layout_to_message(MessageInstance)
 	$MessagesListContainer.move_child(buttonsContainer, -1)	
 	# Populate the message with the received data
 	## We need to check if its a text response or a tool call response
@@ -373,6 +393,7 @@ func on_dropped_files(files):
 			#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
 			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 			$MessagesListContainer.add_child(MessageInstance)
+			_apply_compact_layout_to_message(MessageInstance)
 			#$MessagesListContainer.move_child(addAIButton, -1)
 			#$MessagesListContainer.move_child(addButton, -1)
 			$MessagesListContainer.move_child(buttonsContainer, -1)	
@@ -408,6 +429,7 @@ func add_message(message_obj):
 			#var addAIButton = $MessagesListContainer/AddMessageCompletionButton
 			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 			$MessagesListContainer.add_child(MessageInstance)
+			_apply_compact_layout_to_message(MessageInstance)
 			#$MessagesListContainer.move_child(addAIButton, -1)
 			#$MessagesListContainer.move_child(addButton, -1)
 			$MessagesListContainer.move_child(buttonsContainer, -1)	

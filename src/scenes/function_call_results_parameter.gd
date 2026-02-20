@@ -1,4 +1,7 @@
-extends HBoxContainer
+extends BoxContainer
+
+func set_compact_layout(enabled: bool) -> void:
+	vertical = enabled
 
 func to_var():
 	var me = {}

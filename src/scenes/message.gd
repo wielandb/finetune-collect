@@ -1,4 +1,4 @@
-extends HBoxContainer
+extends BoxContainer
 const RESULT_PARAMETERS_SCENE = preload("res://scenes/function_call_results_parameter.tscn")
 const FUNCTION_USE_PARAMETERS_SCENE = preload("res://scenes/function_use_parameter.tscn")
 @onready var schema_edit = $SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit
@@ -17,6 +17,8 @@ const JsonSchemaValidator := preload("res://json_schema_validator.gd")
 const SchemaFormController = preload("res://scenes/schema_runtime/schema_form_controller.gd")
 const SchemaRefResolver = preload("res://scenes/schema_runtime/schema_ref_resolver.gd")
 const SchemaRemoteRefLoader = preload("res://scenes/schema_runtime/schema_remote_ref_loader.gd")
+const DESKTOP_MESSAGE_TITLE_FONT_SIZE = 36
+const COMPACT_MESSAGE_TITLE_FONT_SIZE = 24
 var _schema_validate_timer: Timer
 var _schema_form_controller = SchemaFormController.new()
 var _schema_sync_guard = false
@@ -25,6 +27,7 @@ var _schema_resolve_serial = 0
 var _schema_is_loading_external = false
 var _schema_loading_serial = 0
 var _schema_runtime_cache = {}
+var _compact_layout_enabled = false
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -66,6 +69,71 @@ func _get_fine_tune_node():
 	if tree == null:
 		return null
 	return tree.root.get_node_or_null("FineTune")
+
+func _set_box_vertical(node_path: String, enabled: bool) -> void:
+	var box = get_node_or_null(node_path)
+	if box is BoxContainer:
+		box.vertical = enabled
+
+func _set_title_font_sizes(font_size: int) -> void:
+	var title_paths = [
+		"TextMessageContainer/TextnachrichtLabel",
+		"ImageMessageContainer/BildNachrichtLabel",
+		"FileMessageContainer/BildNachrichtLabel",
+		"AudioMessageContainer/BildNachrichtLabel",
+		"FunctionMessageContainer/Label",
+		"MetaMessageContainer/ConversationNameLabel",
+		"SchemaMessageContainer/SchemaMessageLabel"
+	]
+	for title_path in title_paths:
+		var title_label = get_node_or_null(title_path)
+		if title_label is Label:
+			title_label.add_theme_font_size_override("font_size", font_size)
+
+func _configure_message_settings_row(enabled: bool) -> void:
+	var role_button = $MessageSettingsContainer/Role
+	var type_button = $MessageSettingsContainer/MessageType
+	var delete_button = $MessageSettingsContainer/DeleteButton
+	var user_name_edit = $MessageSettingsContainer/UserNameEdit
+	if enabled:
+		role_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		type_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		user_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	else:
+		role_button.size_flags_horizontal = 0
+		type_button.size_flags_horizontal = 0
+		delete_button.size_flags_horizontal = 0
+		user_name_edit.size_flags_horizontal = 0
+
+func _apply_compact_layout_to_nested_rows() -> void:
+	for child in $FunctionMessageContainer.get_children():
+		if child.has_method("set_compact_layout"):
+			child.set_compact_layout(_compact_layout_enabled)
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	vertical = enabled
+	_set_box_vertical("MessageSettingsContainer", not enabled)
+	_set_box_vertical("TextMessageContainer/DPOMessagesContainer", enabled)
+	_set_box_vertical("ImageMessageContainer/HBoxContainer", enabled)
+	_set_box_vertical("ImageMessageContainer/LoadButtonsContainer", enabled)
+	_set_box_vertical("FileMessageContainer/FileSelectorContainer", enabled)
+	_set_box_vertical("AudioMessageContainer/AudioMediaPlayerContainer", enabled)
+	_set_box_vertical("AudioMessageContainer/TranscriptionContainer", enabled)
+	_set_box_vertical("FunctionMessageContainer/preFunctionCallTextContainer", enabled)
+	_set_box_vertical("FunctionMessageContainer/function", enabled)
+	_set_box_vertical("MetaMessageContainer/ConversationNameContainer", enabled)
+	_set_box_vertical("MetaMessageContainer/ConversationReadyContainer", enabled)
+	_set_box_vertical("SchemaMessageContainer/HBoxContainer", enabled)
+	_set_box_vertical("SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer", enabled)
+	_set_box_vertical("SchemaMessageContainer/SchemaMessagePolling", enabled)
+	_configure_message_settings_row(enabled)
+	if enabled:
+		_set_title_font_sizes(COMPACT_MESSAGE_TITLE_FONT_SIZE)
+	else:
+		_set_title_font_sizes(DESKTOP_MESSAGE_TITLE_FONT_SIZE)
+	_apply_compact_layout_to_nested_rows()
 
 func to_var():
 	var me = {}
@@ -195,6 +263,8 @@ func from_var(data):
 		$FunctionMessageContainer.add_child(parameterInstance)
 		var parameterSectionLabelIx = $FunctionMessageContainer/ParamterSectionLabel.get_index()
 		$FunctionMessageContainer.move_child(parameterInstance, parameterSectionLabelIx)
+		if parameterInstance.has_method("set_compact_layout"):
+			parameterInstance.set_compact_layout(_compact_layout_enabled)
 		parameterInstance.from_var(d)
 	$FunctionMessageContainer/FunctionUseResultText.text = str(data.get("functionResults", ""))
 	$FunctionMessageContainer/preFunctionCallTextContainer/preFunctionCallTextEdit.text = str(data.get("functionUsePreText", ""))
@@ -426,6 +496,10 @@ func _ready() -> void:
 	var schema_hint = _schema_form_hint_label_node()
 	if schema_hint != null:
 		schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
@@ -568,6 +642,8 @@ func _on_delete_button_pressed() -> void:
 func _on_add_result_button_pressed() -> void:
 	var newResultParameter = RESULT_PARAMETERS_SCENE.instantiate()
 	$FunctionMessageContainer.add_child(newResultParameter)
+	if newResultParameter.has_method("set_compact_layout"):
+		newResultParameter.set_compact_layout(_compact_layout_enabled)
 	var addResultButton = $FunctionMessageContainer/AddResultButton
 	$FunctionMessageContainer.move_child(addResultButton, -1)
 
@@ -650,6 +726,8 @@ func _on_function_name_choice_button_item_selected(index: int) -> void:
 		print("Adding " + p)
 		var newScene = FUNCTION_USE_PARAMETERS_SCENE.instantiate()
 		$FunctionMessageContainer.add_child(newScene)
+		if newScene.has_method("set_compact_layout"):
+			newScene.set_compact_layout(_compact_layout_enabled)
 		newScene.get_node("ParameterName").text = p
 		$FunctionMessageContainer.move_child(newScene, pix + 1)
 		# Falls der Paramter required ist, checkbox auf ja setzen und disablen

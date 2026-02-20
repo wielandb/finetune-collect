@@ -1,4 +1,4 @@
-extends HBoxContainer
+extends BoxContainer
 
 func _ready():
 	pass

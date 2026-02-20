@@ -2,8 +2,26 @@ extends ScrollContainer
 
 @onready var GRADER_SCENE = preload("res://scenes/graders/grader_container.tscn")
 @onready var COPYABLE_SCENE = preload("res://scenes/graders/copy_able_data_container.tscn")
+const DESKTOP_SAMPLE_COLUMNS = 2
+const COMPACT_SAMPLE_COLUMNS = 1
+var _compact_layout_enabled = false
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	var sample_container = get_node_or_null("GradersListContainer/SampleItemsContainer")
+	if sample_container is GridContainer:
+		if enabled:
+			sample_container.columns = COMPACT_SAMPLE_COLUMNS
+		else:
+			sample_container.columns = DESKTOP_SAMPLE_COLUMNS
+	for child in $GradersListContainer.get_children():
+		if child.name in ["AddGraderButton", "SampleItemsContainer"]:
+			continue
+		if child.has_method("set_compact_layout"):
+			child.set_compact_layout(enabled)
 
 func _ready():
+	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	var container = $GradersListContainer/SampleItemsContainer
 	var item_edit = container.get_node("SampleItemTextEdit")
 	var model_edit = container.get_node("SampleModelOutputEdit")
@@ -12,6 +30,11 @@ func _ready():
 	var tab_container = get_parent().get_parent()
 	if tab_container and tab_container.has_signal("tab_changed"):
 		tab_container.connect("tab_changed", Callable(self, "_on_tab_changed"))
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 	update_from_last_message()
 	_update_copyable_data()
 
@@ -51,6 +74,8 @@ func update_from_last_message():
 func _on_add_grader_button_pressed() -> void:
 	var inst = GRADER_SCENE.instantiate()
 	$GradersListContainer.add_child(inst)
+	if inst.has_method("set_compact_layout"):
+		inst.set_compact_layout(_compact_layout_enabled)
 	$GradersListContainer.move_child($GradersListContainer/SampleItemsContainer, 0)
 	$GradersListContainer.move_child($GradersListContainer/AddGraderButton, 1)
 
@@ -73,6 +98,8 @@ func from_var(graders_data):
 		for g in graders_data:
 			var inst = GRADER_SCENE.instantiate()
 			$GradersListContainer.add_child(inst)
+			if inst.has_method("set_compact_layout"):
+				inst.set_compact_layout(_compact_layout_enabled)
 			if inst.has_method("from_var"):
 				inst.from_var(g)
 

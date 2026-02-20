@@ -44,7 +44,7 @@ layout_mode = 2
 layout_mode = 2
 text = "Add Message"
 
-[node name="NewLabelsContainer" type="HBoxContainer" parent="."]
+[node name="NewLabelsContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="NewLabelLabel" type="Label" parent="NewLabelsContainer"]
@@ -64,7 +64,7 @@ custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 allow_reselect = true
 
-[node name="LabelClickingHintContainer" type="HBoxContainer" parent="."]
+[node name="LabelClickingHintContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="LabelClickingHintPart1Label" type="Label" parent="LabelClickingHintContainer"]

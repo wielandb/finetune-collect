@@ -46,7 +46,7 @@ text = "GRADER_ADD_MESSAGE"
 [node name="ModelContainer" parent="." instance=ExtResource("3_f2a6w")]
 layout_mode = 2
 
-[node name="RangeContainer" type="HBoxContainer" parent="."]
+[node name="RangeContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="RangeLabel" type="Label" parent="RangeContainer"]
@@ -71,7 +71,7 @@ layout_mode = 2
 text = "1"
 placeholder_text = "1"
 
-[node name="SamplingParametersContainer" type="HBoxContainer" parent="."]
+[node name="SamplingParametersContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="SamplingParametersLabel" type="Label" parent="SamplingParametersContainer"]

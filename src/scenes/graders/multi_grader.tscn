@@ -18,7 +18,7 @@ script = ExtResource("1_mulgr")
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="AddGraderControls" type="HBoxContainer" parent="GradersContainer"]
+[node name="AddGraderControls" type="BoxContainer" parent="GradersContainer"]
 layout_mode = 2
 
 [node name="GraderTypeOptionButton" type="OptionButton" parent="GradersContainer/AddGraderControls"]
@@ -46,7 +46,7 @@ text = "GRADER_ADD_GRADER"
 layout_mode = 2
 theme_override_styles/separator = SubResource("StyleBoxLine_2g3k8")
 
-[node name="ScoreFormulaContainer" type="HBoxContainer" parent="."]
+[node name="ScoreFormulaContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="ScoreFormulaLabel" type="Label" parent="ScoreFormulaContainer"]
@@ -57,7 +57,7 @@ text = "GRADER_MULTIGRADER_SCORE_FORMULA_COLON"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ScoreFormulaHelperButtonsContainer" type="HBoxContainer" parent="."]
+[node name="ScoreFormulaHelperButtonsContainer" type="FlowContainer" parent="."]
 layout_mode = 2
 alignment = 1
 

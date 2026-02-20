@@ -3,6 +3,42 @@ extends ScrollContainer
 
 var default_schema_editor_url = "https://example.com/editor.php"
 var default_schema_validator_url = ""
+const DESKTOP_SETTINGS_TITLE_FONT_SIZE = 29
+const COMPACT_SETTINGS_TITLE_FONT_SIZE = 22
+var _compact_layout_enabled = false
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	var row_names = [
+		"HBoxContainer",
+		"MinimalImageHeightContainer",
+		"FineTuningTypeSettingContainer",
+		"RFTSplitConversationsSettingContainer",
+		"ExportImagesHowContainer",
+		"AlwaysIncludeFunctionsSettingContainer",
+		"ExportWhatConvoContainer",
+		"APIKeySettingContainer",
+		"ModelChoiceContainer",
+		"BatchCreatonContainer",
+		"FromClipboardJSONCreationContainer",
+		"TokenCountPathContainer",
+		"TokenCountWhenContainer",
+		"TokenCountModelChoiceContainer",
+		"ImageUplaodSettingContainer",
+		"ImageUploadServerURLContainer",
+		"ImageUploadServerKeyContainer",
+		"ImageUploadServerTestContainer",
+		"SchemaEditorURLContainer",
+		"SchemaValidatorURLContainer"
+	]
+	for row_name in row_names:
+		var row = get_node_or_null("VBoxContainer/" + row_name)
+		if row is BoxContainer:
+			row.vertical = enabled
+	if enabled:
+		$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextLabel.add_theme_font_size_override("font_size", COMPACT_SETTINGS_TITLE_FONT_SIZE)
+	else:
+		$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextLabel.add_theme_font_size_override("font_size", DESKTOP_SETTINGS_TITLE_FONT_SIZE)
 
 func to_var():
 	var me = {}
@@ -69,6 +105,7 @@ func from_var(me):
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	# Explain why some things are disabled
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
@@ -88,6 +125,11 @@ func _ready() -> void:
 			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.disabled = true
 			$VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
 			$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.disabled = true
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here

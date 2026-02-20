@@ -27,7 +27,7 @@
 [ext_resource type="Texture2D" uid="uid://b7noaeeiviiq5" path="res://icons/polling/reload-custom_34.png" id="20_g2wwg"]
 [ext_resource type="Texture2D" uid="uid://bf4l332x6f066" path="res://icons/polling/reload-custom_7.png" id="23_g66g3"]
 
-[node name="Message" type="HBoxContainer" groups=["message"]]
+[node name="Message" type="BoxContainer" groups=["message"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -35,8 +35,9 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_lafvt")
 
-[node name="MessageSettingsContainer" type="VBoxContainer" parent="."]
+[node name="MessageSettingsContainer" type="BoxContainer" parent="."]
 layout_mode = 2
+vertical = true
 
 [node name="Role" type="OptionButton" parent="MessageSettingsContainer"]
 layout_mode = 2
@@ -106,7 +107,7 @@ size_flags_vertical = 3
 wrap_mode = 1
 scroll_fit_content_height = true
 
-[node name="DPOMessagesContainer" type="HBoxContainer" parent="TextMessageContainer"]
+[node name="DPOMessagesContainer" type="BoxContainer" parent="TextMessageContainer"]
 visible = false
 layout_mode = 2
 size_flags_vertical = 3
@@ -163,7 +164,7 @@ stretch_mode = 5
 layout_mode = 2
 placeholder_text = "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 
-[node name="HBoxContainer" type="HBoxContainer" parent="ImageMessageContainer"]
+[node name="HBoxContainer" type="BoxContainer" parent="ImageMessageContainer"]
 layout_mode = 2
 
 [node name="ImageDetailLabel" type="Label" parent="ImageMessageContainer/HBoxContainer"]
@@ -197,7 +198,7 @@ file_mode = 0
 access = 2
 use_native_dialog = true
 
-[node name="LoadButtonsContainer" type="HBoxContainer" parent="ImageMessageContainer"]
+[node name="LoadButtonsContainer" type="BoxContainer" parent="ImageMessageContainer"]
 layout_mode = 2
 
 [node name="LoadImageButton" type="Button" parent="ImageMessageContainer/LoadButtonsContainer"]
@@ -229,7 +230,7 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_PDF_FILE_MESSAGE_TITLE"
 horizontal_alignment = 1
 
-[node name="FileSelectorContainer" type="HBoxContainer" parent="FileMessageContainer"]
+[node name="FileSelectorContainer" type="BoxContainer" parent="FileMessageContainer"]
 layout_mode = 2
 alignment = 1
 
@@ -285,7 +286,7 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_AUDIO_MESSAGE_TITLE"
 horizontal_alignment = 1
 
-[node name="AudioMediaPlayerContainer" type="HBoxContainer" parent="AudioMessageContainer"]
+[node name="AudioMediaPlayerContainer" type="BoxContainer" parent="AudioMessageContainer"]
 layout_mode = 2
 alignment = 1
 
@@ -311,7 +312,7 @@ layout_mode = 2
 icon = ExtResource("12_km1wu")
 icon_alignment = 1
 
-[node name="TranscriptionContainer" type="HBoxContainer" parent="AudioMessageContainer"]
+[node name="TranscriptionContainer" type="BoxContainer" parent="AudioMessageContainer"]
 layout_mode = 2
 
 [node name="RichTextLabel" type="RichTextLabel" parent="AudioMessageContainer/TranscriptionContainer"]
@@ -353,7 +354,7 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGE_USE_FUNCTION_TITLE"
 horizontal_alignment = 1
 
-[node name="preFunctionCallTextContainer" type="HBoxContainer" parent="FunctionMessageContainer"]
+[node name="preFunctionCallTextContainer" type="BoxContainer" parent="FunctionMessageContainer"]
 layout_mode = 2
 
 [node name="preFunctionCallTextLabel" type="Label" parent="FunctionMessageContainer/preFunctionCallTextContainer"]
@@ -364,7 +365,7 @@ text = "MESSAGE_FUNCTION_PRETEXT_LABEL"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="function" type="HBoxContainer" parent="FunctionMessageContainer"]
+[node name="function" type="BoxContainer" parent="FunctionMessageContainer"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="FunctionMessageContainer/function"]
@@ -418,7 +419,7 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_TEXT_MESSAGE_TITLE"
 horizontal_alignment = 1
 
-[node name="ConversationNameContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+[node name="ConversationNameContainer" type="BoxContainer" parent="MetaMessageContainer"]
 visible = false
 layout_mode = 2
 
@@ -444,7 +445,7 @@ custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 placeholder_text = "META_MESSAGE_NOTES_PLACEHOLDER"
 
-[node name="ConversationReadyContainer" type="HBoxContainer" parent="MetaMessageContainer"]
+[node name="ConversationReadyContainer" type="BoxContainer" parent="MetaMessageContainer"]
 visible = false
 layout_mode = 2
 
@@ -566,7 +567,7 @@ theme_override_font_sizes/font_size = 36
 text = "MESSAGES_JSON_SCHEMA_MESSAGE_TITLE"
 horizontal_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="SchemaMessageContainer"]
+[node name="HBoxContainer" type="BoxContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
 
 [node name="Spinner" parent="SchemaMessageContainer/HBoxContainer" instance=ExtResource("19_g66g3")]
@@ -586,7 +587,7 @@ size_flags_horizontal = 3
 
 [node name="SchemaValidationHTTPRequest" type="HTTPRequest" parent="SchemaMessageContainer/HBoxContainer"]
 
-[node name="SchemaEditButtonsContainer" type="HBoxContainer" parent="SchemaMessageContainer/HBoxContainer"]
+[node name="SchemaEditButtonsContainer" type="BoxContainer" parent="SchemaMessageContainer/HBoxContainer"]
 layout_mode = 2
 script = ExtResource("12_wnabm")
 
@@ -605,7 +606,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 3
 
-[node name="SchemaMessagePolling" type="HBoxContainer" parent="SchemaMessageContainer"]
+[node name="SchemaMessagePolling" type="BoxContainer" parent="SchemaMessageContainer"]
 visible = false
 layout_mode = 2
 alignment = 1

@@ -1,14 +1,17 @@
-extends HBoxContainer
+extends BoxContainer
 
 const SchemaAlignOpenAI = preload("res://scenes/schemas/schema_align_openai.gd")
 const JsonSchemaValidator = preload("res://json_schema_validator.gd")
 const SchemaRefResolver = preload("res://scenes/schema_runtime/schema_ref_resolver.gd")
 const SchemaRemoteRefLoader = preload("res://scenes/schema_runtime/schema_remote_ref_loader.gd")
+const DESKTOP_SCHEMA_TITLE_FONT_SIZE = 20
+const COMPACT_SCHEMA_TITLE_FONT_SIZE = 18
 
 var _updating_from_name = false
 var _last_resolved_schema = null
 var _last_external_errors = []
 var _validation_serial = 0
+var _compact_layout_enabled = false
 
 const VALID_ICON_OK = "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD = "res://icons/code-json-check-negative.png"
@@ -27,6 +30,29 @@ func _request_schemas_refresh() -> void:
 	if ft_node != null and ft_node.has_method("update_schemas_internal"):
 		ft_node.update_schemas_internal()
 
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	vertical = enabled
+	$MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer.vertical = enabled
+	$MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2.vertical = enabled
+	$MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer.vertical = enabled
+	if enabled:
+		$MarginContainer/JSONSchemaControlsContainer/TitleLabel.add_theme_font_size_override("font_size", COMPACT_SCHEMA_TITLE_FONT_SIZE)
+		$MarginContainer.add_theme_constant_override("margin_left", 8)
+		$MarginContainer.add_theme_constant_override("margin_top", 8)
+		$MarginContainer.add_theme_constant_override("margin_right", 8)
+		$MarginContainer2.add_theme_constant_override("margin_top", 8)
+		$MarginContainer2.add_theme_constant_override("margin_right", 8)
+		$MarginContainer2.add_theme_constant_override("margin_bottom", 8)
+	else:
+		$MarginContainer/JSONSchemaControlsContainer/TitleLabel.add_theme_font_size_override("font_size", DESKTOP_SCHEMA_TITLE_FONT_SIZE)
+		$MarginContainer.add_theme_constant_override("margin_left", 20)
+		$MarginContainer.add_theme_constant_override("margin_top", 25)
+		$MarginContainer.add_theme_constant_override("margin_right", 15)
+		$MarginContainer2.add_theme_constant_override("margin_top", 45)
+		$MarginContainer2.add_theme_constant_override("margin_right", 40)
+		$MarginContainer2.add_theme_constant_override("margin_bottom", 25)
+
 func _ready() -> void:
 	var tab_bar = $MarginContainer2/SchemasTabContainer.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Edit JSON"))
@@ -38,6 +64,11 @@ func _ready() -> void:
 	_validate_timer.wait_time = 0.5
 	add_child(_validate_timer)
 	_validate_timer.connect("timeout", Callable(self, "_on_validate_timeout"))
+	var ft_node = _get_fine_tune_node()
+	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
+		set_compact_layout(ft_node.is_compact_layout_enabled())
+	else:
+		set_compact_layout(false)
 
 func _configure_error_label(label: Label) -> void:
 	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL

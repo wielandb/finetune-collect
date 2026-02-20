@@ -1,5 +1,9 @@
 extends HBoxContainer
 
+signal compact_layout_changed(enabled: bool)
+
+const COMPACT_LAYOUT_MAX_WIDTH = 720
+
 var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
@@ -21,6 +25,10 @@ const LAST_PROJECT_PATH_FILE := "user://last_project.txt"
 const LAST_PROJECT_DATA_FILE := "user://last_project_data.json"
 
 var CURRENT_EDITED_CONVO_IX = "FtC1"
+var _compact_layout_enabled = false
+var _desktop_sidebar_collapsed = false
+var _compact_sidebar_visible = false
+var _schemas_list_default_min_size = Vector2(0, 0)
 
 var file_access_web = FileAccessWeb.new()
 var EXPORT_BTN_ORIG_TEXT = ""
@@ -102,6 +110,61 @@ func load_last_project_on_start() -> void:
 	elif OS.get_name() == "Web":
 		load_last_project_data()
 
+func is_compact_layout_enabled() -> bool:
+	return _compact_layout_enabled
+
+func _compute_should_use_compact_layout() -> bool:
+	var viewport_size = get_viewport_rect().size
+	return int(viewport_size.x) <= COMPACT_LAYOUT_MAX_WIDTH and viewport_size.y > viewport_size.x
+
+func _set_sidebar_and_main_visibility(sidebar_visible: bool, collapsed_menu_visible: bool, conversation_visible: bool) -> void:
+	$VBoxContainer.visible = sidebar_visible
+	$CollapsedMenu.visible = collapsed_menu_visible
+	$Conversation.visible = conversation_visible
+
+func _apply_desktop_sidebar_state() -> void:
+	if _desktop_sidebar_collapsed:
+		_set_sidebar_and_main_visibility(false, true, true)
+	else:
+		_set_sidebar_and_main_visibility(true, false, true)
+
+func _apply_compact_sidebar_state() -> void:
+	if _compact_sidebar_visible:
+		_set_sidebar_and_main_visibility(true, false, false)
+	else:
+		_set_sidebar_and_main_visibility(false, true, true)
+
+func _apply_compact_layout_to_node(node: Node) -> void:
+	if node != self and node.has_method("set_compact_layout"):
+		node.call("set_compact_layout", _compact_layout_enabled)
+	for child in node.get_children():
+		_apply_compact_layout_to_node(child)
+
+func _apply_compact_layout_to_ui() -> void:
+	_apply_compact_layout_to_node(self)
+
+func _apply_compact_layout_state(force_mobile_main: bool = false) -> void:
+	var should_enable_compact = _compute_should_use_compact_layout()
+	if _compact_layout_enabled == should_enable_compact and not force_mobile_main:
+		return
+	var previous_state = _compact_layout_enabled
+	_compact_layout_enabled = should_enable_compact
+	if _compact_layout_enabled:
+		if force_mobile_main or not previous_state:
+			_compact_sidebar_visible = false
+		_apply_compact_sidebar_state()
+		if $Conversation/Schemas/SchemasList != null:
+			$Conversation/Schemas/SchemasList.custom_minimum_size.x = 0
+	else:
+		_apply_desktop_sidebar_state()
+		if $Conversation/Schemas/SchemasList != null:
+			$Conversation/Schemas/SchemasList.custom_minimum_size.x = _schemas_list_default_min_size.x
+	compact_layout_changed.emit(_compact_layout_enabled)
+	_apply_compact_layout_to_ui()
+
+func _on_viewport_size_changed() -> void:
+	_apply_compact_layout_state(false)
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_on_button_pressed()
@@ -120,6 +183,10 @@ func _ready() -> void:
 	tab_bar.set_tab_title(2, tr("Settings"))
 	$Exporter.export_progress.connect(_on_export_progress)
 	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
+	_schemas_list_default_min_size = $Conversation/Schemas/SchemasList.custom_minimum_size
+	if not get_viewport().is_connected("size_changed", Callable(self, "_on_viewport_size_changed")):
+		get_viewport().connect("size_changed", Callable(self, "_on_viewport_size_changed"))
+	_apply_compact_layout_state(true)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -661,12 +728,20 @@ func _on_conversations_list_gui_input(event: InputEvent) -> void:
 					
 
 func _on_collapse_burger_btn_pressed() -> void:
-	$VBoxContainer.visible = false
-	$CollapsedMenu.visible = true
+	if _compact_layout_enabled:
+		_compact_sidebar_visible = false
+		_apply_compact_sidebar_state()
+		return
+	_desktop_sidebar_collapsed = true
+	_apply_desktop_sidebar_state()
 
 func _on_expand_burger_btn_pressed() -> void:
-	$VBoxContainer.visible = true
-	$CollapsedMenu.visible = false
+	if _compact_layout_enabled:
+		_compact_sidebar_visible = true
+		_apply_compact_sidebar_state()
+		return
+	_desktop_sidebar_collapsed = false
+	_apply_desktop_sidebar_state()
 
 func create_jsonl_data_for_file():
 	var EFINETUNEDATA = {} # EFINETUNEDATA -> ExportFinetuneData (so that we don't remove anything from the save file on export)
@@ -900,6 +975,8 @@ func _create_ft_function_call_msg(function_name: String, arguments_dict: Diction
 					}
 					var func_scene = load("res://scenes/available_function.tscn")
 					var func_instance = func_scene.instantiate()
+					if func_instance.has_method("set_compact_layout"):
+						func_instance.set_compact_layout(_compact_layout_enabled)
 					func_instance.from_var(new_func_def)
 					var list_container = $Conversation/Functions/FunctionsList/FunctionsListContainer
 					list_container.add_child(func_instance)

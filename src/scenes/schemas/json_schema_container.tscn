@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c1elx3oj6r7fu" path="res://icons/trashcan_small.png" id="2_dtbvj"]
 [ext_resource type="Texture2D" uid="uid://bc884138utehs" path="res://icons/polling/reload-custom_18.png" id="3_4g7f0"]
 
-[node name="JSONSchemaContainer" type="HBoxContainer"]
+[node name="JSONSchemaContainer" type="BoxContainer"]
 custom_minimum_size = Vector2(0, 350)
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,7 +33,7 @@ theme_override_font_sizes/font_size = 20
 text = "JSON"
 horizontal_alignment = 1
 
-[node name="ValidatedSchemaContainer" type="HBoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="ValidatedSchemaContainer" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
 layout_mode = 2
 
 [node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/ValidatedSchemaContainer"]
@@ -62,7 +62,7 @@ text = "Schema needs a name!"
 horizontal_alignment = 0
 autowrap_mode = 1
 
-[node name="OAIValidatedSchemaContainer2" type="HBoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="OAIValidatedSchemaContainer2" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
 layout_mode = 2
 
 [node name="SchemaKindLabel" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/OAIValidatedSchemaContainer2"]
@@ -91,7 +91,7 @@ text = "Schema needs a name!"
 horizontal_alignment = 0
 autowrap_mode = 1
 
-[node name="SchemaNameContainer" type="HBoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
+[node name="SchemaNameContainer" type="BoxContainer" parent="MarginContainer/JSONSchemaControlsContainer"]
 layout_mode = 2
 
 [node name="SchemaNameLabelContainer" type="Label" parent="MarginContainer/JSONSchemaControlsContainer/SchemaNameContainer"]

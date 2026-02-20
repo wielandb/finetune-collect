@@ -20,7 +20,7 @@ theme_override_font_sizes/font_size = 46
 text = "FUNCTIONS_FUNCTION_TITLE"
 horizontal_alignment = 1
 
-[node name="FunctionNameContainer" type="HBoxContainer" parent="."]
+[node name="FunctionNameContainer" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="FunctionNameLabel" type="Label" parent="FunctionNameContainer"]
@@ -31,7 +31,7 @@ text = "FUNCTIONS_FUNCTION_NAME"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="FunctionDescriptionContainer2" type="HBoxContainer" parent="."]
+[node name="FunctionDescriptionContainer2" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="FunctionDescriptionLabel" type="Label" parent="FunctionDescriptionContainer2"]
@@ -52,7 +52,7 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "FUNCTIONS_ADD_FUNCTION_PARAMETER"
 
-[node name="FunctionExecutionSettings" type="HBoxContainer" parent="."]
+[node name="FunctionExecutionSettings" type="BoxContainer" parent="."]
 layout_mode = 2
 
 [node name="FunctionExecutionEnabled" type="CheckBox" parent="FunctionExecutionSettings"]
@@ -65,7 +65,7 @@ visible = false
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ExecutablePathContainer" type="HBoxContainer" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
+[node name="ExecutablePathContainer" type="BoxContainer" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
 layout_mode = 2
 
 [node name="ExecutablePathLabel" type="Label" parent="FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutablePathContainer"]
@@ -77,7 +77,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "python"
 
-[node name="ExecutionParametersContainer" type="HBoxContainer" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
+[node name="ExecutionParametersContainer" type="BoxContainer" parent="FunctionExecutionSettings/FunctionExecutionConfiguration"]
 layout_mode = 2
 
 [node name="ExecutionParametersLabel" type="Label" parent="FunctionExecutionSettings/FunctionExecutionConfiguration/ExecutionParametersContainer"]

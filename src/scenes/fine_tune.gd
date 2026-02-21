@@ -7,8 +7,12 @@ const MOBILE_LAYOUT_REFERENCE_WIDTH = 360.0
 const MOBILE_LAYOUT_COMFORT_MULTIPLIER = 1.3
 const MOBILE_LAYOUT_MIN_SCALE = 1.0
 const MOBILE_LAYOUT_MAX_SCALE = 4.0
-const SAVE_ACTION_SAVE = 0
-const SAVE_ACTION_SAVE_AS = 1
+const SAVE_ACTION_SAVE_LOCAL = 0
+const SAVE_ACTION_SAVE_LOCAL_AS = 1
+const SAVE_ACTION_SAVE_CLOUD = 2
+const SAVE_ACTION_SAVE_CLOUD_AS = 3
+const LOAD_ACTION_FROM_FILE = 0
+const LOAD_ACTION_FROM_CLOUD = 1
 const PROJECT_STORAGE_MODE_LOCAL = 0
 const PROJECT_STORAGE_MODE_CLOUD = 1
 const AUTO_SAVE_MODE_OFF = 0
@@ -57,6 +61,9 @@ const ACTION_KIND_NEW_FINE_TUNE = "new_fine_tune"
 const ACTION_KIND_LOAD_LOCAL_PATH = "load_local_path"
 const ACTION_KIND_LOAD_CLOUD = "load_cloud"
 const ACTION_KIND_LOAD_WEB_JSON = "load_web_json"
+const SAVE_BUTTON_DEFAULT_ICON = preload("res://icons/save.png")
+const SAVE_BUTTON_SUCCESS_ICON = preload("res://icons/content-save-check-custom.png")
+const SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS = 4.0
 
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 var _compact_layout_enabled = false
@@ -73,6 +80,10 @@ var _last_clean_project_snapshot_json = ""
 var _pending_destructive_action = {}
 var _save_dialog_for_unsaved_guard_active = false
 var _test_unsaved_choice_override = -1
+var _test_cloud_dialog_response_queue = []
+var _test_cloud_request_response_queue = []
+var _save_success_icon_feedback_id = 0
+var _save_success_icon_feedback_duration_seconds = SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS
 
 var file_access_web = FileAccessWeb.new()
 var EXPORT_BTN_ORIG_TEXT = ""
@@ -281,21 +292,27 @@ func _restore_from_legacy_last_project() -> bool:
 	var last_path = get_last_project_path()
 	if last_path != "" and FileAccess.file_exists(last_path):
 		if _load_project_from_local_path(last_path):
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
 			return true
 	if load_last_project_data():
+		_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
 		_mark_project_clean_from_current_state()
 		return true
 	return false
 
 # Attempt to load the previously opened project
 func load_last_project_on_start() -> void:
+	# Startup defaults should always be local/file unless cloud state is explicitly restored.
+	_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
 	var state = _load_last_project_state()
 	var source = str(state.get("source", LAST_PROJECT_SOURCE_NONE))
 	if source == LAST_PROJECT_SOURCE_LOCAL:
 		var local_path = str(state.get("path", "")).strip_edges()
 		if local_path != "" and _load_project_from_local_path(local_path):
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
 			return
 		if load_last_project_data():
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
 			_mark_project_clean_from_current_state()
 			return
 	elif source == LAST_PROJECT_SOURCE_CLOUD:
@@ -412,6 +429,172 @@ func _is_http_url(text: String) -> bool:
 func _set_test_unsaved_choice_override(choice: int) -> void:
 	_test_unsaved_choice_override = choice
 
+func _queue_test_cloud_dialog_response(response: Dictionary) -> void:
+	_test_cloud_dialog_response_queue.append(response.duplicate(true))
+
+func _queue_test_cloud_request_response(response: Dictionary) -> void:
+	_test_cloud_request_response_queue.append(response.duplicate(true))
+
+func _get_default_save_action() -> int:
+	if _is_cloud_storage_enabled():
+		return SAVE_ACTION_SAVE_CLOUD
+	return SAVE_ACTION_SAVE_LOCAL
+
+func _get_default_load_action() -> int:
+	if _is_cloud_storage_enabled():
+		return LOAD_ACTION_FROM_CLOUD
+	return LOAD_ACTION_FROM_FILE
+
+func _configure_action_option_button(option_button: OptionButton) -> void:
+	option_button.fit_to_longest_item = false
+	option_button.clip_text = true
+	option_button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+
+func _set_project_storage_mode(mode: int) -> void:
+	SETTINGS["projectStorageMode"] = mode
+	var settings_ui = $Conversation/Settings/ConversationSettings
+	var mode_button = settings_ui.get_node_or_null("VBoxContainer/ProjectStorageModeContainer/ProjectStorageModeOptionButton")
+	if mode_button is OptionButton:
+		mode_button.select(mode)
+	if settings_ui.has_method("_apply_project_storage_mode_ui"):
+		settings_ui.call("_apply_project_storage_mode_ui")
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+
+func _apply_cloud_target_settings(url: String, key: String, project_id: String) -> void:
+	var cloud_url = url.strip_edges()
+	var cloud_key = key.strip_edges()
+	var cloud_project_id = project_id.strip_edges()
+	SETTINGS["projectCloudURL"] = cloud_url
+	SETTINGS["projectCloudKey"] = cloud_key
+	SETTINGS["projectCloudName"] = cloud_project_id
+	var settings_ui = $Conversation/Settings/ConversationSettings
+	var cloud_url_edit = settings_ui.get_node_or_null("VBoxContainer/ProjectCloudURLContainer/ProjectCloudURLEdit")
+	if cloud_url_edit is LineEdit:
+		cloud_url_edit.text = cloud_url
+	var cloud_key_edit = settings_ui.get_node_or_null("VBoxContainer/ProjectCloudKeyContainer/ProjectCloudKeyEdit")
+	if cloud_key_edit is LineEdit:
+		cloud_key_edit.text = cloud_key
+	var cloud_name_edit = settings_ui.get_node_or_null("VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit")
+	if cloud_name_edit is LineEdit:
+		cloud_name_edit.text = cloud_project_id
+
+func _build_cloud_target_prefill() -> Dictionary:
+	return {
+		"url": str(SETTINGS.get("projectCloudURL", "")).strip_edges(),
+		"key": str(SETTINGS.get("projectCloudKey", "")).strip_edges(),
+		"project_id": str(SETTINGS.get("projectCloudName", "")).strip_edges()
+	}
+
+func _prepare_cloud_target_for_save(force_prompt: bool) -> bool:
+	var prefill = _build_cloud_target_prefill()
+	var should_prompt = force_prompt or str(prefill.get("project_id", "")) == ""
+	if not should_prompt:
+		return true
+	var response = await _request_cloud_target_dialog("save", prefill)
+	if not bool(response.get("confirmed", false)):
+		return false
+	_apply_cloud_target_settings(
+		str(response.get("url", "")),
+		str(response.get("key", "")),
+		str(response.get("project_id", ""))
+	)
+	return true
+
+func _prepare_cloud_target_for_load() -> bool:
+	var response = await _request_cloud_target_dialog("load", _build_cloud_target_prefill())
+	if not bool(response.get("confirmed", false)):
+		return false
+	_apply_cloud_target_settings(
+		str(response.get("url", "")),
+		str(response.get("key", "")),
+		str(response.get("project_id", ""))
+	)
+	return true
+
+func _request_cloud_target_dialog(context: String, prefill: Dictionary) -> Dictionary:
+	if _test_cloud_dialog_response_queue.size() > 0:
+		var queued = _test_cloud_dialog_response_queue.pop_front()
+		if typeof(queued) == TYPE_DICTIONARY:
+			return {
+				"confirmed": bool(queued.get("confirmed", false)),
+				"url": str(queued.get("url", prefill.get("url", ""))).strip_edges(),
+				"key": str(queued.get("key", prefill.get("key", ""))).strip_edges(),
+				"project_id": str(queued.get("project_id", prefill.get("project_id", ""))).strip_edges()
+			}
+	if DisplayServer.get_name().to_lower() == "headless":
+		return {
+			"confirmed": false,
+			"url": str(prefill.get("url", "")).strip_edges(),
+			"key": str(prefill.get("key", "")).strip_edges(),
+			"project_id": str(prefill.get("project_id", "")).strip_edges()
+		}
+	var dialog = ConfirmationDialog.new()
+	var is_load_dialog = context == "load"
+	if is_load_dialog:
+		dialog.title = tr("FINETUNE_CLOUD_DIALOG_TITLE_LOAD")
+		dialog.get_ok_button().text = tr("FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD")
+	else:
+		dialog.title = tr("FINETUNE_CLOUD_DIALOG_TITLE_SAVE")
+		dialog.get_ok_button().text = tr("FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE")
+	dialog.get_cancel_button().text = tr("GENERIC_CANCEL")
+	add_child(dialog)
+	var form = GridContainer.new()
+	form.columns = 2
+	form.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	dialog.add_child(form)
+	var url_label = Label.new()
+	url_label.text = tr("FINETUNE_CLOUD_DIALOG_URL")
+	form.add_child(url_label)
+	var url_edit = LineEdit.new()
+	url_edit.text = str(prefill.get("url", ""))
+	url_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	form.add_child(url_edit)
+	var key_label = Label.new()
+	key_label.text = tr("FINETUNE_CLOUD_DIALOG_API_KEY")
+	form.add_child(key_label)
+	var key_edit = LineEdit.new()
+	key_edit.text = str(prefill.get("key", ""))
+	key_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	key_edit.secret = true
+	form.add_child(key_edit)
+	var project_id_label = Label.new()
+	project_id_label.text = tr("FINETUNE_CLOUD_DIALOG_PROJECT_ID")
+	form.add_child(project_id_label)
+	var project_id_edit = LineEdit.new()
+	project_id_edit.text = str(prefill.get("project_id", ""))
+	project_id_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	form.add_child(project_id_edit)
+	var state = {
+		"done": false,
+		"confirmed": false
+	}
+	dialog.confirmed.connect(func() -> void:
+		state["done"] = true
+		state["confirmed"] = true
+	)
+	var on_cancel = func() -> void:
+		if bool(state.get("done", false)):
+			return
+		state["done"] = true
+	dialog.canceled.connect(on_cancel)
+	dialog.close_requested.connect(on_cancel)
+	dialog.popup_centered(Vector2i(700, 280))
+	while not bool(state.get("done", false)):
+		await get_tree().process_frame
+	var result = {
+		"confirmed": bool(state.get("confirmed", false)),
+		"url": str(prefill.get("url", "")).strip_edges(),
+		"key": str(prefill.get("key", "")).strip_edges(),
+		"project_id": str(prefill.get("project_id", "")).strip_edges()
+	}
+	if bool(state.get("confirmed", false)):
+		result["url"] = url_edit.text.strip_edges()
+		result["key"] = key_edit.text.strip_edges()
+		result["project_id"] = project_id_edit.text.strip_edges()
+	dialog.queue_free()
+	return result
+
 func request_load_project_from_path_with_unsaved_guard(path: String) -> void:
 	await _request_destructive_action({
 		"kind": ACTION_KIND_LOAD_LOCAL_PATH,
@@ -510,16 +693,20 @@ func _save_before_destructive_action() -> int:
 	var save_result = PRE_ACTION_SAVE_FAILED
 	if _is_cloud_storage_enabled():
 		if await _save_project_to_cloud():
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_CLOUD)
 			save_result = PRE_ACTION_SAVE_SUCCESS
 	else:
 		if RUNTIME["filepath"] != "":
-			if _save_local_for_platform(SAVE_ACTION_SAVE, false):
+			if _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL, false):
+				_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
 				save_result = PRE_ACTION_SAVE_SUCCESS
 		else:
 			_save_dialog_for_unsaved_guard_active = true
 			$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
 			save_result = PRE_ACTION_SAVE_WAITING_FOR_DIALOG
 	_save_in_progress = false
+	if save_result == PRE_ACTION_SAVE_SUCCESS:
+		_show_save_success_icon_feedback()
 	return save_result
 
 func _reset_project_to_defaults(clear_last_project_memory: bool = true) -> void:
@@ -553,7 +740,7 @@ func _reset_project_to_defaults(clear_last_project_memory: bool = true) -> void:
 
 func _sync_save_load_ui_for_storage_mode() -> void:
 	var save_btn = $VBoxContainer/SaveControls/SaveBtn
-	var load_btn = $VBoxContainer/LoadBtn
+	var load_btn = $VBoxContainer/LoadControls/LoadBtn
 	if _is_cloud_storage_enabled():
 		save_btn.text = tr("FINETUNE_SAVE_CLOUD")
 		load_btn.text = tr("FINETUNE_LOAD_CLOUD")
@@ -562,14 +749,39 @@ func _sync_save_load_ui_for_storage_mode() -> void:
 		load_btn.text = tr("FINETUNE_LOAD")
 	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
 	save_mode_btn.clear()
-	save_mode_btn.fit_to_longest_item = false
-	save_mode_btn.clip_text = true
-	save_mode_btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	save_mode_btn.add_item(tr("GENERIC_SAVE"), SAVE_ACTION_SAVE)
-	if not _is_cloud_storage_enabled():
-		save_mode_btn.add_item(tr("GENERIC_SAVE_AS"), SAVE_ACTION_SAVE_AS)
+	_configure_action_option_button(save_mode_btn)
+	save_mode_btn.add_item(tr("GENERIC_SAVE"), SAVE_ACTION_SAVE_LOCAL)
+	save_mode_btn.add_item(tr("GENERIC_SAVE_AS"), SAVE_ACTION_SAVE_LOCAL_AS)
+	save_mode_btn.add_item(tr("FINETUNE_SAVE_CLOUD"), SAVE_ACTION_SAVE_CLOUD)
+	save_mode_btn.add_item(tr("FINETUNE_SAVE_CLOUD_AS"), SAVE_ACTION_SAVE_CLOUD_AS)
 	save_mode_btn.select(-1)
 	save_mode_btn.disabled = false
+	var load_mode_btn = $VBoxContainer/LoadControls/LoadModeBtn
+	load_mode_btn.clear()
+	_configure_action_option_button(load_mode_btn)
+	load_mode_btn.add_item(tr("FINETUNE_LOAD_FROM_FILE"), LOAD_ACTION_FROM_FILE)
+	load_mode_btn.add_item(tr("FINETUNE_LOAD_FROM_CLOUD"), LOAD_ACTION_FROM_CLOUD)
+	load_mode_btn.select(-1)
+	load_mode_btn.disabled = false
+
+func _show_save_success_icon_feedback() -> void:
+	if not is_inside_tree():
+		return
+	var save_btn = get_node_or_null("VBoxContainer/SaveControls/SaveBtn")
+	if not (save_btn is Button):
+		return
+	_save_success_icon_feedback_id += 1
+	var current_feedback_id = _save_success_icon_feedback_id
+	save_btn.icon = SAVE_BUTTON_SUCCESS_ICON
+	var wait_duration = float(_save_success_icon_feedback_duration_seconds)
+	if wait_duration < 0.01:
+		wait_duration = 0.01
+	await get_tree().create_timer(wait_duration).timeout
+	if not is_inside_tree():
+		return
+	if current_feedback_id != _save_success_icon_feedback_id:
+		return
+	save_btn.icon = SAVE_BUTTON_DEFAULT_ICON
 
 func _setup_save_mode_option_button() -> void:
 	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
@@ -577,11 +789,22 @@ func _setup_save_mode_option_button() -> void:
 		save_mode_btn.item_selected.connect(_on_save_mode_btn_item_selected)
 	_sync_save_load_ui_for_storage_mode()
 
+func _setup_load_mode_option_button() -> void:
+	var load_mode_btn = $VBoxContainer/LoadControls/LoadModeBtn
+	if not load_mode_btn.is_connected("item_selected", Callable(self, "_on_load_mode_btn_item_selected")):
+		load_mode_btn.item_selected.connect(_on_load_mode_btn_item_selected)
+
 func _on_save_mode_btn_item_selected(index: int) -> void:
 	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
 	var selected_action = save_mode_btn.get_item_id(index)
 	await _run_selected_save_action(selected_action)
 	save_mode_btn.select(-1)
+
+func _on_load_mode_btn_item_selected(index: int) -> void:
+	var load_mode_btn = $VBoxContainer/LoadControls/LoadModeBtn
+	var selected_action = load_mode_btn.get_item_id(index)
+	await _run_selected_load_action(selected_action)
+	load_mode_btn.select(-1)
 
 func _collect_current_state_for_save() -> void:
 	save_current_conversation()
@@ -593,7 +816,7 @@ func _collect_current_state_for_save() -> void:
 func _save_local_for_platform(selected_action: int, allow_save_as_dialog: bool) -> bool:
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			if selected_action == SAVE_ACTION_SAVE_AS:
+			if selected_action == SAVE_ACTION_SAVE_LOCAL_AS:
 				if allow_save_as_dialog:
 					$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
 				return false
@@ -617,6 +840,10 @@ func _save_local_for_platform(selected_action: int, allow_save_as_dialog: bool) 
 	return false
 
 func _cloud_request(action: String, payload: Dictionary) -> Dictionary:
+	if _test_cloud_request_response_queue.size() > 0:
+		var queued = _test_cloud_request_response_queue.pop_front()
+		if typeof(queued) == TYPE_DICTIONARY:
+			return queued.duplicate(true)
 	var cloud_url = str(SETTINGS.get("projectCloudURL", "")).strip_edges()
 	if cloud_url == "":
 		return {"ok": false, "error": "Missing projectCloudURL"}
@@ -738,13 +965,16 @@ func _run_autosave(trigger: String) -> void:
 	_autosave_in_progress = true
 	_save_in_progress = true
 	_collect_current_state_for_save()
+	var save_success = false
 	if _is_cloud_storage_enabled():
-		await _save_project_to_cloud()
+		save_success = await _save_project_to_cloud()
 	else:
 		if RUNTIME["filepath"] == "":
 			print("Autosave skipped (local mode without filepath).")
 		else:
-			_save_local_for_platform(SAVE_ACTION_SAVE, false)
+			save_success = _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL, false)
+	if save_success:
+		_show_save_success_icon_feedback()
 	_save_in_progress = false
 	_autosave_in_progress = false
 
@@ -757,12 +987,44 @@ func _run_selected_save_action(selected_action: int) -> bool:
 	_save_in_progress = true
 	_collect_current_state_for_save()
 	var save_success = false
-	if _is_cloud_storage_enabled():
-		save_success = await _save_project_to_cloud()
-	else:
-		save_success = _save_local_for_platform(selected_action, true)
+	match selected_action:
+		SAVE_ACTION_SAVE_LOCAL:
+			save_success = _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL, true)
+			if save_success:
+				_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+		SAVE_ACTION_SAVE_LOCAL_AS:
+			save_success = _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL_AS, true)
+		SAVE_ACTION_SAVE_CLOUD:
+			if await _prepare_cloud_target_for_save(false):
+				save_success = await _save_project_to_cloud()
+				if save_success:
+					_set_project_storage_mode(PROJECT_STORAGE_MODE_CLOUD)
+		SAVE_ACTION_SAVE_CLOUD_AS:
+			if await _prepare_cloud_target_for_save(true):
+				save_success = await _save_project_to_cloud()
+				if save_success:
+					_set_project_storage_mode(PROJECT_STORAGE_MODE_CLOUD)
 	_save_in_progress = false
+	if save_success:
+		_show_save_success_icon_feedback()
 	return save_success
+
+func _run_selected_load_action(selected_action: int) -> bool:
+	update_settings_internal()
+	match selected_action:
+		LOAD_ACTION_FROM_CLOUD:
+			if not await _prepare_cloud_target_for_load():
+				return false
+			await _request_destructive_action({"kind": ACTION_KIND_LOAD_CLOUD})
+			return true
+		LOAD_ACTION_FROM_FILE:
+			match OS.get_name():
+				"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+					$VBoxContainer/LoadControls/LoadBtn/FileDialog.visible = true
+				"Web":
+					file_access_web.open(".json")
+			return true
+	return false
 
 func _save_to_current_path() -> bool:
 	if RUNTIME["filepath"] == "":
@@ -792,6 +1054,7 @@ func _ready() -> void:
 	_default_settings_template = SETTINGS.duplicate(true)
 	await load_last_project_on_start()
 	_setup_save_mode_option_button()
+	_setup_load_mode_option_button()
 	_configure_autosave()
 	if _last_clean_project_snapshot_json == "":
 		_mark_project_clean_from_current_state()
@@ -812,7 +1075,7 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if Input.is_action_just_released("save"):
-		_run_selected_save_action(SAVE_ACTION_SAVE)
+		_run_selected_save_action(_get_default_save_action())
 	if Input.is_action_just_released("load"):
 		_on_load_btn_pressed()
 	if Input.is_action_just_released("ui_paste"):
@@ -830,7 +1093,7 @@ func _process(delta: float) -> void:
 
 
 func _on_save_btn_pressed() -> void:
-	await _run_selected_save_action(SAVE_ACTION_SAVE)
+	await _run_selected_save_action(_get_default_save_action())
 
 func _on_new_fine_tune_btn_pressed() -> void:
 	await _request_destructive_action({"kind": ACTION_KIND_NEW_FINE_TUNE})
@@ -936,15 +1199,7 @@ func save_current_conversation():
 	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = $Conversation/Messages/MessagesList.to_var()
 
 func _on_load_btn_pressed() -> void:
-	update_settings_internal()
-	if _is_cloud_storage_enabled():
-		await _request_destructive_action({"kind": ACTION_KIND_LOAD_CLOUD})
-		return
-	match OS.get_name():
-		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			$VBoxContainer/LoadBtn/FileDialog.visible = true
-		"Web":
-			file_access_web.open(".json")
+	await _run_selected_load_action(_get_default_load_action())
 
 func _on_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
 	# A finetune project file was loaded via web
@@ -1721,17 +1976,6 @@ func load_from_appropriate_from_path(path):
 
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
-	if _is_cloud_storage_enabled():
-		var cloud_saved = await _save_project_to_cloud()
-		if _save_dialog_for_unsaved_guard_active:
-			_save_dialog_for_unsaved_guard_active = false
-			if cloud_saved and _pending_destructive_action.size() > 0:
-				var cloud_action = _pending_destructive_action.duplicate(true)
-				_pending_destructive_action = {}
-				await _execute_destructive_action(cloud_action)
-			else:
-				_pending_destructive_action = {}
-		return
 	save_current_conversation()
 	update_functions_internal()
 	update_settings_internal()
@@ -1750,6 +1994,8 @@ func _on_save_file_dialog_file_selected(path: String) -> void:
 		var snapshot = make_save_json_data()
 		_last_clean_project_snapshot_json = snapshot
 		_remember_last_open_local(path, snapshot)
+		_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+		_show_save_success_icon_feedback()
 	if _save_dialog_for_unsaved_guard_active:
 		_save_dialog_for_unsaved_guard_active = false
 		if save_success and _pending_destructive_action.size() > 0:
@@ -2352,4 +2598,3 @@ func get_sanitized_schema_by_name(name: String):
 		if s.get("name", "") == name:
 			return s.get("sanitizedSchema", null)
 	return null
-

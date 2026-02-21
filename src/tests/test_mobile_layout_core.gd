@@ -37,7 +37,9 @@ func _run() -> void:
 	get_root().add_child(scene)
 	await create_timer(0.15).timeout
 	var save_mode_btn = scene.get_node("VBoxContainer/SaveControls/SaveModeBtn")
+	var load_mode_btn = scene.get_node("VBoxContainer/LoadControls/LoadModeBtn")
 	_check(not save_mode_btn.fit_to_longest_item, "save mode option button should not expand to the longest translated entry")
+	_check(not load_mode_btn.fit_to_longest_item, "load mode option button should not expand to the longest translated entry")
 
 	await _set_window_size(360, 640)
 	_check(scene.is_compact_layout_enabled(), "compact layout should be enabled for 360x640")

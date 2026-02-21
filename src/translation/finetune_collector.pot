@@ -531,6 +531,14 @@ msgstr ""
 msgid "FINETUNE_LOAD"
 msgstr ""
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_FILE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_CLOUD"
+msgstr ""
+
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_SAVE"
 msgstr ""
@@ -739,6 +747,10 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_UPLOAD_STATUS_UPLOADING"
 msgstr ""
 
 #: scenes/message.tscn
@@ -1799,7 +1811,39 @@ msgid "FINETUNE_SAVE_CLOUD"
 msgstr ""
 
 #: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD_AS"
+msgstr ""
+
+#: scenes/fine_tune.gd
 msgid "FINETUNE_LOAD_CLOUD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_LOAD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_PROJECT_ID"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_URL"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_API_KEY"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD"
 msgstr ""
 
 #: scenes/fine_tune.gd
@@ -1880,6 +1924,54 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_TEST_BUTTON"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_IDLE"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_CHECKING"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_OK"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_EMPTY_RESPONSE"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_URL"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_KEY"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_REQUEST_START"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_NETWORK"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_HTTP"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_INVALID_JSON"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MESSAGE"
 msgstr ""
 
 #: scenes/graders/graders_list.tscn

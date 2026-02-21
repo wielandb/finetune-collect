@@ -6,6 +6,9 @@ var default_schema_validator_url = ""
 const DESKTOP_SETTINGS_TITLE_FONT_SIZE = 29
 const COMPACT_SETTINGS_TITLE_FONT_SIZE = 22
 const SETTINGS_ROW_OVERFLOW_BUFFER = 2.0
+const TEST_RESULT_ICON_SUCCESS = "res://icons/code-json-check-positive.png"
+const TEST_RESULT_ICON_ERROR = "res://icons/code-json-check-negative.png"
+const IMAGE_UPLOAD_TEST_PNG_B64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMDBC0DbS8AAAAASUVORK5CYII="
 const SETTINGS_ROW_NAMES = [
 	"HBoxContainer",
 	"MinimalImageHeightContainer",
@@ -29,6 +32,7 @@ const SETTINGS_ROW_NAMES = [
 	"ProjectCloudURLContainer",
 	"ProjectCloudKeyContainer",
 	"ProjectCloudNameContainer",
+	"ProjectCloudTestContainer",
 	"AutoSaveModeContainer",
 	"SchemaEditorURLContainer",
 	"SchemaValidatorURLContainer"
@@ -188,6 +192,7 @@ func _apply_project_storage_mode_ui() -> void:
 	$VBoxContainer/ProjectCloudURLContainer.visible = is_cloud_mode
 	$VBoxContainer/ProjectCloudKeyContainer.visible = is_cloud_mode
 	$VBoxContainer/ProjectCloudNameContainer.visible = is_cloud_mode
+	$VBoxContainer/ProjectCloudTestContainer.visible = is_cloud_mode
 	var image_upload_option = $VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton
 	if is_cloud_mode:
 		image_upload_option.select(1)
@@ -270,6 +275,8 @@ func from_var(me):
 	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected = me.get("countTokensModel", 0)
 	$VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton.selected = me.get("doRFTExportConversationSplits", 0)
 	_apply_project_storage_mode_ui()
+	_reset_image_upload_test_status()
+	_reset_project_cloud_test_status()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -300,6 +307,8 @@ func _ready() -> void:
 	else:
 		set_compact_layout(false)
 	_apply_project_storage_mode_ui()
+	_reset_image_upload_test_status()
+	_reset_project_cloud_test_status()
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
@@ -312,6 +321,48 @@ func _process(delta: float) -> void:
 
 func update_settings_global():
 	get_node("/root/FineTune").update_settings_internal()
+
+func _truncate_server_test_text(text: String, max_length: int = 220) -> String:
+	var stripped_text = text.strip_edges()
+	if stripped_text == "":
+		return tr("SETTINGS_SERVER_TEST_EMPTY_RESPONSE")
+	if stripped_text.length() <= max_length:
+		return stripped_text
+	return stripped_text.substr(0, max_length) + "..."
+
+func _is_upload_test_success_response(response_body: String) -> bool:
+	var txt = response_body.strip_edges()
+	if txt == "":
+		return false
+	if txt == "ok":
+		return true
+	if txt.begins_with("http://") or txt.begins_with("https://"):
+		return true
+	if txt.find("image=") != -1:
+		return true
+	var parsed = JSON.parse_string(txt)
+	if typeof(parsed) == TYPE_DICTIONARY and bool(parsed.get("ok", false)):
+		return true
+	return false
+
+func _set_server_test_pending(result_image: TextureRect, result_label: Label) -> void:
+	result_image.texture = null
+	result_label.text = tr("SETTINGS_SERVER_TEST_STATUS_CHECKING")
+
+func _set_server_test_result(result_image: TextureRect, result_label: Label, is_success: bool, message: String) -> void:
+	if is_success:
+		result_image.texture = load(TEST_RESULT_ICON_SUCCESS)
+	else:
+		result_image.texture = load(TEST_RESULT_ICON_ERROR)
+	result_label.text = message
+
+func _reset_image_upload_test_status() -> void:
+	$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = null
+	$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel.text = tr("SETTINGS_SERVER_TEST_STATUS_IDLE")
+
+func _reset_project_cloud_test_status() -> void:
+	$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg.texture = null
+	$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel.text = tr("SETTINGS_SERVER_TEST_STATUS_IDLE")
 	
 
 func _on_api_key_edit_text_changed(new_text: String) -> void:
@@ -392,9 +443,11 @@ func _on_always_include_functions_setting_option_button_item_selected(index: int
 	update_settings_global()
 
 func _on_image_upload_server_key_edit_text_changed(new_text: String) -> void:
+	_reset_image_upload_test_status()
 	update_settings_global()
 	
 func _on_image_upload_server_url_edit_text_changed(new_text: String) -> void:
+	_reset_image_upload_test_status()
 	update_settings_global()
 
 func _on_image_uplaod_setting_option_button_item_selected(index: int) -> void:
@@ -408,31 +461,161 @@ func _on_project_storage_mode_item_selected(index: int) -> void:
 	update_settings_global()
 
 func _on_project_cloud_url_edit_text_changed(new_text: String) -> void:
+	_reset_project_cloud_test_status()
 	update_settings_global()
 
 func _on_project_cloud_key_edit_text_changed(new_text: String) -> void:
+	_reset_project_cloud_test_status()
 	update_settings_global()
 
 func _on_project_cloud_name_edit_text_changed(new_text: String) -> void:
+	_reset_project_cloud_test_status()
 	update_settings_global()
 
 func _on_auto_save_mode_option_button_item_selected(index: int) -> void:
 	update_settings_global()
 
 func _on_image_upload_server_test_button_pressed() -> void:
-	var upload_url = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text
-	var upload_key = $VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text
-	if upload_url == "" or upload_key == "":
-		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-negative.png")
+	var upload_url = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text.strip_edges()
+	var upload_key = $VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text.strip_edges()
+	if upload_url == "":
+		_set_server_test_result(
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_MISSING_URL")
+		)
 		return
-	var test_url = upload_url + "?test=1&key=" + upload_key
-	var err = $ImageUploadServerTestRequest.request(test_url)
+	if upload_key == "":
+		_set_server_test_result(
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_MISSING_KEY")
+		)
+		return
+	_set_server_test_pending(
+		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel
+	)
+	var headers = PackedStringArray()
+	headers.append("Content-Type: application/json")
+	var payload = {
+		"key": upload_key,
+		"image": IMAGE_UPLOAD_TEST_PNG_B64,
+		"ext": "png"
+	}
+	var err = $ImageUploadServerTestRequest.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 	if err != OK:
-		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-negative.png")
+		_set_server_test_result(
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_REQUEST_START") % int(err)
+		)
 
 func _on_image_upload_server_test_request_completed(result, response_code, headers, body):
 	var txt = body.get_string_from_utf8().strip_edges()
-	if response_code == 200 and txt == "ok":
-		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-positive.png")
+	if int(result) != HTTPRequest.RESULT_SUCCESS:
+		_set_server_test_result(
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_NETWORK") % int(result)
+		)
+		return
+	if int(response_code) == 200 and _is_upload_test_success_response(txt):
+		_set_server_test_result(
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel,
+			true,
+			tr("SETTINGS_SERVER_TEST_STATUS_OK")
+		)
 	else:
-		$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg.texture = load("res://icons/code-json-check-negative.png")
+		_set_server_test_result(
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultImg,
+			$VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_HTTP") % [int(response_code), _truncate_server_test_text(txt)]
+		)
+
+func _on_project_cloud_test_button_pressed() -> void:
+	var cloud_url = $VBoxContainer/ProjectCloudURLContainer/ProjectCloudURLEdit.text.strip_edges()
+	var cloud_key = $VBoxContainer/ProjectCloudKeyContainer/ProjectCloudKeyEdit.text.strip_edges()
+	if cloud_url == "":
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_MISSING_URL")
+		)
+		return
+	if cloud_key == "":
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_MISSING_KEY")
+		)
+		return
+	_set_server_test_pending(
+		$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+		$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel
+	)
+	var headers = PackedStringArray()
+	headers.append("Content-Type: application/json")
+	var payload = {
+		"action": "test",
+		"key": cloud_key
+	}
+	var err = $ProjectCloudTestRequest.request(cloud_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
+	if err != OK:
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_REQUEST_START") % int(err)
+		)
+
+func _on_project_cloud_test_request_completed(result, response_code, headers, body) -> void:
+	var txt = body.get_string_from_utf8().strip_edges()
+	if int(result) != HTTPRequest.RESULT_SUCCESS:
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_NETWORK") % int(result)
+		)
+		return
+	if int(response_code) != 200:
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_HTTP") % [int(response_code), _truncate_server_test_text(txt)]
+		)
+		return
+	var parsed = JSON.parse_string(txt)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			false,
+			tr("SETTINGS_SERVER_TEST_ERROR_INVALID_JSON") % _truncate_server_test_text(txt)
+		)
+		return
+	if bool(parsed.get("ok", false)):
+		_set_server_test_result(
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+			$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+			true,
+			tr("SETTINGS_SERVER_TEST_STATUS_OK")
+		)
+		return
+	var error_text = str(parsed.get("error", "unknown error")).strip_edges()
+	_set_server_test_result(
+		$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultImg,
+		$VBoxContainer/ProjectCloudTestContainer/ProjectCloudTestResultLabel,
+		false,
+		tr("SETTINGS_SERVER_TEST_ERROR_MESSAGE") % error_text
+	)

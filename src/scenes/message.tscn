@@ -160,8 +160,18 @@ texture = ExtResource("9_2lsc3")
 expand_mode = 2
 stretch_mode = 5
 
-[node name="Base64ImageEdit" type="LineEdit" parent="ImageMessageContainer"]
+[node name="ImageInputRow" type="HBoxContainer" parent="ImageMessageContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="UploadSpinner" parent="ImageMessageContainer/ImageInputRow" instance=ExtResource("19_g66g3")]
+visible = false
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+
+[node name="Base64ImageEdit" type="LineEdit" parent="ImageMessageContainer/ImageInputRow"]
+layout_mode = 2
+size_flags_horizontal = 3
 placeholder_text = "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 
 [node name="HBoxContainer" type="BoxContainer" parent="ImageMessageContainer"]
@@ -704,7 +714,7 @@ layout_mode = 2
 [connection signal="pressed" from="MessageSettingsContainer/DeleteButton" to="." method="update_messages_global"]
 [connection signal="text_changed" from="TextMessageContainer/Message" to="." method="update_messages_global"]
 [connection signal="gui_input" from="ImageMessageContainer/TextureRect" to="." method="_on_texture_rect_gui_input"]
-[connection signal="text_changed" from="ImageMessageContainer/Base64ImageEdit" to="." method="_on_something_string_changed"]
+[connection signal="text_changed" from="ImageMessageContainer/ImageInputRow/Base64ImageEdit" to="." method="_on_something_string_changed"]
 [connection signal="file_selected" from="ImageMessageContainer/FileDialog" to="." method="_on_file_dialog_file_selected"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageButton" to="." method="_on_load_image_button_pressed"]
 [connection signal="pressed" from="ImageMessageContainer/LoadButtonsContainer/LoadImageURLButton" to="." method="_on_load_image_url_button_pressed"]
@@ -724,6 +734,8 @@ layout_mode = 2
 [connection signal="pressed" from="MetaMessageContainer/ShowMetaMessageToggleButton" to="." method="_on_show_meta_message_toggle_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/MetaMessageToggleCostEstimationButton" to="." method="_on_meta_message_toggle_cost_estimation_button_pressed"]
 [connection signal="pressed" from="MetaMessageContainer/Button3" to="." method="_do_token_calculation_update"]
+[connection signal="text_changed" from="MetaMessageContainer/ConversationNameContainer/ConversationNameEdit" to="." method="_on_conversation_name_edit_text_changed"]
+[connection signal="toggled" from="MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox" to="." method="_on_conversation_ready_check_box_toggled"]
 [connection signal="item_selected" from="SchemaMessageContainer/HBoxContainer/OptionButton" to="." method="_on_something_int_changed"]
 [connection signal="pressed" from="SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer/SchemaEditButton" to="." method="_on_schema_edit_button_pressed"]
 [connection signal="pressed" from="SchemaMessageContainer/SchemaMessagePolling/SchemaMessagePollingReopenBrowserBtn" to="." method="_on_schema_message_polling_reopen_browser_btn_pressed"]

@@ -132,6 +132,14 @@ msgstr "New fine-tune"
 msgid "FINETUNE_LOAD"
 msgstr "Load fine-tune file"
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_FILE"
+msgstr "Load from file"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_CLOUD"
+msgstr "Load from cloud"
+
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
@@ -495,6 +503,10 @@ msgstr "Add function parameter"
 #: scenes/message.tscn
 msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 msgstr "URL or Base64"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_UPLOAD_STATUS_UPLOADING"
+msgstr "Image upload in progress..."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_USER_NAMES"
@@ -1015,7 +1027,7 @@ msgstr "URL to image upload script"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
-msgstr "The URL to a hosted instance of the upload-image.php file from the scripts directory"
+msgstr "The URL to a hosted instance of the image-upload.php file from the scripts directory"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
@@ -1023,11 +1035,59 @@ msgstr "Secret key"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
-msgstr "The secret key you've set in the upload-image.php file"
+msgstr "The secret key you've set in the image-upload.php file"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
 msgstr "Test upload server"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_TEST_BUTTON"
+msgstr "Test cloud server"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_IDLE"
+msgstr "No test run yet."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_CHECKING"
+msgstr "Checking server..."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_OK"
+msgstr "Server reachable."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_EMPTY_RESPONSE"
+msgstr "<empty response>"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_URL"
+msgstr "Please enter a server URL."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_KEY"
+msgstr "Please enter a server key."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_REQUEST_START"
+msgstr "Could not start test request (error code %d)."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_NETWORK"
+msgstr "Network error while testing server (result code %d)."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_HTTP"
+msgstr "HTTP %d: %s"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_INVALID_JSON"
+msgstr "Invalid JSON response: %s"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MESSAGE"
+msgstr "Server error: %s"
 
 #: scenes/conversation.tscn
 msgid "Graders"
@@ -1993,7 +2053,39 @@ msgid "FINETUNE_SAVE_CLOUD"
 msgstr "Save to cloud"
 
 #: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD_AS"
+msgstr "Save to cloud as..."
+
+#: scenes/fine_tune.gd
 msgid "FINETUNE_LOAD_CLOUD"
+msgstr "Load from cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_SAVE"
+msgstr "Cloud save target"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_LOAD"
+msgstr "Cloud load target"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_PROJECT_ID"
+msgstr "Project ID"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_URL"
+msgstr "Storage PHP URL"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_API_KEY"
+msgstr "Cloud API key"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE"
+msgstr "Save to cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD"
 msgstr "Load from cloud"
 
 #: scenes/fine_tune.gd

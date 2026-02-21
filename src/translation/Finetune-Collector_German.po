@@ -125,6 +125,10 @@ msgid "FINETUNE_CONVERSATION_NEW"
 msgstr "Neue Unterhaltung"
 
 #: scenes/fine_tune.tscn
+msgid "FINETUNE_NEW_FINE_TUNE"
+msgstr "Neuer Fine-Tune"
+
+#: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
 msgstr "Lade Fine-Tune"
 
@@ -347,6 +351,26 @@ msgstr "Speichern unter"
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
+msgstr "Abbrechen"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TITLE"
+msgstr "Ungespeicherte Aenderungen"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TEXT"
+msgstr "Es gibt ungespeicherte Aenderungen. Vor dem Fortfahren speichern?"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_SAVE"
+msgstr "Speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_DONT_SAVE"
+msgstr "Nicht speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_CANCEL"
 msgstr "Abbrechen"
 
 #: scenes/conversation_settings.tscn

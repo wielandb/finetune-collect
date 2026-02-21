@@ -125,6 +125,10 @@ msgid "FINETUNE_CONVERSATION_NEW"
 msgstr "New conversation"
 
 #: scenes/fine_tune.tscn
+msgid "FINETUNE_NEW_FINE_TUNE"
+msgstr "New fine-tune"
+
+#: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
 msgstr "Load fine-tune file"
 
@@ -335,6 +339,26 @@ msgstr "Save as"
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
+msgstr "Cancel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TITLE"
+msgstr "Unsaved changes"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TEXT"
+msgstr "You have unsaved changes. Save before continuing?"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_SAVE"
+msgstr "Save"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_DONT_SAVE"
+msgstr "Don't Save"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_CANCEL"
 msgstr "Cancel"
 
 #: scenes/conversation_settings.tscn

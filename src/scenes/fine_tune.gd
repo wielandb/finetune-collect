@@ -41,8 +41,22 @@ var SETTINGS = {
 var RUNTIME = {"filepath": ""}
 
 # File used to remember the last opened project across sessions
-const LAST_PROJECT_PATH_FILE := "user://last_project.txt"
-const LAST_PROJECT_DATA_FILE := "user://last_project_data.json"
+const LAST_PROJECT_PATH_FILE = "user://last_project.txt"
+const LAST_PROJECT_DATA_FILE = "user://last_project_data.json"
+const LAST_PROJECT_STATE_FILE = "user://last_project_state.json"
+const LAST_PROJECT_SOURCE_NONE = "none"
+const LAST_PROJECT_SOURCE_LOCAL = "local"
+const LAST_PROJECT_SOURCE_CLOUD = "cloud"
+const UNSAVED_CHOICE_SAVE = 0
+const UNSAVED_CHOICE_DONT_SAVE = 1
+const UNSAVED_CHOICE_CANCEL = 2
+const PRE_ACTION_SAVE_FAILED = 0
+const PRE_ACTION_SAVE_SUCCESS = 1
+const PRE_ACTION_SAVE_WAITING_FOR_DIALOG = 2
+const ACTION_KIND_NEW_FINE_TUNE = "new_fine_tune"
+const ACTION_KIND_LOAD_LOCAL_PATH = "load_local_path"
+const ACTION_KIND_LOAD_CLOUD = "load_cloud"
+const ACTION_KIND_LOAD_WEB_JSON = "load_web_json"
 
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 var _compact_layout_enabled = false
@@ -54,6 +68,11 @@ var _mobile_content_scale_factor = 1.0
 var _is_applying_content_scale = false
 var _autosave_in_progress = false
 var _save_in_progress = false
+var _default_settings_template = {}
+var _last_clean_project_snapshot_json = ""
+var _pending_destructive_action = {}
+var _save_dialog_for_unsaved_guard_active = false
+var _test_unsaved_choice_override = -1
 
 var file_access_web = FileAccessWeb.new()
 var EXPORT_BTN_ORIG_TEXT = ""
@@ -96,6 +115,39 @@ func getallnodes(node):
 			nodeCollection.append(N)
 	return nodeCollection
 
+func _default_last_project_state() -> Dictionary:
+	return {
+		"source": LAST_PROJECT_SOURCE_NONE,
+		"path": "",
+		"cloudURL": "",
+		"cloudKey": "",
+		"cloudName": ""
+	}
+
+func _save_last_project_state(state: Dictionary) -> void:
+	var merged_state = _default_last_project_state()
+	for key in state.keys():
+		merged_state[key] = state[key]
+	var file = FileAccess.open(LAST_PROJECT_STATE_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(merged_state))
+		file.close()
+
+func _load_last_project_state() -> Dictionary:
+	var default_state = _default_last_project_state()
+	if not FileAccess.file_exists(LAST_PROJECT_STATE_FILE):
+		return default_state
+	var state_text = FileAccess.get_file_as_string(LAST_PROJECT_STATE_FILE).strip_edges()
+	if state_text == "":
+		return default_state
+	var parsed_state = JSON.parse_string(state_text)
+	if typeof(parsed_state) != TYPE_DICTIONARY:
+		return default_state
+	for key in default_state.keys():
+		if not parsed_state.has(key):
+			parsed_state[key] = default_state[key]
+	return parsed_state
+
 # Store the given path so it can be loaded on the next start
 func save_last_project_path(path: String) -> void:
 	var file = FileAccess.open(LAST_PROJECT_PATH_FILE, FileAccess.WRITE)
@@ -110,30 +162,150 @@ func save_last_project_data(json_data: String) -> void:
 		file.store_string(json_data)
 		file.close()
 
+func _remember_last_open_local(path: String, json_data: String) -> void:
+	save_last_project_path(path)
+	save_last_project_data(json_data)
+	_save_last_project_state({
+		"source": LAST_PROJECT_SOURCE_LOCAL,
+		"path": path,
+		"cloudURL": "",
+		"cloudKey": "",
+		"cloudName": ""
+	})
+
+func _remember_last_open_cloud(json_data: String) -> void:
+	var cloud_url = str(SETTINGS.get("projectCloudURL", "")).strip_edges()
+	var cloud_key = str(SETTINGS.get("projectCloudKey", "")).strip_edges()
+	var cloud_name = str(SETTINGS.get("projectCloudName", "")).strip_edges()
+	save_last_project_path("")
+	save_last_project_data(json_data)
+	_save_last_project_state({
+		"source": LAST_PROJECT_SOURCE_CLOUD,
+		"path": "",
+		"cloudURL": cloud_url,
+		"cloudKey": cloud_key,
+		"cloudName": cloud_name
+	})
+
+func _clear_last_project_memory() -> void:
+	save_last_project_path("")
+	save_last_project_data("")
+	_save_last_project_state({"source": LAST_PROJECT_SOURCE_NONE})
+
 # Retrieve the stored project path if available
 func get_last_project_path() -> String:
 	if FileAccess.file_exists(LAST_PROJECT_PATH_FILE):
 		var file = FileAccess.open(LAST_PROJECT_PATH_FILE, FileAccess.READ)
-		var txt = file.get_as_text()
-		file.close()
-		return txt.strip_edges()
+		if file:
+			var txt = file.get_as_text()
+			file.close()
+			return txt.strip_edges()
 	return ""
 
-# Load project data stored for web platforms
-func load_last_project_data() -> void:
-	if FileAccess.file_exists(LAST_PROJECT_DATA_FILE):
-		var data = FileAccess.get_file_as_string(LAST_PROJECT_DATA_FILE)
-		if data.strip_edges() != "":
-			load_from_json_data(data)
+func _is_project_json_text(json_text_data: String) -> bool:
+	if json_text_data.strip_edges() == "":
+		return false
+	var parsed = JSON.parse_string(json_text_data)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	return parsed.has("functions") and parsed.has("conversations") and parsed.has("settings")
+
+func _capture_current_project_snapshot_json() -> String:
+	_collect_current_state_for_save()
+	return make_save_json_data()
+
+func _mark_project_clean_from_current_state() -> void:
+	_last_clean_project_snapshot_json = _capture_current_project_snapshot_json()
+
+func _has_unsaved_changes() -> bool:
+	if _last_clean_project_snapshot_json == "":
+		return false
+	var current_snapshot = _capture_current_project_snapshot_json()
+	return current_snapshot != _last_clean_project_snapshot_json
+
+# Load project data stored as snapshot fallback
+func load_last_project_data() -> bool:
+	if not FileAccess.file_exists(LAST_PROJECT_DATA_FILE):
+		return false
+	var data = FileAccess.get_file_as_string(LAST_PROJECT_DATA_FILE)
+	if data.strip_edges() == "":
+		return false
+	if not _is_project_json_text(data):
+		return false
+	load_from_json_data(data)
+	RUNTIME["filepath"] = ""
+	return true
+
+func _load_project_from_local_path(path: String, remember_last_open: bool = true) -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+	var path_lower = path.to_lower()
+	if path_lower.ends_with(".json"):
+		load_from_json(path)
+	elif path_lower.ends_with(".ftproj"):
+		load_from_binary(path)
+	else:
+		return false
+	RUNTIME["filepath"] = path
+	var snapshot = _capture_current_project_snapshot_json()
+	_last_clean_project_snapshot_json = snapshot
+	if remember_last_open:
+		_remember_last_open_local(path, snapshot)
+	return true
+
+func _load_project_from_web_json(json_text_data: String, remember_last_open: bool = true) -> bool:
+	if not _is_project_json_text(json_text_data):
+		return false
+	load_from_json_data(json_text_data)
+	RUNTIME["filepath"] = ""
+	var snapshot = _capture_current_project_snapshot_json()
+	_last_clean_project_snapshot_json = snapshot
+	if remember_last_open:
+		_remember_last_open_local("", snapshot)
+	return true
+
+func _apply_cloud_state_from_last_project_state(state: Dictionary) -> void:
+	if SETTINGS.size() == 0:
+		return
+	var updated_settings = SETTINGS.duplicate(true)
+	updated_settings["projectStorageMode"] = PROJECT_STORAGE_MODE_CLOUD
+	updated_settings["projectCloudURL"] = str(state.get("cloudURL", ""))
+	updated_settings["projectCloudKey"] = str(state.get("cloudKey", ""))
+	updated_settings["projectCloudName"] = str(state.get("cloudName", ""))
+	SETTINGS = updated_settings
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+
+func _restore_from_legacy_last_project() -> bool:
+	var last_path = get_last_project_path()
+	if last_path != "" and FileAccess.file_exists(last_path):
+		if _load_project_from_local_path(last_path):
+			return true
+	if load_last_project_data():
+		_mark_project_clean_from_current_state()
+		return true
+	return false
 
 # Attempt to load the previously opened project
 func load_last_project_on_start() -> void:
-	var last_path = get_last_project_path()
-	if last_path != "" and FileAccess.file_exists(last_path):
-		load_from_appropriate_from_path(last_path)
-		RUNTIME["filepath"] = last_path
-	elif OS.get_name() == "Web":
-		load_last_project_data()
+	var state = _load_last_project_state()
+	var source = str(state.get("source", LAST_PROJECT_SOURCE_NONE))
+	if source == LAST_PROJECT_SOURCE_LOCAL:
+		var local_path = str(state.get("path", "")).strip_edges()
+		if local_path != "" and _load_project_from_local_path(local_path):
+			return
+		if load_last_project_data():
+			_mark_project_clean_from_current_state()
+			return
+	elif source == LAST_PROJECT_SOURCE_CLOUD:
+		_apply_cloud_state_from_last_project_state(state)
+		var cloud_loaded = await _load_project_from_cloud()
+		if cloud_loaded:
+			return
+		_reset_project_to_defaults(false)
+		return
+	_restore_from_legacy_last_project()
 
 func is_compact_layout_enabled() -> bool:
 	return _compact_layout_enabled
@@ -237,6 +409,148 @@ func _is_http_url(text: String) -> bool:
 	var lower_text = text.strip_edges().to_lower()
 	return lower_text.begins_with("http://") or lower_text.begins_with("https://")
 
+func _set_test_unsaved_choice_override(choice: int) -> void:
+	_test_unsaved_choice_override = choice
+
+func request_load_project_from_path_with_unsaved_guard(path: String) -> void:
+	await _request_destructive_action({
+		"kind": ACTION_KIND_LOAD_LOCAL_PATH,
+		"path": path
+	})
+
+func request_load_project_from_web_json_with_unsaved_guard(json_text_data: String) -> void:
+	await _request_destructive_action({
+		"kind": ACTION_KIND_LOAD_WEB_JSON,
+		"jsonData": json_text_data
+	})
+
+func _request_destructive_action(action: Dictionary) -> void:
+	if _has_unsaved_changes():
+		_pending_destructive_action = action.duplicate(true)
+		await _show_unsaved_changes_dialog()
+		return
+	await _execute_destructive_action(action)
+
+func _execute_destructive_action(action: Dictionary) -> void:
+	var action_kind = str(action.get("kind", ""))
+	match action_kind:
+		ACTION_KIND_NEW_FINE_TUNE:
+			_reset_project_to_defaults(true)
+		ACTION_KIND_LOAD_LOCAL_PATH:
+			var path = str(action.get("path", "")).strip_edges()
+			if path != "":
+				_load_project_from_local_path(path)
+		ACTION_KIND_LOAD_CLOUD:
+			update_settings_internal()
+			await _load_project_from_cloud()
+		ACTION_KIND_LOAD_WEB_JSON:
+			var json_text_data = str(action.get("jsonData", ""))
+			_load_project_from_web_json(json_text_data)
+
+func _show_unsaved_changes_dialog() -> void:
+	if _pending_destructive_action.size() == 0:
+		return
+	if _test_unsaved_choice_override != -1:
+		var choice = _test_unsaved_choice_override
+		_test_unsaved_choice_override = -1
+		await _handle_unsaved_choice(choice)
+		return
+	if DisplayServer.get_name().to_lower() == "headless":
+		await _handle_unsaved_choice(UNSAVED_CHOICE_CANCEL)
+		return
+	var dialog = ConfirmationDialog.new()
+	dialog.title = tr("FINETUNE_UNSAVED_DIALOG_TITLE")
+	dialog.dialog_text = tr("FINETUNE_UNSAVED_DIALOG_TEXT")
+	dialog.get_ok_button().text = tr("FINETUNE_UNSAVED_DIALOG_SAVE")
+	dialog.get_cancel_button().text = tr("FINETUNE_UNSAVED_DIALOG_CANCEL")
+	var dont_save_button = dialog.add_button(tr("FINETUNE_UNSAVED_DIALOG_DONT_SAVE"), false, "dont_save")
+	add_child(dialog)
+	dialog.confirmed.connect(_on_unsaved_dialog_save_confirmed.bind(dialog))
+	dialog.canceled.connect(_on_unsaved_dialog_cancelled.bind(dialog))
+	dialog.close_requested.connect(_on_unsaved_dialog_cancelled.bind(dialog))
+	dont_save_button.pressed.connect(_on_unsaved_dialog_dont_save_pressed.bind(dialog))
+	dialog.popup_centered(Vector2i(640, 220))
+
+func _on_unsaved_dialog_save_confirmed(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	await _handle_unsaved_choice(UNSAVED_CHOICE_SAVE)
+
+func _on_unsaved_dialog_dont_save_pressed(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	await _handle_unsaved_choice(UNSAVED_CHOICE_DONT_SAVE)
+
+func _on_unsaved_dialog_cancelled(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	await _handle_unsaved_choice(UNSAVED_CHOICE_CANCEL)
+
+func _handle_unsaved_choice(choice: int) -> void:
+	if _pending_destructive_action.size() == 0:
+		return
+	if choice == UNSAVED_CHOICE_SAVE:
+		var save_result = await _save_before_destructive_action()
+		if save_result == PRE_ACTION_SAVE_SUCCESS:
+			var action = _pending_destructive_action.duplicate(true)
+			_pending_destructive_action = {}
+			await _execute_destructive_action(action)
+		elif save_result == PRE_ACTION_SAVE_FAILED:
+			_pending_destructive_action = {}
+		return
+	if choice == UNSAVED_CHOICE_DONT_SAVE:
+		var action = _pending_destructive_action.duplicate(true)
+		_pending_destructive_action = {}
+		await _execute_destructive_action(action)
+		return
+	_pending_destructive_action = {}
+
+func _save_before_destructive_action() -> int:
+	if _save_in_progress:
+		return PRE_ACTION_SAVE_FAILED
+	_save_in_progress = true
+	_collect_current_state_for_save()
+	var save_result = PRE_ACTION_SAVE_FAILED
+	if _is_cloud_storage_enabled():
+		if await _save_project_to_cloud():
+			save_result = PRE_ACTION_SAVE_SUCCESS
+	else:
+		if RUNTIME["filepath"] != "":
+			if _save_local_for_platform(SAVE_ACTION_SAVE, false):
+				save_result = PRE_ACTION_SAVE_SUCCESS
+		else:
+			_save_dialog_for_unsaved_guard_active = true
+			$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+			save_result = PRE_ACTION_SAVE_WAITING_FOR_DIALOG
+	_save_in_progress = false
+	return save_result
+
+func _reset_project_to_defaults(clear_last_project_memory: bool = true) -> void:
+	RUNTIME["filepath"] = ""
+	FINETUNEDATA = {}
+	FUNCTIONS = []
+	CONVERSATIONS = {}
+	GRADERS = []
+	SCHEMAS = []
+	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
+	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+	$Conversation/Graders/GradersList.from_var([])
+	$Conversation/Schemas/SchemasList.from_var([])
+	if _default_settings_template.size() > 0:
+		SETTINGS = _default_settings_template.duplicate(true)
+	else:
+		update_settings_internal()
+		SETTINGS = SETTINGS.duplicate(true)
+		_default_settings_template = SETTINGS.duplicate(true)
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+	_on_button_pressed()
+	refresh_conversations_list()
+	if $VBoxContainer/ConversationsList.item_count > 0:
+		$VBoxContainer/ConversationsList.select(0)
+		_on_item_list_item_selected(0, false)
+	if clear_last_project_memory:
+		_clear_last_project_memory()
+	_mark_project_clean_from_current_state()
+
 func _sync_save_load_ui_for_storage_mode() -> void:
 	var save_btn = $VBoxContainer/SaveControls/SaveBtn
 	var load_btn = $VBoxContainer/LoadBtn
@@ -289,11 +603,14 @@ func _save_local_for_platform(selected_action: int, allow_save_as_dialog: bool) 
 						$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
 					return false
 				refresh_conversations_list()
+				var json_save_data = make_save_json_data()
+				_last_clean_project_snapshot_json = json_save_data
+				_remember_last_open_local(str(RUNTIME.get("filepath", "")), json_save_data)
 				return true
 		"Web":
-			var json_save_data =  make_save_json_data()
-			save_last_project_path("")
-			save_last_project_data(json_save_data)
+			var json_save_data = make_save_json_data()
+			_last_clean_project_snapshot_json = json_save_data
+			_remember_last_open_local("", json_save_data)
 			var byte_array = json_save_data.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune_project.json", "text/plain")
 			return true
@@ -349,7 +666,8 @@ func _save_project_to_cloud() -> bool:
 		push_error("Cloud save aborted: Found image content that is not an URL.")
 		print(non_url_images)
 		return false
-	var project_data = JSON.parse_string(make_save_json_data())
+	var project_json_text = make_save_json_data()
+	var project_data = JSON.parse_string(project_json_text)
 	if typeof(project_data) != TYPE_DICTIONARY:
 		push_error("Cloud save aborted: Could not serialize project data.")
 		return false
@@ -366,6 +684,8 @@ func _save_project_to_cloud() -> bool:
 		push_error("Cloud save failed: " + str(response.get("error", "unknown error")))
 		return false
 	print("Cloud save successful for project " + project_name)
+	_last_clean_project_snapshot_json = project_json_text
+	_remember_last_open_cloud(project_json_text)
 	return true
 
 func _load_project_from_cloud() -> bool:
@@ -392,8 +712,9 @@ func _load_project_from_cloud() -> bool:
 	var json_text_data = JSON.stringify(data, "\t", false)
 	load_from_json_data(json_text_data)
 	RUNTIME["filepath"] = ""
-	save_last_project_path("")
-	save_last_project_data(json_text_data)
+	var snapshot = _capture_current_project_snapshot_json()
+	_last_clean_project_snapshot_json = snapshot
+	_remember_last_open_cloud(snapshot)
 	return true
 
 func _configure_autosave() -> void:
@@ -430,16 +751,18 @@ func _run_autosave(trigger: String) -> void:
 func _on_auto_save_timer_timeout() -> void:
 	_run_autosave("timer")
 
-func _run_selected_save_action(selected_action: int) -> void:
+func _run_selected_save_action(selected_action: int) -> bool:
 	if _save_in_progress:
-		return
+		return false
 	_save_in_progress = true
 	_collect_current_state_for_save()
+	var save_success = false
 	if _is_cloud_storage_enabled():
-		await _save_project_to_cloud()
+		save_success = await _save_project_to_cloud()
 	else:
-		_save_local_for_platform(selected_action, true)
+		save_success = _save_local_for_platform(selected_action, true)
 	_save_in_progress = false
+	return save_success
 
 func _save_to_current_path() -> bool:
 	if RUNTIME["filepath"] == "":
@@ -462,9 +785,16 @@ func _ready() -> void:
 	_on_item_list_item_selected(0)
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
-	load_last_project_on_start()
+	var save_file_dialog = $VBoxContainer/SaveControls/SaveBtn/SaveFileDialog
+	if not save_file_dialog.is_connected("canceled", Callable(self, "_on_save_file_dialog_canceled")):
+		save_file_dialog.canceled.connect(_on_save_file_dialog_canceled)
+	update_settings_internal()
+	_default_settings_template = SETTINGS.duplicate(true)
+	await load_last_project_on_start()
 	_setup_save_mode_option_button()
 	_configure_autosave()
+	if _last_clean_project_snapshot_json == "":
+		_mark_project_clean_from_current_state()
 	
 	var tab_bar = $Conversation.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Messages"))
@@ -501,6 +831,9 @@ func _process(delta: float) -> void:
 
 func _on_save_btn_pressed() -> void:
 	await _run_selected_save_action(SAVE_ACTION_SAVE)
+
+func _on_new_fine_tune_btn_pressed() -> void:
+	await _request_destructive_action({"kind": ACTION_KIND_NEW_FINE_TUNE})
 
 func update_functions_internal():
 	FUNCTIONS = $Conversation/Functions/FunctionsList.to_var()
@@ -605,7 +938,7 @@ func save_current_conversation():
 func _on_load_btn_pressed() -> void:
 	update_settings_internal()
 	if _is_cloud_storage_enabled():
-		await _load_project_from_cloud()
+		await _request_destructive_action({"kind": ACTION_KIND_LOAD_CLOUD})
 		return
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
@@ -616,9 +949,7 @@ func _on_load_btn_pressed() -> void:
 func _on_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
 	# A finetune project file was loaded via web
 	var json_text_data = Marshalls.base64_to_utf8(base64_data)
-	load_from_json_data(json_text_data)
-	save_last_project_path("")
-	save_last_project_data(json_text_data)
+	await request_load_project_from_web_json_with_unsaved_guard(json_text_data)
 	
 	
 func _on_upload_progress(current_bytes: int, total_bytes: int) -> void:
@@ -763,13 +1094,7 @@ func check_is_conversation_ready(idx: String) -> bool:
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	var path_lower = path.to_lower()
-	if path_lower.ends_with(".json"):
-		load_from_json(path)
-	elif path_lower.ends_with(".ftproj"):
-		load_from_binary(path)
-	RUNTIME["filepath"] = path
-	save_last_project_path(path)
+	await request_load_project_from_path_with_unsaved_guard(path)
 	
 
 
@@ -1397,20 +1722,47 @@ func load_from_appropriate_from_path(path):
 
 func _on_save_file_dialog_file_selected(path: String) -> void:
 	if _is_cloud_storage_enabled():
-		await _save_project_to_cloud()
+		var cloud_saved = await _save_project_to_cloud()
+		if _save_dialog_for_unsaved_guard_active:
+			_save_dialog_for_unsaved_guard_active = false
+			if cloud_saved and _pending_destructive_action.size() > 0:
+				var cloud_action = _pending_destructive_action.duplicate(true)
+				_pending_destructive_action = {}
+				await _execute_destructive_action(cloud_action)
+			else:
+				_pending_destructive_action = {}
 		return
 	save_current_conversation()
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
 	update_schemas_internal()
+	var save_success = false
 	var path_lower = path.to_lower()
 	if path_lower.ends_with(".json"):
 		save_to_json(path)
+		save_success = true
 	elif path_lower.ends_with(".ftproj"):
 		save_to_binary(path)
-	RUNTIME["filepath"] = path
-	save_last_project_path(path)
+		save_success = true
+	if save_success:
+		RUNTIME["filepath"] = path
+		var snapshot = make_save_json_data()
+		_last_clean_project_snapshot_json = snapshot
+		_remember_last_open_local(path, snapshot)
+	if _save_dialog_for_unsaved_guard_active:
+		_save_dialog_for_unsaved_guard_active = false
+		if save_success and _pending_destructive_action.size() > 0:
+			var action = _pending_destructive_action.duplicate(true)
+			_pending_destructive_action = {}
+			await _execute_destructive_action(action)
+		else:
+			_pending_destructive_action = {}
+
+func _on_save_file_dialog_canceled() -> void:
+	if _save_dialog_for_unsaved_guard_active:
+		_save_dialog_for_unsaved_guard_active = false
+		_pending_destructive_action = {}
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)

@@ -18,6 +18,10 @@ func _clear_last_project_files() -> void:
 	if last_project_data_file:
 		last_project_data_file.store_string("")
 		last_project_data_file.close()
+	var last_project_state_file = FileAccess.open("user://last_project_state.json", FileAccess.WRITE)
+	if last_project_state_file:
+		last_project_state_file.store_string("")
+		last_project_state_file.close()
 
 func _init() -> void:
 	call_deferred("_run")
@@ -35,6 +39,7 @@ func _run() -> void:
 	var save_mode_btn = scene.get_node("VBoxContainer/SaveControls/SaveModeBtn")
 	var save_btn = scene.get_node("VBoxContainer/SaveControls/SaveBtn")
 	var load_btn = scene.get_node("VBoxContainer/LoadBtn")
+	var new_fine_tune_btn = scene.get_node("VBoxContainer/NewFineTuneButton")
 	var autosave_timer = scene.get_node("AutoSaveTimer")
 
 	storage_mode.select(1)
@@ -47,6 +52,7 @@ func _run() -> void:
 	_check(save_mode_btn.item_count == 1, "cloud mode should only expose one save action")
 	_check(save_btn.text == scene.tr("FINETUNE_SAVE_CLOUD"), "save button should show cloud text")
 	_check(load_btn.text == scene.tr("FINETUNE_LOAD_CLOUD"), "load button should show cloud text")
+	_check(new_fine_tune_btn.text == scene.tr("FINETUNE_NEW_FINE_TUNE") or new_fine_tune_btn.text == "FINETUNE_NEW_FINE_TUNE", "new fine tune button should be available")
 
 	autosave_mode.select(1)
 	settings_ui._on_auto_save_mode_option_button_item_selected(1)

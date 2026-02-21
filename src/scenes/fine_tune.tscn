@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://c3mvjnlcxln7r" path="res://icons/save.png" id="5_6c4wb"]
 [ext_resource type="Texture2D" uid="uid://dclev2i1xdu5c" path="res://icons/forum-plus-custom.png" id="5_ks358"]
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="8_wwmoc"]
+[ext_resource type="Texture2D" uid="uid://ghs38a5r2f3f" path="res://icons/notepad_write.png" id="9_mt1tq"]
 [ext_resource type="Script" uid="uid://bqrnafj6dml8a" path="res://scenes/exporter.gd" id="10_ido41"]
 
 [node name="FineTune" type="HBoxContainer" unique_id=1428943933]
@@ -48,6 +49,11 @@ icon_alignment = 1
 layout_mode = 2
 text = "FINETUNE_CONVERSATION_NEW"
 icon = ExtResource("5_ks358")
+
+[node name="NewFineTuneButton" type="Button" parent="VBoxContainer" unique_id=1893621157]
+layout_mode = 2
+text = "FINETUNE_NEW_FINE_TUNE"
+icon = ExtResource("9_mt1tq")
 
 [node name="ConversationsList" type="ItemList" parent="VBoxContainer" unique_id=223466987]
 layout_mode = 2
@@ -116,6 +122,7 @@ one_shot = false
 [connection signal="pressed" from="CollapsedMenu/ExpandBurgerBtn" to="." method="_on_expand_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/CollapseBurgerBtn" to="." method="_on_collapse_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewConversationButton" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/NewFineTuneButton" to="." method="_on_new_fine_tune_btn_pressed"]
 [connection signal="gui_input" from="VBoxContainer/ConversationsList" to="." method="_on_conversations_list_gui_input"]
 [connection signal="item_selected" from="VBoxContainer/ConversationsList" to="." method="_on_item_list_item_selected"]
 [connection signal="pressed" from="VBoxContainer/LoadBtn" to="." method="_on_load_btn_pressed"]

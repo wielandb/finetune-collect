@@ -29,6 +29,10 @@ func _run() -> void:
 	if last_project_data_file:
 		last_project_data_file.store_string("")
 		last_project_data_file.close()
+	var last_project_state_file = FileAccess.open("user://last_project_state.json", FileAccess.WRITE)
+	if last_project_state_file:
+		last_project_state_file.store_string("")
+		last_project_state_file.close()
 	var scene = load("res://scenes/fine_tune.tscn").instantiate()
 	get_root().add_child(scene)
 	await create_timer(0.15).timeout

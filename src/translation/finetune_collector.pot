@@ -393,6 +393,26 @@ msgstr ""
 msgid "GENERIC_CANCEL"
 msgstr ""
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TEXT"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_DONT_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_CANCEL"
+msgstr ""
+
 #: scenes/conversation_settings.tscn
 msgid "FROMCLIPBOARDJSON_LABEL_TEXT"
 msgstr ""
@@ -501,6 +521,10 @@ msgstr ""
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_CONVERSATION_NEW"
+msgstr ""
+
+#: scenes/fine_tune.tscn
+msgid "FINETUNE_NEW_FINE_TUNE"
 msgstr ""
 
 #: scenes/fine_tune.tscn

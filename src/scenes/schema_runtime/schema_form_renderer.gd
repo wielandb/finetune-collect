@@ -230,6 +230,7 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 	add_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM")
 	add_button.add_theme_font_override("font", _get_bold_font())
 	add_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
+	_style_single_line_button(add_button)
 	box.add_child(add_button)
 	var max_items = int(descriptor.get("max_items", -1))
 	if max_items >= 0 and array_value.size() >= max_items:
@@ -264,6 +265,7 @@ func _render_key_value_array_rows(parent: VBoxContainer, controller, path: Array
 		delete_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM")
 		delete_button.icon = load(DELETE_ICON_CLOSED_SMALL)
 		delete_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
+		_style_single_line_button(delete_button)
 		delete_button.pressed.connect(controller._on_array_item_delete_requested.bind(-1, path.duplicate(true), i, descriptor))
 		delete_button.mouse_entered.connect(_on_delete_button_mouse_entered.bind(delete_button))
 		delete_button.mouse_exited.connect(_on_delete_button_mouse_exited.bind(delete_button))
@@ -520,6 +522,7 @@ func _render_date_string_input(descriptor: Dictionary, box: VBoxContainer, contr
 	picker_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DATE_OPEN")
 	picker_button.add_theme_font_override("font", _get_bold_font())
 	picker_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
+	_style_single_line_button(picker_button)
 	row.add_child(picker_button)
 
 	var clear_button = Button.new()
@@ -527,6 +530,7 @@ func _render_date_string_input(descriptor: Dictionary, box: VBoxContainer, contr
 	clear_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DATE_CLEAR")
 	clear_button.add_theme_font_override("font", _get_bold_font())
 	clear_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
+	_style_single_line_button(clear_button)
 	row.add_child(clear_button)
 
 	var picker_dialog = AcceptDialog.new()
@@ -616,6 +620,7 @@ func _render_date_string_input(descriptor: Dictionary, box: VBoxContainer, contr
 	dialog_clear_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_ACTION_CLEAR")
 	dialog_clear_button.flat = true
 	dialog_clear_button.add_theme_font_override("font", _get_bold_font())
+	_style_single_line_button(dialog_clear_button)
 	actions_row.add_child(dialog_clear_button)
 
 	var cancel_button = Button.new()
@@ -623,6 +628,7 @@ func _render_date_string_input(descriptor: Dictionary, box: VBoxContainer, contr
 	cancel_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_ACTION_CANCEL")
 	cancel_button.flat = true
 	cancel_button.add_theme_font_override("font", _get_bold_font())
+	_style_single_line_button(cancel_button)
 	actions_row.add_child(cancel_button)
 
 	var set_button = Button.new()
@@ -630,6 +636,7 @@ func _render_date_string_input(descriptor: Dictionary, box: VBoxContainer, contr
 	set_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DATE_DIALOG_ACTION_SET")
 	set_button.flat = true
 	set_button.add_theme_font_override("font", _get_bold_font())
+	_style_single_line_button(set_button)
 	actions_row.add_child(set_button)
 
 	picker_dialog.set_meta("date_line_edit", line_edit)

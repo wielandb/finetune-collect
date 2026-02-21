@@ -33,7 +33,25 @@ class FineTuneStub:
 		"availableModels": ["gpt-4o"]
 	}
 	var FUNCTIONS = []
-	var SCHEMAS = []
+	var SCHEMAS = [
+		{
+			"name": "ExtremelyLongSchemaNameThatMustNeverForceTheMessageListToOverflowOnMobileOrDesktop",
+			"schema": {
+				"type": "object",
+				"required": ["publish_date"],
+				"properties": {
+					"publish_date": {
+						"type": "string",
+						"format": "date",
+						"title": "Publish date"
+					},
+					"notes": {
+						"type": "string"
+					}
+				}
+			}
+		}
+	]
 	var _compact_layout_enabled = false
 
 	func is_compact_layout_enabled() -> bool:
@@ -51,6 +69,8 @@ class FineTuneStub:
 			if node is OptionButton:
 				node.clear()
 				node.add_item("Only JSON")
+				for schema_entry in SCHEMAS:
+					node.add_item(str(schema_entry.get("name", "")))
 				node.select(0)
 
 	func update_functions_internal() -> void:
@@ -63,6 +83,9 @@ class FineTuneStub:
 		pass
 
 	func update_schemas_internal() -> void:
+		pass
+
+	func save_current_conversation() -> void:
 		pass
 
 	func get_parameter_def(_function_name, _parameter_name):
@@ -93,6 +116,15 @@ func _check(condition: bool, message: String) -> void:
 		tests_failed += 1
 		push_error(message)
 
+func _assert_row_children_within_bounds(row, message: String) -> void:
+	if not (row is Control):
+		_check(false, message + ": row missing")
+		return
+	for child in row.get_children():
+		if child is Control and child.visible:
+			var child_right = child.position.x + child.size.x
+			_check(child_right <= row.size.x + 1.0, message + ": child '" + child.name + "' should stay within bounds")
+
 func _init() -> void:
 	call_deferred("_run")
 
@@ -105,8 +137,13 @@ func _run() -> void:
 	get_root().add_child(fine_tune)
 	await process_frame
 
+	var message_host = Control.new()
+	message_host.position = Vector2.ZERO
+	message_host.size = Vector2(360, 900)
+	get_root().add_child(message_host)
 	var message = load("res://scenes/message.tscn").instantiate()
-	get_root().add_child(message)
+	message_host.add_child(message)
+	message.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	await process_frame
 	message.set_compact_layout(true)
 	await process_frame
@@ -124,10 +161,65 @@ func _run() -> void:
 	_check(absf(message_type_button.size.y - delete_button.size.y) <= 0.5, "message type selector should have same compact height as delete button")
 	var delete_button_right = delete_button.position.x + delete_button.size.x
 	_check(delete_button_right <= settings_container.size.x + 0.5, "delete button should stay inside compact settings row")
+	message_type_button.select(3)
+	message._on_message_type_item_selected(3)
+	await process_frame
+	var schema_option = message.get_node("SchemaMessageContainer/HBoxContainer/OptionButton")
+	_check(schema_option.item_count == 2, "schema selector should contain only-json plus configured schema")
+	_check(not schema_option.fit_to_longest_item, "schema selector should not expand to longest schema name")
+	_check(schema_option.clip_text, "schema selector should clip long schema names")
+	schema_option.select(1)
+	schema_option.emit_signal("item_selected", 1)
+	await process_frame
+	await process_frame
+	_check(message.size.x <= message_host.size.x + 1.0, "message should stay within mobile host width in schema mode")
+	_assert_row_children_within_bounds(message.get_node("SchemaMessageContainer/HBoxContainer"), "schema header row should fit in compact layout")
+	var schema_form_scroll = message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll")
+	_check(schema_form_scroll is ScrollContainer, "schema form should use a scroll container")
+	if schema_form_scroll is ScrollContainer:
+		_check(schema_form_scroll.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED, "schema form should disable horizontal scrolling")
+		_check(schema_form_scroll.size.y > 20.0, "schema form scroll area should have visible height in compact layout")
+	var date_input_row = message.find_child("DateInputRow", true, false)
+	if date_input_row != null:
+		_assert_row_children_within_bounds(date_input_row, "date input row should fit in compact layout")
+	message_host.size = Vector2(1200, 900)
+	await process_frame
+	await process_frame
 	message.set_compact_layout(false)
+	await process_frame
 	_check(not message.vertical, "message root should return to desktop horizontal layout")
 	_check(message.get_node("MessageSettingsContainer").vertical, "message actions should return to vertical in desktop layout")
 	_check(message.get_node("TextMessageContainer/TextnachrichtLabel").get_theme_font_size("font_size") == 36, "message title should return to desktop font size")
+	_check(message.size.x <= message_host.size.x + 1.0, "message should stay within desktop host width in schema mode")
+	_assert_row_children_within_bounds(message.get_node("SchemaMessageContainer/HBoxContainer"), "schema header row should fit in desktop layout")
+	if schema_form_scroll is ScrollContainer:
+		_check(schema_form_scroll.size.y > 100.0, "schema form scroll area should have visible height in desktop layout")
+	if date_input_row != null:
+		_assert_row_children_within_bounds(date_input_row, "date input row should fit in desktop layout")
+
+	var list_host = Control.new()
+	list_host.position = Vector2(0, 920)
+	list_host.size = Vector2(900, 700)
+	get_root().add_child(list_host)
+	var messages_list_container = VBoxContainer.new()
+	list_host.add_child(messages_list_container)
+	messages_list_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	var list_message = load("res://scenes/message.tscn").instantiate()
+	messages_list_container.add_child(list_message)
+	await process_frame
+	var list_message_type = list_message.get_node("MessageSettingsContainer/MessageType")
+	list_message_type.select(3)
+	list_message._on_message_type_item_selected(3)
+	await process_frame
+	var list_schema_option = list_message.get_node("SchemaMessageContainer/HBoxContainer/OptionButton")
+	list_schema_option.select(1)
+	list_schema_option.emit_signal("item_selected", 1)
+	await process_frame
+	await process_frame
+	var list_schema_form_scroll = list_message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll")
+	_check(list_schema_form_scroll is ScrollContainer, "list message schema form should use scroll container")
+	if list_schema_form_scroll is ScrollContainer:
+		_check(list_schema_form_scroll.size.y > 100.0, "list message schema form should stay visible instead of collapsing")
 
 	var conversation_settings = load("res://scenes/conversation_settings.tscn").instantiate()
 	var conversation_settings_host = Control.new()

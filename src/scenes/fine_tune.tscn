@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bjjksasvd2r5u"]
+[gd_scene format=3 uid="uid://bjjksasvd2r5u"]
 
 [ext_resource type="PackedScene" uid="uid://cd35p8jv7axv5" path="res://scenes/conversation.tscn" id="1_o1j2m"]
 [ext_resource type="Theme" uid="uid://cebssi3strko3" path="res://themes/theme.res" id="1_v4ety"]
@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://xurn1jso44wj" path="res://icons/file-export-outline-custom.png" id="8_wwmoc"]
 [ext_resource type="Script" uid="uid://bqrnafj6dml8a" path="res://scenes/exporter.gd" id="10_ido41"]
 
-[node name="FineTune" type="HBoxContainer"]
+[node name="FineTune" type="HBoxContainer" unique_id=1428943933]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -23,94 +23,92 @@ size_flags_vertical = 3
 theme = ExtResource("1_v4ety")
 script = ExtResource("2_4tk5v")
 
-[node name="CollapsedMenu" type="VBoxContainer" parent="."]
+[node name="CollapsedMenu" type="VBoxContainer" parent="." unique_id=2003686671]
 visible = false
 custom_minimum_size = Vector2(36.62, 0)
 layout_mode = 2
 
-[node name="ExpandBurgerBtn" type="Button" parent="CollapsedMenu"]
+[node name="ExpandBurgerBtn" type="Button" parent="CollapsedMenu" unique_id=2122456473]
 custom_minimum_size = Vector2(0, 30.09)
 layout_mode = 2
 size_flags_vertical = 3
 icon = ExtResource("3_3ahka")
 icon_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=547947820]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CollapseBurgerBtn" type="Button" parent="VBoxContainer"]
+[node name="CollapseBurgerBtn" type="Button" parent="VBoxContainer" unique_id=90727578]
 layout_mode = 2
 icon = ExtResource("4_qom7o")
 icon_alignment = 1
 
-[node name="NewConversationButton" type="Button" parent="VBoxContainer"]
+[node name="NewConversationButton" type="Button" parent="VBoxContainer" unique_id=1000437468]
 layout_mode = 2
 text = "FINETUNE_CONVERSATION_NEW"
 icon = ExtResource("5_ks358")
 
-[node name="ConversationsList" type="ItemList" parent="VBoxContainer"]
+[node name="ConversationsList" type="ItemList" parent="VBoxContainer" unique_id=223466987]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="LoadBtn" type="Button" parent="VBoxContainer"]
+[node name="LoadBtn" type="Button" parent="VBoxContainer" unique_id=1602043860]
 layout_mode = 2
 text = "FINETUNE_LOAD"
 icon = ExtResource("4_cc3ny")
 
-[node name="FileDialog" type="FileDialog" parent="VBoxContainer/LoadBtn"]
+[node name="FileDialog" type="FileDialog" parent="VBoxContainer/LoadBtn" unique_id=1200874060]
 title = "Open a File"
 ok_button_text = "Open"
 file_mode = 0
 access = 2
 use_native_dialog = true
 
-[node name="SaveControls" type="HBoxContainer" parent="VBoxContainer"]
+[node name="SaveControls" type="HBoxContainer" parent="VBoxContainer" unique_id=1865938660]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SaveBtn" type="Button" parent="VBoxContainer/SaveControls"]
+[node name="SaveBtn" type="Button" parent="VBoxContainer/SaveControls" unique_id=451805546]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 19.0
 text = "FINETUNE_SAVE"
 icon = ExtResource("5_6c4wb")
 
-[node name="SaveModeBtn" type="OptionButton" parent="VBoxContainer/SaveControls"]
-custom_minimum_size = Vector2(34, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 1.0
-selected = -1
-
-[node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveControls/SaveBtn"]
+[node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveControls/SaveBtn" unique_id=2138872584]
 access = 2
 filters = PackedStringArray("*.json", "*.ftproj")
 use_native_dialog = true
 
-[node name="ExportBtn" type="Button" parent="VBoxContainer"]
+[node name="SaveModeBtn" type="OptionButton" parent="VBoxContainer/SaveControls" unique_id=265495986]
+custom_minimum_size = Vector2(34, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ExportBtn" type="Button" parent="VBoxContainer" unique_id=1853391092]
 layout_mode = 2
 text = "FINETUNE_EXPORT"
 icon = ExtResource("8_wwmoc")
 
-[node name="ExportFileDialog" type="FileDialog" parent="VBoxContainer/ExportBtn"]
+[node name="ExportFileDialog" type="FileDialog" parent="VBoxContainer/ExportBtn" unique_id=604683945]
 cancel_button_text = "GENERIC_CANCEL"
 access = 2
 filters = PackedStringArray("*.jsonl;OpenAI fine-tuning file", "*.csv;Dataset CSV")
 use_native_dialog = true
 
-[node name="Conversation" parent="." instance=ExtResource("1_o1j2m")]
+[node name="Conversation" parent="." unique_id=1510660488 instance=ExtResource("1_o1j2m")]
 layout_mode = 2
 size_flags_stretch_ratio = 4.0
 
-[node name="OpenAi" type="Node" parent="."]
+[node name="OpenAi" type="Node" parent="." unique_id=1933532211]
 script = ExtResource("4_slp0e")
 
-[node name="Exporter" type="Node" parent="."]
+[node name="Exporter" type="Node" parent="." unique_id=398116702]
 script = ExtResource("10_ido41")
 
-[node name="HTTPRequest" type="HTTPRequest" parent="Exporter"]
+[node name="HTTPRequest" type="HTTPRequest" parent="Exporter" unique_id=2035345078]
 
 [connection signal="pressed" from="CollapsedMenu/ExpandBurgerBtn" to="." method="_on_expand_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/CollapseBurgerBtn" to="." method="_on_collapse_burger_btn_pressed"]

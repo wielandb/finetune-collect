@@ -560,6 +560,7 @@ layout_mode = 2
 visible = false
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 
 [node name="SchemaMessageLabel" type="Label" parent="SchemaMessageContainer"]
 layout_mode = 2
@@ -584,6 +585,8 @@ stretch_mode = 3
 custom_minimum_size = Vector2(0, 45)
 layout_mode = 2
 size_flags_horizontal = 3
+fit_to_longest_item = false
+clip_text = true
 
 [node name="SchemaValidationHTTPRequest" type="HTTPRequest" parent="SchemaMessageContainer/HBoxContainer"]
 
@@ -632,6 +635,7 @@ icon = ExtResource("13_gakvq")
 
 [node name="SchemaEditTabs" type="TabContainer" parent="SchemaMessageContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 current_tab = 0
 
@@ -651,9 +655,12 @@ layout_mode = 2
 autowrap_mode = 1
 text = "MESSAGES_JSON_SCHEMA_FORM_HINT"
 
-[node name="SchemaFormScroll" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox"]
+[node name="SchemaFormScroll" type="ScrollContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox"]
+custom_minimum_size = Vector2(0, 220)
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
 [node name="SchemaFormRoot" type="VBoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll"]
 layout_mode = 2

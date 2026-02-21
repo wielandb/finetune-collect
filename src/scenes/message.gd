@@ -32,6 +32,7 @@ var _schema_runtime_cache = {}
 var _compact_layout_enabled = false
 var _compact_meta_control_defaults = {}
 var _compact_image_control_defaults = {}
+const SCHEMA_FORM_SCROLL_MIN_HEIGHT = 220.0
 
 func selectionStringToIndex(node, string):
 	# takes a node (OptionButton) and a String that is one of the options and returns its index
@@ -273,6 +274,30 @@ func _configure_meta_layout(enabled: bool) -> void:
 		$MetaMessageContainer/InfoLabelsGridContainer.clip_contents = false
 	_apply_compact_to_meta_controls_recursive($MetaMessageContainer, enabled)
 
+func _configure_schema_layout() -> void:
+	$SchemaMessageContainer.clip_contents = true
+	$SchemaMessageContainer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var schema_title = $SchemaMessageContainer/SchemaMessageLabel
+	schema_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	schema_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var schema_tabs_node = _schema_tabs_node()
+	if schema_tabs_node != null:
+		schema_tabs_node.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var schema_option = $SchemaMessageContainer/HBoxContainer/OptionButton
+	schema_option.fit_to_longest_item = false
+	schema_option.clip_text = true
+	schema_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var schema_form_scroll = get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll")
+	if schema_form_scroll is ScrollContainer:
+		schema_form_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		schema_form_scroll.clip_contents = true
+		schema_form_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		schema_form_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		schema_form_scroll.custom_minimum_size = Vector2(0, SCHEMA_FORM_SCROLL_MIN_HEIGHT)
+	var form_root = _schema_form_root_node()
+	if form_root != null:
+		form_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
 func _apply_compact_layout_to_nested_rows() -> void:
 	for child in $FunctionMessageContainer.get_children():
 		if child.has_method("set_compact_layout"):
@@ -297,6 +322,7 @@ func set_compact_layout(enabled: bool) -> void:
 	_set_box_vertical("SchemaMessageContainer/HBoxContainer", enabled)
 	_set_box_vertical("SchemaMessageContainer/HBoxContainer/SchemaEditButtonsContainer", enabled)
 	_set_box_vertical("SchemaMessageContainer/SchemaMessagePolling", enabled)
+	_configure_schema_layout()
 	_configure_message_settings_row(enabled)
 	if enabled:
 		_set_title_font_sizes(COMPACT_MESSAGE_TITLE_FONT_SIZE)
@@ -708,15 +734,30 @@ func _on_message_type_item_selected(index: int) -> void:
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	# Load the file into the Image and create the base64 string
+	# Load from raw bytes first because Android may provide paths/URIs that Image.load() can't handle directly.
 	var image_path = path
-	var image = Image.new()
-	image.load(image_path)
-	var image_texture = ImageTexture.new()
-	image_texture.set_image(image)
-	
-	get_node("ImageMessageContainer/TextureRect").texture = image_texture
 	var bin = FileAccess.get_file_as_bytes(image_path)
+	if bin.size() == 0:
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		$ImageMessageContainer/Base64ImageEdit.text = ""
+		return
+	var image_type_hint = ""
+	var lower_path = image_path.to_lower()
+	if lower_path.ends_with(".png"):
+		image_type_hint = "png"
+	elif lower_path.ends_with(".jpg") or lower_path.ends_with(".jpeg"):
+		image_type_hint = "jpg"
+	elif lower_path.ends_with(".webp"):
+		image_type_hint = "webp"
+	var decoded_image = _decode_image_from_buffer(bin, image_type_hint, "")
+	if decoded_image == null:
+		var fallback_image = Image.new()
+		if fallback_image.load(image_path) == OK:
+			decoded_image = fallback_image
+	if decoded_image != null:
+		$ImageMessageContainer/TextureRect.texture = ImageTexture.create_from_image(decoded_image)
+	else:
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
 	var base_64_data = Marshalls.raw_to_base64(bin)
 	var ft_node = _get_fine_tune_node()
 	var settings = {}
@@ -732,9 +773,11 @@ func _on_file_dialog_file_selected(path: String) -> void:
 		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
 		var headers := PackedStringArray()
 		headers.append("Content-Type: application/json")
-		var ext = "jpg"
-		if image_path.to_lower().ends_with(".png"):
-			ext = "png"
+		var ext = image_type_hint
+		if ext == "":
+			ext = get_ext_from_base64(base_64_data)
+		if ext == "":
+			ext = "jpg"
 		var payload = {"key": upload_key, "image": base_64_data, "ext": ext}
 		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 		if err != OK:
@@ -752,12 +795,29 @@ func _on_image_upload_request_completed(result, response_code, headers, body, re
 		$ImageMessageContainer/Base64ImageEdit.text = last_base64_to_upload
 		base64_to_image($ImageMessageContainer/TextureRect, last_base64_to_upload)
 
+func _base64_payload_from_data_uri(b64Data: String) -> String:
+	var trimmed = b64Data.strip_edges()
+	var marker = "base64,"
+	var marker_ix = trimmed.find(marker)
+	if marker_ix != -1:
+		return trimmed.substr(marker_ix + marker.length())
+	return trimmed
+
 func base64_to_image(textureRectNode, b64Data):
-	var img = Image.new()
-	img.load_jpg_from_buffer(
-		Marshalls.base64_to_raw(b64Data)
-	)
-	textureRectNode.texture = ImageTexture.create_from_image(img)
+	var payload = _base64_payload_from_data_uri(str(b64Data))
+	if payload == "":
+		textureRectNode.texture = load("res://icons/image-remove-custom.png")
+		return
+	var raw = Marshalls.base64_to_raw(payload)
+	if raw.size() == 0:
+		textureRectNode.texture = load("res://icons/image-remove-custom.png")
+		return
+	var image_type_hint = get_ext_from_base64(payload)
+	var image = _decode_image_from_buffer(raw, image_type_hint, "")
+	if image == null:
+		textureRectNode.texture = load("res://icons/image-remove-custom.png")
+		return
+	textureRectNode.texture = ImageTexture.create_from_image(image)
 
 func get_ext_from_base64(b64:String) -> String:
 	var raw = Marshalls.base64_to_raw(b64)
@@ -765,6 +825,8 @@ func get_ext_from_base64(b64:String) -> String:
 		return "jpg"
 	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
 		return "png"
+	if raw.size() >= 12 and raw[0] == 0x52 and raw[1] == 0x49 and raw[2] == 0x46 and raw[3] == 0x46 and raw[8] == 0x57 and raw[9] == 0x45 and raw[10] == 0x42 and raw[11] == 0x50:
+		return "webp"
 	return "jpg"
 
 func maybe_upload_base64_image():
@@ -1458,82 +1520,89 @@ func load_image_container_from_url(url):
 	$ImageMessageContainer/TextureRect.texture = load("res://icons/image-sync-custom.png")
 	var http_request = HTTPRequest.new()
 	add_child(http_request)
-	http_request.request_completed.connect(self._image_http_request_completed)
+	http_request.request_completed.connect(self._image_http_request_completed.bind(http_request))
 	
 	var urlToBeLoadedFrom = url
 	if not isImageURL(urlToBeLoadedFrom):
 		print("Not a image url to load...")
 		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		http_request.queue_free()
 		return
 	# Perform the HTTP request. The URL below returns a PNG image as of writing.
 	var error = http_request.request(urlToBeLoadedFrom)
 	if error != OK:
 		push_error("An error occurred in the HTTP request.")
 		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		http_request.queue_free()
 
 # Called when the HTTP request is completed.
-func _image_http_request_completed(result, response_code, headers, body):
+func _image_http_request_completed(result, response_code, headers, body, request):
+	if request != null and is_instance_valid(request):
+		request.queue_free()
 	if result != HTTPRequest.RESULT_SUCCESS:
 		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
 		push_error("Image couldn't be downloaded. Try a different image.")
+		return
+	if int(response_code) < 200 or int(response_code) >= 300:
+		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
+		push_error("Image request returned an invalid HTTP status: " + str(response_code))
+		return
 
-	var image = Image.new()
+	var content_type = _get_image_content_type_from_headers(headers)
 	var imageType = getImageType($ImageMessageContainer/Base64ImageEdit.text)
-	var error = false
-	if imageType == "jpg":
-		error = image.load_jpg_from_buffer(body)
-	elif imageType == "png":
-		error = image.load_png_from_buffer(body)
-	if error != OK:
+	var image = _decode_image_from_buffer(body, imageType, content_type)
+	if image == null:
 		push_error("Couldn't load the image.")
 		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
-
+		return
 
 	var texture = ImageTexture.create_from_image(image)
 	$ImageMessageContainer/TextureRect.texture = texture
 	
+func _get_image_content_type_from_headers(headers) -> String:
+	for h in headers:
+		var line = str(h)
+		var lower_line = line.to_lower()
+		if lower_line.begins_with("content-type:"):
+			return lower_line.substr(len("content-type:")).strip_edges()
+	return ""
+
+func _decode_image_from_buffer(raw: PackedByteArray, image_type_hint: String, content_type_hint: String) -> Image:
+	var image = Image.new()
+	var decode_err = ERR_PARSE_ERROR
+
+	if content_type_hint.find("image/png") != -1:
+		decode_err = image.load_png_from_buffer(raw)
+	elif content_type_hint.find("image/jpeg") != -1 or content_type_hint.find("image/jpg") != -1:
+		decode_err = image.load_jpg_from_buffer(raw)
+	elif content_type_hint.find("image/webp") != -1 and image.has_method("load_webp_from_buffer"):
+		decode_err = int(image.call("load_webp_from_buffer", raw))
+	elif image_type_hint == "png":
+		decode_err = image.load_png_from_buffer(raw)
+	elif image_type_hint == "jpg":
+		decode_err = image.load_jpg_from_buffer(raw)
+	elif image_type_hint == "webp" and image.has_method("load_webp_from_buffer"):
+		decode_err = int(image.call("load_webp_from_buffer", raw))
+	else:
+		decode_err = image.load_png_from_buffer(raw)
+		if decode_err != OK:
+			decode_err = image.load_jpg_from_buffer(raw)
+		if decode_err != OK and image.has_method("load_webp_from_buffer"):
+			decode_err = int(image.call("load_webp_from_buffer", raw))
+
+	if decode_err != OK:
+		return null
+	return image
+
 
 func isImageURL(url: String) -> bool:
 	# Return false if the URL is empty or only whitespace.
 	if url.strip_edges() == "":
 		return false
 
-	# Define valid URL schemes. Adjust this list if you need to allow other schemes.
-	var valid_schemes = ["http://", "https://"]
-
-	# Convert the URL to lowercase for case-insensitive comparisons.
+	# Accept HTTP(S) image URLs even when the path has no extension.
 	var lower_url = url.to_lower()
-
-	# Check if the URL begins with one of the valid schemes.
-	var scheme_valid = false
-	for scheme in valid_schemes:
-		if lower_url.begins_with(scheme):
-			scheme_valid = true
-			break
-	if not scheme_valid:
-		return false
-
-	# Remove fragment identifiers for easier handling.
-	var no_fragment = lower_url.split("#")[0]
-
-	# Check path part first (before query string).
-	var path_part = no_fragment.split("?")[0]
-	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg") or path_part.ends_with(".png"):
-		return true
-
-	# Check query parameters for an 'image' parameter with a jpg/jpeg extension.
-	var query_index := no_fragment.find("?")
-	if query_index != -1:
-		var query = no_fragment.substr(query_index + 1)
-		var params = query.split("&")
-		for param in params:
-			var kv = param.split("=")
-			if kv.size() == 2 and kv[0] == "image":
-				var value = kv[1]
-				if value.ends_with(".jpg") or value.ends_with(".jpeg") or value.ends_with(".png"):
-					return true
-
-	return false
+	return lower_url.begins_with("http://") or lower_url.begins_with("https://")
 # This function uses the above isImageURL() to check if the URL is valid,
 # and if so, returns "jpg" for URLs ending with .jpg or .jpeg.
 # Otherwise, it returns an empty string.
@@ -1551,7 +1620,7 @@ func getImageType(url: String) -> String:
 	if path_part.ends_with(".jpg") or path_part.ends_with(".jpeg"):
 		return "jpg"
 
-	var query_index := no_fragment.find("?")
+	var query_index = no_fragment.find("?")
 	if query_index != -1:
 		var query = no_fragment.substr(query_index + 1)
 		var params = query.split("&")

@@ -26,6 +26,7 @@ const JSONL_ENTRY_TYPE_UNKNOWN = -1
 var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
+var CONVERSATION_ORDER = []
 var GRADERS = []
 var SCHEMAS = []
 var SETTINGS = {
@@ -84,6 +85,7 @@ var _test_cloud_dialog_response_queue = []
 var _test_cloud_request_response_queue = []
 var _save_success_icon_feedback_id = 0
 var _save_success_icon_feedback_duration_seconds = SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS
+var _suppress_message_update_events = false
 
 var file_access_web = FileAccessWeb.new()
 var EXPORT_BTN_ORIG_TEXT = ""
@@ -109,12 +111,191 @@ func getRandomConvoID(length: int) -> String:
 	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
-	# Takes a node and a string that matches one of the options and returns its index
-	# Checks both item text and tooltip so it works with custom display names
+	# Match tooltip (stable ID) first, then fallback to visible text.
+	var wanted_value = str(string)
 	for i in range(node.item_count):
-		if node.get_item_text(i) == string or node.get_item_tooltip(i) == string:
+		if str(node.get_item_tooltip(i)) == wanted_value:
+			return i
+	for i in range(node.item_count):
+		if str(node.get_item_text(i)) == wanted_value:
 			return i
 	return -1
+
+func _is_meta_message(message_data) -> bool:
+	if not (message_data is Dictionary):
+		return false
+	return str(message_data.get("type", "")) == "meta" or str(message_data.get("role", "")) == "meta"
+
+func _normalize_meta_message(message_data: Dictionary, fallback_name: String = "") -> Dictionary:
+	var normalized_message = message_data.duplicate(true)
+	normalized_message["role"] = "meta"
+	normalized_message["type"] = "meta"
+	var meta_data = normalized_message.get("metaData", {})
+	if not (meta_data is Dictionary):
+		meta_data = {}
+	if not meta_data.has("ready"):
+		meta_data["ready"] = false
+	if not meta_data.has("conversationName"):
+		meta_data["conversationName"] = fallback_name
+	if not meta_data.has("notes"):
+		meta_data["notes"] = ""
+	normalized_message["metaData"] = meta_data
+	return normalized_message
+
+func _ensure_conversation_meta_message(messages_data, fallback_name: String = "") -> Array:
+	var normalized_messages = []
+	if messages_data is Array:
+		normalized_messages = messages_data.duplicate(true)
+	var meta_index = -1
+	for i in range(normalized_messages.size()):
+		if _is_meta_message(normalized_messages[i]):
+			meta_index = i
+			break
+	if meta_index == -1:
+		normalized_messages.insert(0, _make_meta_message(fallback_name))
+		return normalized_messages
+	var normalized_meta = _normalize_meta_message(normalized_messages[meta_index], fallback_name)
+	if meta_index == 0:
+		normalized_messages[0] = normalized_meta
+		return normalized_messages
+	normalized_messages.remove_at(meta_index)
+	normalized_messages.insert(0, normalized_meta)
+	return normalized_messages
+
+func _normalize_all_conversations_with_meta() -> void:
+	for convo_id in CONVERSATIONS.keys():
+		CONVERSATIONS[convo_id] = _ensure_conversation_meta_message(CONVERSATIONS[convo_id])
+
+func _sync_conversation_order() -> void:
+	var normalized_order = []
+	var seen = {}
+	for raw_id in CONVERSATION_ORDER:
+		var convo_id = str(raw_id).strip_edges()
+		if convo_id == "":
+			continue
+		if seen.has(convo_id):
+			continue
+		if CONVERSATIONS.has(convo_id):
+			normalized_order.append(convo_id)
+			seen[convo_id] = true
+	for raw_id in CONVERSATIONS.keys():
+		var convo_id = str(raw_id).strip_edges()
+		if convo_id == "":
+			continue
+		if seen.has(convo_id):
+			continue
+		normalized_order.append(convo_id)
+		seen[convo_id] = true
+	CONVERSATION_ORDER = normalized_order
+
+func _extract_loaded_conversations(raw_conversations) -> Dictionary:
+	var loaded_conversations = {}
+	if raw_conversations is Dictionary:
+		for raw_id in raw_conversations.keys():
+			var convo_id = str(raw_id).strip_edges()
+			if convo_id == "":
+				continue
+			var convo_messages = raw_conversations[raw_id]
+			loaded_conversations[convo_id] = _ensure_conversation_meta_message(convo_messages)
+	elif raw_conversations is Array:
+		for raw_entry in raw_conversations:
+			if not (raw_entry is Dictionary):
+				continue
+			var convo_id = str(raw_entry.get("id", "")).strip_edges()
+			if convo_id == "":
+				convo_id = getRandomConvoID(4)
+			while loaded_conversations.has(convo_id):
+				convo_id = getRandomConvoID(4)
+			var convo_messages = raw_entry.get("messages", [])
+			loaded_conversations[convo_id] = _ensure_conversation_meta_message(convo_messages)
+	return loaded_conversations
+
+func _apply_loaded_conversations(raw_conversations, raw_order) -> void:
+	CONVERSATIONS = _extract_loaded_conversations(raw_conversations)
+	_normalize_all_conversations_with_meta()
+	CONVERSATION_ORDER = []
+	if raw_order is Array:
+		for raw_id in raw_order:
+			var convo_id = str(raw_id).strip_edges()
+			if convo_id == "":
+				continue
+			if not CONVERSATIONS.has(convo_id):
+				continue
+			if CONVERSATION_ORDER.has(convo_id):
+				continue
+			CONVERSATION_ORDER.append(convo_id)
+	_sync_conversation_order()
+
+func _set_current_conversation_after_load() -> void:
+	if CONVERSATION_ORDER.size() == 0:
+		CURRENT_EDITED_CONVO_IX = ""
+		return
+	CURRENT_EDITED_CONVO_IX = str(CONVERSATION_ORDER[CONVERSATION_ORDER.size() - 1])
+
+func _set_message_update_suppressed(suppressed: bool) -> void:
+	_suppress_message_update_events = suppressed
+
+func is_message_update_suppressed() -> bool:
+	return _suppress_message_update_events
+
+func _extract_conversation_order_from_json_text(json_text_data: String) -> Array:
+	var conversations_key_index = json_text_data.find("\"conversations\"")
+	if conversations_key_index == -1:
+		return []
+	var object_start_index = json_text_data.find("{", conversations_key_index)
+	if object_start_index == -1:
+		return []
+	var extracted_order = []
+	var depth = 1
+	var i = object_start_index + 1
+	var in_string = false
+	var escaped = false
+	var expect_key = true
+	while i < json_text_data.length() and depth > 0:
+		var ch = json_text_data.substr(i, 1)
+		if in_string:
+			if escaped:
+				escaped = false
+			elif ch == "\\":
+				escaped = true
+			elif ch == "\"":
+				in_string = false
+			i += 1
+			continue
+		if ch == "\"":
+			if depth == 1 and expect_key:
+				var key_start = i + 1
+				var key_end = key_start
+				var key_escape = false
+				while key_end < json_text_data.length():
+					var key_char = json_text_data.substr(key_end, 1)
+					if key_escape:
+						key_escape = false
+					elif key_char == "\\":
+						key_escape = true
+					elif key_char == "\"":
+						break
+					key_end += 1
+				if key_end >= json_text_data.length():
+					break
+				var key_text = json_text_data.substr(key_start, key_end - key_start)
+				if key_text != "" and not extracted_order.has(key_text):
+					extracted_order.append(key_text)
+				i = key_end + 1
+				expect_key = false
+				continue
+			in_string = true
+			escaped = false
+			i += 1
+			continue
+		if ch == "{":
+			depth += 1
+		elif ch == "}":
+			depth -= 1
+		elif ch == "," and depth == 1:
+			expect_key = true
+		i += 1
+	return extracted_order
 
 func getallnodes(node):
 	var nodeCollection = []
@@ -132,8 +313,25 @@ func _default_last_project_state() -> Dictionary:
 		"path": "",
 		"cloudURL": "",
 		"cloudKey": "",
-		"cloudName": ""
+		"cloudName": "",
+		"imageUploadSetting": 0,
+		"imageUploadServerURL": "",
+		"imageUploadServerKey": ""
 	}
+
+func _build_last_project_upload_state_from_settings() -> Dictionary:
+	return {
+		"imageUploadSetting": int(SETTINGS.get("imageUploadSetting", 0)),
+		"imageUploadServerURL": str(SETTINGS.get("imageUploadServerURL", "")).strip_edges(),
+		"imageUploadServerKey": str(SETTINGS.get("imageUploadServerKey", "")).strip_edges()
+	}
+
+func _merge_last_project_upload_state(state: Dictionary) -> Dictionary:
+	var merged_state = state.duplicate(true)
+	var upload_state = _build_last_project_upload_state_from_settings()
+	for key in upload_state.keys():
+		merged_state[key] = upload_state[key]
+	return merged_state
 
 func _save_last_project_state(state: Dictionary) -> void:
 	var merged_state = _default_last_project_state()
@@ -176,13 +374,13 @@ func save_last_project_data(json_data: String) -> void:
 func _remember_last_open_local(path: String, json_data: String) -> void:
 	save_last_project_path(path)
 	save_last_project_data(json_data)
-	_save_last_project_state({
+	_save_last_project_state(_merge_last_project_upload_state({
 		"source": LAST_PROJECT_SOURCE_LOCAL,
 		"path": path,
 		"cloudURL": "",
 		"cloudKey": "",
 		"cloudName": ""
-	})
+	}))
 
 func _remember_last_open_cloud(json_data: String) -> void:
 	var cloud_url = str(SETTINGS.get("projectCloudURL", "")).strip_edges()
@@ -190,13 +388,13 @@ func _remember_last_open_cloud(json_data: String) -> void:
 	var cloud_name = str(SETTINGS.get("projectCloudName", "")).strip_edges()
 	save_last_project_path("")
 	save_last_project_data(json_data)
-	_save_last_project_state({
+	_save_last_project_state(_merge_last_project_upload_state({
 		"source": LAST_PROJECT_SOURCE_CLOUD,
 		"path": "",
 		"cloudURL": cloud_url,
 		"cloudKey": cloud_key,
 		"cloudName": cloud_name
-	})
+	}))
 
 func _clear_last_project_memory() -> void:
 	save_last_project_path("")
@@ -283,6 +481,12 @@ func _apply_cloud_state_from_last_project_state(state: Dictionary) -> void:
 	updated_settings["projectCloudURL"] = str(state.get("cloudURL", ""))
 	updated_settings["projectCloudKey"] = str(state.get("cloudKey", ""))
 	updated_settings["projectCloudName"] = str(state.get("cloudName", ""))
+	var restored_upload_setting = int(state.get("imageUploadSetting", 1))
+	if restored_upload_setting != 1:
+		restored_upload_setting = 1
+	updated_settings["imageUploadSetting"] = restored_upload_setting
+	updated_settings["imageUploadServerURL"] = str(state.get("imageUploadServerURL", updated_settings.get("imageUploadServerURL", ""))).strip_edges()
+	updated_settings["imageUploadServerKey"] = str(state.get("imageUploadServerKey", updated_settings.get("imageUploadServerKey", ""))).strip_edges()
 	SETTINGS = updated_settings
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	_sync_save_load_ui_for_storage_mode()
@@ -714,6 +918,7 @@ func _reset_project_to_defaults(clear_last_project_memory: bool = true) -> void:
 	FINETUNEDATA = {}
 	FUNCTIONS = []
 	CONVERSATIONS = {}
+	CONVERSATION_ORDER = []
 	GRADERS = []
 	SCHEMAS = []
 	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
@@ -1178,25 +1383,42 @@ func _on_item_list_item_selected(index: int, save_before_switch = true) -> void:
 		save_current_conversation()
 		if switched_conversation:
 			_run_autosave("conversation_switch")
-	# Alle Nachrichten loeschen
+	var previous_suppress_state = _suppress_message_update_events
+	_set_message_update_suppressed(true)
 	for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 		if message.is_in_group("message"):
 			message.queue_free()
-	# Und die neuen aus der Convo laden
 	CURRENT_EDITED_CONVO_IX = next_conversation_ix
-	# Create conversation if it does not exist
 	print("IX:")
 	print(CURRENT_EDITED_CONVO_IX)
 	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
+	if not CONVERSATIONS.has(CURRENT_EDITED_CONVO_IX):
+		CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = _ensure_conversation_meta_message([])
+		if not CONVERSATION_ORDER.has(CURRENT_EDITED_CONVO_IX):
+			CONVERSATION_ORDER.append(CURRENT_EDITED_CONVO_IX)
+		_sync_conversation_order()
+	CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)] = _ensure_conversation_meta_message(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
+	_set_message_update_suppressed(previous_suppress_state)
 	$Conversation/Graders/GradersList.update_from_last_message()
 
 func save_current_conversation_to_conversations_at_index(ix: int):
 	# THERE SHOULD BE NO REASON TO USE THIS FUNCTION
-	CONVERSATIONS[ix] = $Conversation/Messages/MessagesList.to_var()
+	var convo_id = str(ix)
+	if convo_id == "":
+		return
+	CONVERSATIONS[convo_id] = _ensure_conversation_meta_message($Conversation/Messages/MessagesList.to_var())
+	if not CONVERSATION_ORDER.has(convo_id):
+		CONVERSATION_ORDER.append(convo_id)
+	_sync_conversation_order()
 
 func save_current_conversation():
-	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = $Conversation/Messages/MessagesList.to_var()
+	if CURRENT_EDITED_CONVO_IX == "":
+		return
+	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = _ensure_conversation_meta_message($Conversation/Messages/MessagesList.to_var())
+	if not CONVERSATION_ORDER.has(CURRENT_EDITED_CONVO_IX):
+		CONVERSATION_ORDER.append(CURRENT_EDITED_CONVO_IX)
+	_sync_conversation_order()
 
 func _on_load_btn_pressed() -> void:
 	await _run_selected_load_action(_get_default_load_action())
@@ -1292,6 +1514,10 @@ func exists_parameter_without_description():
 
 func check_is_conversation_problematic(idx: String):
 	var thisconvo = CONVERSATIONS[idx]
+	if not (thisconvo is Array):
+		return true
+	if thisconvo.size() == 0:
+		return true
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		# DPO: First message user, second message assistant (with meta message 3 messages)
@@ -1362,9 +1588,10 @@ func get_conversation_name_or_false(idx):
 	return false
 
 func refresh_conversations_list():
+	_sync_conversation_order()
 	$VBoxContainer/ConversationsList.clear()
 	var numberIx = -1
-	for i in CONVERSATIONS.keys():
+	for i in CONVERSATION_ORDER:
 		numberIx += 1
 		var conversation_name = i
 		if get_conversation_name_or_false(i):
@@ -1386,16 +1613,36 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	update_schemas_internal()
 
 
-func create_new_conversation(msgs=[]):
+func create_new_conversation(msgs: Array = []):
 	# Generate a new ConvoID
 	var newID = getRandomConvoID(4)
-	CONVERSATIONS[newID] = msgs
+	CONVERSATIONS[newID] = _ensure_conversation_meta_message(msgs)
+	CONVERSATION_ORDER.append(newID)
+	_sync_conversation_order()
 	# Update everything that needs to be updated
 	refresh_conversations_list()
 	return newID
 
+func _duplicate_conversation_by_id(source_convo_id: String) -> String:
+	var source_id = str(source_convo_id).strip_edges()
+	if source_id == "":
+		return ""
+	if not CONVERSATIONS.has(source_id):
+		return ""
+	var new_convo_id = getRandomConvoID(4)
+	var source_messages = CONVERSATIONS[source_id]
+	if source_messages is Array:
+		CONVERSATIONS[new_convo_id] = _ensure_conversation_meta_message(source_messages)
+	else:
+		CONVERSATIONS[new_convo_id] = _ensure_conversation_meta_message([])
+	CONVERSATION_ORDER.append(new_convo_id)
+	_sync_conversation_order()
+	refresh_conversations_list()
+	return new_convo_id
+
 func append_to_conversation(convoid, msg={}):
 	if convoid in CONVERSATIONS:
+		CONVERSATIONS[convoid] = _ensure_conversation_meta_message(CONVERSATIONS[convoid])
 		CONVERSATIONS[convoid].append(msg)
 	else:
 		print("Error: No such conversation" + str(convoid))
@@ -1426,9 +1673,11 @@ func _on_button_pressed() -> void:
 	
 
 func save_to_binary(filename):
+	_sync_conversation_order()
 	FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["conversationOrder"] = CONVERSATION_ORDER
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
 	FINETUNEDATA["schemas"] = SCHEMAS
@@ -1438,70 +1687,85 @@ func save_to_binary(filename):
 		file.close()
 	else:
 		print("file open failed")
-	
-func load_from_binary(filename):
-	if FileAccess.file_exists(filename):
-		print("save file found")
-		var file = FileAccess.open(filename, FileAccess.READ)
-		FINETUNEDATA = file.get_var()
-		file.close()
-		FUNCTIONS = FINETUNEDATA["functions"]
-		CONVERSATIONS = FINETUNEDATA["conversations"]
-		SETTINGS = FINETUNEDATA["settings"]
-		GRADERS = FINETUNEDATA.get("graders", [])
-		SCHEMAS = FINETUNEDATA.get("schemas", [])
-		for i in CONVERSATIONS.keys():
-			CURRENT_EDITED_CONVO_IX = str(i)
-			$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
-			$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
-			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
-			_sync_save_load_ui_for_storage_mode()
-			_configure_autosave()
-			$Conversation/Graders/GradersList.from_var(GRADERS)
-			$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
-			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-			refresh_conversations_list()
-			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
-			$VBoxContainer/ConversationsList.select(selected_index)
-			_on_item_list_item_selected(selected_index, false)
-			call_deferred("_convert_base64_images_after_load")
-	else:
-		print("file not found")
 
-func load_from_json_data(jsondata: String):
-	var json_as_dict = JSON.parse_string(jsondata)
-	print(json_as_dict)
-	# Unload all UI
+func _apply_loaded_project_data(loaded_data: Dictionary, conversation_order_override: Array = []) -> void:
 	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
 	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
-	FINETUNEDATA = json_as_dict
-	FUNCTIONS = FINETUNEDATA["functions"]
-	CONVERSATIONS = FINETUNEDATA["conversations"]
-	SETTINGS = FINETUNEDATA["settings"]
-	GRADERS = FINETUNEDATA.get("graders", [])
-	SCHEMAS = FINETUNEDATA.get("schemas", [])
-	for i in CONVERSATIONS.keys():
-		CURRENT_EDITED_CONVO_IX = str(i)
+	FINETUNEDATA = loaded_data
+	var loaded_functions = FINETUNEDATA.get("functions", [])
+	if loaded_functions is Array:
+		FUNCTIONS = loaded_functions
+	else:
+		FUNCTIONS = []
+	var loaded_settings = FINETUNEDATA.get("settings", {})
+	if loaded_settings is Dictionary:
+		SETTINGS = loaded_settings
+	else:
+		SETTINGS = {}
+	var loaded_graders = FINETUNEDATA.get("graders", [])
+	if loaded_graders is Array:
+		GRADERS = loaded_graders
+	else:
+		GRADERS = []
+	var loaded_schemas = FINETUNEDATA.get("schemas", [])
+	if loaded_schemas is Array:
+		SCHEMAS = loaded_schemas
+	else:
+		SCHEMAS = []
+	var loaded_conversation_order = FINETUNEDATA.get("conversationOrder", [])
+	if conversation_order_override.size() > 0:
+		loaded_conversation_order = conversation_order_override
+	_apply_loaded_conversations(FINETUNEDATA.get("conversations", {}), loaded_conversation_order)
+	_set_current_conversation_after_load()
 	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
 	_sync_save_load_ui_for_storage_mode()
 	_configure_autosave()
 	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
 	$Conversation/Graders/GradersList.from_var(GRADERS)
 	$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
-	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 	refresh_conversations_list()
 	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
-	if selected_index == -1:
-		selected_index = len(CONVERSATIONS) - 1 
-	$VBoxContainer/ConversationsList.select(selected_index)
-	_on_item_list_item_selected(selected_index, false)
+	if selected_index >= 0:
+		$VBoxContainer/ConversationsList.select(selected_index)
+		_on_item_list_item_selected(selected_index, false)
+	else:
+		$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
 	call_deferred("_convert_base64_images_after_load")
+	
+func load_from_binary(filename):
+	if not FileAccess.file_exists(filename):
+		print("file not found")
+		return
+	print("save file found")
+	var file = FileAccess.open(filename, FileAccess.READ)
+	var loaded_data = file.get_var()
+	file.close()
+	if not (loaded_data is Dictionary):
+		push_error("Could not load binary project: Invalid project data.")
+		return
+	_apply_loaded_project_data(loaded_data)
+
+func load_from_json_data(jsondata: String):
+	var json_as_dict = JSON.parse_string(jsondata)
+	print(json_as_dict)
+	if not (json_as_dict is Dictionary):
+		push_error("Could not load JSON project: Invalid project data.")
+		return
+	var conversation_order_override = []
+	if not json_as_dict.has("conversationOrder"):
+		conversation_order_override = _extract_conversation_order_from_json_text(jsondata)
+	else:
+		var loaded_order = json_as_dict.get("conversationOrder", [])
+		if loaded_order is Array and loaded_order.size() == 0:
+			conversation_order_override = _extract_conversation_order_from_json_text(jsondata)
+	_apply_loaded_project_data(json_as_dict, conversation_order_override)
 
 func make_save_json_data():
+	_sync_conversation_order()
 	FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["conversationOrder"] = CONVERSATION_ORDER
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
 	FINETUNEDATA["schemas"] = SCHEMAS
@@ -2012,19 +2276,23 @@ func _on_save_file_dialog_canceled() -> void:
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)
+	CONVERSATION_ORDER.erase(ixStr)
+	_sync_conversation_order()
 	# If we were currently editing this conversation, unload it
 	if CURRENT_EDITED_CONVO_IX == ixStr:
 		for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 			if message.is_in_group("message"):
 				message.queue_free()
-		# Select a random conversation that we will now be editing
-		for c in CONVERSATIONS.keys():
-			CURRENT_EDITED_CONVO_IX = c
+		if CONVERSATION_ORDER.size() > 0:
+			CURRENT_EDITED_CONVO_IX = str(CONVERSATION_ORDER[0])
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-			refresh_conversations_list()
-			$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
-			break
+		else:
+			CURRENT_EDITED_CONVO_IX = ""
 	refresh_conversations_list()
+	if CURRENT_EDITED_CONVO_IX != "":
+		var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+		if selected_index >= 0:
+			$VBoxContainer/ConversationsList.select(selected_index)
 	print(CONVERSATIONS)
 
 func get_ItemList_selected_Item_index(node: ItemList) -> int:
@@ -2036,17 +2304,19 @@ func get_ItemList_selected_Item_index(node: ItemList) -> int:
 func _on_conversations_list_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		if event.pressed and event.keycode == 4194312:
-			# Go through every entry and check if it is selected
-			for i in range($VBoxContainer/ConversationsList.item_count):
-				if $VBoxContainer/ConversationsList.is_selected(i):
-					delete_conversation($VBoxContainer/ConversationsList.get_item_tooltip(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)))
+			var selected_index = get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)
+			if selected_index >= 0:
+				var convo_id = str($VBoxContainer/ConversationsList.get_item_tooltip(selected_index))
+				delete_conversation(convo_id)
 		if event.pressed and Input.is_key_pressed(KEY_CTRL) and event.keycode == KEY_D:
-			for i in range($VBoxContainer/ConversationsList.item_count):
-				if $VBoxContainer/ConversationsList.is_selected(i):
-					var newConvoID = getRandomConvoID(4)
-					var origConvoID = $VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList))
-					CONVERSATIONS[newConvoID] = CONVERSATIONS[origConvoID]
-					refresh_conversations_list()
+			var selected_index = get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)
+			if selected_index >= 0:
+				var source_id = str($VBoxContainer/ConversationsList.get_item_tooltip(selected_index))
+				var duplicated_id = _duplicate_conversation_by_id(source_id)
+				if duplicated_id != "":
+					var duplicated_index = selectionStringToIndex($VBoxContainer/ConversationsList, duplicated_id)
+					if duplicated_index >= 0:
+						$VBoxContainer/ConversationsList.select(duplicated_index)
 					
 
 func _on_collapse_burger_btn_pressed() -> void:
@@ -2074,7 +2344,10 @@ func create_jsonl_data_for_file():
 	# Check what the settings say about what to export
 	var whatToExport = SETTINGS.get("exportConvo", 0)
 	# 0 -> only unproblematic, 1 -> only ready, 2 -> all
-	for convokey in allconversations:
+	_sync_conversation_order()
+	for convokey in CONVERSATION_ORDER:
+		if not allconversations.has(convokey):
+			continue
 		if whatToExport == 0:
 			if not check_is_conversation_problematic(convokey):
 				unproblematicconversations[convokey] = CONVERSATIONS[convokey]

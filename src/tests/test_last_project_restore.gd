@@ -87,6 +87,50 @@ func _test_local_missing_path_falls_back_to_snapshot() -> void:
 	_assert_eq(str(restored_state.get("source", "")), "local", "local marker should stay after snapshot fallback")
 	await _destroy_scene(restored_scene)
 
+func _test_cloud_marker_stores_upload_server_settings() -> void:
+	_clear_last_project_files()
+	var scene = await _create_scene()
+	scene._apply_cloud_target_settings("https://state.example/project-storage.php", "state_key", "state_project")
+	scene.SETTINGS["imageUploadSetting"] = 1
+	scene.SETTINGS["imageUploadServerURL"] = "https://images.example/image-upload.php"
+	scene.SETTINGS["imageUploadServerKey"] = "image_state_key"
+	var snapshot = scene.make_save_json_data()
+	scene._remember_last_open_cloud(snapshot)
+	var saved_state = _read_last_project_state()
+	_assert_eq(str(saved_state.get("source", "")), "cloud", "cloud marker should be stored after remember cloud")
+	_assert_eq(int(saved_state.get("imageUploadSetting", -1)), 1, "cloud marker should persist upload mode")
+	_assert_eq(str(saved_state.get("imageUploadServerURL", "")), "https://images.example/image-upload.php", "cloud marker should persist upload URL")
+	_assert_eq(str(saved_state.get("imageUploadServerKey", "")), "image_state_key", "cloud marker should persist upload key")
+	await _destroy_scene(scene)
+
+func _test_apply_cloud_state_restores_upload_server_settings() -> void:
+	_clear_last_project_files()
+	var scene = await _create_scene()
+	var cloud_state = {
+		"source": "cloud",
+		"path": "",
+		"cloudURL": "https://cloud.example/project-storage.php",
+		"cloudKey": "cloud_key_from_state",
+		"cloudName": "cloud_project_from_state",
+		"imageUploadSetting": 1,
+		"imageUploadServerURL": "https://upload-from-state.example/image-upload.php",
+		"imageUploadServerKey": "upload_key_from_state"
+	}
+	scene._apply_cloud_state_from_last_project_state(cloud_state)
+	_assert_eq(int(scene.SETTINGS.get("projectStorageMode", -1)), scene.PROJECT_STORAGE_MODE_CLOUD, "cloud state restore should set cloud storage mode")
+	_assert_eq(str(scene.SETTINGS.get("projectCloudURL", "")), "https://cloud.example/project-storage.php", "cloud state restore should set cloud URL")
+	_assert_eq(str(scene.SETTINGS.get("projectCloudKey", "")), "cloud_key_from_state", "cloud state restore should set cloud key")
+	_assert_eq(str(scene.SETTINGS.get("projectCloudName", "")), "cloud_project_from_state", "cloud state restore should set cloud project id")
+	_assert_eq(int(scene.SETTINGS.get("imageUploadSetting", -1)), 1, "cloud state restore should keep upload mode enabled")
+	_assert_eq(str(scene.SETTINGS.get("imageUploadServerURL", "")), "https://upload-from-state.example/image-upload.php", "cloud state restore should set upload URL")
+	_assert_eq(str(scene.SETTINGS.get("imageUploadServerKey", "")), "upload_key_from_state", "cloud state restore should set upload key")
+	var settings_ui = scene.get_node("Conversation/Settings/ConversationSettings")
+	var upload_url_edit = settings_ui.get_node("VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit")
+	var upload_key_edit = settings_ui.get_node("VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit")
+	_assert_eq(str(upload_url_edit.text), "https://upload-from-state.example/image-upload.php", "cloud state restore should update upload URL field")
+	_assert_eq(str(upload_key_edit.text), "upload_key_from_state", "cloud state restore should update upload key field")
+	await _destroy_scene(scene)
+
 func _test_cloud_restore_failure_falls_back_to_empty_project_and_keeps_marker() -> void:
 	_clear_last_project_files()
 	var cloud_state = {
@@ -94,16 +138,23 @@ func _test_cloud_restore_failure_falls_back_to_empty_project_and_keeps_marker() 
 		"path": "",
 		"cloudURL": "http://127.0.0.1:59999/project-storage.php",
 		"cloudKey": "invalid_key",
-		"cloudName": "cloud_restore_test"
+		"cloudName": "cloud_restore_test",
+		"imageUploadSetting": 1,
+		"imageUploadServerURL": "https://upload.example/image-upload.php",
+		"imageUploadServerKey": "upload_key_123"
 	}
 	_write_text_file("user://last_project_state.json", JSON.stringify(cloud_state))
 
 	var scene = await _create_scene()
+	_check(str(scene.LAST_PROJECT_STATE_FILE).begins_with("user://"), "last-project state file must use user:// for desktop and Android")
 	_check(scene.CONVERSATIONS.size() > 0, "cloud failure fallback should create an empty default project")
 	_assert_eq(str(scene.RUNTIME.get("filepath", "")), "", "cloud fallback project should not have a local filepath")
 	var state_after_failure = _read_last_project_state()
 	_assert_eq(str(state_after_failure.get("source", "")), "cloud", "cloud marker should remain after failed cloud startup load")
 	_assert_eq(str(state_after_failure.get("cloudName", "")), "cloud_restore_test", "cloud marker fields should remain unchanged")
+	_assert_eq(int(state_after_failure.get("imageUploadSetting", -1)), 1, "upload mode marker should remain after failed cloud startup load")
+	_assert_eq(str(state_after_failure.get("imageUploadServerURL", "")), "https://upload.example/image-upload.php", "upload URL marker should remain after failed cloud startup load")
+	_assert_eq(str(state_after_failure.get("imageUploadServerKey", "")), "upload_key_123", "upload key marker should remain after failed cloud startup load")
 	await _destroy_scene(scene)
 
 func _init() -> void:
@@ -112,6 +163,8 @@ func _init() -> void:
 func _run() -> void:
 	await _test_local_path_restore()
 	await _test_local_missing_path_falls_back_to_snapshot()
+	await _test_cloud_marker_stores_upload_server_settings()
+	await _test_apply_cloud_state_restores_upload_server_settings()
 	await _test_cloud_restore_failure_falls_back_to_empty_project_and_keeps_marker()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

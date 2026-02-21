@@ -124,9 +124,9 @@ func _configure_message_settings_row(enabled: bool) -> void:
 	else:
 		role_button.fit_to_longest_item = true
 		type_button.fit_to_longest_item = true
-		role_button.size_flags_horizontal = 0
-		type_button.size_flags_horizontal = 0
-		delete_button.size_flags_horizontal = 0
+		role_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		type_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		user_name_edit.size_flags_horizontal = 0
 		role_button.custom_minimum_size = Vector2(0, 0)
 		type_button.custom_minimum_size = Vector2(0, 0)
@@ -401,9 +401,16 @@ func from_var(data):
 		$MessageSettingsContainer.visible = false
 		$MetaMessageContainer.visible = true
 		var metaData = data.get("metaData", {})
-		$MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed = metaData.get("ready", false)
-		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName", "")
-		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes", "")
+		var ready_checkbox = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox
+		var conversation_name_edit = $MetaMessageContainer/ConversationNameContainer/ConversationNameEdit
+		var conversation_notes_edit = $MetaMessageContainer/ConversationNotesEdit
+		conversation_name_edit.set_block_signals(true)
+		conversation_notes_edit.set_block_signals(true)
+		ready_checkbox.set_pressed_no_signal(metaData.get("ready", false))
+		conversation_name_edit.text = metaData.get("conversationName", "")
+		conversation_notes_edit.text = metaData.get("notes", "")
+		conversation_name_edit.set_block_signals(false)
+		conversation_notes_edit.set_block_signals(false)
 		# Update the saved token counts if available
 		if savedTokenCounts:
 			update_token_costs(savedTokenCounts)
@@ -1488,11 +1495,15 @@ func _on_schema_validate_timeout() -> void:
 func update_messages_global():
 	var ft_node = _get_fine_tune_node()
 	if ft_node != null:
+		if ft_node.has_method("is_message_update_suppressed") and ft_node.is_message_update_suppressed():
+			return
 		ft_node.save_current_conversation()
 
 func _refresh_conversations_sidebar_for_current_conversation() -> void:
 	var ft_node = _get_fine_tune_node()
 	if ft_node == null:
+		return
+	if ft_node.has_method("is_message_update_suppressed") and ft_node.is_message_update_suppressed():
 		return
 	ft_node.refresh_conversations_list()
 	var list_node = ft_node.get_node_or_null("VBoxContainer/ConversationsList")

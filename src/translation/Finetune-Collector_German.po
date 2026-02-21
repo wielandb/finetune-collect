@@ -1616,7 +1616,7 @@ msgstr "Externer Schema-Editor deaktiviert, da keine URL konfiguriert ist."
 
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED"
-msgstr "Externen Schema-Editor Ã¶ffnen (optionaler Fallback)."
+msgstr "Externen Schema-Editor öffnen (optionaler Fallback)."
 
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_USE_NULL"
@@ -2012,7 +2012,7 @@ msgstr "Projektspeicher-Modus"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_PROJECT_STORAGE_HINT"
-msgstr "WÃ¤hle, ob Projekte lokal oder Ã¼ber den konfigurierten Cloud-PHP-Endpunkt gespeichert werden."
+msgstr "Wähle, ob Projekte lokal oder über den konfigurierten Cloud-PHP-Endpunkt gespeichert werden."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
@@ -2032,11 +2032,11 @@ msgstr "URL zur gehosteten project-storage.php."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
-msgstr "Cloud-API-SchlÃ¼ssel"
+msgstr "Cloud-API-Schlüssel"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_PROJECT_CLOUD_KEY_HINT"
-msgstr "Geheimer SchlÃ¼ssel aus der project-storage.php."
+msgstr "Geheimer Schlüssel aus der project-storage.php."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
@@ -2044,7 +2044,7 @@ msgstr "Cloud-Projektname"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_PROJECT_CLOUD_NAME_HINT"
-msgstr "Kennung, die als Dateiname fÃ¼r das Cloud-Projekt verwendet wird."
+msgstr "Kennung, die als Dateiname für das Cloud-Projekt verwendet wird."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_AUTOSAVE_LABEL"

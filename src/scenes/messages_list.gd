@@ -421,6 +421,10 @@ func on_dropped_files(files):
 						var ftcmsglist = ft_node.conversation_from_openai_message_json(json_text)
 						for ftmsg in ftcmsglist:
 							add_message(ftmsg)
+		elif file.to_lower().ends_with(".jsonl"):
+			var ft_node = get_tree().get_root().get_node("FineTune")
+			if ft_node != null and ft_node.has_method("import_finetune_jsonl_file"):
+				ft_node.import_finetune_jsonl_file(file)
 
 func add_message(message_obj):
 			# Add a new message to the MessagesListContainer

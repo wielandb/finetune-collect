@@ -100,16 +100,23 @@ func _configure_message_settings_row(enabled: bool) -> void:
 	var delete_button = $MessageSettingsContainer/DeleteButton
 	var user_name_edit = $MessageSettingsContainer/UserNameEdit
 	if enabled:
+		var compact_row_height = int(role_button.get_combined_minimum_size().y)
+		compact_row_height = maxi(compact_row_height, int(type_button.get_combined_minimum_size().y))
+		compact_row_height = maxi(compact_row_height, int(delete_button.get_combined_minimum_size().y))
+		compact_row_height = maxi(compact_row_height, int(user_name_edit.get_combined_minimum_size().y))
 		role_button.fit_to_longest_item = false
 		type_button.fit_to_longest_item = false
 		role_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		type_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		delete_button.size_flags_horizontal = 0
 		user_name_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		role_button.custom_minimum_size.x = 0
-		type_button.custom_minimum_size.x = 0
-		delete_button.custom_minimum_size.x = 0
-		user_name_edit.custom_minimum_size.x = 0
+		role_button.custom_minimum_size = Vector2(0, compact_row_height)
+		type_button.custom_minimum_size = Vector2(0, compact_row_height)
+		delete_button.custom_minimum_size = Vector2(compact_row_height, compact_row_height)
+		user_name_edit.custom_minimum_size = Vector2(0, compact_row_height)
+		role_button.clip_text = true
+		type_button.clip_text = true
+		delete_button.clip_text = true
 		delete_button.text = ""
 		delete_button.tooltip_text = tr("GENERIC_DELETE")
 	else:
@@ -119,6 +126,13 @@ func _configure_message_settings_row(enabled: bool) -> void:
 		type_button.size_flags_horizontal = 0
 		delete_button.size_flags_horizontal = 0
 		user_name_edit.size_flags_horizontal = 0
+		role_button.custom_minimum_size = Vector2(0, 0)
+		type_button.custom_minimum_size = Vector2(0, 0)
+		delete_button.custom_minimum_size = Vector2(0, 0)
+		user_name_edit.custom_minimum_size = Vector2(0, 0)
+		role_button.clip_text = false
+		type_button.clip_text = false
+		delete_button.clip_text = false
 		delete_button.text = tr("GENERIC_DELETE")
 		delete_button.tooltip_text = ""
 

@@ -109,24 +109,52 @@ func _run() -> void:
 	get_root().add_child(message)
 	await process_frame
 	message.set_compact_layout(true)
+	await process_frame
 	_check(message.vertical, "message root should be vertical in compact layout")
 	_check(not message.get_node("MessageSettingsContainer").vertical, "message actions should be horizontal in compact layout")
 	_check(message.get_node("TextMessageContainer/TextnachrichtLabel").get_theme_font_size("font_size") == 24, "message title should use compact font size")
 	_check(message.get_node("ImageMessageContainer/HBoxContainer").vertical, "image detail row should stack in compact layout")
 	_check(not message.get_node("ImageMessageContainer/HBoxContainer/ImageDetailOptionButton").fit_to_longest_item, "image detail selector should not expand to longest item in compact layout")
 	_check(message.get_node("ImageMessageContainer/LoadButtonsContainer/LoadImageButton").size_flags_horizontal == Control.SIZE_EXPAND_FILL, "image load button should expand within compact width")
+	var settings_container = message.get_node("MessageSettingsContainer")
+	var role_button = message.get_node("MessageSettingsContainer/Role")
+	var message_type_button = message.get_node("MessageSettingsContainer/MessageType")
+	var delete_button = message.get_node("MessageSettingsContainer/DeleteButton")
+	_check(absf(message_type_button.size.y - role_button.size.y) <= 0.5, "message type selector should have same compact height as role button")
+	_check(absf(message_type_button.size.y - delete_button.size.y) <= 0.5, "message type selector should have same compact height as delete button")
+	var delete_button_right = delete_button.position.x + delete_button.size.x
+	_check(delete_button_right <= settings_container.size.x + 0.5, "delete button should stay inside compact settings row")
 	message.set_compact_layout(false)
 	_check(not message.vertical, "message root should return to desktop horizontal layout")
 	_check(message.get_node("MessageSettingsContainer").vertical, "message actions should return to vertical in desktop layout")
 	_check(message.get_node("TextMessageContainer/TextnachrichtLabel").get_theme_font_size("font_size") == 36, "message title should return to desktop font size")
 
 	var conversation_settings = load("res://scenes/conversation_settings.tscn").instantiate()
-	get_root().add_child(conversation_settings)
+	var conversation_settings_host = Control.new()
+	conversation_settings_host.position = Vector2.ZERO
+	conversation_settings_host.size = Vector2(1200, 900)
+	get_root().add_child(conversation_settings_host)
+	conversation_settings_host.add_child(conversation_settings)
+	conversation_settings.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	await process_frame
 	conversation_settings.set_compact_layout(true)
 	_check(conversation_settings.get_node("VBoxContainer/HBoxContainer").vertical, "global settings row should stack vertically in compact layout")
 	_check(conversation_settings.get_node("VBoxContainer/APIKeySettingContainer").vertical, "api key row should stack vertically in compact layout")
 	_check(conversation_settings.horizontal_scroll_mode == ScrollContainer.SCROLL_MODE_DISABLED, "conversation settings should disable horizontal scrolling")
+	conversation_settings.set_compact_layout(false)
+	await process_frame
+	await process_frame
+	_check(not conversation_settings.get_node("VBoxContainer/APIKeySettingContainer").vertical, "api key row should stay horizontal in wide desktop tabs")
+	var model_row = conversation_settings.get_node("VBoxContainer/ModelChoiceContainer")
+	conversation_settings.get_node("VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton").custom_minimum_size = Vector2(700, 0)
+	conversation_settings_host.size = Vector2(620, 900)
+	await process_frame
+	await process_frame
+	_check(model_row.vertical, "model choice row should stack in narrow desktop tabs to avoid overflow")
+	for child in model_row.get_children():
+		if child is Control and child.visible:
+			var child_right = child.position.x + child.size.x
+			_check(child_right <= model_row.size.x + 1.0, "model choice row controls should remain inside row bounds")
 
 	var schema_container = load("res://scenes/schemas/json_schema_container.tscn").instantiate()
 	get_root().add_child(schema_container)

@@ -32,6 +32,8 @@ func _run() -> void:
 	var scene = load("res://scenes/fine_tune.tscn").instantiate()
 	get_root().add_child(scene)
 	await create_timer(0.15).timeout
+	var save_mode_btn = scene.get_node("VBoxContainer/SaveControls/SaveModeBtn")
+	_check(not save_mode_btn.fit_to_longest_item, "save mode option button should not expand to the longest translated entry")
 
 	await _set_window_size(360, 640)
 	_check(scene.is_compact_layout_enabled(), "compact layout should be enabled for 360x640")

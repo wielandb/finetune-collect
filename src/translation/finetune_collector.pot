@@ -1709,3 +1709,71 @@ msgstr ""
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
 msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_CLOUD"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_OFF"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_5MIN"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_CONVO_SWITCH"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_CLOUD"
+msgstr ""

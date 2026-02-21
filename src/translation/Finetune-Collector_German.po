@@ -1921,3 +1921,71 @@ msgstr "String passt nicht zum Format: {format}."
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
 msgstr "Pfad: {path}"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_LABEL"
+msgstr "Projektspeicher-Modus"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_HINT"
+msgstr "WÃ¤hle, ob Projekte lokal oder Ã¼ber den konfigurierten Cloud-PHP-Endpunkt gespeichert werden."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
+msgstr "Lokal"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_CLOUD"
+msgstr "Cloud"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_LABEL"
+msgstr "Cloud-Projekt-PHP-URL"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_HINT"
+msgstr "URL zur gehosteten project-storage.php."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
+msgstr "Cloud-API-SchlÃ¼ssel"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_HINT"
+msgstr "Geheimer SchlÃ¼ssel aus der project-storage.php."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
+msgstr "Cloud-Projektname"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_HINT"
+msgstr "Kennung, die als Dateiname fÃ¼r das Cloud-Projekt verwendet wird."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_LABEL"
+msgstr "Automatisch speichern"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_HINT"
+msgstr "Speichert Projekte automatisch periodisch oder beim Konversationswechsel."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_OFF"
+msgstr "Aus"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_5MIN"
+msgstr "Alle 5 Minuten"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_CONVO_SWITCH"
+msgstr "Bei Konversationswechsel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD"
+msgstr "In Cloud speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_CLOUD"
+msgstr "Aus Cloud laden"

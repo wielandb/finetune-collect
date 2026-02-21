@@ -110,6 +110,9 @@ script = ExtResource("10_ido41")
 
 [node name="HTTPRequest" type="HTTPRequest" parent="Exporter" unique_id=2035345078]
 
+[node name="AutoSaveTimer" type="Timer" parent="." unique_id=1986651090]
+one_shot = false
+
 [connection signal="pressed" from="CollapsedMenu/ExpandBurgerBtn" to="." method="_on_expand_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/CollapseBurgerBtn" to="." method="_on_collapse_burger_btn_pressed"]
 [connection signal="pressed" from="VBoxContainer/NewConversationButton" to="." method="_on_button_pressed"]
@@ -122,3 +125,4 @@ script = ExtResource("10_ido41")
 [connection signal="pressed" from="VBoxContainer/ExportBtn" to="." method="_on_export_btn_pressed"]
 [connection signal="file_selected" from="VBoxContainer/ExportBtn/ExportFileDialog" to="." method="_on_export_file_dialog_file_selected"]
 [connection signal="tab_changed" from="Conversation" to="." method="_on_conversation_tab_changed"]
+[connection signal="timeout" from="AutoSaveTimer" to="." method="_on_auto_save_timer_timeout"]

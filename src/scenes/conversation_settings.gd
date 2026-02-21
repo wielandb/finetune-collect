@@ -25,6 +25,11 @@ const SETTINGS_ROW_NAMES = [
 	"ImageUploadServerURLContainer",
 	"ImageUploadServerKeyContainer",
 	"ImageUploadServerTestContainer",
+	"ProjectStorageModeContainer",
+	"ProjectCloudURLContainer",
+	"ProjectCloudKeyContainer",
+	"ProjectCloudNameContainer",
+	"AutoSaveModeContainer",
 	"SchemaEditorURLContainer",
 	"SchemaValidatorURLContainer"
 ]
@@ -175,6 +180,21 @@ func set_compact_layout(enabled: bool) -> void:
 	_compact_layout_enabled = enabled
 	_refresh_layout_state()
 
+func _get_project_storage_mode() -> int:
+	return $VBoxContainer/ProjectStorageModeContainer/ProjectStorageModeOptionButton.selected
+
+func _apply_project_storage_mode_ui() -> void:
+	var is_cloud_mode = _get_project_storage_mode() == 1
+	$VBoxContainer/ProjectCloudURLContainer.visible = is_cloud_mode
+	$VBoxContainer/ProjectCloudKeyContainer.visible = is_cloud_mode
+	$VBoxContainer/ProjectCloudNameContainer.visible = is_cloud_mode
+	var image_upload_option = $VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton
+	if is_cloud_mode:
+		image_upload_option.select(1)
+		image_upload_option.disabled = true
+	else:
+		image_upload_option.disabled = false
+
 func to_var():
 	var me = {}
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
@@ -194,7 +214,14 @@ func to_var():
 	me["useUserNames"] = $VBoxContainer/UseUserNamesCheckbox.button_pressed
 	me["schemaEditorURL"] = $VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text
 	me["schemaValidatorURL"] = $VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text
+	me["projectStorageMode"] = $VBoxContainer/ProjectStorageModeContainer/ProjectStorageModeOptionButton.selected
+	me["projectCloudURL"] = $VBoxContainer/ProjectCloudURLContainer/ProjectCloudURLEdit.text
+	me["projectCloudKey"] = $VBoxContainer/ProjectCloudKeyContainer/ProjectCloudKeyEdit.text
+	me["projectCloudName"] = $VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit.text
+	me["autoSaveMode"] = $VBoxContainer/AutoSaveModeContainer/AutoSaveModeOptionButton.selected
 	me["imageUploadSetting"] = $VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected
+	if me["projectStorageMode"] == 1:
+		me["imageUploadSetting"] = 1
 	me["imageUploadServerURL"] = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text
 	me["imageUploadServerKey"] = $VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text
 	me["tokenCounterPath"] = $VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text
@@ -223,6 +250,11 @@ func from_var(me):
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
 	$VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text = me.get("schemaValidatorURL", default_schema_validator_url)
+	$VBoxContainer/ProjectStorageModeContainer/ProjectStorageModeOptionButton.selected = me.get("projectStorageMode", 0)
+	$VBoxContainer/ProjectCloudURLContainer/ProjectCloudURLEdit.text = me.get("projectCloudURL", "")
+	$VBoxContainer/ProjectCloudKeyContainer/ProjectCloudKeyEdit.text = me.get("projectCloudKey", "")
+	$VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit.text = me.get("projectCloudName", "")
+	$VBoxContainer/AutoSaveModeContainer/AutoSaveModeOptionButton.selected = me.get("autoSaveMode", 0)
 	$VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected = me.get("imageUploadSetting", 0)
 	$VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text = me.get("imageUploadServerURL", "")
 	$VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text = me.get("imageUploadServerKey", "")
@@ -237,6 +269,7 @@ func from_var(me):
 		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
 	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected = me.get("countTokensModel", 0)
 	$VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton.selected = me.get("doRFTExportConversationSplits", 0)
+	_apply_project_storage_mode_ui()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -266,6 +299,7 @@ func _ready() -> void:
 		set_compact_layout(ft_node.is_compact_layout_enabled())
 	else:
 		set_compact_layout(false)
+	_apply_project_storage_mode_ui()
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
@@ -354,6 +388,9 @@ func _on_token_counter_localizer_file_dialog_file_selected(path: String) -> void
 func _on_something_int_needs_update_global(index: int) -> void:
 	update_settings_global()
 
+func _on_always_include_functions_setting_option_button_item_selected(index: int) -> void:
+	update_settings_global()
+
 func _on_image_upload_server_key_edit_text_changed(new_text: String) -> void:
 	update_settings_global()
 	
@@ -361,6 +398,25 @@ func _on_image_upload_server_url_edit_text_changed(new_text: String) -> void:
 	update_settings_global()
 
 func _on_image_uplaod_setting_option_button_item_selected(index: int) -> void:
+	if _get_project_storage_mode() == 1:
+		$VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.select(1)
+		return
+	update_settings_global()
+
+func _on_project_storage_mode_item_selected(index: int) -> void:
+	_apply_project_storage_mode_ui()
+	update_settings_global()
+
+func _on_project_cloud_url_edit_text_changed(new_text: String) -> void:
+	update_settings_global()
+
+func _on_project_cloud_key_edit_text_changed(new_text: String) -> void:
+	update_settings_global()
+
+func _on_project_cloud_name_edit_text_changed(new_text: String) -> void:
+	update_settings_global()
+
+func _on_auto_save_mode_option_button_item_selected(index: int) -> void:
 	update_settings_global()
 
 func _on_image_upload_server_test_button_pressed() -> void:

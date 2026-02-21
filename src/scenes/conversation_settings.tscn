@@ -490,6 +490,109 @@ text = "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
 layout_mode = 2
 stretch_mode = 3
 
+[node name="ProjectStorageSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ProjectStorageModeContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ProjectStorageModeLabel" type="Label" parent="VBoxContainer/ProjectStorageModeContainer"]
+layout_mode = 2
+text = "SETTINGS_PROJECT_STORAGE_LABEL"
+
+[node name="ProjectStorageModeHint" type="TextureRect" parent="VBoxContainer/ProjectStorageModeContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_PROJECT_STORAGE_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ProjectStorageModeOptionButton" type="OptionButton" parent="VBoxContainer/ProjectStorageModeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 2
+popup/item_0/text = "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_PROJECT_STORAGE_OPTION_CLOUD"
+popup/item_1/id = 1
+
+[node name="ProjectCloudURLContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ProjectCloudURLLabel" type="Label" parent="VBoxContainer/ProjectCloudURLContainer"]
+layout_mode = 2
+text = "SETTINGS_PROJECT_CLOUD_URL_LABEL"
+
+[node name="ProjectCloudURLHint" type="TextureRect" parent="VBoxContainer/ProjectCloudURLContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_PROJECT_CLOUD_URL_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ProjectCloudURLEdit" type="LineEdit" parent="VBoxContainer/ProjectCloudURLContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ProjectCloudKeyContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ProjectCloudKeyLabel" type="Label" parent="VBoxContainer/ProjectCloudKeyContainer"]
+layout_mode = 2
+text = "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
+
+[node name="ProjectCloudKeyHint" type="TextureRect" parent="VBoxContainer/ProjectCloudKeyContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_PROJECT_CLOUD_KEY_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ProjectCloudKeyEdit" type="LineEdit" parent="VBoxContainer/ProjectCloudKeyContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+secret = true
+
+[node name="ProjectCloudNameContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ProjectCloudNameLabel" type="Label" parent="VBoxContainer/ProjectCloudNameContainer"]
+layout_mode = 2
+text = "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
+
+[node name="ProjectCloudNameHint" type="TextureRect" parent="VBoxContainer/ProjectCloudNameContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_PROJECT_CLOUD_NAME_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ProjectCloudNameEdit" type="LineEdit" parent="VBoxContainer/ProjectCloudNameContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AutoSaveModeContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="AutoSaveModeLabel" type="Label" parent="VBoxContainer/AutoSaveModeContainer"]
+layout_mode = 2
+text = "SETTINGS_AUTOSAVE_LABEL"
+
+[node name="AutoSaveModeHint" type="TextureRect" parent="VBoxContainer/AutoSaveModeContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_AUTOSAVE_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="AutoSaveModeOptionButton" type="OptionButton" parent="VBoxContainer/AutoSaveModeContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "SETTINGS_AUTOSAVE_OPTION_OFF"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_AUTOSAVE_OPTION_5MIN"
+popup/item_1/id = 1
+popup/item_2/text = "SETTINGS_AUTOSAVE_OPTION_CONVO_SWITCH"
+popup/item_2/id = 2
+
 [node name="SchemaSettingsSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -550,6 +653,11 @@ size_flags_horizontal = 3
 [connection signal="text_changed" from="VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit" to="." method="_on_image_upload_server_url_edit_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit" to="." method="_on_image_upload_server_key_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestButton" to="." method="_on_image_upload_server_test_button_pressed"]
+[connection signal="item_selected" from="VBoxContainer/ProjectStorageModeContainer/ProjectStorageModeOptionButton" to="." method="_on_project_storage_mode_item_selected"]
+[connection signal="text_changed" from="VBoxContainer/ProjectCloudURLContainer/ProjectCloudURLEdit" to="." method="_on_project_cloud_url_edit_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/ProjectCloudKeyContainer/ProjectCloudKeyEdit" to="." method="_on_project_cloud_key_edit_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit" to="." method="_on_project_cloud_name_edit_text_changed"]
+[connection signal="item_selected" from="VBoxContainer/AutoSaveModeContainer/AutoSaveModeOptionButton" to="." method="_on_auto_save_mode_option_button_item_selected"]
 [connection signal="request_completed" from="ImageUploadServerTestRequest" to="." method="_on_image_upload_server_test_request_completed"]
 [connection signal="pressed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentLoadFromFileBtn" to="." method="_on_schema_content_load_from_file_btn_pressed"]
 [connection signal="text_changed" from="VBoxContainer/SchemaContainer/SchemaContentContainer/SchemaContentEditor" to="." method="_on_schema_content_editor_text_changed"]

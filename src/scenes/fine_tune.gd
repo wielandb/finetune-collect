@@ -1348,20 +1348,20 @@ func _select_conversation_by_id(convo_id: String) -> void:
 
 func _show_jsonl_import_report(report: Dictionary) -> void:
 	var lines = []
-	lines.append("JSONL import report")
-	lines.append("Source: %s" % str(report.get("source_label", "")))
-	lines.append("Imported conversations: %d" % int(report.get("imported", 0)))
-	lines.append("Skipped lines: %d" % int(report.get("skipped", 0)))
-	lines.append("Detected type: %s" % _detected_type_to_label(int(report.get("detected_type", JSONL_ENTRY_TYPE_UNKNOWN))))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_TITLE"))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_SOURCE") % str(report.get("source_label", "")))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_IMPORTED") % int(report.get("imported", 0)))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_SKIPPED") % int(report.get("skipped", 0)))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE") % _detected_type_to_label(int(report.get("detected_type", JSONL_ENTRY_TYPE_UNKNOWN))))
 	var errors = report.get("errors", [])
 	if errors is Array and errors.size() > 0:
 		lines.append("")
-		lines.append("Details:")
+		lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_DETAILS"))
 		var max_errors_to_show = min(20, errors.size())
 		for i in range(max_errors_to_show):
 			lines.append("- " + str(errors[i]))
 		if errors.size() > max_errors_to_show:
-			lines.append("- ... (%d more)" % int(errors.size() - max_errors_to_show))
+			lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_MORE") % int(errors.size() - max_errors_to_show))
 	var dialog_text = "\n".join(lines)
 	print(dialog_text)
 	if not is_inside_tree():
@@ -1369,7 +1369,7 @@ func _show_jsonl_import_report(report: Dictionary) -> void:
 	if DisplayServer.get_name().to_lower() == "headless":
 		return
 	var dialog = AcceptDialog.new()
-	dialog.title = "JSONL Import"
+	dialog.title = tr("FINETUNE_JSONL_IMPORT_DIALOG_TITLE")
 	dialog.dialog_text = dialog_text
 	add_child(dialog)
 	dialog.confirmed.connect(Callable(dialog, "queue_free"))

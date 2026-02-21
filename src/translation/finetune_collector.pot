@@ -1777,3 +1777,96 @@ msgstr ""
 #: scenes/fine_tune.gd
 msgid "FINETUNE_LOAD_CLOUD"
 msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_DIALOG_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SOURCE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_IMPORTED"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SKIPPED"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETAILS"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "fuzzy wuzzy was a bear"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "https://www.haukauntrie.de/online/api/schema-editor/"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "42"
+msgstr ""
+

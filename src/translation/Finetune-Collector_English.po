@@ -250,7 +250,7 @@ msgstr "Add ChatGPT completion"
 
 #: scenes/popup.tscn
 msgid "Arbeitet..."
-msgstr "Arbeitet..."
+msgstr "Working..."
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_FUNCTION"
@@ -1971,3 +1971,92 @@ msgstr "Save to cloud"
 #: scenes/fine_tune.gd
 msgid "FINETUNE_LOAD_CLOUD"
 msgstr "Load from cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_DIALOG_TITLE"
+msgstr "JSONL Import"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_TITLE"
+msgstr "JSONL import report"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SOURCE"
+msgstr "Source: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_IMPORTED"
+msgstr "Imported conversations: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SKIPPED"
+msgstr "Skipped lines: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE"
+msgstr "Detected type: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETAILS"
+msgstr "Details:"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr "- ... (%d more)"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"
+msgstr "const: "
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE"
+msgstr "Partial Raw JSON"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION"
+msgstr "Unsupported schema node."
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON"
+msgstr "Invalid JSON in fallback editor"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX"
+msgstr "This schema section uses raw JSON because: {reason}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND"
+msgstr "Unknown descriptor kind: {kind}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES"
+msgstr "Union has no branches"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION"
+msgstr "Unsupported schema section"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL"
+msgstr "null"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER"
+msgstr "Filter..."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT"
+msgstr "Switching branch keeps compatible fields and resets incompatible values."
+
+#: scenes/graders/graders_list.tscn
+msgid "fuzzy wuzzy was a bear"
+msgstr "fuzzy wuzzy was a bear"
+
+#: scenes/conversation_settings.tscn
+msgid "https://www.haukauntrie.de/online/api/schema-editor/"
+msgstr "https://www.haukauntrie.de/online/api/schema-editor/"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "42"
+msgstr "42"
+

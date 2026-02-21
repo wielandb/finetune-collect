@@ -74,17 +74,17 @@ msgstr "Funktion löschen"
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Messages"
-msgstr "Messages"
+msgstr "Nachrichten"
 
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Functions"
-msgstr "Functions"
+msgstr "Funktionen"
 
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Settings"
-msgstr "Settings"
+msgstr "Einstellungen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
@@ -282,7 +282,7 @@ msgstr "String"
 
 #: scenes/parameter.tscn
 msgid "Number"
-msgstr "Number"
+msgstr "Zahl"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
@@ -390,7 +390,7 @@ msgstr "Alle einschließen, wenn in einer Unterhaltung Funktionen genutzt werden
 
 #: scenes/fine_tune.tscn
 msgid "OpenAI fine-tuning file"
-msgstr "OpenAI fine-tuning file"
+msgstr "OpenAI-Fine-Tuning-Datei"
 
 #: scenes/message.tscn
 msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
@@ -480,7 +480,7 @@ msgstr "Bild von URL laden"
 
 #: scenes/message.tscn
 msgid "URL or Base64"
-msgstr "URL or Base64"
+msgstr "URL oder Base64"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
@@ -821,7 +821,7 @@ msgstr "Anzahl Bilder"
 
 #: scenes/message.tscn
 msgid "Test Token Count"
-msgstr "Test Token Count"
+msgstr "Token-Anzahl testen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
@@ -934,7 +934,7 @@ msgstr "PDF Datei Nachricht"
 
 #: scenes/message.tscn
 msgid "PDF-File"
-msgstr "PDF-File"
+msgstr "PDF-Datei"
 
 #: scenes/message.tscn
 msgid "MESSAGES_AUDIO_MESSAGE_TITLE"
@@ -1116,7 +1116,7 @@ msgstr "Name des Graders. Wird als Referenz für dich und als Variable in multi-
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Messages:"
-msgstr "Messages:"
+msgstr "Nachrichten:"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Add Message"
@@ -1124,11 +1124,11 @@ msgstr "Nachricht hinzufuegen"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "New Label:"
-msgstr "New Label:"
+msgstr "Neues Label:"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Add"
-msgstr "Add"
+msgstr "Hinzufuegen"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Test2"
@@ -1148,7 +1148,7 @@ msgstr "Bewertungsformel:"
 
 #: scenes/graders/multi_grader.tscn
 msgid "Add:"
-msgstr "Add:"
+msgstr "Hinzufuegen:"
 
 #: scenes/graders/multi_grader.tscn
 msgid "+"
@@ -1476,11 +1476,11 @@ msgstr "Schema invalid!"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "Edit:"
-msgstr "Edit:"
+msgstr "Bearbeiten:"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "Schema needs a name!"
-msgstr "Schema needs a name!"
+msgstr "Schema braucht einen Namen!"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "OpenAI:"
@@ -1989,3 +1989,92 @@ msgstr "In Cloud speichern"
 #: scenes/fine_tune.gd
 msgid "FINETUNE_LOAD_CLOUD"
 msgstr "Aus Cloud laden"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_DIALOG_TITLE"
+msgstr "JSONL-Import"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_TITLE"
+msgstr "JSONL-Importbericht"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SOURCE"
+msgstr "Quelle: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_IMPORTED"
+msgstr "Importierte Unterhaltungen: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SKIPPED"
+msgstr "Uebersprungene Zeilen: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE"
+msgstr "Erkannter Typ: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETAILS"
+msgstr "Details:"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr "- ... (%d weitere)"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"
+msgstr "const: "
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE"
+msgstr "Teilweises Roh-JSON"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION"
+msgstr "Nicht unterstuetzter Schema-Knoten."
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON"
+msgstr "Ungueltiges JSON im Fallback-Editor"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX"
+msgstr "Dieser Schema-Abschnitt nutzt rohes JSON, weil: {reason}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND"
+msgstr "Unbekannter Deskriptor-Typ: {kind}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES"
+msgstr "Union hat keine Zweige"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION"
+msgstr "Nicht unterstuetzter Schema-Abschnitt"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL"
+msgstr "null"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER"
+msgstr "Filtern..."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT"
+msgstr "Beim Wechsel des Zweigs bleiben kompatible Felder erhalten und inkompatible Werte werden zurueckgesetzt."
+
+#: scenes/graders/graders_list.tscn
+msgid "fuzzy wuzzy was a bear"
+msgstr "fuzzy wuzzy was a bear"
+
+#: scenes/conversation_settings.tscn
+msgid "https://www.haukauntrie.de/online/api/schema-editor/"
+msgstr "https://www.haukauntrie.de/online/api/schema-editor/"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "42"
+msgstr "42"
+

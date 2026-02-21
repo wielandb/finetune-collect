@@ -100,7 +100,7 @@ msgstr "Minimale Bildgröße"
 
 #: scenes/conversation_settings.tscn
 msgid "??? px"
-msgstr ""
+msgstr "??? px"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_WHAT_FUNCTIONS_ON_EXPORT"
@@ -132,13 +132,13 @@ msgstr "Lade Fine-Tune"
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open a File"
-msgstr ""
+msgstr "Datei oeffnen"
 
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 #: scenes/message.tscn
 msgid "Open"
-msgstr ""
+msgstr "Oeffnen"
 
 #: scenes/fine_tune.tscn
 msgid "FINETUNE_SAVE"
@@ -146,11 +146,11 @@ msgstr "Speichere Fine-Tune"
 
 #: scenes/fine_tune.tscn
 msgid "*.json"
-msgstr ""
+msgstr "*.json"
 
 #: scenes/fine_tune.tscn
 msgid "*.ftproj"
-msgstr ""
+msgstr "*.ftproj"
 
 #: scenes/functions_list.tscn
 msgid "FUNCTIONS_ADD_NEW_FUNCTION"
@@ -158,15 +158,15 @@ msgstr "Neue Funktion"
 
 #: scenes/function_call_results_parameter.tscn
 msgid "Parameter Key"
-msgstr ""
+msgstr "Parameter-Schluessel"
 
 #: scenes/function_call_results_parameter.tscn
 msgid "Parameter Value"
-msgstr ""
+msgstr "Parameterwert"
 
 #: scenes/function_call_results_parameter.tscn
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: scenes/function_use_parameter.tscn
 msgid "MESSAGE_USE_PARAMETER_CHECKBOX_TITLE"
@@ -175,31 +175,31 @@ msgstr "Benutze Parameter"
 #: scenes/function_use_parameter.tscn
 msgid "[Parameter Name]\n"
 ""
-msgstr ""
+msgstr "[Parameter Name]\n"
 
 #: scenes/message.tscn
 msgid "system"
-msgstr ""
+msgstr "System"
 
 #: scenes/message.tscn
 msgid "user"
-msgstr ""
+msgstr "Benutzer"
 
 #: scenes/message.tscn
 msgid "assistant"
-msgstr ""
+msgstr "Assistent"
 
 #: scenes/message.tscn
 msgid "Text"
-msgstr ""
+msgstr "Text"
 
 #: scenes/message.tscn
 msgid "Image"
-msgstr ""
+msgstr "Bild"
 
 #: scenes/message.tscn
 msgid "Function Call"
-msgstr ""
+msgstr "Funktionsaufruf"
 
 #: scenes/message.tscn
 #: scenes/schemas/json_schema_container.tscn
@@ -250,7 +250,7 @@ msgstr "Nachricht vervollständigen lassen"
 
 #: scenes/popup.tscn
 msgid "Arbeitet..."
-msgstr ""
+msgstr "Arbeitet..."
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_FUNCTION"
@@ -340,6 +340,10 @@ msgstr "Bild wird heruntergeladen..."
 msgid "GENERIC_SAVE"
 msgstr "Speichern"
 
+#: scenes/fine_tune.gd
+msgid "GENERIC_SAVE_AS"
+msgstr "Speichern unter"
+
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
@@ -386,7 +390,7 @@ msgstr "Alle einschließen, wenn in einer Unterhaltung Funktionen genutzt werden
 
 #: scenes/fine_tune.tscn
 msgid "OpenAI fine-tuning file"
-msgstr ""
+msgstr "OpenAI fine-tuning file"
 
 #: scenes/message.tscn
 msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
@@ -476,7 +480,7 @@ msgstr "Bild von URL laden"
 
 #: scenes/message.tscn
 msgid "URL or Base64"
-msgstr ""
+msgstr "URL or Base64"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
@@ -817,7 +821,7 @@ msgstr "Anzahl Bilder"
 
 #: scenes/message.tscn
 msgid "Test Token Count"
-msgstr ""
+msgstr "Test Token Count"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
@@ -910,19 +914,19 @@ msgstr "Der Assistent kann keine PDFs senden"
 
 #: scenes/message.gd
 msgid "mp3"
-msgstr ""
+msgstr "mp3"
 
 #: scenes/message.gd
 msgid "wav"
-msgstr ""
+msgstr "wav"
 
 #: scenes/message.tscn
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: scenes/message.tscn
 msgid "PDF File"
-msgstr ""
+msgstr "PDF-Datei"
 
 #: scenes/message.tscn
 msgid "MESSAGES_PDF_FILE_MESSAGE_TITLE"
@@ -930,7 +934,7 @@ msgstr "PDF Datei Nachricht"
 
 #: scenes/message.tscn
 msgid "PDF-File"
-msgstr ""
+msgstr "PDF-File"
 
 #: scenes/message.tscn
 msgid "MESSAGES_AUDIO_MESSAGE_TITLE"
@@ -938,7 +942,7 @@ msgstr "Audio Nachricht"
 
 #: scenes/message.tscn
 msgid "NON"
-msgstr ""
+msgstr "NON"
 
 #: scenes/message.tscn
 msgid "MESSAGE_AUDIO_AUDIO_EDIT_PLACEHOLDER"
@@ -946,7 +950,7 @@ msgstr "Hier kommen die base64-Daten hin..."
 
 #: scenes/message.tscn
 msgid "Supported Audio Files"
-msgstr ""
+msgstr "Unterstuetzte Audio-Dateien"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_RFT_SPLIT_CONVO_LABEL"
@@ -1021,23 +1025,23 @@ msgstr "Upload-Server testen"
 
 #: scenes/conversation.tscn
 msgid "Graders"
-msgstr ""
+msgstr "Graders"
 
 #: scenes/message.tscn
 msgid "HOVER_TOOLTIP"
-msgstr ""
+msgstr "HOVER_TOOLTIP"
 
 #: scenes/message.tscn
 msgid "HOVER_FOR_REFERENCE"
-msgstr ""
+msgstr "HOVER_FOR_REFERENCE"
 
 #: scenes/message.tscn
 msgid "LOL"
-msgstr ""
+msgstr "LOL"
 
 #: scenes/graders/copy_able_data_container.tscn
 msgid "exampleData"
-msgstr ""
+msgstr "exampleData"
 
 #: scenes/graders/graders_list.tscn
 msgid "GRADERS_ADD_GRADER_BUTTON_TEXT"
@@ -1045,11 +1049,11 @@ msgstr "Grader hinzufügen"
 
 #: scenes/graders/graders_list.tscn
 msgid "Sample Item"
-msgstr ""
+msgstr "Beispiel-Element"
 
 #: scenes/graders/graders_list.tscn
 msgid "Sample Model Output"
-msgstr ""
+msgstr "Beispiel-Modellausgabe"
 
 #: scenes/graders/grader_container.tscn
 msgid "GRADER_TYPE"
@@ -1058,32 +1062,32 @@ msgstr "Grader typ"
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/multi_grader.tscn
 msgid "String Check Grader"
-msgstr ""
+msgstr "String Check Grader"
 
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/multi_grader.tscn
 msgid "String Similarity Grader"
-msgstr ""
+msgstr "String Similarity Grader"
 
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/multi_grader.tscn
 msgid "Score Model Grader"
-msgstr ""
+msgstr "Score Model Grader"
 
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/multi_grader.tscn
 msgid "Label Model Grader"
-msgstr ""
+msgstr "Label Model Grader"
 
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/multi_grader.tscn
 msgid "Python Grader"
-msgstr ""
+msgstr "Python Grader"
 
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/multi_grader.tscn
 msgid "Multi Grader"
-msgstr ""
+msgstr "Multi Grader"
 
 #: scenes/graders/grader_container.tscn
 #: scenes/graders/grader_container.gd
@@ -1104,7 +1108,7 @@ msgstr "Grader löschen"
 
 #: scenes/graders/grader_name_container.tscn
 msgid "Name: "
-msgstr ""
+msgstr "Name: "
 
 #: scenes/graders/grader_name_container.tscn
 msgid "GRADER_NAME_HINT"
@@ -1112,23 +1116,23 @@ msgstr "Name des Graders. Wird als Referenz für dich und als Variable in multi-
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Messages:"
-msgstr ""
+msgstr "Messages:"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Add Message"
-msgstr ""
+msgstr "Nachricht hinzufuegen"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "New Label:"
-msgstr ""
+msgstr "New Label:"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Add"
-msgstr ""
+msgstr "Add"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Test2"
-msgstr ""
+msgstr "Test2"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "LABEL_CLICKING_HINT_PART_1"
@@ -1136,63 +1140,63 @@ msgstr "Label rechtsklicken, um es als \"bestehen\"-Label zu definieren. \"Beste
 
 #: scenes/graders/multi_grader.tscn
 msgid "Add Grader"
-msgstr ""
+msgstr "Grader hinzufuegen"
 
 #: scenes/graders/multi_grader.tscn
 msgid "Score Formula:"
-msgstr ""
+msgstr "Bewertungsformel:"
 
 #: scenes/graders/multi_grader.tscn
 msgid "Add:"
-msgstr ""
+msgstr "Add:"
 
 #: scenes/graders/multi_grader.tscn
 msgid "+"
-msgstr ""
+msgstr "+"
 
 #: scenes/graders/multi_grader.tscn
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #: scenes/graders/multi_grader.tscn
 msgid "*"
-msgstr ""
+msgstr "*"
 
 #: scenes/graders/multi_grader.tscn
 msgid "/"
-msgstr ""
+msgstr "/"
 
 #: scenes/graders/multi_grader.tscn
 msgid "^"
-msgstr ""
+msgstr "^"
 
 #: scenes/graders/multi_grader.tscn
 msgid "min()"
-msgstr ""
+msgstr "min()"
 
 #: scenes/graders/multi_grader.tscn
 msgid "max()"
-msgstr ""
+msgstr "max()"
 
 #: scenes/graders/multi_grader.tscn
 msgid "abs()"
-msgstr ""
+msgstr "abs()"
 
 #: scenes/graders/multi_grader.tscn
 msgid "floor()"
-msgstr ""
+msgstr "floor()"
 
 #: scenes/graders/multi_grader.tscn
 msgid "exp()"
-msgstr ""
+msgstr "exp()"
 
 #: scenes/graders/multi_grader.tscn
 msgid "sqrt()"
-msgstr ""
+msgstr "sqrt()"
 
 #: scenes/graders/multi_grader.tscn
 msgid "log()"
-msgstr ""
+msgstr "log()"
 
 #: scenes/graders/python_grader.tscn
 msgid "def grade(sample: dict, item: dict) -> float:\n"
@@ -1202,71 +1206,71 @@ msgid "def grade(sample: dict, item: dict) -> float:\n"
 "    output = sample.get(\"output_text\")\n"
 "    label = item.get(\"label\")\n"
 "    return 1.0 if output == label else 0.0"
-msgstr ""
+msgstr "def grade(sample: dict, item: dict) -> float:\n    \"\"\"\n    Returns 1.0 if `output_text` equals `label`, otherwise 0.0.\n    \"\"\"\n    output = sample.get(\"output_text\")\n    label = item.get(\"label\")\n    return 1.0 if output == label else 0.0"
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Range: "
-msgstr ""
+msgstr "Bereich: "
 
 #: scenes/graders/score_model_grader.tscn
 msgid "From "
-msgstr ""
+msgstr "Von "
 
 #: scenes/graders/score_model_grader.tscn
 msgid "to"
-msgstr ""
+msgstr "bis"
 
 #: scenes/graders/score_model_grader.tscn
 msgid "1"
-msgstr ""
+msgstr "1"
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Sampling parameters:"
-msgstr ""
+msgstr "Sampling-Parameter:"
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Temperature: "
-msgstr ""
+msgstr "Temperatur: "
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Top P:"
-msgstr ""
+msgstr "Top P:"
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Seed:"
-msgstr ""
+msgstr "Seed:"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "Input"
-msgstr ""
+msgstr "Eingabe"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "Operation"
-msgstr ""
+msgstr "Operation"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "Reference"
-msgstr ""
+msgstr "Referenz"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "eq"
-msgstr ""
+msgstr "eq"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "ne"
-msgstr ""
+msgstr "ne"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "like"
-msgstr ""
+msgstr "like"
 
 #: scenes/graders/string_check_grader.tscn
 msgid "ilike"
-msgstr ""
+msgstr "ilike"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "Input: "
-msgstr ""
+msgstr "Eingabe: "
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "Reference: "
@@ -1278,43 +1282,43 @@ msgstr "Evaluations-Metrik:"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "fuzzy_match"
-msgstr ""
+msgstr "fuzzy_match"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "bleu"
-msgstr ""
+msgstr "bleu"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "gleu"
-msgstr ""
+msgstr "gleu"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "meteor"
-msgstr ""
+msgstr "meteor"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_1"
-msgstr ""
+msgstr "rouge_1"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_2"
-msgstr ""
+msgstr "rouge_2"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_3"
-msgstr ""
+msgstr "rouge_3"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_4"
-msgstr ""
+msgstr "rouge_4"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_5"
-msgstr ""
+msgstr "rouge_5"
 
 #: scenes/graders/string_similarity_grader.tscn
 msgid "rouge_l"
-msgstr ""
+msgstr "rouge_l"
 
 #: scenes/graders/copy_able_data_container.tscn
 msgid "TOOLTIP_COPY_TO_CLIPBOARD"
@@ -1435,7 +1439,7 @@ msgstr "Verifiziert!"
 
 #: scenes/conversation.tscn
 msgid "Schemas"
-msgstr ""
+msgstr "Schemata"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_SCHEMA_VALIDATOR_URL"
@@ -1455,11 +1459,11 @@ msgstr "Mindestens ein Schema muss im Schema-Tab definiert werden"
 
 #: scenes/schemas/json_schema_container.gd
 msgid "Edit JSON"
-msgstr ""
+msgstr "JSON bearbeiten"
 
 #: scenes/schemas/json_schema_container.gd
 msgid "OpenAI JSON"
-msgstr ""
+msgstr "OpenAI-JSON"
 
 #: scenes/schemas/json_schema_container.gd
 #: scenes/schemas/json_schema_container.tscn
@@ -1472,7 +1476,7 @@ msgstr "Schema invalid!"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "Edit:"
-msgstr ""
+msgstr "Edit:"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "Schema needs a name!"
@@ -1480,7 +1484,7 @@ msgstr "Schema needs a name!"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "OpenAI:"
-msgstr ""
+msgstr "OpenAI:"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "SCHEMA_NAME_COLON"
@@ -1488,11 +1492,11 @@ msgstr "Name:"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "EditSchemaTabBar"
-msgstr ""
+msgstr "EditSchemaTabBar"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "OAISchemaTabBar"
-msgstr ""
+msgstr "OAISchemaTabBar"
 
 #: scenes/schemas/schemas_list.tscn
 msgid "ADD_SCHEMA"

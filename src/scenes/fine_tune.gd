@@ -7,6 +7,12 @@ const MOBILE_LAYOUT_REFERENCE_WIDTH = 360.0
 const MOBILE_LAYOUT_COMFORT_MULTIPLIER = 2.3
 const MOBILE_LAYOUT_MIN_SCALE = 1.0
 const MOBILE_LAYOUT_MAX_SCALE = 4.0
+const SAVE_ACTION_SAVE = 0
+const SAVE_ACTION_SAVE_AS = 1
+const FINETUNE_TYPE_SUPERVISED = 0
+const FINETUNE_TYPE_DPO = 1
+const FINETUNE_TYPE_REINFORCEMENT = 2
+const JSONL_ENTRY_TYPE_UNKNOWN = -1
 
 var FINETUNEDATA = {}
 var FUNCTIONS = []
@@ -212,6 +218,57 @@ func _apply_compact_layout_state(force_mobile_main: bool = false) -> void:
 func _on_viewport_size_changed() -> void:
 	_apply_compact_layout_state(false)
 
+func _setup_save_mode_option_button() -> void:
+	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
+	save_mode_btn.clear()
+	save_mode_btn.fit_to_longest_item = false
+	save_mode_btn.clip_text = true
+	save_mode_btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	save_mode_btn.add_item(tr("GENERIC_SAVE"), SAVE_ACTION_SAVE)
+	save_mode_btn.add_item(tr("GENERIC_SAVE_AS"), SAVE_ACTION_SAVE_AS)
+	if not save_mode_btn.is_connected("item_selected", Callable(self, "_on_save_mode_btn_item_selected")):
+		save_mode_btn.item_selected.connect(_on_save_mode_btn_item_selected)
+	save_mode_btn.select(-1)
+	save_mode_btn.disabled = false
+
+func _on_save_mode_btn_item_selected(index: int) -> void:
+	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
+	var selected_action = save_mode_btn.get_item_id(index)
+	_run_selected_save_action(selected_action)
+	save_mode_btn.select(-1)
+
+func _run_selected_save_action(selected_action: int) -> void:
+	save_current_conversation()
+	update_functions_internal()
+	update_settings_internal()
+	update_graders_internal()
+	update_schemas_internal()
+	match OS.get_name():
+		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+			if selected_action == SAVE_ACTION_SAVE_AS:
+				$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+			else:
+				if not _save_to_current_path():
+					$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+				refresh_conversations_list()
+		"Web":
+			var json_save_data =  make_save_json_data()
+			save_last_project_path("")
+			save_last_project_data(json_save_data)
+			var byte_array = json_save_data.to_utf8_buffer()
+			JavaScriptBridge.download_buffer(byte_array, "fine_tune_project.json", "text/plain")
+
+func _save_to_current_path() -> bool:
+	if RUNTIME["filepath"] == "":
+		return false
+	save_as_appropriate_from_path(RUNTIME["filepath"])
+	var messages_list_container = $Conversation/Messages/MessagesList/MessagesListContainer
+	if messages_list_container.get_child_count() > 0:
+		var first_message_container = messages_list_container.get_child(0)
+		if first_message_container.is_in_group("message") and SETTINGS.get("countTokensWhen") == 0:
+			first_message_container._do_token_calculation_update()
+	return true
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	_on_button_pressed()
@@ -223,6 +280,7 @@ func _ready() -> void:
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
 	load_last_project_on_start()
+	_setup_save_mode_option_button()
 	
 	var tab_bar = $Conversation.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Messages"))
@@ -247,12 +305,9 @@ func _process(delta: float) -> void:
 		update_graders_internal()
 		update_schemas_internal()
 		if RUNTIME["filepath"] == "":
-			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+			$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
 		else:
-			save_as_appropriate_from_path(RUNTIME["filepath"])
-			var first_message_container = $Conversation/Messages/MessagesList/MessagesListContainer.get_child(0)
-			if first_message_container.is_in_group("message") and SETTINGS.get("countTokensWhen") == 0:
-				first_message_container._do_token_calculation_update()
+			_save_to_current_path()
 		refresh_conversations_list()
 	if Input.is_action_just_released("load"):
 		$VBoxContainer/LoadBtn/FileDialog.visible = true
@@ -265,7 +320,7 @@ func _process(delta: float) -> void:
 			for ftmsg in ftcmsglist:
 				$Conversation/Messages/MessagesList.add_message(ftmsg)
 	#	if RUNTIME["filepath"] == "":
-	#		$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+	#		$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
 	#	else:
 	#		save_as_appropriate_from_path(RUNTIME["filepath"])
 
@@ -278,7 +333,9 @@ func _on_save_btn_pressed() -> void:
 	update_schemas_internal()
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			$VBoxContainer/SaveBtn/SaveFileDialog.visible = true
+			if not _save_to_current_path():
+				$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+			refresh_conversations_list()
 		"Web":
 			var json_save_data =  make_save_json_data()
 			save_last_project_path("")
@@ -537,9 +594,10 @@ func check_is_conversation_ready(idx: String) -> bool:
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	if path.ends_with(".json"):
+	var path_lower = path.to_lower()
+	if path_lower.ends_with(".json"):
 		load_from_json(path)
-	elif path.ends_with(".ftproj"):
+	elif path_lower.ends_with(".ftproj"):
 		load_from_binary(path)
 	RUNTIME["filepath"] = path
 	save_last_project_path(path)
@@ -585,6 +643,7 @@ func create_new_conversation(msgs=[]):
 	CONVERSATIONS[newID] = msgs
 	# Update everything that needs to be updated
 	refresh_conversations_list()
+	return newID
 
 func append_to_conversation(convoid, msg={}):
 	if convoid in CONVERSATIONS:
@@ -707,18 +766,457 @@ func load_from_json(filename):
 	var json_as_text = FileAccess.get_file_as_string(filename)
 	load_from_json_data(json_as_text)
 
+func import_finetune_jsonl_file(path: String) -> Dictionary:
+	var report = {
+		"detected_type": JSONL_ENTRY_TYPE_UNKNOWN,
+		"imported": 0,
+		"skipped": 0,
+		"errors": [],
+		"created_ids": [],
+		"source_label": path.get_file(),
+		"line_total": 0
+	}
+	if not FileAccess.file_exists(path):
+		report["skipped"] = 1
+		report["errors"].append("File not found: " + path)
+		_show_jsonl_import_report(report)
+		return report
+	var jsonl_text = FileAccess.get_file_as_string(path)
+	report = import_finetune_jsonl_text(jsonl_text, path.get_file())
+	_show_jsonl_import_report(report)
+	return report
+
+func import_finetune_jsonl_text(jsonl_text: String, source_label: String) -> Dictionary:
+	if source_label.strip_edges() == "":
+		source_label = "jsonl"
+	var report = {
+		"detected_type": JSONL_ENTRY_TYPE_UNKNOWN,
+		"imported": 0,
+		"skipped": 0,
+		"errors": [],
+		"created_ids": [],
+		"source_label": source_label,
+		"line_total": 0
+	}
+	save_current_conversation()
+	update_functions_internal()
+	var lines = jsonl_text.split("\n")
+	report["line_total"] = lines.size()
+	var detected_type = JSONL_ENTRY_TYPE_UNKNOWN
+	for i in range(lines.size()):
+		var line_no = i + 1
+		var line_text = lines[i].strip_edges()
+		if line_text == "":
+			continue
+		var json = JSON.new()
+		var parse_err = json.parse(line_text)
+		if parse_err != OK:
+			report["skipped"] += 1
+			report["errors"].append("Line %d: Invalid JSON (%s)." % [line_no, json.get_error_message()])
+			continue
+		var entry = json.data
+		if typeof(entry) != TYPE_DICTIONARY:
+			report["skipped"] += 1
+			report["errors"].append("Line %d: JSON entry is not an object." % line_no)
+			continue
+		var entry_type = _detect_jsonl_entry_type(entry)
+		if entry_type == JSONL_ENTRY_TYPE_UNKNOWN:
+			report["skipped"] += 1
+			report["errors"].append("Line %d: Unknown fine-tuning JSONL entry shape." % line_no)
+			continue
+		if detected_type == JSONL_ENTRY_TYPE_UNKNOWN:
+			detected_type = entry_type
+			report["detected_type"] = detected_type
+			_set_finetune_type_for_import(detected_type)
+		elif entry_type != detected_type:
+			report["skipped"] += 1
+			report["errors"].append(
+				"Line %d: Mixed fine-tuning type skipped (detected %s, expected %s)." % [
+					line_no,
+					_detected_type_to_label(entry_type),
+					_detected_type_to_label(detected_type)
+				]
+			)
+			continue
+		_import_tools_from_jsonl_entry(entry, detected_type)
+		var conversion_result = _convert_jsonl_entry_to_conversation(entry, detected_type, line_no, source_label)
+		for warning_text in conversion_result.get("errors", []):
+			report["errors"].append(warning_text)
+		if not conversion_result.get("ok", false):
+			report["skipped"] += 1
+			continue
+		var conversation_messages = conversion_result.get("conversation", [])
+		if not (conversation_messages is Array) or conversation_messages.size() == 0:
+			report["skipped"] += 1
+			report["errors"].append("Line %d: Converted conversation is empty." % line_no)
+			continue
+		var created_id = create_new_conversation(conversation_messages)
+		report["created_ids"].append(created_id)
+		report["imported"] += 1
+	update_functions_internal()
+	update_settings_internal()
+	if report["created_ids"].size() > 0:
+		var last_created_id = report["created_ids"][report["created_ids"].size() - 1]
+		_select_conversation_by_id(last_created_id)
+	call_deferred("_convert_base64_images_after_load")
+	return report
+
+func _set_finetune_type_for_import(finetune_type: int) -> void:
+	SETTINGS["finetuneType"] = finetune_type
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	update_settings_internal()
+
+func _detect_jsonl_entry_type(entry: Dictionary) -> int:
+	var looks_like_dpo = entry.has("input") and entry.has("preferred_output") and entry.has("non_preferred_output")
+	if looks_like_dpo:
+		return FINETUNE_TYPE_DPO
+	if not entry.has("messages"):
+		return JSONL_ENTRY_TYPE_UNKNOWN
+	if entry.has("reference_json") \
+	or entry.has("reference_answer") \
+	or entry.has("do_function_call") \
+	or entry.has("ideal_function_call_data"):
+		return FINETUNE_TYPE_REINFORCEMENT
+	for key in entry.keys():
+		if key != "messages" and key != "tools":
+			return FINETUNE_TYPE_REINFORCEMENT
+	return FINETUNE_TYPE_SUPERVISED
+
+func _detected_type_to_label(detected_type: int) -> String:
+	match detected_type:
+		FINETUNE_TYPE_SUPERVISED:
+			return "SFT"
+		FINETUNE_TYPE_DPO:
+			return "DPO"
+		FINETUNE_TYPE_REINFORCEMENT:
+			return "RFT"
+	return "Unknown"
+
+func _make_ft_message_template(role: String, msg_type: String) -> Dictionary:
+	return {
+		"role": role,
+		"type": msg_type,
+		"textContent": "",
+		"unpreferredTextContent": "",
+		"preferredTextContent": "",
+		"imageContent": "",
+		"imageDetail": 0,
+		"functionName": "",
+		"functionParameters": [],
+		"functionResults": "",
+		"functionUsePreText": "",
+		"userName": "",
+		"jsonSchemaValue": "{}",
+		"audioData": "",
+		"audioTranscript": "",
+		"audioFiletype": "",
+		"fileMessageData": "",
+		"fileMessageName": ""
+	}
+
+func _make_meta_message(conversation_name: String) -> Dictionary:
+	var msg = _make_ft_message_template("meta", "meta")
+	msg["metaData"] = {
+		"ready": false,
+		"conversationName": conversation_name,
+		"notes": ""
+	}
+	return msg
+
+func _make_text_message(role: String, text: String, user_name: String = "") -> Dictionary:
+	var msg = _make_ft_message_template(role, "Text")
+	msg["textContent"] = text
+	msg["userName"] = user_name
+	return msg
+
+func _make_json_message(role: String, json_text: String) -> Dictionary:
+	var msg = _make_ft_message_template(role, "JSON")
+	msg["jsonSchemaValue"] = json_text
+	return msg
+
+func _extract_first_text_from_message_array(messages: Array, role_hint: String = "") -> String:
+	for msg in messages:
+		if msg is Dictionary:
+			if role_hint == "" or msg.get("role", "") == role_hint:
+				var text = _extract_text_from_msg(msg)
+				if text != "":
+					return text
+	for msg in messages:
+		if msg is Dictionary:
+			return _extract_text_from_msg(msg)
+	return ""
+
+func _extract_rft_extra_fields(entry: Dictionary) -> Dictionary:
+	var reserved_keys = {
+		"messages": true,
+		"tools": true,
+		"reference_json": true,
+		"reference_answer": true,
+		"do_function_call": true,
+		"ideal_function_call_data": true
+	}
+	var extras = {}
+	for key in entry.keys():
+		if not reserved_keys.has(key):
+			extras[key] = entry[key]
+	return extras
+
+func _convert_jsonl_entry_to_conversation(entry: Dictionary, detected_type: int, line_no: int, source_label: String) -> Dictionary:
+	var result = {
+		"ok": false,
+		"conversation": [],
+		"errors": []
+	}
+	var conversation_name = "%s L%d" % [source_label, line_no]
+	var conversation = [_make_meta_message(conversation_name)]
+	match detected_type:
+		FINETUNE_TYPE_SUPERVISED:
+			var messages = entry.get("messages", [])
+			if messages is Array:
+				var converted_messages = conversation_from_openai_message_json(messages)
+				for msg in converted_messages:
+					conversation.append(msg)
+			else:
+				result["errors"].append("Line %d: SFT entry has no valid messages array." % line_no)
+				result["conversation"] = []
+				return result
+		FINETUNE_TYPE_DPO:
+			var input_entry = entry.get("input", {})
+			if not (input_entry is Dictionary):
+				result["errors"].append("Line %d: DPO entry input is missing or invalid." % line_no)
+				result["conversation"] = []
+				return result
+			var input_messages = input_entry.get("messages", [])
+			if input_messages is Array:
+				var converted_input_messages = conversation_from_openai_message_json(input_messages)
+				for msg in converted_input_messages:
+					conversation.append(msg)
+			else:
+				result["errors"].append("Line %d: DPO input has no valid messages array." % line_no)
+				result["conversation"] = []
+				return result
+			var preferred_messages = entry.get("preferred_output", [])
+			var non_preferred_messages = entry.get("non_preferred_output", [])
+			var preferred_text = ""
+			var non_preferred_text = ""
+			if preferred_messages is Array:
+				preferred_text = _extract_first_text_from_message_array(preferred_messages, "assistant")
+			if non_preferred_messages is Array:
+				non_preferred_text = _extract_first_text_from_message_array(non_preferred_messages, "assistant")
+			var dpo_assistant = _make_text_message("assistant", preferred_text)
+			dpo_assistant["preferredTextContent"] = preferred_text
+			dpo_assistant["unpreferredTextContent"] = non_preferred_text
+			conversation.append(dpo_assistant)
+		FINETUNE_TYPE_REINFORCEMENT:
+			var rft_messages = entry.get("messages", [])
+			if rft_messages is Array:
+				var converted_rft_messages = conversation_from_openai_message_json(rft_messages)
+				for msg in converted_rft_messages:
+					conversation.append(msg)
+			else:
+				result["errors"].append("Line %d: RFT entry has no valid messages array." % line_no)
+				result["conversation"] = []
+				return result
+			if entry.get("do_function_call", false):
+				var ideal_call_data = entry.get("ideal_function_call_data", {})
+				if ideal_call_data is Dictionary:
+					var function_name = str(ideal_call_data.get("name", ""))
+					if function_name != "":
+						var arguments_dict = {}
+						var raw_arguments = ideal_call_data.get("arguments", {})
+						if raw_arguments is Dictionary:
+							arguments_dict = raw_arguments
+						elif raw_arguments is String:
+							var parsed_args = JSON.parse_string(raw_arguments)
+							if parsed_args is Dictionary:
+								arguments_dict = parsed_args
+						var pretext = str(ideal_call_data.get("functionUsePreText", ""))
+						conversation.append(_create_ft_function_call_msg(function_name, arguments_dict, "", pretext))
+					else:
+						result["errors"].append("Line %d: RFT ideal_function_call_data has no function name." % line_no)
+				else:
+					result["errors"].append("Line %d: RFT ideal_function_call_data is invalid." % line_no)
+			if entry.has("reference_json"):
+				conversation.append(_make_json_message("assistant", JSON.stringify(entry.get("reference_json", {}))))
+			if entry.has("reference_answer"):
+				conversation.append(_make_text_message("assistant", str(entry.get("reference_answer", ""))))
+			var extra_fields = _extract_rft_extra_fields(entry)
+			if extra_fields.size() > 0:
+				conversation.append(_make_json_message("assistant", JSON.stringify(extra_fields)))
+		_:
+			result["errors"].append("Line %d: Unsupported fine-tuning type." % line_no)
+			result["conversation"] = []
+			return result
+	if conversation.size() < 2:
+		result["errors"].append("Line %d: Conversation has too few messages after conversion." % line_no)
+		result["conversation"] = conversation
+		return result
+	result["ok"] = true
+	result["conversation"] = conversation
+	return result
+
+func _import_tools_from_jsonl_entry(entry: Dictionary, detected_type: int) -> void:
+	var tools = []
+	if detected_type == FINETUNE_TYPE_DPO:
+		var dpo_input = entry.get("input", {})
+		if dpo_input is Dictionary:
+			var dpo_tools = dpo_input.get("tools", [])
+			if dpo_tools is Array:
+				tools = dpo_tools
+	else:
+		var top_level_tools = entry.get("tools", [])
+		if top_level_tools is Array:
+			tools = top_level_tools
+	for tool in tools:
+		if tool is Dictionary:
+			_ensure_function_from_openai_tool(tool)
+
+func _normalize_openai_param_type(raw_type) -> String:
+	if raw_type is String:
+		return raw_type.to_lower()
+	if raw_type is Array:
+		for t in raw_type:
+			if t is String and t.to_lower() != "null":
+				return t.to_lower()
+		for t in raw_type:
+			if t is String:
+				return t.to_lower()
+	return "string"
+
+func _append_function_definition_to_ui(new_func_def: Dictionary) -> void:
+	var func_scene = load("res://scenes/available_function.tscn")
+	var func_instance = func_scene.instantiate()
+	if func_instance.has_method("set_compact_layout"):
+		func_instance.set_compact_layout(_compact_layout_enabled)
+	func_instance.from_var(new_func_def)
+	var list_container = $Conversation/Functions/FunctionsList/FunctionsListContainer
+	list_container.add_child(func_instance)
+	var add_btn = list_container.get_node("AddFunctionButton")
+	list_container.move_child(add_btn, -1)
+	update_functions_internal()
+	update_available_functions_in_UI_global()
+
+func _ensure_function_from_openai_tool(tool: Dictionary) -> void:
+	if tool.get("type", "") != "function":
+		return
+	var function_data = tool.get("function", {})
+	if not (function_data is Dictionary):
+		return
+	var function_name = str(function_data.get("name", "")).strip_edges()
+	if function_name == "":
+		return
+	update_functions_internal()
+	for existing in FUNCTIONS:
+		if existing.get("name", "") == function_name:
+			return
+	var parameters_schema = function_data.get("parameters", {})
+	var properties = {}
+	var required_parameters = []
+	if parameters_schema is Dictionary:
+		var raw_properties = parameters_schema.get("properties", {})
+		if raw_properties is Dictionary:
+			properties = raw_properties
+		var raw_required = parameters_schema.get("required", [])
+		if raw_required is Array:
+			required_parameters = raw_required
+	var parameter_defs = []
+	for parameter_name in properties.keys():
+		var parameter_schema = properties[parameter_name]
+		if not (parameter_schema is Dictionary):
+			continue
+		var normalized_type = _normalize_openai_param_type(parameter_schema.get("type", "string"))
+		var ft_parameter_type = "String"
+		if normalized_type == "number" or normalized_type == "integer":
+			ft_parameter_type = "Number"
+		var is_required = required_parameters.has(parameter_name)
+		var is_enum = false
+		var enum_options = ""
+		var raw_enum = parameter_schema.get("enum", [])
+		if raw_enum is Array and raw_enum.size() > 0:
+			is_enum = true
+			var enum_text_values = []
+			for enum_value in raw_enum:
+				enum_text_values.append(str(enum_value))
+			enum_options = ",".join(enum_text_values)
+		var has_limits = parameter_schema.has("minimum") or parameter_schema.has("maximum")
+		var minimum = 0
+		var maximum = 0
+		if parameter_schema.has("minimum"):
+			minimum = float(parameter_schema["minimum"])
+		if parameter_schema.has("maximum"):
+			maximum = float(parameter_schema["maximum"])
+		parameter_defs.append({
+			"type": ft_parameter_type,
+			"name": str(parameter_name),
+			"description": str(parameter_schema.get("description", "")),
+			"minimum": minimum,
+			"maximum": maximum,
+			"isEnum": is_enum,
+			"hasLimits": has_limits and ft_parameter_type == "Number",
+			"enumOptions": enum_options,
+			"isRequired": is_required
+		})
+	var new_function_definition = {
+		"name": function_name,
+		"description": str(function_data.get("description", "")),
+		"parameters": parameter_defs,
+		"functionExecutionEnabled": false,
+		"functionExecutionExecutable": "",
+		"functionExecutionArgumentsString": ""
+	}
+	_append_function_definition_to_ui(new_function_definition)
+
+func _select_conversation_by_id(convo_id: String) -> void:
+	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, convo_id)
+	if selected_index < 0:
+		return
+	$VBoxContainer/ConversationsList.select(selected_index)
+	_on_item_list_item_selected(selected_index, false)
+
+func _show_jsonl_import_report(report: Dictionary) -> void:
+	var lines = []
+	lines.append("JSONL import report")
+	lines.append("Source: %s" % str(report.get("source_label", "")))
+	lines.append("Imported conversations: %d" % int(report.get("imported", 0)))
+	lines.append("Skipped lines: %d" % int(report.get("skipped", 0)))
+	lines.append("Detected type: %s" % _detected_type_to_label(int(report.get("detected_type", JSONL_ENTRY_TYPE_UNKNOWN))))
+	var errors = report.get("errors", [])
+	if errors is Array and errors.size() > 0:
+		lines.append("")
+		lines.append("Details:")
+		var max_errors_to_show = min(20, errors.size())
+		for i in range(max_errors_to_show):
+			lines.append("- " + str(errors[i]))
+		if errors.size() > max_errors_to_show:
+			lines.append("- ... (%d more)" % int(errors.size() - max_errors_to_show))
+	var dialog_text = "\n".join(lines)
+	print(dialog_text)
+	if not is_inside_tree():
+		return
+	if DisplayServer.get_name().to_lower() == "headless":
+		return
+	var dialog = AcceptDialog.new()
+	dialog.title = "JSONL Import"
+	dialog.dialog_text = dialog_text
+	add_child(dialog)
+	dialog.confirmed.connect(Callable(dialog, "queue_free"))
+	dialog.close_requested.connect(Callable(dialog, "queue_free"))
+	dialog.popup_centered(Vector2i(760, 460))
+
 func save_as_appropriate_from_path(path):
-	if path.ends_with(".json"):
+	var path_lower = path.to_lower()
+	if path_lower.ends_with(".json"):
 		save_to_json(path)
-	elif path.ends_with(".ftproj"):
+	elif path_lower.ends_with(".ftproj"):
 		save_to_binary(path)
 	else:
 		print("Konnte nicht speichern, da unbekanntes format")
 
 func load_from_appropriate_from_path(path):
-	if path.ends_with(".json"):
+	var path_lower = path.to_lower()
+	if path_lower.ends_with(".json"):
 		load_from_json(path)
-	elif path.ends_with(".ftproj"):
+	elif path_lower.ends_with(".ftproj"):
 		load_from_binary(path)
 	else:
 		print("Konnte nicht laden, da unbekanntes format")
@@ -730,9 +1228,10 @@ func _on_save_file_dialog_file_selected(path: String) -> void:
 	update_settings_internal()
 	update_graders_internal()
 	update_schemas_internal()
-	if path.ends_with(".json"):
+	var path_lower = path.to_lower()
+	if path_lower.ends_with(".json"):
 		save_to_json(path)
-	elif path.ends_with(".ftproj"):
+	elif path_lower.ends_with(".ftproj"):
 		save_to_binary(path)
 	RUNTIME["filepath"] = path
 	save_last_project_path(path)
@@ -821,7 +1320,6 @@ func create_jsonl_data_for_file():
 		2:
 			complete_jsonl_string = await $Exporter.convert_rft_data(EFINETUNEDATA)
 	return complete_jsonl_string
-
 
 func _start_export_progress():
 	EXPORT_BTN_ORIG_TEXT = $VBoxContainer/ExportBtn.text
@@ -1077,8 +1575,7 @@ func _validate_is_json(testtext) -> bool:
 	if err == OK:
 			return true
 	return false
-	
-	
+
 func conversation_from_openai_message_json(oaimsgjson):
 	# Accept both a JSON string or an already parsed array
 	if typeof(oaimsgjson) == TYPE_STRING:

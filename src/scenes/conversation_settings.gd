@@ -5,7 +5,32 @@ var default_schema_editor_url = "https://example.com/editor.php"
 var default_schema_validator_url = ""
 const DESKTOP_SETTINGS_TITLE_FONT_SIZE = 29
 const COMPACT_SETTINGS_TITLE_FONT_SIZE = 22
+const SETTINGS_ROW_OVERFLOW_BUFFER = 2.0
+const SETTINGS_ROW_NAMES = [
+	"HBoxContainer",
+	"MinimalImageHeightContainer",
+	"FineTuningTypeSettingContainer",
+	"RFTSplitConversationsSettingContainer",
+	"ExportImagesHowContainer",
+	"AlwaysIncludeFunctionsSettingContainer",
+	"ExportWhatConvoContainer",
+	"APIKeySettingContainer",
+	"ModelChoiceContainer",
+	"BatchCreatonContainer",
+	"FromClipboardJSONCreationContainer",
+	"TokenCountPathContainer",
+	"TokenCountWhenContainer",
+	"TokenCountModelChoiceContainer",
+	"ImageUplaodSettingContainer",
+	"ImageUploadServerURLContainer",
+	"ImageUploadServerKeyContainer",
+	"ImageUploadServerTestContainer",
+	"SchemaEditorURLContainer",
+	"SchemaValidatorURLContainer"
+]
 var _compact_layout_enabled = false
+var _effective_compact_layout_enabled = false
+var _layout_refresh_queued = false
 var _compact_control_defaults = {}
 
 func _remember_control_defaults(control: Control) -> void:
@@ -64,34 +89,51 @@ func _apply_compact_to_controls_recursive(node: Node, enabled: bool) -> void:
 	for child in node.get_children():
 		_apply_compact_to_controls_recursive(child, enabled)
 
-func set_compact_layout(enabled: bool) -> void:
-	_compact_layout_enabled = enabled
-	var row_names = [
-		"HBoxContainer",
-		"MinimalImageHeightContainer",
-		"FineTuningTypeSettingContainer",
-		"RFTSplitConversationsSettingContainer",
-		"ExportImagesHowContainer",
-		"AlwaysIncludeFunctionsSettingContainer",
-		"ExportWhatConvoContainer",
-		"APIKeySettingContainer",
-		"ModelChoiceContainer",
-		"BatchCreatonContainer",
-		"FromClipboardJSONCreationContainer",
-		"TokenCountPathContainer",
-		"TokenCountWhenContainer",
-		"TokenCountModelChoiceContainer",
-		"ImageUplaodSettingContainer",
-		"ImageUploadServerURLContainer",
-		"ImageUploadServerKeyContainer",
-		"ImageUploadServerTestContainer",
-		"SchemaEditorURLContainer",
-		"SchemaValidatorURLContainer"
-	]
-	for row_name in row_names:
+func _get_settings_rows() -> Array:
+	var rows = []
+	for row_name in SETTINGS_ROW_NAMES:
 		var row = get_node_or_null("VBoxContainer/" + row_name)
 		if row is BoxContainer:
-			row.vertical = enabled
+			rows.append(row)
+	return rows
+
+func _row_requires_stacked_layout(row: BoxContainer) -> bool:
+	if row == null or not row.visible:
+		return false
+	var available_width = row.size.x
+	if available_width <= 0.0:
+		return false
+	var furthest_child_right = 0.0
+	var visible_children = 0
+	for child in row.get_children():
+		if child is Control and child.visible:
+			furthest_child_right = maxf(furthest_child_right, child.position.x + child.size.x)
+			visible_children += 1
+	if visible_children <= 1:
+		return false
+	if furthest_child_right > available_width + SETTINGS_ROW_OVERFLOW_BUFFER:
+		return true
+	var required_width = 0.0
+	var separation = float(row.get_theme_constant("separation"))
+	for child in row.get_children():
+		if child is Control and child.visible:
+			required_width += child.get_combined_minimum_size().x
+	if visible_children > 1:
+		required_width += separation * float(visible_children - 1)
+	return required_width > available_width + SETTINGS_ROW_OVERFLOW_BUFFER
+
+func _desktop_rows_would_overflow() -> bool:
+	for row in _get_settings_rows():
+		if _row_requires_stacked_layout(row):
+			return true
+	return false
+
+func _apply_effective_compact_layout(enabled: bool, force: bool = false) -> void:
+	if not force and _effective_compact_layout_enabled == enabled:
+		return
+	_effective_compact_layout_enabled = enabled
+	for row in _get_settings_rows():
+		row.vertical = enabled
 	_apply_compact_to_controls_recursive($VBoxContainer, enabled)
 	if enabled:
 		scroll_horizontal = 0
@@ -99,6 +141,39 @@ func set_compact_layout(enabled: bool) -> void:
 		$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextLabel.add_theme_font_size_override("font_size", COMPACT_SETTINGS_TITLE_FONT_SIZE)
 	else:
 		$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextLabel.add_theme_font_size_override("font_size", DESKTOP_SETTINGS_TITLE_FONT_SIZE)
+
+func _queue_layout_refresh() -> void:
+	if _layout_refresh_queued:
+		return
+	_layout_refresh_queued = true
+	call_deferred("_refresh_layout_state")
+
+func _refresh_layout_state() -> void:
+	_layout_refresh_queued = false
+	if not is_inside_tree():
+		return
+	if _compact_layout_enabled:
+		_apply_effective_compact_layout(true)
+		return
+	# Measure in desktop mode first so overflow detection uses desktop metrics.
+	_apply_effective_compact_layout(false, true)
+	call_deferred("_apply_desktop_overflow_safety")
+
+func _apply_desktop_overflow_safety() -> void:
+	if not is_inside_tree() or _compact_layout_enabled:
+		return
+	if _desktop_rows_would_overflow():
+		_apply_effective_compact_layout(true)
+	else:
+		_apply_effective_compact_layout(false)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_queue_layout_refresh()
+
+func set_compact_layout(enabled: bool) -> void:
+	_compact_layout_enabled = enabled
+	_refresh_layout_state()
 
 func to_var():
 	var me = {}

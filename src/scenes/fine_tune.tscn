@@ -66,12 +66,25 @@ file_mode = 0
 access = 2
 use_native_dialog = true
 
-[node name="SaveBtn" type="Button" parent="VBoxContainer"]
+[node name="SaveControls" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SaveBtn" type="Button" parent="VBoxContainer/SaveControls"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 19.0
 text = "FINETUNE_SAVE"
 icon = ExtResource("5_6c4wb")
 
-[node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveBtn"]
+[node name="SaveModeBtn" type="OptionButton" parent="VBoxContainer/SaveControls"]
+custom_minimum_size = Vector2(34, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.0
+selected = -1
+
+[node name="SaveFileDialog" type="FileDialog" parent="VBoxContainer/SaveControls/SaveBtn"]
 access = 2
 filters = PackedStringArray("*.json", "*.ftproj")
 use_native_dialog = true
@@ -84,7 +97,7 @@ icon = ExtResource("8_wwmoc")
 [node name="ExportFileDialog" type="FileDialog" parent="VBoxContainer/ExportBtn"]
 cancel_button_text = "GENERIC_CANCEL"
 access = 2
-filters = PackedStringArray("*.jsonl;OpenAI fine-tuning file")
+filters = PackedStringArray("*.jsonl;OpenAI fine-tuning file", "*.csv;Dataset CSV")
 use_native_dialog = true
 
 [node name="Conversation" parent="." instance=ExtResource("1_o1j2m")]
@@ -106,8 +119,8 @@ script = ExtResource("10_ido41")
 [connection signal="item_selected" from="VBoxContainer/ConversationsList" to="." method="_on_item_list_item_selected"]
 [connection signal="pressed" from="VBoxContainer/LoadBtn" to="." method="_on_load_btn_pressed"]
 [connection signal="file_selected" from="VBoxContainer/LoadBtn/FileDialog" to="." method="_on_file_dialog_file_selected"]
-[connection signal="pressed" from="VBoxContainer/SaveBtn" to="." method="_on_save_btn_pressed"]
-[connection signal="file_selected" from="VBoxContainer/SaveBtn/SaveFileDialog" to="." method="_on_save_file_dialog_file_selected"]
+[connection signal="pressed" from="VBoxContainer/SaveControls/SaveBtn" to="." method="_on_save_btn_pressed"]
+[connection signal="file_selected" from="VBoxContainer/SaveControls/SaveBtn/SaveFileDialog" to="." method="_on_save_file_dialog_file_selected"]
 [connection signal="pressed" from="VBoxContainer/ExportBtn" to="." method="_on_export_btn_pressed"]
 [connection signal="file_selected" from="VBoxContainer/ExportBtn/ExportFileDialog" to="." method="_on_export_file_dialog_file_selected"]
 [connection signal="tab_changed" from="Conversation" to="." method="_on_conversation_tab_changed"]

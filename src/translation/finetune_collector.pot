@@ -393,6 +393,26 @@ msgstr ""
 msgid "GENERIC_CANCEL"
 msgstr ""
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TEXT"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_DONT_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_CANCEL"
+msgstr ""
+
 #: scenes/conversation_settings.tscn
 msgid "FROMCLIPBOARDJSON_LABEL_TEXT"
 msgstr ""
@@ -504,7 +524,19 @@ msgid "FINETUNE_CONVERSATION_NEW"
 msgstr ""
 
 #: scenes/fine_tune.tscn
+msgid "FINETUNE_NEW_FINE_TUNE"
+msgstr ""
+
+#: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_FILE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_CLOUD"
 msgstr ""
 
 #: scenes/fine_tune.tscn
@@ -715,6 +747,10 @@ msgstr ""
 
 #: scenes/message.tscn
 msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
+msgstr ""
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_UPLOAD_STATUS_UPLOADING"
 msgstr ""
 
 #: scenes/message.tscn
@@ -1709,3 +1745,244 @@ msgstr ""
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
 msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_CLOUD"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_OFF"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_5MIN"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_CONVO_SWITCH"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD_AS"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_CLOUD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_LOAD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_PROJECT_ID"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_URL"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_API_KEY"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_DIALOG_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SOURCE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_IMPORTED"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SKIPPED"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETAILS"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON"
+msgstr ""
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_TEST_BUTTON"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_IDLE"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_CHECKING"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_OK"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_EMPTY_RESPONSE"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_URL"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_KEY"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_REQUEST_START"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_NETWORK"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_HTTP"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_INVALID_JSON"
+msgstr ""
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MESSAGE"
+msgstr ""
+
+#: scenes/graders/graders_list.tscn
+msgid "fuzzy wuzzy was a bear"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "https://www.haukauntrie.de/online/api/schema-editor/"
+msgstr ""
+
+#: scenes/graders/score_model_grader.tscn
+msgid "42"
+msgstr ""
+

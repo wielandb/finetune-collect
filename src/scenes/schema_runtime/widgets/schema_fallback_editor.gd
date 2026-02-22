@@ -7,14 +7,18 @@ var _last_valid_value = null
 var _suppress_change = false
 
 func _ready() -> void:
+	$FallbackTitle.text = tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE")
+	$FallbackDescription.text = tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION")
+	$FallbackError.text = tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON")
 	$FallbackJSONEdit.text_changed.connect(_on_fallback_json_text_changed)
 
 func configure(title: String, description: String, reason: String) -> void:
 	if title == "":
-		$FallbackTitle.text = "Partial Raw JSON"
+		$FallbackTitle.text = tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE")
 	else:
 		$FallbackTitle.text = title
-	var reason_text = "This schema section uses raw JSON because: " + reason
+	var reason_text = tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX")
+	reason_text = reason_text.replace("{reason}", reason)
 	if description != "":
 		reason_text += "\n" + description
 	$FallbackDescription.text = reason_text
@@ -37,7 +41,7 @@ func _on_fallback_json_text_changed() -> void:
 	var err = json.parse($FallbackJSONEdit.text)
 	if err != OK:
 		$FallbackError.visible = true
-		$FallbackError.text = "Invalid JSON in fallback editor"
+		$FallbackError.text = tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON")
 		validity_changed.emit(false, $FallbackError.text)
 		return
 	$FallbackError.visible = false

@@ -74,17 +74,17 @@ msgstr "Funktion löschen"
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Messages"
-msgstr "Messages"
+msgstr "Nachrichten"
 
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Functions"
-msgstr "Functions"
+msgstr "Funktionen"
 
 #: scenes/conversation.tscn
 #: scenes/fine_tune.gd
 msgid "Settings"
-msgstr "Settings"
+msgstr "Einstellungen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_GLOBAL_SYSTEM_MESSAGE"
@@ -125,8 +125,20 @@ msgid "FINETUNE_CONVERSATION_NEW"
 msgstr "Neue Unterhaltung"
 
 #: scenes/fine_tune.tscn
+msgid "FINETUNE_NEW_FINE_TUNE"
+msgstr "Neuer Fine-Tune"
+
+#: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
 msgstr "Lade Fine-Tune"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_FILE"
+msgstr "Aus Datei laden"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_CLOUD"
+msgstr "Aus Cloud laden"
 
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
@@ -282,7 +294,7 @@ msgstr "String"
 
 #: scenes/parameter.tscn
 msgid "Number"
-msgstr "Number"
+msgstr "Zahl"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_INCLUDE_FUNCTIONS_OPTION_ALLWAYS_ALL"
@@ -349,6 +361,26 @@ msgstr "Speichern unter"
 msgid "GENERIC_CANCEL"
 msgstr "Abbrechen"
 
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TITLE"
+msgstr "Ungespeicherte Aenderungen"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TEXT"
+msgstr "Es gibt ungespeicherte Aenderungen. Vor dem Fortfahren speichern?"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_SAVE"
+msgstr "Speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_DONT_SAVE"
+msgstr "Nicht speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_CANCEL"
+msgstr "Abbrechen"
+
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_GLOBAL_SYSTEM_MESSAGE_TOOLTIP"
 msgstr "Wenn aktiviert, wird diese Nachricht\n"
@@ -390,7 +422,7 @@ msgstr "Alle einschließen, wenn in einer Unterhaltung Funktionen genutzt werden
 
 #: scenes/fine_tune.tscn
 msgid "OpenAI fine-tuning file"
-msgstr "OpenAI fine-tuning file"
+msgstr "OpenAI-Fine-Tuning-Datei"
 
 #: scenes/message.tscn
 msgid "MESSAGE_FUNCTION_PRETEXT_LABEL"
@@ -480,7 +512,7 @@ msgstr "Bild von URL laden"
 
 #: scenes/message.tscn
 msgid "URL or Base64"
-msgstr "URL or Base64"
+msgstr "URL oder Base64"
 
 #: scenes/available_function.tscn
 msgid "FUNCTIONS_ADD_FUNCTION_PARAMETER"
@@ -489,6 +521,10 @@ msgstr "Neuer Funktionsparameter"
 #: scenes/message.tscn
 msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 msgstr "URL oder Base64"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_UPLOAD_STATUS_UPLOADING"
+msgstr "Bild-Upload laeuft..."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_USER_NAMES"
@@ -821,7 +857,7 @@ msgstr "Anzahl Bilder"
 
 #: scenes/message.tscn
 msgid "Test Token Count"
-msgstr "Test Token Count"
+msgstr "Token-Anzahl testen"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_EXPORT_WHICH_CONVERSATIONS_LABEL"
@@ -934,7 +970,7 @@ msgstr "PDF Datei Nachricht"
 
 #: scenes/message.tscn
 msgid "PDF-File"
-msgstr "PDF-File"
+msgstr "PDF-Datei"
 
 #: scenes/message.tscn
 msgid "MESSAGES_AUDIO_MESSAGE_TITLE"
@@ -1009,7 +1045,7 @@ msgstr "URL zum Upload-Skript"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
-msgstr "Die URL zu einer gehosteten Instanz des upload-image.php Skripts aus dem scripts/-Ordner"
+msgstr "Die URL zu einer gehosteten Instanz des image-upload.php Skripts aus dem scripts/-Ordner"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
@@ -1017,11 +1053,59 @@ msgstr "Geheimer Schlüssel"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
-msgstr "Der geheime Schlüssel, der in der upload-image.php festgelegt wurde"
+msgstr "Der geheime Schlüssel, der in der image-upload.php festgelegt wurde"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
 msgstr "Upload-Server testen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_TEST_BUTTON"
+msgstr "Cloud-Server testen"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_IDLE"
+msgstr "Noch kein Test ausgefuehrt."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_CHECKING"
+msgstr "Server wird geprueft..."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_OK"
+msgstr "Server erreichbar."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_EMPTY_RESPONSE"
+msgstr "<leere Antwort>"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_URL"
+msgstr "Bitte eine Server-URL eingeben."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_KEY"
+msgstr "Bitte einen Server-Schluessel eingeben."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_REQUEST_START"
+msgstr "Testanfrage konnte nicht gestartet werden (Fehlercode %d)."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_NETWORK"
+msgstr "Netzwerkfehler beim Servertest (Result-Code %d)."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_HTTP"
+msgstr "HTTP %d: %s"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_INVALID_JSON"
+msgstr "Ungueltige JSON-Antwort: %s"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MESSAGE"
+msgstr "Serverfehler: %s"
 
 #: scenes/conversation.tscn
 msgid "Graders"
@@ -1116,7 +1200,7 @@ msgstr "Name des Graders. Wird als Referenz für dich und als Variable in multi-
 
 #: scenes/graders/score_model_grader.tscn
 msgid "Messages:"
-msgstr "Messages:"
+msgstr "Nachrichten:"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Add Message"
@@ -1124,11 +1208,11 @@ msgstr "Nachricht hinzufuegen"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "New Label:"
-msgstr "New Label:"
+msgstr "Neues Label:"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Add"
-msgstr "Add"
+msgstr "Hinzufuegen"
 
 #: scenes/graders/label_model_grader.tscn
 msgid "Test2"
@@ -1148,7 +1232,7 @@ msgstr "Bewertungsformel:"
 
 #: scenes/graders/multi_grader.tscn
 msgid "Add:"
-msgstr "Add:"
+msgstr "Hinzufuegen:"
 
 #: scenes/graders/multi_grader.tscn
 msgid "+"
@@ -1476,11 +1560,11 @@ msgstr "Schema invalid!"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "Edit:"
-msgstr "Edit:"
+msgstr "Bearbeiten:"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "Schema needs a name!"
-msgstr "Schema needs a name!"
+msgstr "Schema braucht einen Namen!"
 
 #: scenes/schemas/json_schema_container.tscn
 msgid "OpenAI:"
@@ -1532,7 +1616,7 @@ msgstr "Externer Schema-Editor deaktiviert, da keine URL konfiguriert ist."
 
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED"
-msgstr "Externen Schema-Editor Ã¶ffnen (optionaler Fallback)."
+msgstr "Externen Schema-Editor öffnen (optionaler Fallback)."
 
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_USE_NULL"
@@ -1921,3 +2005,192 @@ msgstr "String passt nicht zum Format: {format}."
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
 msgstr "Pfad: {path}"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_LABEL"
+msgstr "Projektspeicher-Modus"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_HINT"
+msgstr "Wähle, ob Projekte lokal oder über den konfigurierten Cloud-PHP-Endpunkt gespeichert werden."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
+msgstr "Lokal"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_CLOUD"
+msgstr "Cloud"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_LABEL"
+msgstr "Cloud-Projekt-PHP-URL"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_HINT"
+msgstr "URL zur gehosteten project-storage.php."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
+msgstr "Cloud-API-Schlüssel"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_HINT"
+msgstr "Geheimer Schlüssel aus der project-storage.php."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
+msgstr "Cloud-Projektname"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_HINT"
+msgstr "Kennung, die als Dateiname für das Cloud-Projekt verwendet wird."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_LABEL"
+msgstr "Automatisch speichern"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_HINT"
+msgstr "Speichert Projekte automatisch periodisch oder beim Konversationswechsel."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_OFF"
+msgstr "Aus"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_5MIN"
+msgstr "Alle 5 Minuten"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_CONVO_SWITCH"
+msgstr "Bei Konversationswechsel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD"
+msgstr "In Cloud speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD_AS"
+msgstr "In Cloud speichern unter"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_CLOUD"
+msgstr "Aus Cloud laden"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_SAVE"
+msgstr "Cloud-Speicherziel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_LOAD"
+msgstr "Cloud-Ladeziel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_PROJECT_ID"
+msgstr "Projekt-ID"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_URL"
+msgstr "Storage-PHP-URL"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_API_KEY"
+msgstr "Cloud-API-Schluessel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE"
+msgstr "In Cloud speichern"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD"
+msgstr "Aus Cloud laden"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_DIALOG_TITLE"
+msgstr "JSONL-Import"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_TITLE"
+msgstr "JSONL-Importbericht"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SOURCE"
+msgstr "Quelle: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_IMPORTED"
+msgstr "Importierte Unterhaltungen: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SKIPPED"
+msgstr "Uebersprungene Zeilen: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE"
+msgstr "Erkannter Typ: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETAILS"
+msgstr "Details:"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr "- ... (%d weitere)"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"
+msgstr "const: "
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE"
+msgstr "Teilweises Roh-JSON"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION"
+msgstr "Nicht unterstuetzter Schema-Knoten."
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON"
+msgstr "Ungueltiges JSON im Fallback-Editor"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX"
+msgstr "Dieser Schema-Abschnitt nutzt rohes JSON, weil: {reason}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND"
+msgstr "Unbekannter Deskriptor-Typ: {kind}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES"
+msgstr "Union hat keine Zweige"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION"
+msgstr "Nicht unterstuetzter Schema-Abschnitt"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL"
+msgstr "null"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER"
+msgstr "Filtern..."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT"
+msgstr "Beim Wechsel des Zweigs bleiben kompatible Felder erhalten und inkompatible Werte werden zurueckgesetzt."
+
+#: scenes/graders/graders_list.tscn
+msgid "fuzzy wuzzy was a bear"
+msgstr "fuzzy wuzzy was a bear"
+
+#: scenes/conversation_settings.tscn
+msgid "https://www.haukauntrie.de/online/api/schema-editor/"
+msgstr "https://www.haukauntrie.de/online/api/schema-editor/"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "42"
+msgstr "42"
+

@@ -115,6 +115,11 @@ Global configuration stored in the `settings` object.
 | `exportImagesHow` | integer | How image messages are exported. |
 | `useUserNames` | bool | Include user names in exported data. |
 | `schemaEditorURL` | string | URL to an external JSON schema editor. |
+| `projectStorageMode` | integer | Project storage backend (`0` = local, `1` = cloud). |
+| `projectCloudURL` | string | URL to the `project-storage.php` cloud endpoint. |
+| `projectCloudKey` | string | Secret key used for cloud save/load requests. |
+| `projectCloudName` | string | Cloud project identifier (maps to one remote JSON file). |
+| `autoSaveMode` | integer | Auto-save behavior (`0` off, `1` every 5 minutes, `2` on conversation switch). |
 | `tokenCounterPath` | string | Path to an external token counting tool. |
 | `exportConvos` | integer | Determines which conversations are exported. |
 | `countTokensWhen` | integer | Specifies when token counting is performed. |

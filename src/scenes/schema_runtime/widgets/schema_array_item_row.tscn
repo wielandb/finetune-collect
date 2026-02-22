@@ -13,7 +13,7 @@ layout_mode = 2
 [node name="ItemLabel" type="Label" parent="Header"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Item 1"
+text = "MESSAGES_JSON_SCHEMA_FORM_ITEM"
 
 [node name="DeleteButton" type="Button" parent="Header"]
 layout_mode = 2

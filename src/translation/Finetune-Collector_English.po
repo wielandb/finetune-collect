@@ -125,8 +125,20 @@ msgid "FINETUNE_CONVERSATION_NEW"
 msgstr "New conversation"
 
 #: scenes/fine_tune.tscn
+msgid "FINETUNE_NEW_FINE_TUNE"
+msgstr "New fine-tune"
+
+#: scenes/fine_tune.tscn
 msgid "FINETUNE_LOAD"
 msgstr "Load fine-tune file"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_FILE"
+msgstr "Load from file"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_FROM_CLOUD"
+msgstr "Load from cloud"
 
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
@@ -250,7 +262,7 @@ msgstr "Add ChatGPT completion"
 
 #: scenes/popup.tscn
 msgid "Arbeitet..."
-msgstr "Arbeitet..."
+msgstr "Working..."
 
 #: scenes/used_function.tscn
 msgid "MESSAGE_USE_FUNCTION"
@@ -335,6 +347,26 @@ msgstr "Save as"
 #: scenes/conversation_settings.tscn
 #: scenes/fine_tune.tscn
 msgid "GENERIC_CANCEL"
+msgstr "Cancel"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TITLE"
+msgstr "Unsaved changes"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_TEXT"
+msgstr "You have unsaved changes. Save before continuing?"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_SAVE"
+msgstr "Save"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_DONT_SAVE"
+msgstr "Don't Save"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_UNSAVED_DIALOG_CANCEL"
 msgstr "Cancel"
 
 #: scenes/conversation_settings.tscn
@@ -471,6 +503,10 @@ msgstr "Add function parameter"
 #: scenes/message.tscn
 msgid "MESSAGE_IMAGE_IMAGE_EDIT_PLACEHOLDER"
 msgstr "URL or Base64"
+
+#: scenes/message.tscn
+msgid "MESSAGES_IMAGE_UPLOAD_STATUS_UPLOADING"
+msgstr "Image upload in progress..."
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_USE_USER_NAMES"
@@ -991,7 +1027,7 @@ msgstr "URL to image upload script"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_URL_HINT"
-msgstr "The URL to a hosted instance of the upload-image.php file from the scripts directory"
+msgstr "The URL to a hosted instance of the image-upload.php file from the scripts directory"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_LABEL"
@@ -999,11 +1035,59 @@ msgstr "Secret key"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_KEY_HINT"
-msgstr "The secret key you've set in the upload-image.php file"
+msgstr "The secret key you've set in the image-upload.php file"
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_TEST_BUTTON"
 msgstr "Test upload server"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_TEST_BUTTON"
+msgstr "Test cloud server"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_IDLE"
+msgstr "No test run yet."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_CHECKING"
+msgstr "Checking server..."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_STATUS_OK"
+msgstr "Server reachable."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_EMPTY_RESPONSE"
+msgstr "<empty response>"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_URL"
+msgstr "Please enter a server URL."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MISSING_KEY"
+msgstr "Please enter a server key."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_REQUEST_START"
+msgstr "Could not start test request (error code %d)."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_NETWORK"
+msgstr "Network error while testing server (result code %d)."
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_HTTP"
+msgstr "HTTP %d: %s"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_INVALID_JSON"
+msgstr "Invalid JSON response: %s"
+
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_SERVER_TEST_ERROR_MESSAGE"
+msgstr "Server error: %s"
 
 #: scenes/conversation.tscn
 msgid "Graders"
@@ -1903,3 +1987,192 @@ msgstr "String does not match format: {format}."
 #: scenes/message.gd
 msgid "MESSAGES_JSON_SCHEMA_ERROR_PATH"
 msgstr "Path: {path}"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_LABEL"
+msgstr "Project storage mode"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_HINT"
+msgstr "Choose whether projects are saved locally or via the configured cloud PHP endpoint."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_LOCAL"
+msgstr "Local"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_STORAGE_OPTION_CLOUD"
+msgstr "Cloud"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_LABEL"
+msgstr "Cloud project PHP URL"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_URL_HINT"
+msgstr "URL to the hosted project-storage.php script."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_LABEL"
+msgstr "Cloud API key"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_KEY_HINT"
+msgstr "Secret key configured in project-storage.php."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_LABEL"
+msgstr "Cloud project name"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_PROJECT_CLOUD_NAME_HINT"
+msgstr "Identifier used as the remote project filename."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_LABEL"
+msgstr "Auto save"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_HINT"
+msgstr "Automatically save projects either periodically or when switching conversations."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_OFF"
+msgstr "Off"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_5MIN"
+msgstr "Every 5 minutes"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_AUTOSAVE_OPTION_CONVO_SWITCH"
+msgstr "On conversation switch"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD"
+msgstr "Save to cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_SAVE_CLOUD_AS"
+msgstr "Save to cloud as..."
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_LOAD_CLOUD"
+msgstr "Load from cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_SAVE"
+msgstr "Cloud save target"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_TITLE_LOAD"
+msgstr "Cloud load target"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_PROJECT_ID"
+msgstr "Project ID"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_URL"
+msgstr "Storage PHP URL"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_API_KEY"
+msgstr "Cloud API key"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE"
+msgstr "Save to cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD"
+msgstr "Load from cloud"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_DIALOG_TITLE"
+msgstr "JSONL Import"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_TITLE"
+msgstr "JSONL import report"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SOURCE"
+msgstr "Source: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_IMPORTED"
+msgstr "Imported conversations: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_SKIPPED"
+msgstr "Skipped lines: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE"
+msgstr "Detected type: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_DETAILS"
+msgstr "Details:"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr "- ... (%d more)"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"
+msgstr "const: "
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_TITLE"
+msgstr "Partial Raw JSON"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_DEFAULT_DESCRIPTION"
+msgstr "Unsupported schema node."
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_INVALID_JSON"
+msgstr "Invalid JSON in fallback editor"
+
+#: scenes/schema_runtime/widgets/schema_fallback_editor.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_PREFIX"
+msgstr "This schema section uses raw JSON because: {reason}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND"
+msgstr "Unknown descriptor kind: {kind}"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES"
+msgstr "Union has no branches"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION"
+msgstr "Unsupported schema section"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL"
+msgstr "null"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER"
+msgstr "Filter..."
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT"
+msgstr "Switching branch keeps compatible fields and resets incompatible values."
+
+#: scenes/graders/graders_list.tscn
+msgid "fuzzy wuzzy was a bear"
+msgstr "fuzzy wuzzy was a bear"
+
+#: scenes/conversation_settings.tscn
+msgid "https://www.haukauntrie.de/online/api/schema-editor/"
+msgstr "https://www.haukauntrie.de/online/api/schema-editor/"
+
+#: scenes/graders/score_model_grader.tscn
+msgid "42"
+msgstr "42"
+

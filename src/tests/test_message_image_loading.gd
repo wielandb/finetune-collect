@@ -76,12 +76,22 @@ func test_local_file_import_sets_texture_and_base64() -> void:
 	assert_eq(image.save_png(temp_path), OK, "save temp png")
 	node._on_file_dialog_file_selected(temp_path)
 	var texture_rect = node.get_node("ImageMessageContainer/TextureRect")
-	var base64_edit = node.get_node("ImageMessageContainer/Base64ImageEdit")
+	var base64_edit = node.get_node("ImageMessageContainer/ImageInputRow/Base64ImageEdit")
 	assert_true(texture_rect.texture != null, "local import texture exists")
 	assert_true(base64_edit.text.length() > 0, "local import base64 exists")
 	var abs_path = ProjectSettings.globalize_path(temp_path)
 	if FileAccess.file_exists(temp_path):
 		DirAccess.remove_absolute(abs_path)
+	node.queue_free()
+
+func test_upload_spinner_is_toggled_during_upload_status() -> void:
+	var node = _new_message_node()
+	var spinner = node.get_node("ImageMessageContainer/ImageInputRow/UploadSpinner")
+	assert_true(not spinner.visible, "spinner hidden by default")
+	node._begin_image_upload_status()
+	assert_true(spinner.visible, "spinner visible while upload is pending")
+	node._end_image_upload_status()
+	assert_true(not spinner.visible, "spinner hidden after upload finished")
 	node.queue_free()
 
 func _init() -> void:
@@ -90,5 +100,6 @@ func _init() -> void:
 	test_data_uri_base64_is_rendered()
 	test_http_url_without_extension_is_accepted()
 	test_local_file_import_sets_texture_and_base64()
+	test_upload_spinner_is_toggled_during_upload_status()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

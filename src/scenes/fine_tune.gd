@@ -7,8 +7,17 @@ const MOBILE_LAYOUT_REFERENCE_WIDTH = 360.0
 const MOBILE_LAYOUT_COMFORT_MULTIPLIER = 1.3
 const MOBILE_LAYOUT_MIN_SCALE = 1.0
 const MOBILE_LAYOUT_MAX_SCALE = 4.0
-const SAVE_ACTION_SAVE = 0
-const SAVE_ACTION_SAVE_AS = 1
+const SAVE_ACTION_SAVE_LOCAL = 0
+const SAVE_ACTION_SAVE_LOCAL_AS = 1
+const SAVE_ACTION_SAVE_CLOUD = 2
+const SAVE_ACTION_SAVE_CLOUD_AS = 3
+const LOAD_ACTION_FROM_FILE = 0
+const LOAD_ACTION_FROM_CLOUD = 1
+const PROJECT_STORAGE_MODE_LOCAL = 0
+const PROJECT_STORAGE_MODE_CLOUD = 1
+const AUTO_SAVE_MODE_OFF = 0
+const AUTO_SAVE_MODE_EVERY_5_MIN = 1
+const AUTO_SAVE_MODE_ON_CONVERSATION_SWITCH = 2
 const FINETUNE_TYPE_SUPERVISED = 0
 const FINETUNE_TYPE_DPO = 1
 const FINETUNE_TYPE_REINFORCEMENT = 2
@@ -17,6 +26,7 @@ const JSONL_ENTRY_TYPE_UNKNOWN = -1
 var FINETUNEDATA = {}
 var FUNCTIONS = []
 var CONVERSATIONS = {}
+var CONVERSATION_ORDER = []
 var GRADERS = []
 var SCHEMAS = []
 var SETTINGS = {
@@ -25,14 +35,36 @@ var SETTINGS = {
 	"globalSystemMessage": "",
 	"modelChoice": "gpt-4o",
 	"availableModels": [],
-"schemaValidatorURL": ""
+	"schemaValidatorURL": "",
+	"projectStorageMode": PROJECT_STORAGE_MODE_LOCAL,
+	"projectCloudURL": "",
+	"projectCloudKey": "",
+	"projectCloudName": "",
+	"autoSaveMode": AUTO_SAVE_MODE_OFF
 }
 
 var RUNTIME = {"filepath": ""}
 
 # File used to remember the last opened project across sessions
-const LAST_PROJECT_PATH_FILE := "user://last_project.txt"
-const LAST_PROJECT_DATA_FILE := "user://last_project_data.json"
+const LAST_PROJECT_PATH_FILE = "user://last_project.txt"
+const LAST_PROJECT_DATA_FILE = "user://last_project_data.json"
+const LAST_PROJECT_STATE_FILE = "user://last_project_state.json"
+const LAST_PROJECT_SOURCE_NONE = "none"
+const LAST_PROJECT_SOURCE_LOCAL = "local"
+const LAST_PROJECT_SOURCE_CLOUD = "cloud"
+const UNSAVED_CHOICE_SAVE = 0
+const UNSAVED_CHOICE_DONT_SAVE = 1
+const UNSAVED_CHOICE_CANCEL = 2
+const PRE_ACTION_SAVE_FAILED = 0
+const PRE_ACTION_SAVE_SUCCESS = 1
+const PRE_ACTION_SAVE_WAITING_FOR_DIALOG = 2
+const ACTION_KIND_NEW_FINE_TUNE = "new_fine_tune"
+const ACTION_KIND_LOAD_LOCAL_PATH = "load_local_path"
+const ACTION_KIND_LOAD_CLOUD = "load_cloud"
+const ACTION_KIND_LOAD_WEB_JSON = "load_web_json"
+const SAVE_BUTTON_DEFAULT_ICON = preload("res://icons/save.png")
+const SAVE_BUTTON_SUCCESS_ICON = preload("res://icons/content-save-check-custom.png")
+const SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS = 4.0
 
 var CURRENT_EDITED_CONVO_IX = "FtC1"
 var _compact_layout_enabled = false
@@ -42,6 +74,18 @@ var _schemas_list_default_min_size = Vector2(0, 0)
 var _desktop_content_scale_factor = 1.0
 var _mobile_content_scale_factor = 1.0
 var _is_applying_content_scale = false
+var _autosave_in_progress = false
+var _save_in_progress = false
+var _default_settings_template = {}
+var _last_clean_project_snapshot_json = ""
+var _pending_destructive_action = {}
+var _save_dialog_for_unsaved_guard_active = false
+var _test_unsaved_choice_override = -1
+var _test_cloud_dialog_response_queue = []
+var _test_cloud_request_response_queue = []
+var _save_success_icon_feedback_id = 0
+var _save_success_icon_feedback_duration_seconds = SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS
+var _suppress_message_update_events = false
 
 var file_access_web = FileAccessWeb.new()
 var EXPORT_BTN_ORIG_TEXT = ""
@@ -67,12 +111,191 @@ func getRandomConvoID(length: int) -> String:
 	return "----" # We will never get here but Godot needs it to be happy
 
 func selectionStringToIndex(node, string):
-	# Takes a node and a string that matches one of the options and returns its index
-	# Checks both item text and tooltip so it works with custom display names
+	# Match tooltip (stable ID) first, then fallback to visible text.
+	var wanted_value = str(string)
 	for i in range(node.item_count):
-		if node.get_item_text(i) == string or node.get_item_tooltip(i) == string:
+		if str(node.get_item_tooltip(i)) == wanted_value:
+			return i
+	for i in range(node.item_count):
+		if str(node.get_item_text(i)) == wanted_value:
 			return i
 	return -1
+
+func _is_meta_message(message_data) -> bool:
+	if not (message_data is Dictionary):
+		return false
+	return str(message_data.get("type", "")) == "meta" or str(message_data.get("role", "")) == "meta"
+
+func _normalize_meta_message(message_data: Dictionary, fallback_name: String = "") -> Dictionary:
+	var normalized_message = message_data.duplicate(true)
+	normalized_message["role"] = "meta"
+	normalized_message["type"] = "meta"
+	var meta_data = normalized_message.get("metaData", {})
+	if not (meta_data is Dictionary):
+		meta_data = {}
+	if not meta_data.has("ready"):
+		meta_data["ready"] = false
+	if not meta_data.has("conversationName"):
+		meta_data["conversationName"] = fallback_name
+	if not meta_data.has("notes"):
+		meta_data["notes"] = ""
+	normalized_message["metaData"] = meta_data
+	return normalized_message
+
+func _ensure_conversation_meta_message(messages_data, fallback_name: String = "") -> Array:
+	var normalized_messages = []
+	if messages_data is Array:
+		normalized_messages = messages_data.duplicate(true)
+	var meta_index = -1
+	for i in range(normalized_messages.size()):
+		if _is_meta_message(normalized_messages[i]):
+			meta_index = i
+			break
+	if meta_index == -1:
+		normalized_messages.insert(0, _make_meta_message(fallback_name))
+		return normalized_messages
+	var normalized_meta = _normalize_meta_message(normalized_messages[meta_index], fallback_name)
+	if meta_index == 0:
+		normalized_messages[0] = normalized_meta
+		return normalized_messages
+	normalized_messages.remove_at(meta_index)
+	normalized_messages.insert(0, normalized_meta)
+	return normalized_messages
+
+func _normalize_all_conversations_with_meta() -> void:
+	for convo_id in CONVERSATIONS.keys():
+		CONVERSATIONS[convo_id] = _ensure_conversation_meta_message(CONVERSATIONS[convo_id])
+
+func _sync_conversation_order() -> void:
+	var normalized_order = []
+	var seen = {}
+	for raw_id in CONVERSATION_ORDER:
+		var convo_id = str(raw_id).strip_edges()
+		if convo_id == "":
+			continue
+		if seen.has(convo_id):
+			continue
+		if CONVERSATIONS.has(convo_id):
+			normalized_order.append(convo_id)
+			seen[convo_id] = true
+	for raw_id in CONVERSATIONS.keys():
+		var convo_id = str(raw_id).strip_edges()
+		if convo_id == "":
+			continue
+		if seen.has(convo_id):
+			continue
+		normalized_order.append(convo_id)
+		seen[convo_id] = true
+	CONVERSATION_ORDER = normalized_order
+
+func _extract_loaded_conversations(raw_conversations) -> Dictionary:
+	var loaded_conversations = {}
+	if raw_conversations is Dictionary:
+		for raw_id in raw_conversations.keys():
+			var convo_id = str(raw_id).strip_edges()
+			if convo_id == "":
+				continue
+			var convo_messages = raw_conversations[raw_id]
+			loaded_conversations[convo_id] = _ensure_conversation_meta_message(convo_messages)
+	elif raw_conversations is Array:
+		for raw_entry in raw_conversations:
+			if not (raw_entry is Dictionary):
+				continue
+			var convo_id = str(raw_entry.get("id", "")).strip_edges()
+			if convo_id == "":
+				convo_id = getRandomConvoID(4)
+			while loaded_conversations.has(convo_id):
+				convo_id = getRandomConvoID(4)
+			var convo_messages = raw_entry.get("messages", [])
+			loaded_conversations[convo_id] = _ensure_conversation_meta_message(convo_messages)
+	return loaded_conversations
+
+func _apply_loaded_conversations(raw_conversations, raw_order) -> void:
+	CONVERSATIONS = _extract_loaded_conversations(raw_conversations)
+	_normalize_all_conversations_with_meta()
+	CONVERSATION_ORDER = []
+	if raw_order is Array:
+		for raw_id in raw_order:
+			var convo_id = str(raw_id).strip_edges()
+			if convo_id == "":
+				continue
+			if not CONVERSATIONS.has(convo_id):
+				continue
+			if CONVERSATION_ORDER.has(convo_id):
+				continue
+			CONVERSATION_ORDER.append(convo_id)
+	_sync_conversation_order()
+
+func _set_current_conversation_after_load() -> void:
+	if CONVERSATION_ORDER.size() == 0:
+		CURRENT_EDITED_CONVO_IX = ""
+		return
+	CURRENT_EDITED_CONVO_IX = str(CONVERSATION_ORDER[CONVERSATION_ORDER.size() - 1])
+
+func _set_message_update_suppressed(suppressed: bool) -> void:
+	_suppress_message_update_events = suppressed
+
+func is_message_update_suppressed() -> bool:
+	return _suppress_message_update_events
+
+func _extract_conversation_order_from_json_text(json_text_data: String) -> Array:
+	var conversations_key_index = json_text_data.find("\"conversations\"")
+	if conversations_key_index == -1:
+		return []
+	var object_start_index = json_text_data.find("{", conversations_key_index)
+	if object_start_index == -1:
+		return []
+	var extracted_order = []
+	var depth = 1
+	var i = object_start_index + 1
+	var in_string = false
+	var escaped = false
+	var expect_key = true
+	while i < json_text_data.length() and depth > 0:
+		var ch = json_text_data.substr(i, 1)
+		if in_string:
+			if escaped:
+				escaped = false
+			elif ch == "\\":
+				escaped = true
+			elif ch == "\"":
+				in_string = false
+			i += 1
+			continue
+		if ch == "\"":
+			if depth == 1 and expect_key:
+				var key_start = i + 1
+				var key_end = key_start
+				var key_escape = false
+				while key_end < json_text_data.length():
+					var key_char = json_text_data.substr(key_end, 1)
+					if key_escape:
+						key_escape = false
+					elif key_char == "\\":
+						key_escape = true
+					elif key_char == "\"":
+						break
+					key_end += 1
+				if key_end >= json_text_data.length():
+					break
+				var key_text = json_text_data.substr(key_start, key_end - key_start)
+				if key_text != "" and not extracted_order.has(key_text):
+					extracted_order.append(key_text)
+				i = key_end + 1
+				expect_key = false
+				continue
+			in_string = true
+			escaped = false
+			i += 1
+			continue
+		if ch == "{":
+			depth += 1
+		elif ch == "}":
+			depth -= 1
+		elif ch == "," and depth == 1:
+			expect_key = true
+		i += 1
+	return extracted_order
 
 func getallnodes(node):
 	var nodeCollection = []
@@ -83,6 +306,56 @@ func getallnodes(node):
 		else:
 			nodeCollection.append(N)
 	return nodeCollection
+
+func _default_last_project_state() -> Dictionary:
+	return {
+		"source": LAST_PROJECT_SOURCE_NONE,
+		"path": "",
+		"cloudURL": "",
+		"cloudKey": "",
+		"cloudName": "",
+		"imageUploadSetting": 0,
+		"imageUploadServerURL": "",
+		"imageUploadServerKey": ""
+	}
+
+func _build_last_project_upload_state_from_settings() -> Dictionary:
+	return {
+		"imageUploadSetting": int(SETTINGS.get("imageUploadSetting", 0)),
+		"imageUploadServerURL": str(SETTINGS.get("imageUploadServerURL", "")).strip_edges(),
+		"imageUploadServerKey": str(SETTINGS.get("imageUploadServerKey", "")).strip_edges()
+	}
+
+func _merge_last_project_upload_state(state: Dictionary) -> Dictionary:
+	var merged_state = state.duplicate(true)
+	var upload_state = _build_last_project_upload_state_from_settings()
+	for key in upload_state.keys():
+		merged_state[key] = upload_state[key]
+	return merged_state
+
+func _save_last_project_state(state: Dictionary) -> void:
+	var merged_state = _default_last_project_state()
+	for key in state.keys():
+		merged_state[key] = state[key]
+	var file = FileAccess.open(LAST_PROJECT_STATE_FILE, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(merged_state))
+		file.close()
+
+func _load_last_project_state() -> Dictionary:
+	var default_state = _default_last_project_state()
+	if not FileAccess.file_exists(LAST_PROJECT_STATE_FILE):
+		return default_state
+	var state_text = FileAccess.get_file_as_string(LAST_PROJECT_STATE_FILE).strip_edges()
+	if state_text == "":
+		return default_state
+	var parsed_state = JSON.parse_string(state_text)
+	if typeof(parsed_state) != TYPE_DICTIONARY:
+		return default_state
+	for key in default_state.keys():
+		if not parsed_state.has(key):
+			parsed_state[key] = default_state[key]
+	return parsed_state
 
 # Store the given path so it can be loaded on the next start
 func save_last_project_path(path: String) -> void:
@@ -98,30 +371,162 @@ func save_last_project_data(json_data: String) -> void:
 		file.store_string(json_data)
 		file.close()
 
+func _remember_last_open_local(path: String, json_data: String) -> void:
+	save_last_project_path(path)
+	save_last_project_data(json_data)
+	_save_last_project_state(_merge_last_project_upload_state({
+		"source": LAST_PROJECT_SOURCE_LOCAL,
+		"path": path,
+		"cloudURL": "",
+		"cloudKey": "",
+		"cloudName": ""
+	}))
+
+func _remember_last_open_cloud(json_data: String) -> void:
+	var cloud_url = str(SETTINGS.get("projectCloudURL", "")).strip_edges()
+	var cloud_key = str(SETTINGS.get("projectCloudKey", "")).strip_edges()
+	var cloud_name = str(SETTINGS.get("projectCloudName", "")).strip_edges()
+	save_last_project_path("")
+	save_last_project_data(json_data)
+	_save_last_project_state(_merge_last_project_upload_state({
+		"source": LAST_PROJECT_SOURCE_CLOUD,
+		"path": "",
+		"cloudURL": cloud_url,
+		"cloudKey": cloud_key,
+		"cloudName": cloud_name
+	}))
+
+func _clear_last_project_memory() -> void:
+	save_last_project_path("")
+	save_last_project_data("")
+	_save_last_project_state({"source": LAST_PROJECT_SOURCE_NONE})
+
 # Retrieve the stored project path if available
 func get_last_project_path() -> String:
 	if FileAccess.file_exists(LAST_PROJECT_PATH_FILE):
 		var file = FileAccess.open(LAST_PROJECT_PATH_FILE, FileAccess.READ)
-		var txt = file.get_as_text()
-		file.close()
-		return txt.strip_edges()
+		if file:
+			var txt = file.get_as_text()
+			file.close()
+			return txt.strip_edges()
 	return ""
 
-# Load project data stored for web platforms
-func load_last_project_data() -> void:
-	if FileAccess.file_exists(LAST_PROJECT_DATA_FILE):
-		var data = FileAccess.get_file_as_string(LAST_PROJECT_DATA_FILE)
-		if data.strip_edges() != "":
-			load_from_json_data(data)
+func _is_project_json_text(json_text_data: String) -> bool:
+	if json_text_data.strip_edges() == "":
+		return false
+	var parsed = JSON.parse_string(json_text_data)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	return parsed.has("functions") and parsed.has("conversations") and parsed.has("settings")
+
+func _capture_current_project_snapshot_json() -> String:
+	_collect_current_state_for_save()
+	return make_save_json_data()
+
+func _mark_project_clean_from_current_state() -> void:
+	_last_clean_project_snapshot_json = _capture_current_project_snapshot_json()
+
+func _has_unsaved_changes() -> bool:
+	if _last_clean_project_snapshot_json == "":
+		return false
+	var current_snapshot = _capture_current_project_snapshot_json()
+	return current_snapshot != _last_clean_project_snapshot_json
+
+# Load project data stored as snapshot fallback
+func load_last_project_data() -> bool:
+	if not FileAccess.file_exists(LAST_PROJECT_DATA_FILE):
+		return false
+	var data = FileAccess.get_file_as_string(LAST_PROJECT_DATA_FILE)
+	if data.strip_edges() == "":
+		return false
+	if not _is_project_json_text(data):
+		return false
+	load_from_json_data(data)
+	RUNTIME["filepath"] = ""
+	return true
+
+func _load_project_from_local_path(path: String, remember_last_open: bool = true) -> bool:
+	if not FileAccess.file_exists(path):
+		return false
+	var path_lower = path.to_lower()
+	if path_lower.ends_with(".json"):
+		load_from_json(path)
+	elif path_lower.ends_with(".ftproj"):
+		load_from_binary(path)
+	else:
+		return false
+	RUNTIME["filepath"] = path
+	var snapshot = _capture_current_project_snapshot_json()
+	_last_clean_project_snapshot_json = snapshot
+	if remember_last_open:
+		_remember_last_open_local(path, snapshot)
+	return true
+
+func _load_project_from_web_json(json_text_data: String, remember_last_open: bool = true) -> bool:
+	if not _is_project_json_text(json_text_data):
+		return false
+	load_from_json_data(json_text_data)
+	RUNTIME["filepath"] = ""
+	var snapshot = _capture_current_project_snapshot_json()
+	_last_clean_project_snapshot_json = snapshot
+	if remember_last_open:
+		_remember_last_open_local("", snapshot)
+	return true
+
+func _apply_cloud_state_from_last_project_state(state: Dictionary) -> void:
+	if SETTINGS.size() == 0:
+		return
+	var updated_settings = SETTINGS.duplicate(true)
+	updated_settings["projectStorageMode"] = PROJECT_STORAGE_MODE_CLOUD
+	updated_settings["projectCloudURL"] = str(state.get("cloudURL", ""))
+	updated_settings["projectCloudKey"] = str(state.get("cloudKey", ""))
+	updated_settings["projectCloudName"] = str(state.get("cloudName", ""))
+	var restored_upload_setting = int(state.get("imageUploadSetting", 1))
+	if restored_upload_setting != 1:
+		restored_upload_setting = 1
+	updated_settings["imageUploadSetting"] = restored_upload_setting
+	updated_settings["imageUploadServerURL"] = str(state.get("imageUploadServerURL", updated_settings.get("imageUploadServerURL", ""))).strip_edges()
+	updated_settings["imageUploadServerKey"] = str(state.get("imageUploadServerKey", updated_settings.get("imageUploadServerKey", ""))).strip_edges()
+	SETTINGS = updated_settings
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+
+func _restore_from_legacy_last_project() -> bool:
+	var last_path = get_last_project_path()
+	if last_path != "" and FileAccess.file_exists(last_path):
+		if _load_project_from_local_path(last_path):
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+			return true
+	if load_last_project_data():
+		_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+		_mark_project_clean_from_current_state()
+		return true
+	return false
 
 # Attempt to load the previously opened project
 func load_last_project_on_start() -> void:
-	var last_path = get_last_project_path()
-	if last_path != "" and FileAccess.file_exists(last_path):
-		load_from_appropriate_from_path(last_path)
-		RUNTIME["filepath"] = last_path
-	elif OS.get_name() == "Web":
-		load_last_project_data()
+	# Startup defaults should always be local/file unless cloud state is explicitly restored.
+	_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+	var state = _load_last_project_state()
+	var source = str(state.get("source", LAST_PROJECT_SOURCE_NONE))
+	if source == LAST_PROJECT_SOURCE_LOCAL:
+		var local_path = str(state.get("path", "")).strip_edges()
+		if local_path != "" and _load_project_from_local_path(local_path):
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+			return
+		if load_last_project_data():
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+			_mark_project_clean_from_current_state()
+			return
+	elif source == LAST_PROJECT_SOURCE_CLOUD:
+		_apply_cloud_state_from_last_project_state(state)
+		var cloud_loaded = await _load_project_from_cloud()
+		if cloud_loaded:
+			return
+		_reset_project_to_defaults(false)
+		return
+	_restore_from_legacy_last_project()
 
 func is_compact_layout_enabled() -> bool:
 	return _compact_layout_enabled
@@ -218,45 +623,613 @@ func _apply_compact_layout_state(force_mobile_main: bool = false) -> void:
 func _on_viewport_size_changed() -> void:
 	_apply_compact_layout_state(false)
 
-func _setup_save_mode_option_button() -> void:
+func _is_cloud_storage_enabled() -> bool:
+	return int(SETTINGS.get("projectStorageMode", PROJECT_STORAGE_MODE_LOCAL)) == PROJECT_STORAGE_MODE_CLOUD
+
+func _is_http_url(text: String) -> bool:
+	var lower_text = text.strip_edges().to_lower()
+	return lower_text.begins_with("http://") or lower_text.begins_with("https://")
+
+func _set_test_unsaved_choice_override(choice: int) -> void:
+	_test_unsaved_choice_override = choice
+
+func _queue_test_cloud_dialog_response(response: Dictionary) -> void:
+	_test_cloud_dialog_response_queue.append(response.duplicate(true))
+
+func _queue_test_cloud_request_response(response: Dictionary) -> void:
+	_test_cloud_request_response_queue.append(response.duplicate(true))
+
+func _get_default_save_action() -> int:
+	if _is_cloud_storage_enabled():
+		return SAVE_ACTION_SAVE_CLOUD
+	return SAVE_ACTION_SAVE_LOCAL
+
+func _get_default_load_action() -> int:
+	if _is_cloud_storage_enabled():
+		return LOAD_ACTION_FROM_CLOUD
+	return LOAD_ACTION_FROM_FILE
+
+func _configure_action_option_button(option_button: OptionButton) -> void:
+	option_button.fit_to_longest_item = false
+	option_button.clip_text = true
+	option_button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+
+func _set_project_storage_mode(mode: int) -> void:
+	SETTINGS["projectStorageMode"] = mode
+	var settings_ui = $Conversation/Settings/ConversationSettings
+	var mode_button = settings_ui.get_node_or_null("VBoxContainer/ProjectStorageModeContainer/ProjectStorageModeOptionButton")
+	if mode_button is OptionButton:
+		mode_button.select(mode)
+	if settings_ui.has_method("_apply_project_storage_mode_ui"):
+		settings_ui.call("_apply_project_storage_mode_ui")
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+
+func _apply_cloud_target_settings(url: String, key: String, project_id: String) -> void:
+	var cloud_url = url.strip_edges()
+	var cloud_key = key.strip_edges()
+	var cloud_project_id = project_id.strip_edges()
+	SETTINGS["projectCloudURL"] = cloud_url
+	SETTINGS["projectCloudKey"] = cloud_key
+	SETTINGS["projectCloudName"] = cloud_project_id
+	var settings_ui = $Conversation/Settings/ConversationSettings
+	var cloud_url_edit = settings_ui.get_node_or_null("VBoxContainer/ProjectCloudURLContainer/ProjectCloudURLEdit")
+	if cloud_url_edit is LineEdit:
+		cloud_url_edit.text = cloud_url
+	var cloud_key_edit = settings_ui.get_node_or_null("VBoxContainer/ProjectCloudKeyContainer/ProjectCloudKeyEdit")
+	if cloud_key_edit is LineEdit:
+		cloud_key_edit.text = cloud_key
+	var cloud_name_edit = settings_ui.get_node_or_null("VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit")
+	if cloud_name_edit is LineEdit:
+		cloud_name_edit.text = cloud_project_id
+
+func _build_cloud_target_prefill() -> Dictionary:
+	return {
+		"url": str(SETTINGS.get("projectCloudURL", "")).strip_edges(),
+		"key": str(SETTINGS.get("projectCloudKey", "")).strip_edges(),
+		"project_id": str(SETTINGS.get("projectCloudName", "")).strip_edges()
+	}
+
+func _prepare_cloud_target_for_save(force_prompt: bool) -> bool:
+	var prefill = _build_cloud_target_prefill()
+	var should_prompt = force_prompt or str(prefill.get("project_id", "")) == ""
+	if not should_prompt:
+		return true
+	var response = await _request_cloud_target_dialog("save", prefill)
+	if not bool(response.get("confirmed", false)):
+		return false
+	_apply_cloud_target_settings(
+		str(response.get("url", "")),
+		str(response.get("key", "")),
+		str(response.get("project_id", ""))
+	)
+	return true
+
+func _prepare_cloud_target_for_load() -> bool:
+	var response = await _request_cloud_target_dialog("load", _build_cloud_target_prefill())
+	if not bool(response.get("confirmed", false)):
+		return false
+	_apply_cloud_target_settings(
+		str(response.get("url", "")),
+		str(response.get("key", "")),
+		str(response.get("project_id", ""))
+	)
+	return true
+
+func _request_cloud_target_dialog(context: String, prefill: Dictionary) -> Dictionary:
+	if _test_cloud_dialog_response_queue.size() > 0:
+		var queued = _test_cloud_dialog_response_queue.pop_front()
+		if typeof(queued) == TYPE_DICTIONARY:
+			return {
+				"confirmed": bool(queued.get("confirmed", false)),
+				"url": str(queued.get("url", prefill.get("url", ""))).strip_edges(),
+				"key": str(queued.get("key", prefill.get("key", ""))).strip_edges(),
+				"project_id": str(queued.get("project_id", prefill.get("project_id", ""))).strip_edges()
+			}
+	if DisplayServer.get_name().to_lower() == "headless":
+		return {
+			"confirmed": false,
+			"url": str(prefill.get("url", "")).strip_edges(),
+			"key": str(prefill.get("key", "")).strip_edges(),
+			"project_id": str(prefill.get("project_id", "")).strip_edges()
+		}
+	var dialog = ConfirmationDialog.new()
+	var is_load_dialog = context == "load"
+	if is_load_dialog:
+		dialog.title = tr("FINETUNE_CLOUD_DIALOG_TITLE_LOAD")
+		dialog.get_ok_button().text = tr("FINETUNE_CLOUD_DIALOG_CONFIRM_LOAD")
+	else:
+		dialog.title = tr("FINETUNE_CLOUD_DIALOG_TITLE_SAVE")
+		dialog.get_ok_button().text = tr("FINETUNE_CLOUD_DIALOG_CONFIRM_SAVE")
+	dialog.get_cancel_button().text = tr("GENERIC_CANCEL")
+	add_child(dialog)
+	var form = GridContainer.new()
+	form.columns = 2
+	form.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	dialog.add_child(form)
+	var url_label = Label.new()
+	url_label.text = tr("FINETUNE_CLOUD_DIALOG_URL")
+	form.add_child(url_label)
+	var url_edit = LineEdit.new()
+	url_edit.text = str(prefill.get("url", ""))
+	url_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	form.add_child(url_edit)
+	var key_label = Label.new()
+	key_label.text = tr("FINETUNE_CLOUD_DIALOG_API_KEY")
+	form.add_child(key_label)
+	var key_edit = LineEdit.new()
+	key_edit.text = str(prefill.get("key", ""))
+	key_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	key_edit.secret = true
+	form.add_child(key_edit)
+	var project_id_label = Label.new()
+	project_id_label.text = tr("FINETUNE_CLOUD_DIALOG_PROJECT_ID")
+	form.add_child(project_id_label)
+	var project_id_edit = LineEdit.new()
+	project_id_edit.text = str(prefill.get("project_id", ""))
+	project_id_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	form.add_child(project_id_edit)
+	var state = {
+		"done": false,
+		"confirmed": false
+	}
+	dialog.confirmed.connect(func() -> void:
+		state["done"] = true
+		state["confirmed"] = true
+	)
+	var on_cancel = func() -> void:
+		if bool(state.get("done", false)):
+			return
+		state["done"] = true
+	dialog.canceled.connect(on_cancel)
+	dialog.close_requested.connect(on_cancel)
+	dialog.popup_centered(Vector2i(700, 280))
+	while not bool(state.get("done", false)):
+		await get_tree().process_frame
+	var result = {
+		"confirmed": bool(state.get("confirmed", false)),
+		"url": str(prefill.get("url", "")).strip_edges(),
+		"key": str(prefill.get("key", "")).strip_edges(),
+		"project_id": str(prefill.get("project_id", "")).strip_edges()
+	}
+	if bool(state.get("confirmed", false)):
+		result["url"] = url_edit.text.strip_edges()
+		result["key"] = key_edit.text.strip_edges()
+		result["project_id"] = project_id_edit.text.strip_edges()
+	dialog.queue_free()
+	return result
+
+func request_load_project_from_path_with_unsaved_guard(path: String) -> void:
+	await _request_destructive_action({
+		"kind": ACTION_KIND_LOAD_LOCAL_PATH,
+		"path": path
+	})
+
+func request_load_project_from_web_json_with_unsaved_guard(json_text_data: String) -> void:
+	await _request_destructive_action({
+		"kind": ACTION_KIND_LOAD_WEB_JSON,
+		"jsonData": json_text_data
+	})
+
+func _request_destructive_action(action: Dictionary) -> void:
+	if _has_unsaved_changes():
+		_pending_destructive_action = action.duplicate(true)
+		await _show_unsaved_changes_dialog()
+		return
+	await _execute_destructive_action(action)
+
+func _execute_destructive_action(action: Dictionary) -> void:
+	var action_kind = str(action.get("kind", ""))
+	match action_kind:
+		ACTION_KIND_NEW_FINE_TUNE:
+			_reset_project_to_defaults(true)
+		ACTION_KIND_LOAD_LOCAL_PATH:
+			var path = str(action.get("path", "")).strip_edges()
+			if path != "":
+				_load_project_from_local_path(path)
+		ACTION_KIND_LOAD_CLOUD:
+			update_settings_internal()
+			await _load_project_from_cloud()
+		ACTION_KIND_LOAD_WEB_JSON:
+			var json_text_data = str(action.get("jsonData", ""))
+			_load_project_from_web_json(json_text_data)
+
+func _show_unsaved_changes_dialog() -> void:
+	if _pending_destructive_action.size() == 0:
+		return
+	if _test_unsaved_choice_override != -1:
+		var choice = _test_unsaved_choice_override
+		_test_unsaved_choice_override = -1
+		await _handle_unsaved_choice(choice)
+		return
+	if DisplayServer.get_name().to_lower() == "headless":
+		await _handle_unsaved_choice(UNSAVED_CHOICE_CANCEL)
+		return
+	var dialog = ConfirmationDialog.new()
+	dialog.title = tr("FINETUNE_UNSAVED_DIALOG_TITLE")
+	dialog.dialog_text = tr("FINETUNE_UNSAVED_DIALOG_TEXT")
+	dialog.get_ok_button().text = tr("FINETUNE_UNSAVED_DIALOG_SAVE")
+	dialog.get_cancel_button().text = tr("FINETUNE_UNSAVED_DIALOG_CANCEL")
+	var dont_save_button = dialog.add_button(tr("FINETUNE_UNSAVED_DIALOG_DONT_SAVE"), false, "dont_save")
+	add_child(dialog)
+	dialog.confirmed.connect(_on_unsaved_dialog_save_confirmed.bind(dialog))
+	dialog.canceled.connect(_on_unsaved_dialog_cancelled.bind(dialog))
+	dialog.close_requested.connect(_on_unsaved_dialog_cancelled.bind(dialog))
+	dont_save_button.pressed.connect(_on_unsaved_dialog_dont_save_pressed.bind(dialog))
+	dialog.popup_centered(Vector2i(640, 220))
+
+func _on_unsaved_dialog_save_confirmed(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	await _handle_unsaved_choice(UNSAVED_CHOICE_SAVE)
+
+func _on_unsaved_dialog_dont_save_pressed(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	await _handle_unsaved_choice(UNSAVED_CHOICE_DONT_SAVE)
+
+func _on_unsaved_dialog_cancelled(dialog: ConfirmationDialog) -> void:
+	dialog.queue_free()
+	await _handle_unsaved_choice(UNSAVED_CHOICE_CANCEL)
+
+func _handle_unsaved_choice(choice: int) -> void:
+	if _pending_destructive_action.size() == 0:
+		return
+	if choice == UNSAVED_CHOICE_SAVE:
+		var save_result = await _save_before_destructive_action()
+		if save_result == PRE_ACTION_SAVE_SUCCESS:
+			var action = _pending_destructive_action.duplicate(true)
+			_pending_destructive_action = {}
+			await _execute_destructive_action(action)
+		elif save_result == PRE_ACTION_SAVE_FAILED:
+			_pending_destructive_action = {}
+		return
+	if choice == UNSAVED_CHOICE_DONT_SAVE:
+		var action = _pending_destructive_action.duplicate(true)
+		_pending_destructive_action = {}
+		await _execute_destructive_action(action)
+		return
+	_pending_destructive_action = {}
+
+func _save_before_destructive_action() -> int:
+	if _save_in_progress:
+		return PRE_ACTION_SAVE_FAILED
+	_save_in_progress = true
+	_collect_current_state_for_save()
+	var save_result = PRE_ACTION_SAVE_FAILED
+	if _is_cloud_storage_enabled():
+		if await _save_project_to_cloud():
+			_set_project_storage_mode(PROJECT_STORAGE_MODE_CLOUD)
+			save_result = PRE_ACTION_SAVE_SUCCESS
+	else:
+		if RUNTIME["filepath"] != "":
+			if _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL, false):
+				_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+				save_result = PRE_ACTION_SAVE_SUCCESS
+		else:
+			_save_dialog_for_unsaved_guard_active = true
+			$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+			save_result = PRE_ACTION_SAVE_WAITING_FOR_DIALOG
+	_save_in_progress = false
+	if save_result == PRE_ACTION_SAVE_SUCCESS:
+		_show_save_success_icon_feedback()
+	return save_result
+
+func _reset_project_to_defaults(clear_last_project_memory: bool = true) -> void:
+	RUNTIME["filepath"] = ""
+	FINETUNEDATA = {}
+	FUNCTIONS = []
+	CONVERSATIONS = {}
+	CONVERSATION_ORDER = []
+	GRADERS = []
+	SCHEMAS = []
+	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
+	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+	$Conversation/Graders/GradersList.from_var([])
+	$Conversation/Schemas/SchemasList.from_var([])
+	if _default_settings_template.size() > 0:
+		SETTINGS = _default_settings_template.duplicate(true)
+	else:
+		update_settings_internal()
+		SETTINGS = SETTINGS.duplicate(true)
+		_default_settings_template = SETTINGS.duplicate(true)
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+	_on_button_pressed()
+	refresh_conversations_list()
+	if $VBoxContainer/ConversationsList.item_count > 0:
+		$VBoxContainer/ConversationsList.select(0)
+		_on_item_list_item_selected(0, false)
+	if clear_last_project_memory:
+		_clear_last_project_memory()
+	_mark_project_clean_from_current_state()
+
+func _sync_save_load_ui_for_storage_mode() -> void:
+	var save_btn = $VBoxContainer/SaveControls/SaveBtn
+	var load_btn = $VBoxContainer/LoadControls/LoadBtn
+	if _is_cloud_storage_enabled():
+		save_btn.text = tr("FINETUNE_SAVE_CLOUD")
+		load_btn.text = tr("FINETUNE_LOAD_CLOUD")
+	else:
+		save_btn.text = tr("FINETUNE_SAVE")
+		load_btn.text = tr("FINETUNE_LOAD")
 	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
 	save_mode_btn.clear()
-	save_mode_btn.fit_to_longest_item = false
-	save_mode_btn.clip_text = true
-	save_mode_btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	save_mode_btn.add_item(tr("GENERIC_SAVE"), SAVE_ACTION_SAVE)
-	save_mode_btn.add_item(tr("GENERIC_SAVE_AS"), SAVE_ACTION_SAVE_AS)
-	if not save_mode_btn.is_connected("item_selected", Callable(self, "_on_save_mode_btn_item_selected")):
-		save_mode_btn.item_selected.connect(_on_save_mode_btn_item_selected)
+	_configure_action_option_button(save_mode_btn)
+	save_mode_btn.add_item(tr("GENERIC_SAVE"), SAVE_ACTION_SAVE_LOCAL)
+	save_mode_btn.add_item(tr("GENERIC_SAVE_AS"), SAVE_ACTION_SAVE_LOCAL_AS)
+	save_mode_btn.add_item(tr("FINETUNE_SAVE_CLOUD"), SAVE_ACTION_SAVE_CLOUD)
+	save_mode_btn.add_item(tr("FINETUNE_SAVE_CLOUD_AS"), SAVE_ACTION_SAVE_CLOUD_AS)
 	save_mode_btn.select(-1)
 	save_mode_btn.disabled = false
+	var load_mode_btn = $VBoxContainer/LoadControls/LoadModeBtn
+	load_mode_btn.clear()
+	_configure_action_option_button(load_mode_btn)
+	load_mode_btn.add_item(tr("FINETUNE_LOAD_FROM_FILE"), LOAD_ACTION_FROM_FILE)
+	load_mode_btn.add_item(tr("FINETUNE_LOAD_FROM_CLOUD"), LOAD_ACTION_FROM_CLOUD)
+	load_mode_btn.select(-1)
+	load_mode_btn.disabled = false
+
+func _show_save_success_icon_feedback() -> void:
+	if not is_inside_tree():
+		return
+	var save_btn = get_node_or_null("VBoxContainer/SaveControls/SaveBtn")
+	if not (save_btn is Button):
+		return
+	_save_success_icon_feedback_id += 1
+	var current_feedback_id = _save_success_icon_feedback_id
+	save_btn.icon = SAVE_BUTTON_SUCCESS_ICON
+	var wait_duration = float(_save_success_icon_feedback_duration_seconds)
+	if wait_duration < 0.01:
+		wait_duration = 0.01
+	await get_tree().create_timer(wait_duration).timeout
+	if not is_inside_tree():
+		return
+	if current_feedback_id != _save_success_icon_feedback_id:
+		return
+	save_btn.icon = SAVE_BUTTON_DEFAULT_ICON
+
+func _setup_save_mode_option_button() -> void:
+	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
+	if not save_mode_btn.is_connected("item_selected", Callable(self, "_on_save_mode_btn_item_selected")):
+		save_mode_btn.item_selected.connect(_on_save_mode_btn_item_selected)
+	_sync_save_load_ui_for_storage_mode()
+
+func _setup_load_mode_option_button() -> void:
+	var load_mode_btn = $VBoxContainer/LoadControls/LoadModeBtn
+	if not load_mode_btn.is_connected("item_selected", Callable(self, "_on_load_mode_btn_item_selected")):
+		load_mode_btn.item_selected.connect(_on_load_mode_btn_item_selected)
 
 func _on_save_mode_btn_item_selected(index: int) -> void:
 	var save_mode_btn = $VBoxContainer/SaveControls/SaveModeBtn
 	var selected_action = save_mode_btn.get_item_id(index)
-	_run_selected_save_action(selected_action)
+	await _run_selected_save_action(selected_action)
 	save_mode_btn.select(-1)
 
-func _run_selected_save_action(selected_action: int) -> void:
+func _on_load_mode_btn_item_selected(index: int) -> void:
+	var load_mode_btn = $VBoxContainer/LoadControls/LoadModeBtn
+	var selected_action = load_mode_btn.get_item_id(index)
+	await _run_selected_load_action(selected_action)
+	load_mode_btn.select(-1)
+
+func _collect_current_state_for_save() -> void:
 	save_current_conversation()
 	update_functions_internal()
 	update_settings_internal()
 	update_graders_internal()
 	update_schemas_internal()
+
+func _save_local_for_platform(selected_action: int, allow_save_as_dialog: bool) -> bool:
 	match OS.get_name():
 		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			if selected_action == SAVE_ACTION_SAVE_AS:
-				$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+			if selected_action == SAVE_ACTION_SAVE_LOCAL_AS:
+				if allow_save_as_dialog:
+					$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+				return false
 			else:
 				if not _save_to_current_path():
-					$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+					if allow_save_as_dialog:
+						$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
+					return false
 				refresh_conversations_list()
+				var json_save_data = make_save_json_data()
+				_last_clean_project_snapshot_json = json_save_data
+				_remember_last_open_local(str(RUNTIME.get("filepath", "")), json_save_data)
+				return true
 		"Web":
-			var json_save_data =  make_save_json_data()
-			save_last_project_path("")
-			save_last_project_data(json_save_data)
+			var json_save_data = make_save_json_data()
+			_last_clean_project_snapshot_json = json_save_data
+			_remember_last_open_local("", json_save_data)
 			var byte_array = json_save_data.to_utf8_buffer()
 			JavaScriptBridge.download_buffer(byte_array, "fine_tune_project.json", "text/plain")
+			return true
+	return false
+
+func _cloud_request(action: String, payload: Dictionary) -> Dictionary:
+	if _test_cloud_request_response_queue.size() > 0:
+		var queued = _test_cloud_request_response_queue.pop_front()
+		if typeof(queued) == TYPE_DICTIONARY:
+			return queued.duplicate(true)
+	var cloud_url = str(SETTINGS.get("projectCloudURL", "")).strip_edges()
+	if cloud_url == "":
+		return {"ok": false, "error": "Missing projectCloudURL"}
+	var request_payload = payload.duplicate(true)
+	request_payload["action"] = action
+	var http = HTTPRequest.new()
+	add_child(http)
+	var headers = PackedStringArray()
+	headers.append("Content-Type: application/json")
+	var err = http.request(cloud_url, headers, HTTPClient.METHOD_POST, JSON.stringify(request_payload))
+	if err != OK:
+		http.queue_free()
+		return {"ok": false, "error": "HTTP request failed to start"}
+	var response = await http.request_completed
+	http.queue_free()
+	if int(response[0]) != HTTPRequest.RESULT_SUCCESS:
+		return {"ok": false, "error": "Network error", "result": int(response[0])}
+	var response_code = int(response[1])
+	var body_text = response[3].get_string_from_utf8().strip_edges()
+	var parsed = JSON.parse_string(body_text)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		parsed = {"ok": false, "error": body_text}
+	parsed["http_code"] = response_code
+	return parsed
+
+func _find_non_url_images() -> Array:
+	var invalid_entries = []
+	for convo_key in CONVERSATIONS.keys():
+		var convo = CONVERSATIONS[convo_key]
+		for i in range(convo.size()):
+			var msg = convo[i]
+			if msg.get("type", "") == "Image":
+				var image_content = str(msg.get("imageContent", "")).strip_edges()
+				if image_content != "" and not _is_http_url(image_content):
+					invalid_entries.append({"conversation": str(convo_key), "messageIndex": i})
+	return invalid_entries
+
+func _save_project_to_cloud() -> bool:
+	var cloud_key = str(SETTINGS.get("projectCloudKey", "")).strip_edges()
+	var project_name = str(SETTINGS.get("projectCloudName", "")).strip_edges()
+	if cloud_key == "" or project_name == "":
+		push_error("Cloud save aborted: Missing cloud key or project name.")
+		return false
+	await convert_base64_images_in_all_conversations()
+	var non_url_images = _find_non_url_images()
+	if non_url_images.size() > 0:
+		push_error("Cloud save aborted: Found image content that is not an URL.")
+		print(non_url_images)
+		return false
+	var project_json_text = make_save_json_data()
+	var project_data = JSON.parse_string(project_json_text)
+	if typeof(project_data) != TYPE_DICTIONARY:
+		push_error("Cloud save aborted: Could not serialize project data.")
+		return false
+	var payload = {
+		"key": cloud_key,
+		"project": project_name,
+		"data": project_data
+	}
+	var response = await _cloud_request("save", payload)
+	if int(response.get("http_code", 0)) != 200:
+		push_error("Cloud save failed with HTTP code " + str(response.get("http_code", 0)))
+		return false
+	if not bool(response.get("ok", false)):
+		push_error("Cloud save failed: " + str(response.get("error", "unknown error")))
+		return false
+	print("Cloud save successful for project " + project_name)
+	_last_clean_project_snapshot_json = project_json_text
+	_remember_last_open_cloud(project_json_text)
+	return true
+
+func _load_project_from_cloud() -> bool:
+	var cloud_key = str(SETTINGS.get("projectCloudKey", "")).strip_edges()
+	var project_name = str(SETTINGS.get("projectCloudName", "")).strip_edges()
+	if cloud_key == "" or project_name == "":
+		push_error("Cloud load aborted: Missing cloud key or project name.")
+		return false
+	var payload = {
+		"key": cloud_key,
+		"project": project_name
+	}
+	var response = await _cloud_request("load", payload)
+	if int(response.get("http_code", 0)) != 200:
+		push_error("Cloud load failed with HTTP code " + str(response.get("http_code", 0)))
+		return false
+	if not bool(response.get("ok", false)):
+		push_error("Cloud load failed: " + str(response.get("error", "unknown error")))
+		return false
+	var data = response.get("data", null)
+	if typeof(data) != TYPE_DICTIONARY:
+		push_error("Cloud load failed: Invalid data payload.")
+		return false
+	var json_text_data = JSON.stringify(data, "\t", false)
+	load_from_json_data(json_text_data)
+	RUNTIME["filepath"] = ""
+	var snapshot = _capture_current_project_snapshot_json()
+	_last_clean_project_snapshot_json = snapshot
+	_remember_last_open_cloud(snapshot)
+	return true
+
+func _configure_autosave() -> void:
+	var mode = int(SETTINGS.get("autoSaveMode", AUTO_SAVE_MODE_OFF))
+	var timer = $AutoSaveTimer
+	timer.stop()
+	if mode == AUTO_SAVE_MODE_EVERY_5_MIN:
+		timer.wait_time = 300.0
+		timer.start()
+
+func _run_autosave(trigger: String) -> void:
+	if _autosave_in_progress or _save_in_progress:
+		return
+	var mode = int(SETTINGS.get("autoSaveMode", AUTO_SAVE_MODE_OFF))
+	if mode == AUTO_SAVE_MODE_OFF:
+		return
+	if trigger == "conversation_switch" and mode != AUTO_SAVE_MODE_ON_CONVERSATION_SWITCH:
+		return
+	if trigger == "timer" and mode != AUTO_SAVE_MODE_EVERY_5_MIN:
+		return
+	_autosave_in_progress = true
+	_save_in_progress = true
+	_collect_current_state_for_save()
+	var save_success = false
+	if _is_cloud_storage_enabled():
+		save_success = await _save_project_to_cloud()
+	else:
+		if RUNTIME["filepath"] == "":
+			print("Autosave skipped (local mode without filepath).")
+		else:
+			save_success = _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL, false)
+	if save_success:
+		_show_save_success_icon_feedback()
+	_save_in_progress = false
+	_autosave_in_progress = false
+
+func _on_auto_save_timer_timeout() -> void:
+	_run_autosave("timer")
+
+func _run_selected_save_action(selected_action: int) -> bool:
+	if _save_in_progress:
+		return false
+	_save_in_progress = true
+	_collect_current_state_for_save()
+	var save_success = false
+	match selected_action:
+		SAVE_ACTION_SAVE_LOCAL:
+			save_success = _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL, true)
+			if save_success:
+				_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+		SAVE_ACTION_SAVE_LOCAL_AS:
+			save_success = _save_local_for_platform(SAVE_ACTION_SAVE_LOCAL_AS, true)
+		SAVE_ACTION_SAVE_CLOUD:
+			if await _prepare_cloud_target_for_save(false):
+				save_success = await _save_project_to_cloud()
+				if save_success:
+					_set_project_storage_mode(PROJECT_STORAGE_MODE_CLOUD)
+		SAVE_ACTION_SAVE_CLOUD_AS:
+			if await _prepare_cloud_target_for_save(true):
+				save_success = await _save_project_to_cloud()
+				if save_success:
+					_set_project_storage_mode(PROJECT_STORAGE_MODE_CLOUD)
+	_save_in_progress = false
+	if save_success:
+		_show_save_success_icon_feedback()
+	return save_success
+
+func _run_selected_load_action(selected_action: int) -> bool:
+	update_settings_internal()
+	match selected_action:
+		LOAD_ACTION_FROM_CLOUD:
+			if not await _prepare_cloud_target_for_load():
+				return false
+			await _request_destructive_action({"kind": ACTION_KIND_LOAD_CLOUD})
+			return true
+		LOAD_ACTION_FROM_FILE:
+			match OS.get_name():
+				"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
+					$VBoxContainer/LoadControls/LoadBtn/FileDialog.visible = true
+				"Web":
+					file_access_web.open(".json")
+			return true
+	return false
 
 func _save_to_current_path() -> bool:
 	if RUNTIME["filepath"] == "":
@@ -279,8 +1252,17 @@ func _ready() -> void:
 	_on_item_list_item_selected(0)
 	file_access_web.loaded.connect(_on_file_loaded)
 	file_access_web.progress.connect(_on_upload_progress)
-	load_last_project_on_start()
+	var save_file_dialog = $VBoxContainer/SaveControls/SaveBtn/SaveFileDialog
+	if not save_file_dialog.is_connected("canceled", Callable(self, "_on_save_file_dialog_canceled")):
+		save_file_dialog.canceled.connect(_on_save_file_dialog_canceled)
+	update_settings_internal()
+	_default_settings_template = SETTINGS.duplicate(true)
+	await load_last_project_on_start()
 	_setup_save_mode_option_button()
+	_setup_load_mode_option_button()
+	_configure_autosave()
+	if _last_clean_project_snapshot_json == "":
+		_mark_project_clean_from_current_state()
 	
 	var tab_bar = $Conversation.get_tab_bar()
 	tab_bar.set_tab_title(0, tr("Messages"))
@@ -297,20 +1279,10 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if Input.is_action_pressed("save"):
-		print("Würde jetzt speichern...")
-		save_current_conversation()
-		update_functions_internal()
-		update_settings_internal()
-		update_graders_internal()
-		update_schemas_internal()
-		if RUNTIME["filepath"] == "":
-			$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
-		else:
-			_save_to_current_path()
-		refresh_conversations_list()
+	if Input.is_action_just_released("save"):
+		_run_selected_save_action(_get_default_save_action())
 	if Input.is_action_just_released("load"):
-		$VBoxContainer/LoadBtn/FileDialog.visible = true
+		_on_load_btn_pressed()
 	if Input.is_action_just_released("ui_paste"):
 		var clipboard_content = DisplayServer.clipboard_get()
 		var is_cb_json = $Conversation/Settings/ConversationSettings.validate_is_json(clipboard_content)
@@ -326,22 +1298,10 @@ func _process(delta: float) -> void:
 
 
 func _on_save_btn_pressed() -> void:
-	save_current_conversation()
-	update_functions_internal()
-	update_settings_internal()
-	update_graders_internal()
-	update_schemas_internal()
-	match OS.get_name():
-		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			if not _save_to_current_path():
-				$VBoxContainer/SaveControls/SaveBtn/SaveFileDialog.visible = true
-			refresh_conversations_list()
-		"Web":
-			var json_save_data =  make_save_json_data()
-			save_last_project_path("")
-			save_last_project_data(json_save_data)
-			var byte_array = json_save_data.to_utf8_buffer()
-			JavaScriptBridge.download_buffer(byte_array, "fine_tune_project.json", "text/plain")
+	await _run_selected_save_action(_get_default_save_action())
+
+func _on_new_fine_tune_btn_pressed() -> void:
+	await _request_destructive_action({"kind": ACTION_KIND_NEW_FINE_TUNE})
 
 func update_functions_internal():
 	FUNCTIONS = $Conversation/Functions/FunctionsList.to_var()
@@ -351,6 +1311,8 @@ func update_settings_internal():
 	print("Settings: ")
 
 	print(SETTINGS)
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
 func update_graders_internal():
 	GRADERS = $Conversation/Graders/GradersList.to_var()
 
@@ -406,9 +1368,11 @@ func update_available_functions_in_UI_global():
 		for f in get_available_function_names():
 			node.add_item(f)
 
-func _on_item_list_item_selected(index: int, save_before_switch := true) -> void:
+func _on_item_list_item_selected(index: int, save_before_switch = true) -> void:
 	if index < 0 or index >= $VBoxContainer/ConversationsList.item_count:
 		return
+	var next_conversation_ix = str($VBoxContainer/ConversationsList.get_item_tooltip(index))
+	var switched_conversation = next_conversation_ix != CURRENT_EDITED_CONVO_IX
 	update_functions_internal()
 	print("Available Function Names:")
 	print(get_available_function_names())
@@ -417,39 +1381,52 @@ func _on_item_list_item_selected(index: int, save_before_switch := true) -> void
 	update_available_functions_in_UI_global()
 	if save_before_switch:
 		save_current_conversation()
-	# Alle Nachrichten löschen
+		if switched_conversation:
+			_run_autosave("conversation_switch")
+	var previous_suppress_state = _suppress_message_update_events
+	_set_message_update_suppressed(true)
 	for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 		if message.is_in_group("message"):
 			message.queue_free()
-	# Und die neuen aus der Convo laden
-	CURRENT_EDITED_CONVO_IX = $VBoxContainer/ConversationsList.get_item_tooltip(index)
-	# Create conversation if it does not exist
+	CURRENT_EDITED_CONVO_IX = next_conversation_ix
 	print("IX:")
 	print(CURRENT_EDITED_CONVO_IX)
 	DisplayServer.window_set_title("finetune-collect - Current conversation: " + CURRENT_EDITED_CONVO_IX)
+	if not CONVERSATIONS.has(CURRENT_EDITED_CONVO_IX):
+		CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = _ensure_conversation_meta_message([])
+		if not CONVERSATION_ORDER.has(CURRENT_EDITED_CONVO_IX):
+			CONVERSATION_ORDER.append(CURRENT_EDITED_CONVO_IX)
+		_sync_conversation_order()
+	CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)] = _ensure_conversation_meta_message(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
 	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[str(CURRENT_EDITED_CONVO_IX)])
+	_set_message_update_suppressed(previous_suppress_state)
 	$Conversation/Graders/GradersList.update_from_last_message()
 
 func save_current_conversation_to_conversations_at_index(ix: int):
 	# THERE SHOULD BE NO REASON TO USE THIS FUNCTION
-	CONVERSATIONS[ix] = $Conversation/Messages/MessagesList.to_var()
+	var convo_id = str(ix)
+	if convo_id == "":
+		return
+	CONVERSATIONS[convo_id] = _ensure_conversation_meta_message($Conversation/Messages/MessagesList.to_var())
+	if not CONVERSATION_ORDER.has(convo_id):
+		CONVERSATION_ORDER.append(convo_id)
+	_sync_conversation_order()
 
 func save_current_conversation():
-	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = $Conversation/Messages/MessagesList.to_var()
+	if CURRENT_EDITED_CONVO_IX == "":
+		return
+	CONVERSATIONS[CURRENT_EDITED_CONVO_IX] = _ensure_conversation_meta_message($Conversation/Messages/MessagesList.to_var())
+	if not CONVERSATION_ORDER.has(CURRENT_EDITED_CONVO_IX):
+		CONVERSATION_ORDER.append(CURRENT_EDITED_CONVO_IX)
+	_sync_conversation_order()
 
 func _on_load_btn_pressed() -> void:
-	match OS.get_name():
-		"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
-			$VBoxContainer/LoadBtn/FileDialog.visible = true
-		"Web":
-			file_access_web.open(".json")
+	await _run_selected_load_action(_get_default_load_action())
 
 func _on_file_loaded(file_name: String, file_type: String, base64_data: String) -> void:
 	# A finetune project file was loaded via web
 	var json_text_data = Marshalls.base64_to_utf8(base64_data)
-	load_from_json_data(json_text_data)
-	save_last_project_path("")
-	save_last_project_data(json_text_data)
+	await request_load_project_from_web_json_with_unsaved_guard(json_text_data)
 	
 	
 func _on_upload_progress(current_bytes: int, total_bytes: int) -> void:
@@ -537,6 +1514,10 @@ func exists_parameter_without_description():
 
 func check_is_conversation_problematic(idx: String):
 	var thisconvo = CONVERSATIONS[idx]
+	if not (thisconvo is Array):
+		return true
+	if thisconvo.size() == 0:
+		return true
 	var finetunetype = SETTINGS.get("finetuneType", 0)
 	if finetunetype == 1:
 		# DPO: First message user, second message assistant (with meta message 3 messages)
@@ -594,13 +1575,7 @@ func check_is_conversation_ready(idx: String) -> bool:
 	return false
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	var path_lower = path.to_lower()
-	if path_lower.ends_with(".json"):
-		load_from_json(path)
-	elif path_lower.ends_with(".ftproj"):
-		load_from_binary(path)
-	RUNTIME["filepath"] = path
-	save_last_project_path(path)
+	await request_load_project_from_path_with_unsaved_guard(path)
 	
 
 
@@ -613,9 +1588,10 @@ func get_conversation_name_or_false(idx):
 	return false
 
 func refresh_conversations_list():
+	_sync_conversation_order()
 	$VBoxContainer/ConversationsList.clear()
 	var numberIx = -1
-	for i in CONVERSATIONS.keys():
+	for i in CONVERSATION_ORDER:
 		numberIx += 1
 		var conversation_name = i
 		if get_conversation_name_or_false(i):
@@ -637,16 +1613,36 @@ func _on_conversation_tab_changed(tab: int) -> void:
 	update_schemas_internal()
 
 
-func create_new_conversation(msgs=[]):
+func create_new_conversation(msgs: Array = []):
 	# Generate a new ConvoID
 	var newID = getRandomConvoID(4)
-	CONVERSATIONS[newID] = msgs
+	CONVERSATIONS[newID] = _ensure_conversation_meta_message(msgs)
+	CONVERSATION_ORDER.append(newID)
+	_sync_conversation_order()
 	# Update everything that needs to be updated
 	refresh_conversations_list()
 	return newID
 
+func _duplicate_conversation_by_id(source_convo_id: String) -> String:
+	var source_id = str(source_convo_id).strip_edges()
+	if source_id == "":
+		return ""
+	if not CONVERSATIONS.has(source_id):
+		return ""
+	var new_convo_id = getRandomConvoID(4)
+	var source_messages = CONVERSATIONS[source_id]
+	if source_messages is Array:
+		CONVERSATIONS[new_convo_id] = _ensure_conversation_meta_message(source_messages)
+	else:
+		CONVERSATIONS[new_convo_id] = _ensure_conversation_meta_message([])
+	CONVERSATION_ORDER.append(new_convo_id)
+	_sync_conversation_order()
+	refresh_conversations_list()
+	return new_convo_id
+
 func append_to_conversation(convoid, msg={}):
 	if convoid in CONVERSATIONS:
+		CONVERSATIONS[convoid] = _ensure_conversation_meta_message(CONVERSATIONS[convoid])
 		CONVERSATIONS[convoid].append(msg)
 	else:
 		print("Error: No such conversation" + str(convoid))
@@ -677,9 +1673,11 @@ func _on_button_pressed() -> void:
 	
 
 func save_to_binary(filename):
+	_sync_conversation_order()
 	FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["conversationOrder"] = CONVERSATION_ORDER
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
 	FINETUNEDATA["schemas"] = SCHEMAS
@@ -689,66 +1687,85 @@ func save_to_binary(filename):
 		file.close()
 	else:
 		print("file open failed")
+
+func _apply_loaded_project_data(loaded_data: Dictionary, conversation_order_override: Array = []) -> void:
+	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
+	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
+	FINETUNEDATA = loaded_data
+	var loaded_functions = FINETUNEDATA.get("functions", [])
+	if loaded_functions is Array:
+		FUNCTIONS = loaded_functions
+	else:
+		FUNCTIONS = []
+	var loaded_settings = FINETUNEDATA.get("settings", {})
+	if loaded_settings is Dictionary:
+		SETTINGS = loaded_settings
+	else:
+		SETTINGS = {}
+	var loaded_graders = FINETUNEDATA.get("graders", [])
+	if loaded_graders is Array:
+		GRADERS = loaded_graders
+	else:
+		GRADERS = []
+	var loaded_schemas = FINETUNEDATA.get("schemas", [])
+	if loaded_schemas is Array:
+		SCHEMAS = loaded_schemas
+	else:
+		SCHEMAS = []
+	var loaded_conversation_order = FINETUNEDATA.get("conversationOrder", [])
+	if conversation_order_override.size() > 0:
+		loaded_conversation_order = conversation_order_override
+	_apply_loaded_conversations(FINETUNEDATA.get("conversations", {}), loaded_conversation_order)
+	_set_current_conversation_after_load()
+	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
+	_sync_save_load_ui_for_storage_mode()
+	_configure_autosave()
+	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
+	$Conversation/Graders/GradersList.from_var(GRADERS)
+	$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
+	refresh_conversations_list()
+	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+	if selected_index >= 0:
+		$VBoxContainer/ConversationsList.select(selected_index)
+		_on_item_list_item_selected(selected_index, false)
+	else:
+		$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
+	call_deferred("_convert_base64_images_after_load")
 	
 func load_from_binary(filename):
-	if FileAccess.file_exists(filename):
-		print("save file found")
-		var file = FileAccess.open(filename, FileAccess.READ)
-		FINETUNEDATA = file.get_var()
-		file.close()
-		FUNCTIONS = FINETUNEDATA["functions"]
-		CONVERSATIONS = FINETUNEDATA["conversations"]
-		SETTINGS = FINETUNEDATA["settings"]
-		GRADERS = FINETUNEDATA.get("graders", [])
-		SCHEMAS = FINETUNEDATA.get("schemas", [])
-		for i in CONVERSATIONS.keys():
-			CURRENT_EDITED_CONVO_IX = str(i)
-			$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
-			$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
-			$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-			$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
-			$Conversation/Graders/GradersList.from_var(GRADERS)
-			$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
-			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-			refresh_conversations_list()
-			var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
-			$VBoxContainer/ConversationsList.select(selected_index)
-			_on_item_list_item_selected(selected_index, false)
-			call_deferred("_convert_base64_images_after_load")
-	else:
+	if not FileAccess.file_exists(filename):
 		print("file not found")
+		return
+	print("save file found")
+	var file = FileAccess.open(filename, FileAccess.READ)
+	var loaded_data = file.get_var()
+	file.close()
+	if not (loaded_data is Dictionary):
+		push_error("Could not load binary project: Invalid project data.")
+		return
+	_apply_loaded_project_data(loaded_data)
 
 func load_from_json_data(jsondata: String):
 	var json_as_dict = JSON.parse_string(jsondata)
 	print(json_as_dict)
-	# Unload all UI
-	$Conversation/Functions/FunctionsList.delete_all_functions_from_UI()
-	$Conversation/Messages/MessagesList.delete_all_messages_from_UI()
-	FINETUNEDATA = json_as_dict
-	FUNCTIONS = FINETUNEDATA["functions"]
-	CONVERSATIONS = FINETUNEDATA["conversations"]
-	SETTINGS = FINETUNEDATA["settings"]
-	GRADERS = FINETUNEDATA.get("graders", [])
-	SCHEMAS = FINETUNEDATA.get("schemas", [])
-	for i in CONVERSATIONS.keys():
-		CURRENT_EDITED_CONVO_IX = str(i)
-	$Conversation/Settings/ConversationSettings.from_var(SETTINGS)
-	$Conversation/Functions/FunctionsList.from_var(FUNCTIONS)
-	$Conversation/Graders/GradersList.from_var(GRADERS)
-	$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
-	$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-	refresh_conversations_list()
-	var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
-	if selected_index == -1:
-		selected_index = len(CONVERSATIONS) - 1 
-	$VBoxContainer/ConversationsList.select(selected_index)
-	_on_item_list_item_selected(selected_index, false)
-	call_deferred("_convert_base64_images_after_load")
+	if not (json_as_dict is Dictionary):
+		push_error("Could not load JSON project: Invalid project data.")
+		return
+	var conversation_order_override = []
+	if not json_as_dict.has("conversationOrder"):
+		conversation_order_override = _extract_conversation_order_from_json_text(jsondata)
+	else:
+		var loaded_order = json_as_dict.get("conversationOrder", [])
+		if loaded_order is Array and loaded_order.size() == 0:
+			conversation_order_override = _extract_conversation_order_from_json_text(jsondata)
+	_apply_loaded_project_data(json_as_dict, conversation_order_override)
 
 func make_save_json_data():
+	_sync_conversation_order()
 	FINETUNEDATA = {}
 	FINETUNEDATA["functions"] = FUNCTIONS
 	FINETUNEDATA["conversations"] = CONVERSATIONS
+	FINETUNEDATA["conversationOrder"] = CONVERSATION_ORDER
 	FINETUNEDATA["settings"] = SETTINGS
 	FINETUNEDATA["graders"] = GRADERS
 	FINETUNEDATA["schemas"] = SCHEMAS
@@ -1175,20 +2192,20 @@ func _select_conversation_by_id(convo_id: String) -> void:
 
 func _show_jsonl_import_report(report: Dictionary) -> void:
 	var lines = []
-	lines.append("JSONL import report")
-	lines.append("Source: %s" % str(report.get("source_label", "")))
-	lines.append("Imported conversations: %d" % int(report.get("imported", 0)))
-	lines.append("Skipped lines: %d" % int(report.get("skipped", 0)))
-	lines.append("Detected type: %s" % _detected_type_to_label(int(report.get("detected_type", JSONL_ENTRY_TYPE_UNKNOWN))))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_TITLE"))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_SOURCE") % str(report.get("source_label", "")))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_IMPORTED") % int(report.get("imported", 0)))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_SKIPPED") % int(report.get("skipped", 0)))
+	lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_DETECTED_TYPE") % _detected_type_to_label(int(report.get("detected_type", JSONL_ENTRY_TYPE_UNKNOWN))))
 	var errors = report.get("errors", [])
 	if errors is Array and errors.size() > 0:
 		lines.append("")
-		lines.append("Details:")
+		lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_DETAILS"))
 		var max_errors_to_show = min(20, errors.size())
 		for i in range(max_errors_to_show):
 			lines.append("- " + str(errors[i]))
 		if errors.size() > max_errors_to_show:
-			lines.append("- ... (%d more)" % int(errors.size() - max_errors_to_show))
+			lines.append(tr("FINETUNE_JSONL_IMPORT_REPORT_MORE") % int(errors.size() - max_errors_to_show))
 	var dialog_text = "\n".join(lines)
 	print(dialog_text)
 	if not is_inside_tree():
@@ -1196,7 +2213,7 @@ func _show_jsonl_import_report(report: Dictionary) -> void:
 	if DisplayServer.get_name().to_lower() == "headless":
 		return
 	var dialog = AcceptDialog.new()
-	dialog.title = "JSONL Import"
+	dialog.title = tr("FINETUNE_JSONL_IMPORT_DIALOG_TITLE")
 	dialog.dialog_text = dialog_text
 	add_child(dialog)
 	dialog.confirmed.connect(Callable(dialog, "queue_free"))
@@ -1228,29 +2245,54 @@ func _on_save_file_dialog_file_selected(path: String) -> void:
 	update_settings_internal()
 	update_graders_internal()
 	update_schemas_internal()
+	var save_success = false
 	var path_lower = path.to_lower()
 	if path_lower.ends_with(".json"):
 		save_to_json(path)
+		save_success = true
 	elif path_lower.ends_with(".ftproj"):
 		save_to_binary(path)
-	RUNTIME["filepath"] = path
-	save_last_project_path(path)
+		save_success = true
+	if save_success:
+		RUNTIME["filepath"] = path
+		var snapshot = make_save_json_data()
+		_last_clean_project_snapshot_json = snapshot
+		_remember_last_open_local(path, snapshot)
+		_set_project_storage_mode(PROJECT_STORAGE_MODE_LOCAL)
+		_show_save_success_icon_feedback()
+	if _save_dialog_for_unsaved_guard_active:
+		_save_dialog_for_unsaved_guard_active = false
+		if save_success and _pending_destructive_action.size() > 0:
+			var action = _pending_destructive_action.duplicate(true)
+			_pending_destructive_action = {}
+			await _execute_destructive_action(action)
+		else:
+			_pending_destructive_action = {}
+
+func _on_save_file_dialog_canceled() -> void:
+	if _save_dialog_for_unsaved_guard_active:
+		_save_dialog_for_unsaved_guard_active = false
+		_pending_destructive_action = {}
 
 func delete_conversation(ixStr: String):
 	CONVERSATIONS.erase(ixStr)
+	CONVERSATION_ORDER.erase(ixStr)
+	_sync_conversation_order()
 	# If we were currently editing this conversation, unload it
 	if CURRENT_EDITED_CONVO_IX == ixStr:
 		for message in $Conversation/Messages/MessagesList/MessagesListContainer.get_children():
 			if message.is_in_group("message"):
 				message.queue_free()
-		# Select a random conversation that we will now be editing
-		for c in CONVERSATIONS.keys():
-			CURRENT_EDITED_CONVO_IX = c
+		if CONVERSATION_ORDER.size() > 0:
+			CURRENT_EDITED_CONVO_IX = str(CONVERSATION_ORDER[0])
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
-			refresh_conversations_list()
-			$VBoxContainer/ConversationsList.select(selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX))
-			break
+		else:
+			CURRENT_EDITED_CONVO_IX = ""
 	refresh_conversations_list()
+	if CURRENT_EDITED_CONVO_IX != "":
+		var selected_index = selectionStringToIndex($VBoxContainer/ConversationsList, CURRENT_EDITED_CONVO_IX)
+		if selected_index >= 0:
+			$VBoxContainer/ConversationsList.select(selected_index)
 	print(CONVERSATIONS)
 
 func get_ItemList_selected_Item_index(node: ItemList) -> int:
@@ -1262,17 +2304,19 @@ func get_ItemList_selected_Item_index(node: ItemList) -> int:
 func _on_conversations_list_gui_input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		if event.pressed and event.keycode == 4194312:
-			# Go through every entry and check if it is selected
-			for i in range($VBoxContainer/ConversationsList.item_count):
-				if $VBoxContainer/ConversationsList.is_selected(i):
-					delete_conversation($VBoxContainer/ConversationsList.get_item_tooltip(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)))
+			var selected_index = get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)
+			if selected_index >= 0:
+				var convo_id = str($VBoxContainer/ConversationsList.get_item_tooltip(selected_index))
+				delete_conversation(convo_id)
 		if event.pressed and Input.is_key_pressed(KEY_CTRL) and event.keycode == KEY_D:
-			for i in range($VBoxContainer/ConversationsList.item_count):
-				if $VBoxContainer/ConversationsList.is_selected(i):
-					var newConvoID = getRandomConvoID(4)
-					var origConvoID = $VBoxContainer/ConversationsList.get_item_text(get_ItemList_selected_Item_index($VBoxContainer/ConversationsList))
-					CONVERSATIONS[newConvoID] = CONVERSATIONS[origConvoID]
-					refresh_conversations_list()
+			var selected_index = get_ItemList_selected_Item_index($VBoxContainer/ConversationsList)
+			if selected_index >= 0:
+				var source_id = str($VBoxContainer/ConversationsList.get_item_tooltip(selected_index))
+				var duplicated_id = _duplicate_conversation_by_id(source_id)
+				if duplicated_id != "":
+					var duplicated_index = selectionStringToIndex($VBoxContainer/ConversationsList, duplicated_id)
+					if duplicated_index >= 0:
+						$VBoxContainer/ConversationsList.select(duplicated_index)
 					
 
 func _on_collapse_burger_btn_pressed() -> void:
@@ -1300,7 +2344,10 @@ func create_jsonl_data_for_file():
 	# Check what the settings say about what to export
 	var whatToExport = SETTINGS.get("exportConvo", 0)
 	# 0 -> only unproblematic, 1 -> only ready, 2 -> all
-	for convokey in allconversations:
+	_sync_conversation_order()
+	for convokey in CONVERSATION_ORDER:
+		if not allconversations.has(convokey):
+			continue
 		if whatToExport == 0:
 			if not check_is_conversation_problematic(convokey):
 				unproblematicconversations[convokey] = CONVERSATIONS[convokey]
@@ -1463,7 +2510,7 @@ func convert_base64_images_in_all_conversations() -> void:
 			var msg = convo[i]
 			if msg.get("type", "") == "Image":
 				var img_data = msg.get("imageContent", "")
-				if img_data != "" and not isImageURL(img_data):
+				if img_data != "" and not _is_http_url(str(img_data)):
 					var url = await _upload_base64_image_get_url(img_data, upload_url, upload_key)
 					CONVERSATIONS[convo_key][i]["imageContent"] = url
 

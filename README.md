@@ -16,6 +16,10 @@ You can also provide the program with your OpenAI API key and it can generate re
 - Import OpenAI message JSON from the clipboard or drag & drop `.json`/`.ftproj` files
 - Execute local functions with optional pre‑text and store the results
 - Automatically upload images to a configurable server
+- Save/load projects either locally or via a configurable cloud PHP endpoint
+- "New fine-tune" project reset action with save/discard/cancel guard for unsaved changes
+- Auto-save projects every 5 minutes or on conversation switches
+- Cloud mode enforces URL-only images (base64 images must be uploaded first)
 - Export images as base64 or URLs and choose which conversations to export
 - Token usage and cost estimation via a script
 - Conversation auto-splitting for Reinforcement Fine-Tuning
@@ -29,4 +33,4 @@ You can also provide the program with your OpenAI API key and it can generate re
 - `Ctrl` + `Right Click` – Shrink image when hovering
 - `Ctrl` + `Space` – Add new message
 - Drag and drop a `.ftproj` or `.json` file onto the window to load a project or insert messages
-- The application remembers the last opened project file and loads it automatically on the next start if it still exists
+- The application remembers the last opened local or cloud project and restores it on startup (local paths fall back to the stored project snapshot when needed, e.g. on Android)

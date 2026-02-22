@@ -9,9 +9,14 @@ scripts/data.json
 docs/schema_examples.md
 export/windows/finetune-collector.exe
 export/windows/finetune-collector.console.exe
+/tests/__pycache__/
+/scripts/stored_projects/
+*.pyc
 /export/windows
 export/windows.zip
 export/web.zip
 export/linux.zip
 export/windows/finetune-collector.exe
 export/windows/finetune-collector.console.exe
+export/android/finetune-collector.apk.idsig
+export/android/finetune-collector.apk

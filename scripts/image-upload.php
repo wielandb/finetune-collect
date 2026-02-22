@@ -1,79 +1,79 @@
 <?php
 
+declare(strict_types=1);
+
 $UPLOAD_DIR = __DIR__ . '/uploaded_images';
 $SECRET_KEY = 'gaertner';
+
 if (!file_exists($UPLOAD_DIR)) {
 	mkdir($UPLOAD_DIR, 0755, true);
 }
+
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: *');
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+	http_response_code(204);
 	exit;
 }
 
-// helper to build base url
-function base_url() {
+function base_url(): string {
 	$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-	// include the script name so that the returned url can be used directly
-	return $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+	return $protocol . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['SCRIPT_NAME'] ?? '');
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	$input = file_get_contents('php://input');
-	$data = [];
-	if (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
-		$json = json_decode($input, true);
-		if ($json !== null) { $data = $json; }
-	} else {
-		$data = $_POST;
+function respond_text(int $status, string $message): void {
+	http_response_code($status);
+	header('Content-Type: text/plain; charset=utf-8');
+	echo $message;
+	exit;
+}
+
+function read_request_data(): array {
+	$content_type = strtolower(strval($_SERVER['CONTENT_TYPE'] ?? ''));
+	$raw_input = file_get_contents('php://input');
+	if (strpos($content_type, 'application/json') !== false) {
+		if ($raw_input === false || trim($raw_input) === '') {
+			respond_text(400, 'invalid JSON request: empty body');
+		}
+		$decoded = json_decode($raw_input, true);
+		if (!is_array($decoded)) {
+			respond_text(400, 'invalid JSON request: ' . json_last_error_msg());
+		}
+		return $decoded;
 	}
-	$key = $data['key'] ?? '';
+	if (!empty($_POST)) {
+		return $_POST;
+	}
+	if ($raw_input !== false && trim($raw_input) !== '') {
+		$parsed = [];
+		parse_str($raw_input, $parsed);
+		if (is_array($parsed) && !empty($parsed)) {
+			return $parsed;
+		}
+	}
+	return [];
+}
+
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+if ($method === 'GET' && array_key_exists('test', $_GET)) {
+	$key = strval($_GET['key'] ?? '');
+	if ($key === '') {
+		respond_text(400, 'missing key parameter');
+	}
 	if ($key !== $SECRET_KEY) {
-		http_response_code(403);
-		echo 'invalid key';
-		exit;
+		respond_text(403, 'invalid key');
 	}
-	$image_b64 = $data['image'] ?? '';
-	if ($image_b64 === '') {
-		http_response_code(400);
-		echo 'missing image';
-		exit;
-	}
-        $img_data = base64_decode($image_b64);
-        if ($img_data === false) {
-                http_response_code(400);
-                echo 'decode failed';
-                exit;
-        }
-        $ext = strtolower($data['ext'] ?? '');
-        if (!in_array($ext, ['jpg', 'jpeg', 'png'])) {
-                $ext = 'jpg';
-        }
-        $filename = 'img_' . md5($img_data) . '.' . $ext;
-        file_put_contents($UPLOAD_DIR . '/' . $filename, $img_data);
-        echo base_url() . '?image=' . urlencode($filename);
-        exit;
+	respond_text(200, 'ok');
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['test'])) {
-       $key = $_GET['key'] ?? '';
-       if ($key !== $SECRET_KEY) {
-               http_response_code(403);
-               echo 'invalid key';
-       } else {
-               echo 'ok';
-       }
-       exit;
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['image'])) {
-	$file = basename($_GET['image']);
+if ($method === 'GET' && array_key_exists('image', $_GET)) {
+	$file = basename(strval($_GET['image']));
 	$path = $UPLOAD_DIR . '/' . $file;
 	if (!is_file($path)) {
-		http_response_code(404);
-		echo 'not found';
-		exit;
+		respond_text(404, 'not found');
 	}
 	if (function_exists('mime_content_type')) {
 		$mime = mime_content_type($path);
@@ -89,6 +89,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['image'])) {
 	exit;
 }
 
-http_response_code(400);
-echo 'invalid request';
-?>
+if ($method === 'POST') {
+	$data = read_request_data();
+	$key = strval($data['key'] ?? '');
+	if ($key === '') {
+		respond_text(400, 'missing key parameter');
+	}
+	if ($key !== $SECRET_KEY) {
+		respond_text(403, 'invalid key');
+	}
+
+	if (array_key_exists('test', $data)) {
+		respond_text(200, 'ok');
+	}
+
+	$image_b64 = strval($data['image'] ?? '');
+	if ($image_b64 === '') {
+		respond_text(400, "missing image payload in field 'image'");
+	}
+
+	// Accept data URLs and plain base64 payloads.
+	if (strpos($image_b64, 'data:') === 0) {
+		$comma_pos = strpos($image_b64, ',');
+		if ($comma_pos === false) {
+			respond_text(400, 'invalid data URL format');
+		}
+		$image_b64 = substr($image_b64, $comma_pos + 1);
+	}
+
+	$img_data = base64_decode($image_b64, true);
+	if ($img_data === false) {
+		respond_text(400, 'invalid base64 image payload');
+	}
+
+	$ext = strtolower(strval($data['ext'] ?? ''));
+	if (!in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
+		$ext = 'jpg';
+	}
+
+	$filename = 'img_' . md5($img_data) . '.' . $ext;
+	$write_result = @file_put_contents($UPLOAD_DIR . '/' . $filename, $img_data);
+	if ($write_result === false) {
+		respond_text(500, 'failed to write image file');
+	}
+
+	respond_text(200, base_url() . '?image=' . urlencode($filename));
+}
+
+$query_keys = array_keys($_GET);
+if (empty($query_keys)) {
+	$query_keys_text = '<none>';
+} else {
+	$query_keys_text = implode(', ', $query_keys);
+}
+respond_text(
+	400,
+	'invalid request: expected GET ?test=1&key=..., GET ?image=..., or POST with key+image. ' .
+	'method=' . $method . ', query_keys=' . $query_keys_text
+);

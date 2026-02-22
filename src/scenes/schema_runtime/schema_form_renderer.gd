@@ -137,7 +137,7 @@ func _render_non_nullable_node(descriptor: Dictionary, parent: Control, controll
 				"kind": "fallback",
 				"title": descriptor.get("title", ""),
 				"description": descriptor.get("description", ""),
-				"reason": "Unknown descriptor kind: " + kind
+				"reason": tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND").replace("{kind}", kind)
 			}, parent, controller, path, depth)
 
 func _render_object_node(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> void:
@@ -307,7 +307,7 @@ func _build_option_selector(parent: Control, labels: Array, selected_index: int,
 		var filter_input = LineEdit.new()
 		filter_input.name = FILTERABLE_OPTION_FILTER_LINE_EDIT_NAME
 		filter_input.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		filter_input.placeholder_text = "Filter..."
+		filter_input.placeholder_text = tr("MESSAGES_JSON_SCHEMA_FORM_OPTION_FILTER_PLACEHOLDER")
 		selector_box.add_child(filter_input)
 		selector_box.add_child(choice)
 		filter_input.text_changed.connect(_on_option_filter_text_changed.bind(choice, state, on_selected))
@@ -1093,7 +1093,7 @@ func _render_const_node(descriptor: Dictionary, parent: Control, controller, pat
 	var label = Label.new()
 	label.autowrap_mode = 2
 	label.add_theme_font_size_override("font_size", _description_font_size_for_depth(depth + 1))
-	label.text = "const: " + JSON.stringify(descriptor.get("const_value", null))
+	label.text = tr("MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX") + JSON.stringify(descriptor.get("const_value", null))
 	box.add_child(label)
 	controller.set_value_at_path(path, descriptor.get("const_value", null), false)
 
@@ -1102,7 +1102,7 @@ func _render_null_node(descriptor: Dictionary, parent: Control, controller, path
 	_add_title_and_description(descriptor, box, depth)
 	var label = Label.new()
 	label.add_theme_font_size_override("font_size", _description_font_size_for_depth(depth + 1))
-	label.text = "null"
+	label.text = tr("MESSAGES_JSON_SCHEMA_FORM_NULL_LITERAL")
 	box.add_child(label)
 	controller.set_value_at_path(path, null, false)
 
@@ -1116,7 +1116,7 @@ func _render_union_node(descriptor: Dictionary, parent: Control, controller, pat
 			"kind": "fallback",
 			"title": descriptor.get("title", ""),
 			"description": descriptor.get("description", ""),
-			"reason": "Union has no branches"
+			"reason": tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES")
 		}, box, controller, path, depth + 1)
 		return
 	var labels = []
@@ -1135,7 +1135,7 @@ func _render_union_node(descriptor: Dictionary, parent: Control, controller, pat
 	var hint = Label.new()
 	_style_wrapping_label(hint)
 	hint.add_theme_font_size_override("font_size", _description_font_size_for_depth(depth + 1))
-	hint.text = "Switching branch keeps compatible fields and resets incompatible values."
+	hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_UNION_SWITCH_HINT")
 	box.add_child(hint)
 	_add_divider(box)
 	var branch_holder = VBoxContainer.new()
@@ -1150,7 +1150,7 @@ func _render_fallback_node(descriptor: Dictionary, parent: Control, controller, 
 	editor.configure(
 		str(descriptor.get("title", "")),
 		str(descriptor.get("description", "")),
-		str(descriptor.get("reason", "Unsupported schema section"))
+		str(descriptor.get("reason", tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNSUPPORTED_SECTION")))
 	)
 	_style_fallback_editor(editor, depth)
 	editor.set_json_value(controller.get_value_at_path(path))

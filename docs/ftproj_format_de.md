@@ -115,6 +115,11 @@ Globale Konfiguration, gespeichert im Objekt `settings`.
 | `exportImagesHow` | integer | Art und Weise des Bildexports. |
 | `useUserNames` | bool | Benutzernamen in exportierten Daten einbeziehen. |
 | `schemaEditorURL` | string | URL zu einem externen JSON-Schema-Editor. |
+| `projectStorageMode` | integer | Speicher-Backend des Projekts (`0` = lokal, `1` = Cloud). |
+| `projectCloudURL` | string | URL zum Cloud-Endpunkt `project-storage.php`. |
+| `projectCloudKey` | string | Geheimer Schluessel fuer Cloud-Speicher-/Ladeanfragen. |
+| `projectCloudName` | string | Cloud-Projektkennung (entspricht einer entfernten JSON-Datei). |
+| `autoSaveMode` | integer | Verhalten fuer automatisches Speichern (`0` aus, `1` alle 5 Minuten, `2` bei Konversationswechsel). |
 | `tokenCounterPath` | string | Pfad zu einem externen Tool zur TokenzÃ¤hlung. |
 | `exportConvos` | integer | Welche GesprÃ¤che exportiert werden. |
 | `countTokensWhen` | integer | Wann die TokenzÃ¤hlung erfolgt. |
@@ -135,4 +140,3 @@ Jedes Element im Array `schemas` beschreibt ein JSON-Schema.
 ### BinÃ¤r vs. JSON
 
 Bei Speicherung als `.ftproj` wird das komplette Objekt mit Godots `store_var` serialisiert. Mit `.json` wird dieselbe Struktur als JSONâ€‘Text geschrieben.
-

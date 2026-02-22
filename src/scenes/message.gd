@@ -10,6 +10,7 @@ var image_access_web = null
 var token = "" # The token for the schema editor for this message
 var edit_message_url = ""
 var last_base64_to_upload = ""
+var _pending_image_upload_requests = 0
 
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
 const VALID_ICON_BAD := "res://icons/code-json-check-negative.png"
@@ -123,9 +124,9 @@ func _configure_message_settings_row(enabled: bool) -> void:
 	else:
 		role_button.fit_to_longest_item = true
 		type_button.fit_to_longest_item = true
-		role_button.size_flags_horizontal = 0
-		type_button.size_flags_horizontal = 0
-		delete_button.size_flags_horizontal = 0
+		role_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		type_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		delete_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		user_name_edit.size_flags_horizontal = 0
 		role_button.custom_minimum_size = Vector2(0, 0)
 		type_button.custom_minimum_size = Vector2(0, 0)
@@ -339,7 +340,7 @@ func to_var():
 	me["textContent"] = $TextMessageContainer/Message.text
 	me["unpreferredTextContent"] = $TextMessageContainer/DPOMessagesContainer/DPOUnpreferredMsgContainer/DPOUnpreferredMsgEdit.text
 	me["preferredTextContent"] = $TextMessageContainer/DPOMessagesContainer/DPOPreferredMsgContainer/DPOPreferredMsgEdit.text
-	me["imageContent"] = $ImageMessageContainer/Base64ImageEdit.text
+	me["imageContent"] = $ImageMessageContainer/ImageInputRow/Base64ImageEdit.text
 	me["imageDetail"] = $ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.selected
 	me["functionName"] = ""
 	if $FunctionMessageContainer/function/FunctionNameChoiceButton.selected != -1:
@@ -400,9 +401,16 @@ func from_var(data):
 		$MessageSettingsContainer.visible = false
 		$MetaMessageContainer.visible = true
 		var metaData = data.get("metaData", {})
-		$MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox.button_pressed = metaData.get("ready", false)
-		$MetaMessageContainer/ConversationNameContainer/ConversationNameEdit.text = metaData.get("conversationName", "")
-		$MetaMessageContainer/ConversationNotesEdit.text = metaData.get("notes", "")
+		var ready_checkbox = $MetaMessageContainer/ConversationReadyContainer/ConversationReadyCheckBox
+		var conversation_name_edit = $MetaMessageContainer/ConversationNameContainer/ConversationNameEdit
+		var conversation_notes_edit = $MetaMessageContainer/ConversationNotesEdit
+		conversation_name_edit.set_block_signals(true)
+		conversation_notes_edit.set_block_signals(true)
+		ready_checkbox.set_pressed_no_signal(metaData.get("ready", false))
+		conversation_name_edit.text = metaData.get("conversationName", "")
+		conversation_notes_edit.text = metaData.get("notes", "")
+		conversation_name_edit.set_block_signals(false)
+		conversation_notes_edit.set_block_signals(false)
 		# Update the saved token counts if available
 		if savedTokenCounts:
 			update_token_costs(savedTokenCounts)
@@ -431,13 +439,13 @@ func from_var(data):
 				$TextMessageContainer/Message.visible = true
 		2:
 			pass
-	$ImageMessageContainer/Base64ImageEdit.text = data.get("imageContent", "")
+	$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = data.get("imageContent", "")
 	# If not empty, create the image from the base64
-	if $ImageMessageContainer/Base64ImageEdit.text != "":
-		if isImageURL($ImageMessageContainer/Base64ImageEdit.text):
-			load_image_container_from_url($ImageMessageContainer/Base64ImageEdit.text)
+	if $ImageMessageContainer/ImageInputRow/Base64ImageEdit.text != "":
+		if isImageURL($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text):
+			load_image_container_from_url($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text)
 		else:
-			base64_to_image($ImageMessageContainer/TextureRect, $ImageMessageContainer/Base64ImageEdit.text)
+			base64_to_image($ImageMessageContainer/TextureRect, $ImageMessageContainer/ImageInputRow/Base64ImageEdit.text)
 	if data.has("imageDetail"):
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(data["imageDetail"])
 	else: # TODO: Add option what the standard quality should be
@@ -608,7 +616,7 @@ func from_grader_var(gradermessage):
 			$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Image"))
 			_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
 			var img = content.get("image_url", "")
-			$ImageMessageContainer/Base64ImageEdit.text = img
+			$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = img
 			var image_detail_map = {"high":0, "low":1, "auto":2}
 			$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(image_detail_map.get(content.get("detail", "high"), 0))
 			if img != "":
@@ -691,6 +699,8 @@ func _ready() -> void:
 	var schema_hint = _schema_form_hint_label_node()
 	if schema_hint != null:
 		schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
+	if _pending_image_upload_requests == 0:
+		_set_image_upload_status_visible(false)
 	if ft_node != null and ft_node.has_method("is_compact_layout_enabled"):
 		set_compact_layout(ft_node.is_compact_layout_enabled())
 	else:
@@ -699,11 +709,23 @@ func _ready() -> void:
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
 	
+func _set_image_upload_status_visible(visible: bool) -> void:
+	$ImageMessageContainer/ImageInputRow/UploadSpinner.visible = visible
+
+func _begin_image_upload_status() -> void:
+	_pending_image_upload_requests += 1
+	_set_image_upload_status_visible(true)
+
+func _end_image_upload_status() -> void:
+	_pending_image_upload_requests = maxi(0, _pending_image_upload_requests - 1)
+	if _pending_image_upload_requests == 0:
+		_set_image_upload_status_visible(false)
+
 
 func _on_file_loaded(file_name: String, type: String, base64_data: String) -> void:
 	# var raw_data: PackedByteArray = Marshalls.base64_to_raw(base64_data)
 	base64_to_image($ImageMessageContainer/TextureRect, base64_data)
-	$ImageMessageContainer/Base64ImageEdit.text = base64_data
+	$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = base64_data
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -739,7 +761,7 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	var bin = FileAccess.get_file_as_bytes(image_path)
 	if bin.size() == 0:
 		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
-		$ImageMessageContainer/Base64ImageEdit.text = ""
+		$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = ""
 		return
 	var image_type_hint = ""
 	var lower_path = image_path.to_lower()
@@ -767,11 +789,13 @@ func _on_file_dialog_file_selected(path: String) -> void:
 	var upload_key = settings.get("imageUploadServerKey", "")
 	var upload_enabled = settings.get("imageUploadSetting", 0)
 	last_base64_to_upload = base_64_data
+	$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = base_64_data
 	if upload_enabled == 1 and upload_url != "" and upload_key != "":
+		_begin_image_upload_status()
 		var http = HTTPRequest.new()
 		add_child(http)
 		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
-		var headers := PackedStringArray()
+		var headers = PackedStringArray()
 		headers.append("Content-Type: application/json")
 		var ext = image_type_hint
 		if ext == "":
@@ -781,18 +805,20 @@ func _on_file_dialog_file_selected(path: String) -> void:
 		var payload = {"key": upload_key, "image": base_64_data, "ext": ext}
 		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 		if err != OK:
-			$ImageMessageContainer/Base64ImageEdit.text = base_64_data
+			_end_image_upload_status()
 		return
-	$ImageMessageContainer/Base64ImageEdit.text = base_64_data
+	if _pending_image_upload_requests == 0:
+		_set_image_upload_status_visible(false)
 
 func _on_image_upload_request_completed(result, response_code, headers, body, request):
 	request.queue_free()
-	if response_code == 200:
+	_end_image_upload_status()
+	if int(result) == HTTPRequest.RESULT_SUCCESS and int(response_code) == 200:
 		var url = body.get_string_from_utf8().strip_edges()
-		$ImageMessageContainer/Base64ImageEdit.text = url
+		$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = url
 		load_image_container_from_url(url)
 	else:
-		$ImageMessageContainer/Base64ImageEdit.text = last_base64_to_upload
+		$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = last_base64_to_upload
 		base64_to_image($ImageMessageContainer/TextureRect, last_base64_to_upload)
 
 func _base64_payload_from_data_uri(b64Data: String) -> String:
@@ -830,7 +856,7 @@ func get_ext_from_base64(b64:String) -> String:
 	return "jpg"
 
 func maybe_upload_base64_image():
-	var img_data = $ImageMessageContainer/Base64ImageEdit.text
+	var img_data = $ImageMessageContainer/ImageInputRow/Base64ImageEdit.text
 	if img_data == "" or isImageURL(img_data) or img_data.begins_with("http://") or img_data.begins_with("https://"):
 		return
 	var ft_node = _get_fine_tune_node()
@@ -842,16 +868,18 @@ func maybe_upload_base64_image():
 	var upload_enabled = settings.get("imageUploadSetting", 0)
 	if upload_enabled == 1 and upload_url != "" and upload_key != "":
 		last_base64_to_upload = img_data
+		_begin_image_upload_status()
 		var http = HTTPRequest.new()
 		add_child(http)
 		http.request_completed.connect(self._on_image_upload_request_completed.bind(http))
-		var headers := PackedStringArray()
+		var headers = PackedStringArray()
 		headers.append("Content-Type: application/json")
 		var ext = get_ext_from_base64(img_data)
 		var payload = {"key": upload_key, "image": img_data, "ext": ext}
 		var err = http.request(upload_url, headers, HTTPClient.METHOD_POST, JSON.stringify(payload))
 		if err != OK:
-				$ImageMessageContainer/Base64ImageEdit.text = img_data
+			_end_image_upload_status()
+			$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = img_data
 	
 func _on_load_image_button_pressed() -> void:
 	match OS.get_name():
@@ -1467,7 +1495,31 @@ func _on_schema_validate_timeout() -> void:
 func update_messages_global():
 	var ft_node = _get_fine_tune_node()
 	if ft_node != null:
+		if ft_node.has_method("is_message_update_suppressed") and ft_node.is_message_update_suppressed():
+			return
 		ft_node.save_current_conversation()
+
+func _refresh_conversations_sidebar_for_current_conversation() -> void:
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		return
+	if ft_node.has_method("is_message_update_suppressed") and ft_node.is_message_update_suppressed():
+		return
+	ft_node.refresh_conversations_list()
+	var list_node = ft_node.get_node_or_null("VBoxContainer/ConversationsList")
+	if list_node is ItemList:
+		var current_conversation_id = str(ft_node.CURRENT_EDITED_CONVO_IX)
+		var selected_index = ft_node.selectionStringToIndex(list_node, current_conversation_id)
+		if selected_index >= 0:
+			list_node.select(selected_index)
+
+func _on_conversation_name_edit_text_changed(new_text: String) -> void:
+	update_messages_global()
+	_refresh_conversations_sidebar_for_current_conversation()
+
+func _on_conversation_ready_check_box_toggled(button_pressed: bool) -> void:
+	update_messages_global()
+	_refresh_conversations_sidebar_for_current_conversation()
 # Jetzt die Events
 
 func _on_something_int_changed(index: int) -> void:
@@ -1512,7 +1564,7 @@ func _on_delete_button_mouse_exited() -> void:
 
 
 func _on_load_image_url_button_pressed() -> void:
-	load_image_container_from_url($ImageMessageContainer/Base64ImageEdit.text)
+	load_image_container_from_url($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text)
 	
 func load_image_container_from_url(url):
 	if not is_inside_tree():
@@ -1549,7 +1601,7 @@ func _image_http_request_completed(result, response_code, headers, body, request
 		return
 
 	var content_type = _get_image_content_type_from_headers(headers)
-	var imageType = getImageType($ImageMessageContainer/Base64ImageEdit.text)
+	var imageType = getImageType($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text)
 	var image = _decode_image_from_buffer(body, imageType, content_type)
 	if image == null:
 		push_error("Couldn't load the image.")
@@ -2072,7 +2124,7 @@ func from_openai_message(oai_msg: Dictionary):
 	elif msg_type == "Image":
 		$MessageSettingsContainer/MessageType.select(selectionStringToIndex($MessageSettingsContainer/MessageType, "Image"))
 		_on_message_type_item_selected($MessageSettingsContainer/MessageType.selected)
-		$ImageMessageContainer/Base64ImageEdit.text = image_content
+		$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = image_content
 		$ImageMessageContainer/HBoxContainer/ImageDetailOptionButton.select(image_detail_idx)
 		if image_content != "":
 			if isImageURL(image_content) or image_content.begins_with("http://") or image_content.begins_with("https://"):

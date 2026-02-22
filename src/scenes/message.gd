@@ -25,6 +25,7 @@ const COMPACT_META_INFO_GRID_COLUMNS = 1
 var _schema_validate_timer: Timer
 var _schema_form_controller = SchemaFormController.new()
 var _schema_sync_guard = false
+var _schema_restore_guard = false
 var _schema_last_selected_name = ""
 var _schema_resolve_serial = 0
 var _schema_is_loading_external = false
@@ -489,6 +490,8 @@ func from_var(data):
 	if schema_option.item_count == 0:
 		schema_option.add_item("Only JSON")
 	var saved_name = data.get("jsonSchemaName", "")
+	_schema_restore_guard = true
+	schema_option.set_block_signals(true)
 	if saved_name == "":
 		if schema_option.item_count > 0:
 			schema_option.select(0)
@@ -498,6 +501,8 @@ func from_var(data):
 			schema_option.select(saved_ix)
 		elif schema_option.item_count > 0:
 			schema_option.select(0)
+	schema_option.set_block_signals(false)
+	_schema_restore_guard = false
 	_rebuild_schema_form_from_selection(false)
 	_validate_schema_message()
 	# Audio Message
@@ -1361,6 +1366,10 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 	_ensure_schema_form_bound()
 	var schema_hint = _schema_form_hint_label_node()
 	var schema_edit_node = _schema_edit_node()
+	# Keep a stable copy of raw JSON for load paths so form rebuild side effects cannot erase it.
+	var preserved_raw_json = "{}"
+	if schema_edit_node != null:
+		preserved_raw_json = schema_edit_node.text
 	var option = $SchemaMessageContainer/HBoxContainer/OptionButton
 	var selected_schema_name = ""
 	if option.selected >= 0 and option.selected < option.item_count:
@@ -1395,8 +1404,8 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 	if sync_raw_from_form and schema_changed:
 		apply_result = _schema_form_controller.set_value_from_json("")
 	else:
-		var source_json = "{}"
-		if schema_edit_node != null:
+		var source_json = preserved_raw_json
+		if sync_raw_from_form and schema_edit_node != null:
 			source_json = schema_edit_node.text
 		apply_result = _schema_form_controller.set_value_from_json(source_json)
 	if sync_raw_from_form and (schema_changed or not bool(apply_result.get("ok", false))):
@@ -1482,6 +1491,14 @@ func _on_schema_edit_text_changed() -> void:
 	_schedule_schema_validate()
 
 func _on_schema_option_selected(_index: int) -> void:
+	# During load/restore we rebuild explicitly from from_var(false) to preserve saved JSON payload.
+	if _schema_restore_guard:
+		return
+	var ft_node = _get_fine_tune_node()
+	if ft_node != null and ft_node.has_method("is_message_update_suppressed") and ft_node.is_message_update_suppressed():
+		_rebuild_schema_form_from_selection(false)
+		_schedule_schema_validate()
+		return
 	_rebuild_schema_form_from_selection(true)
 	_schedule_schema_validate()
 

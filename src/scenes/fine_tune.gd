@@ -1329,22 +1329,24 @@ func get_available_schema_names():
 
 func update_available_schemas_in_UI_global():
 	for node in get_tree().get_nodes_in_group("UI_needs_schema_list"):
-		var selected_text := ""
+		if not (node is OptionButton):
+			continue
+		var selected_text = ""
 		if node.selected != -1:
 			selected_text = node.get_item_text(node.selected)
+		node.set_block_signals(true)
 		node.clear()
 		node.add_item(tr("ONLY_JSON_NO_SCHEMA"))
 		for s in get_available_schema_names():
 			node.add_item(s)
+		var selected_index = 0
 		if selected_text != "":
-			var idx := -1
 			for i in range(node.item_count):
 				if node.get_item_text(i) == selected_text:
-					idx = i
+					selected_index = i
 					break
-			node.select(idx)
-		else:
-			node.select(0)
+		node.select(selected_index)
+		node.set_block_signals(false)
 func get_available_function_names():
 	var tmpNames = []
 	for f in FUNCTIONS:

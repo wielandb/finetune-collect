@@ -690,6 +690,21 @@ func _build_cloud_target_prefill() -> Dictionary:
 		"project_id": str(SETTINGS.get("projectCloudName", "")).strip_edges()
 	}
 
+func _popup_dialog_fit_to_viewport(dialog: Window, preferred_size: Vector2i) -> void:
+	var viewport_size = get_viewport_rect().size
+	if viewport_size.x <= 0 or viewport_size.y <= 0:
+		dialog.popup_centered(preferred_size)
+		return
+	var side_margin = 24
+	var vertical_margin = 24
+	var max_width = maxi(220, int(viewport_size.x) - side_margin)
+	var max_height = maxi(160, int(viewport_size.y) - vertical_margin)
+	var target_size = Vector2i(
+		mini(preferred_size.x, max_width),
+		mini(preferred_size.y, max_height)
+	)
+	dialog.popup_centered(target_size)
+
 func _prepare_cloud_target_for_save(force_prompt: bool) -> bool:
 	var prefill = _build_cloud_target_prefill()
 	var should_prompt = force_prompt or str(prefill.get("project_id", "")) == ""
@@ -783,7 +798,7 @@ func _request_cloud_target_dialog(context: String, prefill: Dictionary) -> Dicti
 		state["done"] = true
 	dialog.canceled.connect(on_cancel)
 	dialog.close_requested.connect(on_cancel)
-	dialog.popup_centered(Vector2i(700, 280))
+	_popup_dialog_fit_to_viewport(dialog, Vector2i(700, 280))
 	while not bool(state.get("done", false)):
 		await get_tree().process_frame
 	var result = {
@@ -856,7 +871,7 @@ func _show_unsaved_changes_dialog() -> void:
 	dialog.canceled.connect(_on_unsaved_dialog_cancelled.bind(dialog))
 	dialog.close_requested.connect(_on_unsaved_dialog_cancelled.bind(dialog))
 	dont_save_button.pressed.connect(_on_unsaved_dialog_dont_save_pressed.bind(dialog))
-	dialog.popup_centered(Vector2i(640, 220))
+	_popup_dialog_fit_to_viewport(dialog, Vector2i(640, 220))
 
 func _on_unsaved_dialog_save_confirmed(dialog: ConfirmationDialog) -> void:
 	dialog.queue_free()
@@ -2220,7 +2235,7 @@ func _show_jsonl_import_report(report: Dictionary) -> void:
 	add_child(dialog)
 	dialog.confirmed.connect(Callable(dialog, "queue_free"))
 	dialog.close_requested.connect(Callable(dialog, "queue_free"))
-	dialog.popup_centered(Vector2i(760, 460))
+	_popup_dialog_fit_to_viewport(dialog, Vector2i(760, 460))
 
 func save_as_appropriate_from_path(path):
 	var path_lower = path.to_lower()

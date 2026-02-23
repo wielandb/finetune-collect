@@ -68,6 +68,7 @@ const DATE_PICKER_MONTH_SHORT_KEYS = [
 ]
 const DELETE_ICON_CLOSED_SMALL = "res://icons/trashcan_small.png"
 const DELETE_ICON_OPEN_SMALL = "res://icons/trashcanOpen_small.png"
+const INFO_ICON_SMALL = "res://icons/help-circle-outline-custom.png"
 const FILTERABLE_OPTION_THRESHOLD = 10
 const FILTERABLE_OPTION_FILTER_LINE_EDIT_NAME = "OptionFilterLineEdit"
 const OPTION_SELECTOR_FONT_SIZE = 11
@@ -208,7 +209,9 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 	if not (array_value is Array):
 		array_value = []
 	var items = descriptor.get("items", {})
-	if _is_key_value_pair_array(descriptor):
+	if _is_compact_string_enum_array(descriptor):
+		_render_compact_string_enum_array_rows(box, controller, path, depth, descriptor, array_value, items)
+	elif _is_key_value_pair_array(descriptor):
 		_render_key_value_array_rows(box, controller, path, depth, descriptor, array_value, items)
 	else:
 		for i in range(array_value.size()):
@@ -236,6 +239,80 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 	if max_items >= 0 and array_value.size() >= max_items:
 		add_button.disabled = true
 	add_button.pressed.connect(controller._on_array_item_add_requested.bind(path.duplicate(true), descriptor))
+
+func _render_compact_string_enum_array_rows(parent: VBoxContainer, controller, path: Array, depth: int, descriptor: Dictionary, array_value: Array, items_descriptor: Dictionary) -> void:
+	var enum_values = items_descriptor.get("enum_values", [])
+	var labels = []
+	for enum_value in enum_values:
+		labels.append(str(enum_value))
+	for i in range(array_value.size()):
+		var row = HBoxContainer.new()
+		row.name = "CompactStringEnumRow"
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 8)
+		parent.add_child(row)
+
+		var info_hint = _create_compact_info_hint(items_descriptor)
+		if info_hint != null:
+			row.add_child(info_hint)
+
+		var selector_holder = VBoxContainer.new()
+		selector_holder.name = "CompactSelectorHolder"
+		selector_holder.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		selector_holder.add_theme_constant_override("separation", 4)
+		row.add_child(selector_holder)
+
+		var current = controller.get_value_at_path(path + [i])
+		var selected_index = -1
+		for value_index in range(enum_values.size()):
+			if JSON.stringify(enum_values[value_index]) == JSON.stringify(current):
+				selected_index = value_index
+				break
+		if selected_index == -1 and enum_values.size() > 0:
+			selected_index = 0
+			controller.set_value_at_path(path + [i], enum_values[0], false)
+
+		_build_option_selector(
+			selector_holder,
+			labels,
+			selected_index,
+			controller._on_enum_item_selected.bind(path.duplicate(true) + [i], items_descriptor)
+		)
+
+		var delete_button = Button.new()
+		delete_button.name = "DeleteButton"
+		delete_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM")
+		delete_button.icon = load(DELETE_ICON_CLOSED_SMALL)
+		delete_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
+		_style_single_line_button(delete_button)
+		delete_button.pressed.connect(controller._on_array_item_delete_requested.bind(path.duplicate(true), i, descriptor))
+		delete_button.mouse_entered.connect(_on_delete_button_mouse_entered.bind(delete_button))
+		delete_button.mouse_exited.connect(_on_delete_button_mouse_exited.bind(delete_button))
+		var min_items = int(descriptor.get("min_items", 0))
+		if i < min_items:
+			delete_button.disabled = true
+		row.add_child(delete_button)
+
+		if i < array_value.size() - 1:
+			_add_divider(parent)
+
+func _create_compact_info_hint(item_descriptor: Dictionary) -> TextureRect:
+	var title_text = str(item_descriptor.get("title", "")).strip_edges()
+	var description_text = str(item_descriptor.get("description", "")).strip_edges()
+	var tooltip_parts = []
+	if title_text != "":
+		tooltip_parts.append(title_text)
+	if description_text != "":
+		tooltip_parts.append(description_text)
+	if tooltip_parts.is_empty():
+		return null
+	var info_hint = TextureRect.new()
+	info_hint.name = "InfoHint"
+	info_hint.tooltip_text = "\n\n".join(tooltip_parts)
+	info_hint.texture = load(INFO_ICON_SMALL)
+	info_hint.stretch_mode = TextureRect.STRETCH_KEEP_CENTERED
+	info_hint.custom_minimum_size = Vector2(24, 24)
+	return info_hint
 
 func _render_key_value_array_rows(parent: VBoxContainer, controller, path: Array, depth: int, descriptor: Dictionary, array_value: Array, items_descriptor: Dictionary) -> void:
 	var key_descriptor = _get_object_property_descriptor(items_descriptor, "key")
@@ -441,6 +518,18 @@ func _is_key_value_pair_array(descriptor: Dictionary) -> bool:
 	if key_descriptor.is_empty() or value_descriptor.is_empty():
 		return false
 	return _is_supported_key_value_field(key_descriptor) and _is_supported_key_value_field(value_descriptor)
+
+func _is_compact_string_enum_array(descriptor: Dictionary) -> bool:
+	if str(descriptor.get("kind", "")) != "array":
+		return false
+	var items_descriptor = descriptor.get("items", {})
+	if not (items_descriptor is Dictionary):
+		return false
+	if bool(items_descriptor.get("nullable", false)):
+		return false
+	if str(items_descriptor.get("kind", "")) != "enum":
+		return false
+	return _is_string_enum_descriptor(items_descriptor)
 
 func _get_object_property_descriptor(object_descriptor: Dictionary, property_name: String) -> Dictionary:
 	var property_entry = _get_object_property_entry(object_descriptor, property_name)
@@ -667,6 +756,27 @@ func _on_date_clear_pressed(line_edit: LineEdit, controller, path: Array, descri
 	line_edit.text = ""
 	controller._on_string_value_changed("", path, descriptor)
 
+func _popup_dialog_fit_to_viewport(dialog: Window, preferred_size: Vector2i) -> void:
+	var viewport_size = Vector2.ZERO
+	var viewport = dialog.get_viewport()
+	if viewport != null:
+		viewport_size = viewport.get_visible_rect().size
+	if viewport_size.x <= 0 or viewport_size.y <= 0:
+		var native_size = DisplayServer.window_get_size()
+		viewport_size = Vector2(native_size.x, native_size.y)
+	if viewport_size.x <= 0 or viewport_size.y <= 0:
+		dialog.popup_centered(preferred_size)
+		return
+	var side_margin = 24
+	var vertical_margin = 24
+	var max_width = maxi(220, int(viewport_size.x) - side_margin)
+	var max_height = maxi(180, int(viewport_size.y) - vertical_margin)
+	var target_size = Vector2i(
+		mini(preferred_size.x, max_width),
+		mini(preferred_size.y, max_height)
+	)
+	dialog.popup_centered(target_size)
+
 func _on_date_picker_open_pressed(dialog: AcceptDialog, line_edit: LineEdit) -> void:
 	var parsed = _parse_iso_date_string(line_edit.text)
 	if bool(parsed.get("ok", false)):
@@ -687,7 +797,7 @@ func _on_date_picker_open_pressed(dialog: AcceptDialog, line_edit: LineEdit) -> 
 	dialog.set_meta("date_click_key", "")
 	dialog.set_meta("date_click_timestamp", -DATE_PICKER_DOUBLE_CLICK_WINDOW_MS)
 	_refresh_date_picker_calendar(dialog)
-	dialog.popup_centered(Vector2i(360, 430))
+	_popup_dialog_fit_to_viewport(dialog, Vector2i(360, 430))
 
 func _on_date_picker_dialog_clear_pressed(dialog: AcceptDialog) -> void:
 	var line_edit = dialog.get_meta("date_line_edit", null)

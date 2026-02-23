@@ -285,7 +285,9 @@ func _render_compact_string_enum_array_rows(parent: VBoxContainer, controller, p
 		delete_button.icon = load(DELETE_ICON_CLOSED_SMALL)
 		delete_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
 		_style_single_line_button(delete_button)
-		delete_button.pressed.connect(controller._on_array_item_delete_requested.bind(path.duplicate(true), i, descriptor))
+		delete_button.pressed.connect(func() -> void:
+			controller._on_array_item_delete_requested(i, path.duplicate(true), i, descriptor)
+		)
 		delete_button.mouse_entered.connect(_on_delete_button_mouse_entered.bind(delete_button))
 		delete_button.mouse_exited.connect(_on_delete_button_mouse_exited.bind(delete_button))
 		var min_items = int(descriptor.get("min_items", 0))

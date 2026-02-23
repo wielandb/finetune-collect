@@ -39,5 +39,15 @@ func _run() -> void:
 	controller._on_array_item_delete_requested(1, [], 1, descriptor)
 	var parsed_after_delete = JSON.parse_string(controller.get_value_as_json(false))
 	assert_true(parsed_after_delete.size() == 1, "delete item behavior")
+	controller._on_array_item_add_requested([], descriptor)
+	var enum_rows = root.find_children("CompactStringEnumRow", "", true, false)
+	assert_true(enum_rows.size() == 2, "compact enum rows rendered")
+	if enum_rows.size() > 1:
+		var delete_button = enum_rows[1].get_node_or_null("DeleteButton")
+		assert_true(delete_button is Button, "compact row delete button exists")
+		if delete_button is Button:
+			delete_button.emit_signal("pressed")
+			var parsed_after_button_delete = JSON.parse_string(controller.get_value_as_json(false))
+			assert_true(parsed_after_button_delete.size() == 1, "compact delete button behavior")
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

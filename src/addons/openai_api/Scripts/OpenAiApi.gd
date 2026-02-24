@@ -14,6 +14,7 @@ var grader_inst = preload("res://addons/openai_api/Scenes/Grader.tscn")
 @export var openai_api_key = ""
 
 signal gpt_response_completed(message:Message, response:Dictionary)
+signal gpt_response_failed(response: Dictionary)
 signal dalle_response_completed(texture:ImageTexture)
 signal models_received(models: Array[String])
 signal grader_run_completed(response: Dictionary)

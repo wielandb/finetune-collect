@@ -9,9 +9,26 @@ var _compact_layout_enabled = false
 var _schema_completion_options = []
 var _pending_completion_contexts = []
 
+func _apply_completion_controls_layout() -> void:
+	var add_message_btn = $MessagesListContainer/AddButtonsContainer/AddMessageButton
+	var add_completion_btn = $MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton
+	var completion_mode_btn = $MessagesListContainer/AddButtonsContainer/AddMessageCompletionModeBtn
+	add_message_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	add_message_btn.size_flags_stretch_ratio = 19.0
+	add_message_btn.clip_text = true
+	add_completion_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	add_completion_btn.size_flags_stretch_ratio = 19.0
+	add_completion_btn.clip_text = true
+	completion_mode_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	completion_mode_btn.size_flags_stretch_ratio = 2.0
+	completion_mode_btn.fit_to_longest_item = false
+	completion_mode_btn.clip_text = true
+	completion_mode_btn.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+
 func set_compact_layout(enabled: bool) -> void:
 	_compact_layout_enabled = enabled
 	$MessagesListContainer/AddButtonsContainer.vertical = enabled
+	_apply_completion_controls_layout()
 	for child in $MessagesListContainer.get_children():
 		if child.is_in_group("message") and child.has_method("set_compact_layout"):
 			child.set_compact_layout(enabled)
@@ -43,7 +60,10 @@ func from_var(data):
 func _ready() -> void:
 	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	clip_contents = true
+	_apply_completion_controls_layout()
 	openai.connect("gpt_response_completed", gpt_response_completed)
+	if openai.has_signal("gpt_response_failed") and not openai.is_connected("gpt_response_failed", Callable(self, "_on_gpt_response_failed")):
+		openai.connect("gpt_response_failed", _on_gpt_response_failed)
 	openai.connect("models_received", models_received)
 	openai.get_models()
 	get_viewport().files_dropped.connect(on_dropped_files)
@@ -58,8 +78,20 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if Input.is_action_just_released("new_msg"):
+	if Input.is_action_just_released("new_msg") and _is_new_message_shortcut_allowed():
 		_on_add_message_button_pressed()
+
+func _is_new_message_shortcut_allowed() -> bool:
+	var conversation_tabs = get_tree().get_root().get_node_or_null("FineTune/Conversation")
+	if conversation_tabs is TabContainer and conversation_tabs.current_tab != 0:
+		return false
+	var add_message_btn = $MessagesListContainer/AddButtonsContainer/AddMessageButton
+	if add_message_btn.disabled:
+		return false
+	var focus_owner = get_viewport().gui_get_focus_owner()
+	if focus_owner is LineEdit or focus_owner is TextEdit:
+		return false
+	return true
 
 
 func update_conversation():
@@ -77,6 +109,9 @@ func get_last_message_role():
 	
 
 func _on_add_message_button_pressed() -> void:
+	if check_add_message_disabled_status():
+		_on_something_happened_to_check_enabled_status()
+		return
 	var isGlobalSystemMessageEnabled = get_tree().get_root().get_node("FineTune").SETTINGS.get("useGlobalSystemMessage", false)
 	# Add a new message to the MessagesListContainer
 	var MessageInstance = MESSAGE_SCENE.instantiate()
@@ -216,7 +251,9 @@ func _get_openai_valid_schema_options() -> Array:
 	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
 	if ft_node == null:
 		return output
-	var schemas = ft_node.get("SCHEMAS", [])
+	var schemas = ft_node.get("SCHEMAS")
+	if schemas == null:
+		schemas = []
 	if not (schemas is Array):
 		return output
 	for schema_entry in schemas:
@@ -236,6 +273,7 @@ func _get_openai_valid_schema_options() -> Array:
 
 func _refresh_schema_completion_mode_options() -> void:
 	var mode_btn = $MessagesListContainer/AddButtonsContainer/AddMessageCompletionModeBtn
+	_apply_completion_controls_layout()
 	mode_btn.clear()
 	_schema_completion_options = _get_openai_valid_schema_options()
 	for i in range(_schema_completion_options.size()):
@@ -338,6 +376,25 @@ func gpt_response_completed(message: Message, response:Dictionary):
 	MessageInstance.from_var(RecvMsgVar)
 	_on_something_happened_to_check_enabled_status()
 
+func _extract_openai_error_message(response: Dictionary) -> String:
+	var error_data = response.get("error", {})
+	if error_data is Dictionary:
+		var explicit_message = str(error_data.get("message", "")).strip_edges()
+		if explicit_message != "":
+			return explicit_message
+	var response_code = int(response.get("response_code", 0))
+	if response_code <= 0:
+		response_code = int(response.get("http_code", 0))
+	if response_code > 0:
+		return "OpenAI completion failed (HTTP " + str(response_code) + ")."
+	return "OpenAI completion failed."
+
+func _on_gpt_response_failed(response: Dictionary) -> void:
+	if _pending_completion_contexts.size() > 0:
+		_pending_completion_contexts.remove_at(0)
+	push_error(_extract_openai_error_message(response))
+	_on_something_happened_to_check_enabled_status()
+
 func messages_to_openai_format():
 	var ftc_messages = self.to_var()
 	var openai_messages = []
@@ -367,31 +424,42 @@ func _build_completion_message_payload() -> Dictionary:
 	var openai_messages:Array[Message] = []
 	# Check if a global system message needs to be used, and if so, add it before working with the message list
 	if settings.get("useGlobalSystemMessage", false):
+		var global_system_message = settings.get("globalSystemMessage", "")
+		if global_system_message == null:
+			global_system_message = ""
 		var gsm = Message.new()
 		gsm.set_role("system")
-		gsm.set_content(settings.get("globalSystemMessage", ""))
+		gsm.set_content(str(global_system_message))
 		openai_messages.append(gsm)
 	var current_msg_ix = 0
 	for m in ftc_messages:
 		var nm = Message.new()
 		nm.set_role(m["role"])
-		if settings.get("useUserNames", false):
-			nm.set_user_name(m.get("userName", ""))
+		if settings.get("useUserNames", false) and str(m.get("role", "")) == "user":
+			var user_name = str(m.get("userName", "")).strip_edges()
+			if user_name != "":
+				nm.set_user_name(user_name)
 		match m["type"]:
 			"Text":
-				nm.set_content(m["textContent"])
+				var text_content = m.get("textContent", "")
+				if text_content == null:
+					text_content = ""
+				nm.set_content(str(text_content))
 				openai_messages.append(nm)
 			"Image":
-				nm.add_image_content(m["imageContent"], image_detail_map[m.get("imageDetail", 0)])
+				nm.add_image_content(str(m.get("imageContent", "")), image_detail_map[m.get("imageDetail", 0)])
 				openai_messages.append(nm)
 			"Audio":
-				nm.add_audio_content(m["audioData"], m["audioFiletype"])
+				nm.add_audio_content(str(m.get("audioData", "")), str(m.get("audioFiletype", "")))
 				openai_messages.append(nm)
 			"PDF File":
-				nm.add_pdf_content(m["fileMessageData"], m["fileMessageName"])
+				nm.add_pdf_content(str(m.get("fileMessageData", "")), str(m.get("fileMessageName", "")))
 				openai_messages.append(nm)
 			"JSON", "JSON Schema":
-				nm.set_content(m.get("jsonSchemaValue", ""))
+				var json_content = m.get("jsonSchemaValue", "")
+				if json_content == null:
+					json_content = ""
+				nm.set_content(str(json_content))
 				openai_messages.append(nm)
 			"Function Call":
 				# A "function call" for us when part of the messages list is two messages for openai, one the assistant calling the tool, and then the response
@@ -414,10 +482,11 @@ func _build_completion_message_payload() -> Dictionary:
 							paramValue = param["parameterValueNumber"]
 						thisFunctionCallParameters[param["name"]] = paramValue
 				tool_call_message.add_function_call(call_id, m["functionName"], thisFunctionCallParameters)
-				if m["functionUsePreText"] != "":
-					tool_call_message.add_text_content(m["functionUsePreText"])
+				var function_pre_text = str(m.get("functionUsePreText", ""))
+				if function_pre_text != "":
+					tool_call_message.add_text_content(function_pre_text)
 				var tool_response_message = Message.new()
-				tool_response_message.create_tool_response(call_id, m["functionResults"])
+				tool_response_message.create_tool_response(call_id, str(m.get("functionResults", "")))
 				openai_messages.append(tool_call_message)
 				openai_messages.append(tool_response_message)
 		current_msg_ix += 1
@@ -465,7 +534,9 @@ func check_autocomplete_disabled_status():
 	if ft_node == null:
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY")
 		return true
-	var settings = ft_node.get("SETTINGS", {})
+	var settings = ft_node.get("SETTINGS")
+	if not (settings is Dictionary):
+		settings = {}
 	if str(settings.get("apikey", "")) == "":
 		$MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton.tooltip_text = tr("DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY")
 		return true

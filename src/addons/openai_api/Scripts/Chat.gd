@@ -12,7 +12,7 @@ func _ready():
 	http_request.request_completed.connect(self._http_request_completed)
 	
 ##Sends an api request to chat gpt, will return a signal with a `Message` class.
-func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4-vision-preview", url:String="https://api.openai.com/v1/chat/completions", tools: Array = []):
+func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4-vision-preview", url:String="https://api.openai.com/v1/chat/completions", tools: Array = [], response_format: Dictionary = {}):
 	var openai_api_key = parent.get_api()
 	if !openai_api_key:
 		return
@@ -33,6 +33,8 @@ func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4-vision-pre
 	
 	if !tools.is_empty():
 		body["tools"] = tools
+	if response_format.size() > 0:
+		body["response_format"] = response_format
 		
 	var json = JSON.new()
 	

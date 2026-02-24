@@ -20,12 +20,12 @@ signal grader_run_completed(response: Dictionary)
 signal grader_validation_completed(response: Dictionary)
 
 ##Makes an api call to open ai chatgpt, and returns a class `Message` that contains `{"role":role,"content":content}`
-func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4o-mini", url:String="https://api.openai.com/v1/chat/completions", tools:Array = []):
+func prompt_gpt(ListOfMessages:Array[Message], model: String = "gpt-4o-mini", url:String="https://api.openai.com/v1/chat/completions", tools:Array = [], response_format: Dictionary = {}):
 	
 	while !chatgpt:
 		await get_tree().create_timer(0.2).timeout
 		
-	chatgpt.prompt_gpt(ListOfMessages,model,url,tools)
+	chatgpt.prompt_gpt(ListOfMessages, model, url, tools, response_format)
 
 ##Makes an api call to open ai dalle, and returns the generated Texture
 func prompt_dalle(prompt:String, resolution:String = "1024x1024", model: String = "dall-e-2", url:String="https://api.openai.com/v1/images/generations"):

@@ -3,6 +3,7 @@ extends ScrollContainer
 
 var default_schema_editor_url = "https://example.com/editor.php"
 var default_schema_validator_url = ""
+const OPENAI_DEFAULT_API_BASE_URL = "https://api.openai.com/v1"
 const DESKTOP_SETTINGS_TITLE_FONT_SIZE = 29
 const COMPACT_SETTINGS_TITLE_FONT_SIZE = 22
 const SETTINGS_ROW_OVERFLOW_BUFFER = 2.0
@@ -18,6 +19,7 @@ const SETTINGS_ROW_NAMES = [
 	"AlwaysIncludeFunctionsSettingContainer",
 	"ExportWhatConvoContainer",
 	"APIKeySettingContainer",
+	"APIBaseURLSettingContainer",
 	"ModelChoiceContainer",
 	"BatchCreatonContainer",
 	"FromClipboardJSONCreationContainer",
@@ -200,15 +202,71 @@ func _apply_project_storage_mode_ui() -> void:
 	else:
 		image_upload_option.disabled = false
 
+func _normalize_api_base_url(url: String) -> String:
+	var normalized = url.strip_edges()
+	while normalized.ends_with("/"):
+		normalized = normalized.substr(0, normalized.length() - 1)
+	if normalized == "":
+		return OPENAI_DEFAULT_API_BASE_URL
+	return normalized
+
+func _get_api_base_url_from_ui() -> String:
+	return _normalize_api_base_url($VBoxContainer/APIBaseURLSettingContainer/APIBaseURLEdit.text)
+
+func _is_openai_api_base_url(url: String) -> bool:
+	return _normalize_api_base_url(url).to_lower() == OPENAI_DEFAULT_API_BASE_URL.to_lower()
+
+func _is_openai_url_selected() -> bool:
+	return _is_openai_api_base_url(_get_api_base_url_from_ui())
+
+func _get_selected_model_from_option_button() -> String:
+	var model_choice_option = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton
+	if model_choice_option.item_count == 0:
+		return ""
+	var selected_index = model_choice_option.selected
+	if selected_index < 0 or selected_index >= model_choice_option.item_count:
+		return ""
+	return model_choice_option.get_item_text(selected_index)
+
+func _select_model_in_option_button(model_name: String) -> void:
+	var model_choice_option = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton
+	model_choice_option.select(-1)
+	for i in range(model_choice_option.item_count):
+		if model_choice_option.get_item_text(i) == model_name:
+			model_choice_option.select(i)
+			return
+	if model_choice_option.item_count > 0:
+		model_choice_option.select(0)
+
+func _apply_model_choice_input_mode() -> void:
+	var model_choice_option = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton
+	var model_choice_line_edit = $VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit
+	var model_choice_refresh_button = $VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton
+	var selected_model_text = _get_selected_model_from_option_button()
+	if model_choice_line_edit.text.strip_edges() == "":
+		model_choice_line_edit.text = selected_model_text
+	var use_option_button = _is_openai_url_selected()
+	model_choice_option.visible = use_option_button
+	model_choice_refresh_button.visible = use_option_button
+	model_choice_line_edit.visible = not use_option_button
+	if use_option_button:
+		var wanted_model = model_choice_line_edit.text.strip_edges()
+		if wanted_model != "":
+			_select_model_in_option_button(wanted_model)
+
 func to_var():
 	var me = {}
 	me["useGlobalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed
 	me["globalSystemMessage"] = $VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text
 	me["apikey"] = $VBoxContainer/APIKeySettingContainer/APIKeyEdit.text
-	if $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count == 0:
-		me["modelChoice"] = ""
+	me["apiBaseURL"] = _get_api_base_url_from_ui()
+	if _is_openai_api_base_url(me["apiBaseURL"]):
+		var selected_model = _get_selected_model_from_option_button()
+		if selected_model == "":
+			selected_model = $VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit.text.strip_edges()
+		me["modelChoice"] = selected_model
 	else:
-		me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.selected)
+		me["modelChoice"] = $VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit.text.strip_edges()
 	var availableModels = []
 	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
 		availableModels.append($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i))
@@ -239,19 +297,24 @@ func to_var():
 	
 func from_var(me):
 	# data -> SETTINGS
-	$VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed = me["useGlobalSystemMessage"]
-	$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text = me["globalSystemMessage"]
-	$VBoxContainer/APIKeySettingContainer/APIKeyEdit.text = me["apikey"]
+	$VBoxContainer/HBoxContainer/GlobalSystemMessageCheckbox.button_pressed = me.get("useGlobalSystemMessage", false)
+	$VBoxContainer/HBoxContainer/GlobalSystemMessageContainer/GlobalSystemMessageTextEdit.text = me.get("globalSystemMessage", "")
+	$VBoxContainer/APIKeySettingContainer/APIKeyEdit.text = me.get("apikey", "")
+	var api_base_url = _normalize_api_base_url(str(me.get("apiBaseURL", OPENAI_DEFAULT_API_BASE_URL)))
+	$VBoxContainer/APIBaseURLSettingContainer/APIBaseURLEdit.text = api_base_url
 	openai.set_api($VBoxContainer/APIKeySettingContainer/APIKeyEdit.text)
+	if openai.has_method("set_api_base_url"):
+		openai.set_api_base_url(api_base_url)
 	$VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton.select(me.get("includeFunctions", 0))
 	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.select(me.get("exportImagesHow", 0))
 	$VBoxContainer/UseUserNamesCheckbox.button_pressed = me.get("useUserNames", false)
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
-	for m in me["availableModels"]:
+	for m in me.get("availableModels", []):
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)
-	for i in range($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.item_count):
-		if ($VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.get_item_text(i) == me["modelChoice"]):
-			$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.select(i)
+	var saved_model_choice = str(me.get("modelChoice", "")).strip_edges()
+	$VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit.text = saved_model_choice
+	_select_model_in_option_button(saved_model_choice)
+	_apply_model_choice_input_mode()
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.select(me.get("finetuneType", 0))
 	$VBoxContainer/SchemaEditorURLContainer/SchemaEditorURLEdit.text = me.get("schemaEditorURL", default_schema_editor_url)
 	$VBoxContainer/SchemaValidatorURLContainer/SchemaValidatorURLEdit.text = me.get("schemaValidatorURL", default_schema_validator_url)
@@ -290,8 +353,11 @@ func _ready() -> void:
 	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.clear()
 	for item in load_available_fine_tuning_models_from_file():
 		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
-	# TODO: This should only be called if an OpenAI API key is set
-	openai.get_models()
+	if openai.has_method("set_api_base_url"):
+		openai.set_api_base_url(_get_api_base_url_from_ui())
+	_apply_model_choice_input_mode()
+	if _is_openai_url_selected():
+		openai.get_models()
 	print("OSNAME")
 	print(OS.get_name())
 	match OS.get_name():
@@ -312,9 +378,14 @@ func _ready() -> void:
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
+	var current_model = $VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit.text.strip_edges()
+	if current_model == "":
+		current_model = _get_selected_model_from_option_button()
 	$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.clear()
 	for m in models:
 		$VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton.add_item(m)
+	_select_model_in_option_button(current_model)
+	_apply_model_choice_input_mode()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
@@ -368,7 +439,17 @@ func _reset_project_cloud_test_status() -> void:
 func _on_api_key_edit_text_changed(new_text: String) -> void:
 	openai.set_api(new_text)
 	update_settings_global()
-	openai.get_models()
+	if _is_openai_url_selected():
+		openai.get_models()
+
+func _on_api_base_url_edit_text_changed(new_text: String) -> void:
+	var normalized_base_url = _normalize_api_base_url(new_text)
+	if openai.has_method("set_api_base_url"):
+		openai.set_api_base_url(normalized_base_url)
+	_apply_model_choice_input_mode()
+	update_settings_global()
+	if _is_openai_api_base_url(normalized_base_url):
+		openai.get_models()
 	
 func load_available_fine_tuning_models_from_file():
 	var cost_json = FileAccess.get_file_as_string("res://assets/openai_costs.json").strip_edges()
@@ -387,7 +468,14 @@ func validate_is_json(testtext) -> bool:
 
 
 func _on_model_choice_refresh_button_pressed() -> void:
-	openai.get_models()
+	if _is_openai_url_selected():
+		openai.get_models()
+
+func _on_model_choice_option_button_item_selected(index: int) -> void:
+	update_settings_global()
+
+func _on_model_choice_line_edit_text_changed(new_text: String) -> void:
+	update_settings_global()
 
 
 # Batch Creation

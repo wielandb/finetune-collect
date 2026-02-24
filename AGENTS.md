@@ -14,3 +14,5 @@ Du kannst eine Instanz im Projektordner headless ausführen, um deinen Code zu t
 Nutze den Godot MCP Server um die Godot Dokumentation abzurufen und nutze den OpenAI MCP Server um die OpenAI Dokumentation abzurufen.
 
 Wenn du temporäre Tests/Skripte anlegst denke daran sie und ihre .uuid Dateien zu entfernen wenn du fertig bist.
+
+Verwende in UI-Texten im deutschen immer korrekte Umlaute wie "ä" anstatt umschreibungen wie "ae".

@@ -29,16 +29,30 @@ size_flags_vertical = 10
 [node name="AddMessageButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 19.0
 text = "MESSAGES_ADD_MESSAGE"
 icon = ExtResource("2_blnfe")
 
 [node name="AddMessageCompletionButton" type="Button" parent="MessagesListContainer/AddButtonsContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 19.0
 text = "MESSAGES_ADD_CHATGPT_COMPLETION"
 icon = ExtResource("3_0iovp")
+
+[node name="AddMessageCompletionModeBtn" type="OptionButton" parent="MessagesListContainer/AddButtonsContainer"]
+custom_minimum_size = Vector2(34, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+fit_to_longest_item = false
+clip_text = true
+focus_mode = 0
 
 [connection signal="mouse_entered" from="." to="." method="_on_add_message_completion_button_mouse_entered"]
 [connection signal="pressed" from="MessagesListContainer/AddButtonsContainer/AddMessageButton" to="." method="_on_add_message_button_pressed"]
 [connection signal="mouse_entered" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton" to="." method="_on_add_message_completion_button_mouse_entered"]
 [connection signal="pressed" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionButton" to="." method="_on_add_message_completion_button_pressed"]
+[connection signal="mouse_entered" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionModeBtn" to="." method="_on_add_message_completion_button_mouse_entered"]
+[connection signal="pressed" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionModeBtn" to="." method="_on_add_message_completion_mode_btn_pressed"]
+[connection signal="item_selected" from="MessagesListContainer/AddButtonsContainer/AddMessageCompletionModeBtn" to="." method="_on_add_message_completion_mode_btn_item_selected"]

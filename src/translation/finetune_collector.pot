@@ -334,6 +334,14 @@ msgid "SETTINGS_API_KEY_TOOLTIP"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_BASE_URL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_BASE_URL_TOOLTIP"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
 msgstr ""
 
@@ -1985,4 +1993,3 @@ msgstr ""
 #: scenes/graders/score_model_grader.tscn
 msgid "42"
 msgstr ""
-

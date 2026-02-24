@@ -91,7 +91,11 @@ func _render_nullable_node(descriptor: Dictionary, parent: Control, controller, 
 	var wrapper = _create_level_box(parent, depth)
 	_add_title_and_description(descriptor, wrapper, depth)
 	var null_toggle = CheckBox.new()
-	null_toggle.text = tr("MESSAGES_JSON_SCHEMA_FORM_USE_NULL")
+	var use_include_toggle = bool(descriptor.get("null_branch_optional", false))
+	if use_include_toggle:
+		null_toggle.text = tr("MESSAGES_JSON_SCHEMA_FORM_INCLUDE")
+	else:
+		null_toggle.text = tr("MESSAGES_JSON_SCHEMA_FORM_USE_NULL")
 	null_toggle.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth))
 	null_toggle.add_theme_font_override("font", _get_bold_font())
 	_style_single_line_button(null_toggle)
@@ -101,14 +105,23 @@ func _render_nullable_node(descriptor: Dictionary, parent: Control, controller, 
 	body.add_theme_constant_override("separation", 6)
 	wrapper.add_child(body)
 	var current_value = controller.get_value_at_path(path)
-	var is_null_value = current_value == null
-	null_toggle.button_pressed = is_null_value
-	body.visible = not is_null_value
-	null_toggle.toggled.connect(controller._on_nullable_toggled.bind(path.duplicate(true), descriptor))
-	if not is_null_value:
+	if use_include_toggle:
+		var is_included = current_value != null
+		null_toggle.button_pressed = is_included
+		body.visible = is_included
+		null_toggle.toggled.connect(controller._on_nullable_include_toggled.bind(path.duplicate(true), descriptor))
+	else:
+		var is_null_value = current_value == null
+		null_toggle.button_pressed = is_null_value
+		body.visible = not is_null_value
+		null_toggle.toggled.connect(controller._on_nullable_toggled.bind(path.duplicate(true), descriptor))
+	if body.visible:
 		var desc_no_null = descriptor.duplicate(true)
 		desc_no_null["nullable"] = false
-		_render_non_nullable_node(desc_no_null, body, controller, path, depth + 1)
+		var content_depth = depth + 1
+		if use_include_toggle:
+			content_depth = 0
+		_render_non_nullable_node(desc_no_null, body, controller, path, content_depth)
 
 func _render_non_nullable_node(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> void:
 	var kind = str(descriptor.get("kind", "fallback"))
@@ -1231,6 +1244,9 @@ func _render_union_node(descriptor: Dictionary, parent: Control, controller, pat
 			"reason": tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNION_NO_BRANCHES")
 		}, box, controller, path, depth + 1)
 		return
+	if branches.size() == 1:
+		_render_node(branches[0], box, controller, path, depth)
+		return
 	var labels = []
 	for i in range(branches.size()):
 		var branch_title = str(branches[i].get("title", ""))
@@ -1238,6 +1254,8 @@ func _render_union_node(descriptor: Dictionary, parent: Control, controller, pat
 			branch_title = mode + " option " + str(i + 1)
 		labels.append(branch_title)
 	var active_index = controller.get_union_branch_index(path, descriptor)
+	if active_index < 0 or active_index >= branches.size():
+		active_index = 0
 	_build_option_selector(
 		box,
 		labels,

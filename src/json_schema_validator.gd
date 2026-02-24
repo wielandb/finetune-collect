@@ -96,9 +96,9 @@ static func _validate_schema_node(schema, path: String, errors: Array, root: Dic
 
 	if schema.has("enum") and not (schema["enum"] is Array):
 		errors.append({"path": _child_path(path, "enum"), "message": "enum must be array"})
-	if schema.has("minLength") and not (schema["minLength"] is int):
+	if schema.has("minLength") and not _is_integer_number(schema["minLength"]):
 		errors.append({"path": _child_path(path, "minLength"), "message": "minLength must be integer"})
-	if schema.has("maxLength") and not (schema["maxLength"] is int):
+	if schema.has("maxLength") and not _is_integer_number(schema["maxLength"]):
 		errors.append({"path": _child_path(path, "maxLength"), "message": "maxLength must be integer"})
 	if schema.has("minimum") and not _is_number(schema["minimum"]):
 		errors.append({"path": _child_path(path, "minimum"), "message": "minimum must be number"})
@@ -110,9 +110,9 @@ static func _validate_schema_node(schema, path: String, errors: Array, root: Dic
 		errors.append({"path": _child_path(path, "exclusiveMaximum"), "message": "exclusiveMaximum must be number"})
 	if schema.has("multipleOf") and not _is_number(schema["multipleOf"]):
 		errors.append({"path": _child_path(path, "multipleOf"), "message": "multipleOf must be number"})
-	if schema.has("minItems") and not (schema["minItems"] is int):
+	if schema.has("minItems") and not _is_integer_number(schema["minItems"]):
 		errors.append({"path": _child_path(path, "minItems"), "message": "minItems must be integer"})
-	if schema.has("maxItems") and not (schema["maxItems"] is int):
+	if schema.has("maxItems") and not _is_integer_number(schema["maxItems"]):
 		errors.append({"path": _child_path(path, "maxItems"), "message": "maxItems must be integer"})
 
 static func _validate(data, schema, path: String, errors: Array, root: Dictionary, depth: int) -> void:
@@ -407,6 +407,15 @@ static func _matches_format(value: String, fmt: String) -> bool:
 
 static func _is_number(value) -> bool:
 	return value is int or value is float
+
+static func _is_integer_number(value) -> bool:
+	if value is int:
+		return true
+	if value is float:
+		if is_nan(value) or is_inf(value):
+			return false
+		return int(value) == value
+	return false
 
 static func _child_path(path: String, segment: String) -> String:
 	if path == "":

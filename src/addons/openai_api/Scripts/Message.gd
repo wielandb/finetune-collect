@@ -27,7 +27,10 @@ func set_user_name(new_name: String) -> void:
 
 ## Sets the content of the message. Can be either a string or an array of content items.
 func set_content(new_content) -> void:
-	content = new_content
+	if new_content == null:
+		content = ""
+	else:
+		content = new_content
 
 ## Sets a text content
 func set_text_content(text: String) -> void:
@@ -104,9 +107,12 @@ func add_function_call(id: String, function_name: String, arguments: Dictionary)
 ## Gets the message as a dictionary for API calls
 func get_as_dict() -> Dictionary:
 	var dict = {"role": role}
-	
-	if content:
-		dict["content"] = content
+	var normalized_content = content
+	if normalized_content == null:
+		normalized_content = ""
+	elif typeof(normalized_content) != TYPE_STRING and typeof(normalized_content) != TYPE_ARRAY:
+		normalized_content = str(normalized_content)
+	dict["content"] = normalized_content
 		
 	if !tool_calls.is_empty():
 		dict["tool_calls"] = tool_calls
@@ -142,7 +148,7 @@ func set_as_dict(dictionary: Dictionary) -> void:
 func create_tool_response(call_id: String, response_content: String) -> void:
 	role = "tool"
 	tool_call_id = call_id
-	content = [{"type":"text", "text":response_content}]
+	content = response_content
 
 func isImageURL(url: String) -> bool:
 	   # Determines if the provided string is a URL pointing to an image.

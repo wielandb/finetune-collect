@@ -248,6 +248,24 @@ layout_mode = 2
 size_flags_horizontal = 3
 secret = true
 
+[node name="APIBaseURLSettingContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="APIBaseURLLabel" type="Label" parent="VBoxContainer/APIBaseURLSettingContainer"]
+layout_mode = 2
+text = "SETTINGS_API_BASE_URL"
+
+[node name="APIBaseURLHint" type="TextureRect" parent="VBoxContainer/APIBaseURLSettingContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_API_BASE_URL_TOOLTIP"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="APIBaseURLEdit" type="LineEdit" parent="VBoxContainer/APIBaseURLSettingContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "https://api.openai.com/v1"
+
 [node name="ModelChoiceContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -264,6 +282,12 @@ expand_mode = 2
 [node name="ModelChoiceOptionButton" type="OptionButton" parent="VBoxContainer/ModelChoiceContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="ModelChoiceLineEdit" type="LineEdit" parent="VBoxContainer/ModelChoiceContainer"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "gpt-4o-mini"
 
 [node name="ModelChoiceRefreshButton" type="Button" parent="VBoxContainer/ModelChoiceContainer"]
 layout_mode = 2
@@ -666,6 +690,9 @@ size_flags_horizontal = 3
 [connection signal="item_selected" from="VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/AlwaysIncludeFunctionsSettingContainer/AlwaysIncludeFunctionsSettingOptionButton" to="." method="_on_always_include_functions_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/APIKeySettingContainer/APIKeyEdit" to="." method="_on_api_key_edit_text_changed"]
+[connection signal="text_changed" from="VBoxContainer/APIBaseURLSettingContainer/APIBaseURLEdit" to="." method="_on_api_base_url_edit_text_changed"]
+[connection signal="item_selected" from="VBoxContainer/ModelChoiceContainer/ModelChoiceOptionButton" to="." method="_on_model_choice_option_button_item_selected"]
+[connection signal="text_changed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit" to="." method="_on_model_choice_line_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton" to="." method="_on_model_choice_refresh_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/BatchCreatonContainer/BatchCreationButton" to="." method="_on_batch_creation_button_pressed"]
 [connection signal="files_selected" from="VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog" to="." method="_on_batch_creation_file_dialog_files_selected"]

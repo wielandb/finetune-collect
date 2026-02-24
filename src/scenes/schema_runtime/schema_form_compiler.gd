@@ -185,14 +185,44 @@ func _compile_union_schema(schema: Dictionary, pointer: String) -> Dictionary:
 	var descriptor = {
 		"kind": "union",
 		"mode": mode,
-		"branches": []
+		"branches": [],
+		"nullable": false,
+		"null_branch_optional": false
 	}
+	var has_explicit_null_branch = false
 	for i in range(branches.size()):
 		var branch = branches[i]
 		var branch_pointer = pointer + "/" + mode + "/" + str(i)
+		if _is_explicit_null_union_branch(branch):
+			has_explicit_null_branch = true
+			continue
 		descriptor["branches"].append(_compile_node(branch, branch_pointer))
+	if has_explicit_null_branch:
+		descriptor["nullable"] = true
+		descriptor["null_branch_optional"] = descriptor["branches"].size() > 0
+	if descriptor["branches"].is_empty():
+		if has_explicit_null_branch:
+			return _compile_null_schema(schema, pointer)
+		return _fallback_descriptor(schema, mode + " has no branches", pointer)
 	_apply_common_metadata(descriptor, schema, pointer)
 	return descriptor
+
+func _is_explicit_null_union_branch(branch) -> bool:
+	if not (branch is Dictionary):
+		return false
+	if not branch.has("type"):
+		return false
+	var t = branch.get("type")
+	if t is String:
+		return t == "null"
+	if t is Array:
+		if t.is_empty():
+			return false
+		for entry in t:
+			if not (entry is String) or entry != "null":
+				return false
+		return true
+	return false
 
 func _compile_type_union(schema: Dictionary, types: Array, pointer: String) -> Dictionary:
 	var descriptor = {

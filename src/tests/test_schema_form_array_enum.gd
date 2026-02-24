@@ -40,10 +40,21 @@ func _run() -> void:
 	var parsed_after_delete = JSON.parse_string(controller.get_value_as_json(false))
 	assert_true(parsed_after_delete.size() == 1, "delete item behavior")
 	controller._on_array_item_add_requested([], descriptor)
-	var enum_rows = root.find_children("CompactStringEnumRow", "", true, false)
+	await process_frame
+	var enum_rows = []
+	for node in root.find_children("*", "HBoxContainer", true, false):
+		var selector_holder = node.get_node_or_null("CompactSelectorHolder")
+		var delete_candidate = node.get_node_or_null("DeleteButton")
+		if selector_holder is VBoxContainer and delete_candidate is Button:
+			enum_rows.append(node)
 	assert_true(enum_rows.size() == 2, "compact enum rows rendered")
-	if enum_rows.size() > 1:
-		var delete_button = enum_rows[1].get_node_or_null("DeleteButton")
+	if enum_rows.size() > 0:
+		var delete_button = null
+		for row in enum_rows:
+			var button = row.get_node_or_null("DeleteButton")
+			if button is Button and not button.disabled:
+				delete_button = button
+				break
 		assert_true(delete_button is Button, "compact row delete button exists")
 		if delete_button is Button:
 			delete_button.emit_signal("pressed")

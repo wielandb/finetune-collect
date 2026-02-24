@@ -164,6 +164,15 @@ func _coerce_value_for_descriptor(value, descriptor: Dictionary):
 		if descriptor.get("nullable", false) or kind == "null":
 			return null
 		return create_default_value(descriptor)
+	if kind == "union":
+		var union_branch_index = _find_matching_union_branch(value, descriptor)
+		var union_branches = descriptor.get("branches", [])
+		if union_branch_index < 0 or union_branch_index >= union_branches.size():
+			union_branch_index = 0
+		_union_selection[_path_key_from_pointer(str(descriptor.get("pointer", "")))] = union_branch_index
+		if union_branch_index >= 0 and union_branch_index < union_branches.size():
+			return _coerce_value_for_descriptor(value, union_branches[union_branch_index])
+		return value
 	match kind:
 		"object":
 			if not (value is Dictionary):
@@ -229,13 +238,6 @@ func _coerce_value_for_descriptor(value, descriptor: Dictionary):
 			return descriptor.get("const_value", null)
 		"null":
 			return null
-		"union":
-			var branch_index = _find_matching_union_branch(value, descriptor)
-			var branches = descriptor.get("branches", [])
-			if branch_index < 0 or branch_index >= branches.size():
-				branch_index = 0
-			_union_selection[_path_key_from_pointer(str(descriptor.get("pointer", "")))] = branch_index
-			return _coerce_value_for_descriptor(value, branches[branch_index])
 		"fallback":
 			return value
 		_:
@@ -266,6 +268,17 @@ func _validate_value_against_descriptor(value, descriptor: Dictionary, path: Str
 		if descriptor.get("nullable", false) or kind == "null":
 			return
 		errors.append({"path": _path_or_root(path), "message": "Value must not be null"})
+		return
+	if kind == "union":
+		var branch_index = _find_matching_union_branch(value, descriptor)
+		if branch_index == -1:
+			errors.append({"path": _path_or_root(path), "message": "No union branch matches value"})
+			return
+		var branches = descriptor.get("branches", [])
+		if branch_index < 0 or branch_index >= branches.size():
+			errors.append({"path": _path_or_root(path), "message": "No union branch matches value"})
+			return
+		_validate_value_against_descriptor(value, branches[branch_index], path, errors)
 		return
 	match kind:
 		"object":
@@ -327,13 +340,6 @@ func _validate_value_against_descriptor(value, descriptor: Dictionary, path: Str
 		"null":
 			if value != null:
 				errors.append({"path": _path_or_root(path), "message": "Expected null"})
-		"union":
-			var branch_index = _find_matching_union_branch(value, descriptor)
-			if branch_index == -1:
-				errors.append({"path": _path_or_root(path), "message": "No union branch matches value"})
-			else:
-				var branch = descriptor.get("branches", [])[branch_index]
-				_validate_value_against_descriptor(value, branch, path, errors)
 		"fallback":
 			pass
 		_:
@@ -505,6 +511,17 @@ func _on_enum_item_selected(index: int, path: Array, descriptor: Dictionary) -> 
 
 func _on_nullable_toggled(use_null: bool, path: Array, descriptor: Dictionary) -> void:
 	if use_null:
+		set_value_at_path(path, null, true)
+		return
+	var current = get_value_at_path(path)
+	if current == null:
+		set_value_at_path(path, create_default_value(_strip_nullable(descriptor)), true)
+	else:
+		_rebuild_form()
+		_emit_after_value_update()
+
+func _on_nullable_include_toggled(enabled: bool, path: Array, descriptor: Dictionary) -> void:
+	if not enabled:
 		set_value_at_path(path, null, true)
 		return
 	var current = get_value_at_path(path)

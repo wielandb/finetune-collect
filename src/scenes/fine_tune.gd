@@ -31,6 +31,7 @@ var GRADERS = []
 var SCHEMAS = []
 var SETTINGS = {
 	"apikey": "",
+	"apiBaseURL": "https://api.openai.com/v1",
 	"useGlobalSystemMessage": false,
 	"globalSystemMessage": "",
 	"modelChoice": "gpt-4o",

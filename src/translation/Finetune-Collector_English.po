@@ -317,6 +317,14 @@ msgid "SETTINGS_API_KEY_TOOLTIP"
 msgstr "Your OpenAI API key. Used to poll for completions and to fetch the list of available models."
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_BASE_URL"
+msgstr "OpenAI-compatible API URL"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_BASE_URL_TOOLTIP"
+msgstr "Base URL for an OpenAI-compatible API, for example https://api.openai.com/v1. When using the OpenAI URL, model selection stays as a dropdown."
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_MODEL_TO_USE_FOR_COMPLETIONS"
 msgstr "Model to use for completions"
 
@@ -2175,4 +2183,3 @@ msgstr "https://www.haukauntrie.de/online/api/schema-editor/"
 #: scenes/graders/score_model_grader.tscn
 msgid "42"
 msgstr "42"
-

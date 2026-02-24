@@ -107,12 +107,22 @@ func _run() -> void:
 	message._rebuild_schema_form_from_selection(false)
 	await process_frame
 	await process_frame
+	await process_frame
 
 	var schema_edit = message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit")
 	assert_true(schema_edit is CodeEdit, "schema raw editor exists")
 	if schema_edit is CodeEdit:
 		assert_true(schema_edit.text.strip_edges() != "", "raw editor text stays non-empty after rebuild")
 		assert_true(schema_edit.text == loaded_json_text, "loaded json schema value is preserved in raw editor")
+
+	var schema_form_scroll = message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll")
+	var schema_form_root = message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll/SchemaFormRoot")
+	assert_true(schema_form_scroll is ScrollContainer, "schema form scroll exists")
+	assert_true(schema_form_root is VBoxContainer, "schema form root exists")
+	if schema_form_scroll is ScrollContainer and schema_form_root is VBoxContainer:
+		var form_height = schema_form_root.get_combined_minimum_size().y
+		var scroll_min_height = schema_form_scroll.custom_minimum_size.y
+		assert_true(scroll_min_height + 0.5 >= form_height, "form tab min height covers full schema form content")
 
 	var msg = message.to_var()
 	assert_true(msg.get("jsonSchemaValue", "") == loaded_json_text, "to_var keeps loaded json schema value")

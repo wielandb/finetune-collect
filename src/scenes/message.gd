@@ -34,6 +34,7 @@ var _schema_runtime_cache = {}
 var _compact_layout_enabled = false
 var _compact_meta_control_defaults = {}
 var _compact_image_control_defaults = {}
+var _schema_form_height_refresh_queued = false
 const SCHEMA_FORM_SCROLL_MIN_HEIGHT = 220.0
 
 func selectionStringToIndex(node, string):
@@ -64,10 +65,68 @@ func _schema_form_hint_label_node():
 		return schema_form_hint_label
 	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormHintLabel")
 
+func _schema_form_scroll_node():
+	if schema_form_root != null:
+		var possible_scroll = schema_form_root.get_parent()
+		if possible_scroll is ScrollContainer:
+			return possible_scroll
+	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll")
+
+func _schema_form_vbox_node():
+	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox")
+
 func _ensure_schema_form_bound() -> void:
 	var form_root_node = _schema_form_root_node()
 	if form_root_node != null:
 		_schema_form_controller.bind_form_root(form_root_node)
+
+func _connect_schema_form_layout_signals() -> void:
+	var form_root_node = _schema_form_root_node()
+	if form_root_node != null:
+		if not form_root_node.minimum_size_changed.is_connected(_queue_schema_form_height_refresh):
+			form_root_node.minimum_size_changed.connect(_queue_schema_form_height_refresh)
+		if not form_root_node.resized.is_connected(_queue_schema_form_height_refresh):
+			form_root_node.resized.connect(_queue_schema_form_height_refresh)
+	var schema_tabs_node = _schema_tabs_node()
+	if schema_tabs_node != null:
+		if not schema_tabs_node.resized.is_connected(_queue_schema_form_height_refresh):
+			schema_tabs_node.resized.connect(_queue_schema_form_height_refresh)
+	if not resized.is_connected(_queue_schema_form_height_refresh):
+		resized.connect(_queue_schema_form_height_refresh)
+
+func _queue_schema_form_height_refresh() -> void:
+	if _schema_form_height_refresh_queued:
+		return
+	_schema_form_height_refresh_queued = true
+	call_deferred("_refresh_schema_form_height")
+
+func _refresh_schema_form_height() -> void:
+	_schema_form_height_refresh_queued = false
+	var schema_tabs_node = _schema_tabs_node()
+	var schema_form_vbox = _schema_form_vbox_node()
+	var schema_form_scroll = _schema_form_scroll_node()
+	var form_root_node = _schema_form_root_node()
+	if not (schema_tabs_node is TabContainer):
+		return
+	if not (schema_form_vbox is VBoxContainer):
+		return
+	if not (schema_form_scroll is ScrollContainer):
+		return
+	var form_content_height = SCHEMA_FORM_SCROLL_MIN_HEIGHT
+	if form_root_node != null:
+		form_content_height = maxf(form_content_height, ceilf(form_root_node.get_combined_minimum_size().y))
+	var target_scroll_size = Vector2(0, form_content_height)
+	var current_scroll_size = schema_form_scroll.custom_minimum_size
+	if not (is_equal_approx(current_scroll_size.x, target_scroll_size.x) and is_equal_approx(current_scroll_size.y, target_scroll_size.y)):
+		schema_form_scroll.custom_minimum_size = target_scroll_size
+	var tab_bar_height = 0.0
+	var tab_bar = schema_tabs_node.get_tab_bar()
+	if tab_bar != null:
+		tab_bar_height = ceilf(tab_bar.get_combined_minimum_size().y)
+	var target_tabs_size = Vector2(0, ceilf(schema_form_vbox.get_combined_minimum_size().y + tab_bar_height))
+	var current_tabs_size = schema_tabs_node.custom_minimum_size
+	if not (is_equal_approx(current_tabs_size.x, target_tabs_size.x) and is_equal_approx(current_tabs_size.y, target_tabs_size.y)):
+		schema_tabs_node.custom_minimum_size = target_tabs_size
 
 func _get_fine_tune_node():
 	if not is_inside_tree():
@@ -299,6 +358,7 @@ func _configure_schema_layout() -> void:
 	var form_root = _schema_form_root_node()
 	if form_root != null:
 		form_root.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_queue_schema_form_height_refresh()
 
 func _apply_compact_layout_to_nested_rows() -> void:
 	for child in $FunctionMessageContainer.get_children():
@@ -690,6 +750,7 @@ func _ready() -> void:
 		schema_tab_bar.set_tab_title(0, tr("MESSAGES_JSON_SCHEMA_FORM_TAB"))
 		schema_tab_bar.set_tab_title(1, tr("MESSAGES_JSON_SCHEMA_RAW_TAB"))
 	_ensure_schema_form_bound()
+	_connect_schema_form_layout_signals()
 	_schema_form_controller.value_changed.connect(_on_schema_form_value_changed)
 	_schema_form_controller.validation_updated.connect(_on_schema_form_validation_updated)
 	_schema_form_controller.schema_loaded.connect(_on_schema_form_loaded)
@@ -710,6 +771,7 @@ func _ready() -> void:
 		set_compact_layout(ft_node.is_compact_layout_enabled())
 	else:
 		set_compact_layout(false)
+	_queue_schema_form_height_refresh()
 
 func _on_progress(current_bytes: int, total_bytes: int) -> void:
 	var percentage: float = float(current_bytes) / float(total_bytes) * 100
@@ -758,6 +820,8 @@ func _on_message_type_item_selected(index: int) -> void:
 			$AudioMessageContainer.visible = true
 		5:
 			$FileMessageContainer.visible = true
+	if index == 3:
+		_queue_schema_form_height_refresh()
 
 
 func _on_file_dialog_file_selected(path: String) -> void:
@@ -1233,6 +1297,7 @@ func _clear_schema_form_root() -> void:
 		return
 	for child in form_root.get_children():
 		child.queue_free()
+	_queue_schema_form_height_refresh()
 
 func _is_only_json_option_text(option_text: String) -> bool:
 	var normalized = option_text.strip_edges()
@@ -1380,6 +1445,7 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 		_clear_schema_form_root()
 		if schema_hint != null:
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
+		_queue_schema_form_height_refresh()
 		return
 	var runtime_schema_name = _get_schema_name_from_data(schema_data, selected_schema_name)
 	var resolve_info = await _resolve_runtime_schema_if_needed(schema_data, runtime_schema_name, serial)
@@ -1391,6 +1457,7 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 		_clear_schema_form_root()
 		if schema_hint != null:
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_NO_SCHEMA")
+		_queue_schema_form_height_refresh()
 		return
 	if schema_hint != null:
 		if bool(resolve_info.get("external_failed", false)):
@@ -1414,12 +1481,14 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 			schema_edit_node.text = _schema_form_controller.get_value_as_json(true)
 			_schema_sync_guard = false
 	update_messages_global()
+	_queue_schema_form_height_refresh()
 
 func _on_schema_form_loaded(has_fallback: bool) -> void:
 	if has_fallback:
 		var schema_hint = _schema_form_hint_label_node()
 		if schema_hint != null:
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK")
+	_queue_schema_form_height_refresh()
 
 func _on_schema_form_value_changed(json_text: String) -> void:
 	if _schema_sync_guard:
@@ -1430,6 +1499,7 @@ func _on_schema_form_value_changed(json_text: String) -> void:
 		schema_edit_node.text = json_text
 		_schema_sync_guard = false
 	update_messages_global()
+	_queue_schema_form_height_refresh()
 	_schedule_schema_validate()
 
 func _on_schema_form_validation_updated(_errors: Array) -> void:

@@ -2194,3 +2194,11 @@ msgstr "https://www.haukauntrie.de/online/api/schema-editor/"
 msgid "42"
 msgstr "42"
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_BASE_URL"
+msgstr "OpenAI-kompatible API-URL"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_API_BASE_URL_TOOLTIP"
+msgstr "Basis-URL für eine OpenAI-kompatible API, zum Beispiel https://api.openai.com/v1.\n"
+"Wenn die OpenAI-URL genutzt wird, bleibt die Modellauswahl ein Dropdown."

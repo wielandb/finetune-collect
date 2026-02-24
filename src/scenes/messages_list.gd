@@ -212,6 +212,29 @@ func _completion_schema_name_to_api_name(schema_name: String) -> String:
 		cleaned = cleaned.substr(0, 64)
 	return cleaned
 
+func _looks_like_json_schema(value) -> bool:
+	if not (value is Dictionary):
+		return false
+	for key in ["type", "properties", "required", "items", "enum", "anyOf", "allOf", "oneOf", "$ref", "$defs", "definitions", "additionalProperties", "const"]:
+		if value.has(key):
+			return true
+	return false
+
+func _unwrap_schema_envelope(candidate):
+	var current = candidate
+	for i in range(8):
+		if not (current is Dictionary):
+			return current
+		if _looks_like_json_schema(current):
+			return current
+		if not current.has("schema"):
+			return current
+		var nested = current.get("schema", null)
+		if not (nested is Dictionary):
+			return current
+		current = nested
+	return current
+
 func _build_response_format_from_schema_entry(schema_entry: Dictionary) -> Dictionary:
 	var schema_name = str(schema_entry.get("name", "")).strip_edges()
 	if schema_name == "":
@@ -225,6 +248,9 @@ func _build_response_format_from_schema_entry(schema_entry: Dictionary) -> Dicti
 		schema_source = schema_entry.get("schema", null)
 	if not (schema_source is Dictionary):
 		return {}
+	schema_source = _unwrap_schema_envelope(schema_source)
+	if not (schema_source is Dictionary):
+		return {}
 	var sanitize_report = SchemaAlignOpenAI.sanitize_envelope_or_schema_with_report(schema_source)
 	if not bool(sanitize_report.get("ok", false)):
 		return {}
@@ -232,6 +258,9 @@ func _build_response_format_from_schema_entry(schema_entry: Dictionary) -> Dicti
 	if not (schema_envelope is Dictionary):
 		return {}
 	var sanitized_schema = schema_envelope.get("schema", null)
+	if not (sanitized_schema is Dictionary):
+		return {}
+	sanitized_schema = _unwrap_schema_envelope(sanitized_schema)
 	if not (sanitized_schema is Dictionary):
 		return {}
 	var validation_result = JsonSchemaValidator.validate_schema(sanitized_schema)
@@ -521,7 +550,7 @@ func _request_completion(schema_name: String = "", response_format_override: Dic
 	print(model)
 	for m in openai_messages:
 		print(m.content)
-	openai.prompt_gpt(openai_messages, model, "https://api.openai.com/v1/chat/completions", toolsforopenAI, response_format)
+	openai.prompt_gpt(openai_messages, model, "", toolsforopenAI, response_format)
 
 func _on_add_message_completion_button_pressed() -> void:
 	if check_autocomplete_disabled_status():

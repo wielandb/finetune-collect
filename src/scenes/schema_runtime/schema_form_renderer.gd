@@ -120,7 +120,7 @@ func _render_nullable_node(descriptor: Dictionary, parent: Control, controller, 
 		desc_no_null["nullable"] = false
 		var content_depth = depth + 1
 		if use_include_toggle:
-			content_depth = depth
+			content_depth = 0
 		_render_non_nullable_node(desc_no_null, body, controller, path, content_depth)
 
 func _render_non_nullable_node(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> void:

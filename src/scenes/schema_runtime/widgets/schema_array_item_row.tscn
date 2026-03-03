@@ -17,7 +17,7 @@ text = "MESSAGES_JSON_SCHEMA_FORM_ITEM"
 
 [node name="DeleteButton" type="Button" parent="Header"]
 layout_mode = 2
-text = "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"
+text = ""
 icon = ExtResource("2_hgk53")
 
 [node name="ContentContainer" type="VBoxContainer" parent="."]

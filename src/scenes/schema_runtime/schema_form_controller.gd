@@ -479,6 +479,25 @@ func _on_array_item_add_requested(path: Array, descriptor: Dictionary) -> void:
 	arr.append(create_default_value(descriptor.get("items", {})))
 	set_value_at_path(path, arr, true)
 
+func _on_array_item_move_up_requested(_emitted_index: int, path: Array, index: int) -> void:
+	_move_array_item(path, index, index - 1)
+
+func _on_array_item_move_down_requested(_emitted_index: int, path: Array, index: int) -> void:
+	_move_array_item(path, index, index + 1)
+
+func _on_array_item_duplicate_requested(_emitted_index: int, path: Array, index: int, descriptor: Dictionary) -> void:
+	var arr = get_value_at_path(path)
+	if not (arr is Array):
+		return
+	if index < 0 or index >= arr.size():
+		return
+	arr = arr.duplicate(true)
+	var max_items = int(descriptor.get("max_items", -1))
+	if max_items >= 0 and arr.size() >= max_items:
+		return
+	arr.insert(index + 1, _duplicate_json_value(arr[index]))
+	set_value_at_path(path, arr, true)
+
 func _on_array_item_delete_requested(_emitted_index: int, path: Array, index: int, descriptor: Dictionary) -> void:
 	var arr = get_value_at_path(path)
 	if not (arr is Array):
@@ -490,6 +509,27 @@ func _on_array_item_delete_requested(_emitted_index: int, path: Array, index: in
 	if index >= 0 and index < arr.size():
 		arr.remove_at(index)
 	set_value_at_path(path, arr, true)
+
+func _move_array_item(path: Array, from_index: int, to_index: int) -> void:
+	var arr = get_value_at_path(path)
+	if not (arr is Array):
+		return
+	if from_index < 0 or from_index >= arr.size():
+		return
+	if to_index < 0 or to_index >= arr.size():
+		return
+	if from_index == to_index:
+		return
+	arr = arr.duplicate(true)
+	var item = arr[from_index]
+	arr.remove_at(from_index)
+	arr.insert(to_index, item)
+	set_value_at_path(path, arr, true)
+
+func _duplicate_json_value(value):
+	if value is Dictionary or value is Array:
+		return value.duplicate(true)
+	return value
 
 func _on_string_value_changed(new_text: String, path: Array, _descriptor: Dictionary) -> void:
 	set_value_at_path(path, new_text, false)

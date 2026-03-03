@@ -69,7 +69,7 @@ func _run() -> void:
 
 	var item_labels = root.find_children("ItemLabel", "Label", true, false)
 	assert_true(item_labels.is_empty(), "no Item label for key/value pair rows")
-	var key_value_rows = root.find_children("KeyValueItemRow", "VBoxContainer", true, false)
+	var key_value_rows = _find_key_value_rows(root)
 	assert_true(key_value_rows.size() == 1, "key/value row rendered")
 	if key_value_rows.size() > 0:
 		var first_row = key_value_rows[0]
@@ -107,6 +107,39 @@ func _run() -> void:
 	assert_true(parsed_after_add[1] is Dictionary, "new row is object")
 	assert_true(parsed_after_add[1].get("key", "") == "alpha", "new key uses enum default")
 	assert_true(parsed_after_add[1].get("value", "") == "", "new value uses string default")
+	controller.set_value_at_path([1, "key"], "beta", true)
+	controller.set_value_at_path([1, "value"], "eins", true)
+	await process_frame
+	key_value_rows = _find_key_value_rows(root)
+	assert_true(key_value_rows.size() == 2, "two key/value rows rendered after add")
+	if key_value_rows.size() == 2:
+		var first_move_up = key_value_rows[0].find_child("MoveUpButton", true, false)
+		var first_move_down = key_value_rows[0].find_child("MoveDownButton", true, false)
+		var first_duplicate = key_value_rows[0].find_child("DuplicateButton", true, false)
+		var second_move_up = key_value_rows[1].find_child("MoveUpButton", true, false)
+		var second_move_down = key_value_rows[1].find_child("MoveDownButton", true, false)
+		assert_true(first_move_up is Button and first_move_up.disabled, "first key/value row move up is disabled")
+		assert_true(first_move_down is Button and not first_move_down.disabled, "first key/value row move down is enabled")
+		assert_true(first_duplicate is Button and not first_duplicate.disabled, "key/value duplicate button exists")
+		assert_true(second_move_up is Button and not second_move_up.disabled, "second key/value row move up is enabled")
+		assert_true(second_move_down is Button and second_move_down.disabled, "second key/value row move down is disabled")
+		if second_move_up is Button:
+			second_move_up.emit_signal("pressed")
+			await process_frame
+			var parsed_after_move = JSON.parse_string(controller.get_value_as_json(false))
+			assert_true(parsed_after_move[0].get("key", "") == "beta", "key/value move up reorders first row")
+			assert_true(parsed_after_move[1].get("key", "") == "alpha", "key/value move up shifts previous first row down")
+		key_value_rows = _find_key_value_rows(root)
+		if key_value_rows.size() > 0:
+			first_duplicate = key_value_rows[0].find_child("DuplicateButton", true, false)
+			if first_duplicate is Button:
+				first_duplicate.emit_signal("pressed")
+				await process_frame
+				var parsed_after_duplicate = JSON.parse_string(controller.get_value_as_json(false))
+				assert_true(parsed_after_duplicate.size() == 3, "key/value duplicate adds item")
+				assert_true(parsed_after_duplicate[0].get("key", "") == "beta", "key/value duplicate keeps source item")
+				assert_true(parsed_after_duplicate[1].get("key", "") == "beta", "key/value duplicate inserts copy below source")
+				assert_true(parsed_after_duplicate[1].get("value", "") == "eins", "key/value duplicate keeps copied value")
 	var delete_buttons = root.find_children("DeleteButton", "Button", true, false)
 	var disabled_button_found = false
 	var disabled_icon_unchanged = true
@@ -132,7 +165,7 @@ func _run() -> void:
 	await process_frame
 	var parsed_after_delete = JSON.parse_string(controller.get_value_as_json(false))
 	assert_true(parsed_after_delete is Array, "value remains array after delete")
-	assert_true(parsed_after_delete.size() == 1, "delete button removes item")
+	assert_true(parsed_after_delete.size() == 2, "delete button removes item")
 	var item_labels_after_add = root.find_children("ItemLabel", "Label", true, false)
 	assert_true(item_labels_after_add.is_empty(), "no Item label after add")
 
@@ -221,3 +254,11 @@ func _find_label_with_prefix(node: Node, prefix: String):
 		if nested != null:
 			return nested
 	return null
+
+func _find_key_value_rows(root: Node) -> Array:
+	var rows = []
+	for node in root.find_children("*", "VBoxContainer", true, false):
+		var fields = node.get_node_or_null("KeyValueFields")
+		if fields is HBoxContainer:
+			rows.append(node)
+	return rows

@@ -34,6 +34,16 @@ func _run() -> void:
 	assert_true(parsed is Dictionary, "parsed is dictionary")
 	assert_true(parsed.get("name", "") == "Alice", "name roundtrip")
 	assert_true(parsed.get("count", -1) == 1, "required default for count")
+	await process_frame
+	var spin_boxes = root.find_children("*", "SpinBox", true, false)
+	assert_true(spin_boxes.size() == 1, "one numeric field rendered")
+	if spin_boxes.size() == 1:
+		var count_spin = spin_boxes[0]
+		assert_true(abs(float(count_spin.min_value) - 1.0) < 0.001, "numeric field keeps schema minimum")
+		count_spin.value = 1000.0
+		count_spin.emit_signal("value_changed", count_spin.value)
+		var parsed_after_spin = JSON.parse_string(controller.get_value_as_json(false))
+		assert_true(parsed_after_spin.get("count", -1) == 1000, "numeric field does not impose default maximum")
 	controller.set_value_at_path(["active"], true, false)
 	var parsed2 = JSON.parse_string(controller.get_value_as_json(false))
 	assert_true(parsed2.get("active", false) == true, "set_value_at_path updates value")

@@ -66,12 +66,17 @@ const DATE_PICKER_MONTH_SHORT_KEYS = [
 	"MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_NOV",
 	"MESSAGES_JSON_SCHEMA_FORM_DATE_MONTH_SHORT_DEC"
 ]
+const MOVE_UP_ICON_SMALL = "res://icons/chevron-double-up.png"
+const MOVE_DOWN_ICON_SMALL = "res://icons/chevron-double-down.png"
+const DUPLICATE_ICON_SMALL = "res://icons/content-duplicate-custom.png"
 const DELETE_ICON_CLOSED_SMALL = "res://icons/trashcan_small.png"
 const DELETE_ICON_OPEN_SMALL = "res://icons/trashcanOpen_small.png"
 const INFO_ICON_SMALL = "res://icons/help-circle-outline-custom.png"
 const FILTERABLE_OPTION_THRESHOLD = 10
 const FILTERABLE_OPTION_FILTER_LINE_EDIT_NAME = "OptionFilterLineEdit"
 const OPTION_SELECTOR_FONT_SIZE = 11
+const UNBOUNDED_NUMBER_RANGE_SPAN = 1000000000000.0
+const ARRAY_ACTION_BUTTON_MIN_WIDTH = 36
 
 var _array_item_row_scene = preload("res://scenes/schema_runtime/widgets/schema_array_item_row.tscn")
 var _fallback_scene = preload("res://scenes/schema_runtime/widgets/schema_fallback_editor.tscn")
@@ -236,10 +241,16 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 				row_label.add_theme_font_override("font", _get_bold_font())
 				row_label.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
 				_style_single_line_label(row_label)
+			row.move_up_requested.connect(controller._on_array_item_move_up_requested.bind(path.duplicate(true), i))
+			row.move_down_requested.connect(controller._on_array_item_move_down_requested.bind(path.duplicate(true), i))
+			row.duplicate_requested.connect(controller._on_array_item_duplicate_requested.bind(path.duplicate(true), i, descriptor))
 			row.delete_requested.connect(controller._on_array_item_delete_requested.bind(path.duplicate(true), i, descriptor))
-			var min_items = int(descriptor.get("min_items", 0))
-			if i < min_items:
-				row.get_node("Header/DeleteButton").disabled = true
+			row.set_action_states(
+				i > 0,
+				i < array_value.size() - 1,
+				_can_duplicate_array_item(array_value.size(), descriptor),
+				_can_delete_array_item(i, descriptor)
+			)
 			var content_container = row.get_content_container()
 			_render_node(items, content_container, controller, path + [i], depth + 1)
 	var add_button = Button.new()
@@ -292,21 +303,7 @@ func _render_compact_string_enum_array_rows(parent: VBoxContainer, controller, p
 			controller._on_enum_item_selected.bind(path.duplicate(true) + [i], items_descriptor)
 		)
 
-		var delete_button = Button.new()
-		delete_button.name = "DeleteButton"
-		delete_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM")
-		delete_button.icon = load(DELETE_ICON_CLOSED_SMALL)
-		delete_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
-		_style_single_line_button(delete_button)
-		delete_button.pressed.connect(func() -> void:
-			controller._on_array_item_delete_requested(i, path.duplicate(true), i, descriptor)
-		)
-		delete_button.mouse_entered.connect(_on_delete_button_mouse_entered.bind(delete_button))
-		delete_button.mouse_exited.connect(_on_delete_button_mouse_exited.bind(delete_button))
-		var min_items = int(descriptor.get("min_items", 0))
-		if i < min_items:
-			delete_button.disabled = true
-		row.add_child(delete_button)
+		_add_array_item_action_buttons(row, controller, path, i, array_value.size(), descriptor)
 
 		if i < array_value.size() - 1:
 			_add_divider(parent)
@@ -351,22 +348,50 @@ func _render_key_value_array_rows(parent: VBoxContainer, controller, path: Array
 		var actions_row = HBoxContainer.new()
 		actions_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		actions_row.alignment = BoxContainer.ALIGNMENT_END
+		actions_row.add_theme_constant_override("separation", 8)
 		row.add_child(actions_row)
-		var delete_button = Button.new()
-		delete_button.name = "DeleteButton"
-		delete_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM")
-		delete_button.icon = load(DELETE_ICON_CLOSED_SMALL)
-		delete_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
-		_style_single_line_button(delete_button)
-		delete_button.pressed.connect(controller._on_array_item_delete_requested.bind(-1, path.duplicate(true), i, descriptor))
-		delete_button.mouse_entered.connect(_on_delete_button_mouse_entered.bind(delete_button))
-		delete_button.mouse_exited.connect(_on_delete_button_mouse_exited.bind(delete_button))
-		var min_items = int(descriptor.get("min_items", 0))
-		if i < min_items:
-			delete_button.disabled = true
-		actions_row.add_child(delete_button)
+		_add_array_item_action_buttons(actions_row, controller, path, i, array_value.size(), descriptor)
 		if i < array_value.size() - 1:
 			_add_divider(parent)
+
+func _add_array_item_action_buttons(parent: BoxContainer, controller, path: Array, index: int, item_count: int, descriptor: Dictionary) -> void:
+	var row_path = path.duplicate(true)
+	var move_up_button = _create_array_action_button("MoveUpButton", MOVE_UP_ICON_SMALL)
+	move_up_button.disabled = index <= 0
+	move_up_button.pressed.connect(controller._on_array_item_move_up_requested.bind(-1, row_path, index))
+	parent.add_child(move_up_button)
+	var move_down_button = _create_array_action_button("MoveDownButton", MOVE_DOWN_ICON_SMALL)
+	move_down_button.disabled = index >= item_count - 1
+	move_down_button.pressed.connect(controller._on_array_item_move_down_requested.bind(-1, row_path, index))
+	parent.add_child(move_down_button)
+	var duplicate_button = _create_array_action_button("DuplicateButton", DUPLICATE_ICON_SMALL)
+	duplicate_button.disabled = not _can_duplicate_array_item(item_count, descriptor)
+	duplicate_button.pressed.connect(controller._on_array_item_duplicate_requested.bind(-1, row_path, index, descriptor))
+	parent.add_child(duplicate_button)
+	var delete_button = _create_array_action_button("DeleteButton", DELETE_ICON_CLOSED_SMALL)
+	delete_button.disabled = not _can_delete_array_item(index, descriptor)
+	delete_button.pressed.connect(controller._on_array_item_delete_requested.bind(-1, row_path, index, descriptor))
+	delete_button.mouse_entered.connect(_on_delete_button_mouse_entered.bind(delete_button))
+	delete_button.mouse_exited.connect(_on_delete_button_mouse_exited.bind(delete_button))
+	parent.add_child(delete_button)
+
+func _create_array_action_button(button_name: String, icon_path: String) -> Button:
+	var button = Button.new()
+	button.name = button_name
+	button.text = ""
+	button.icon = load(icon_path)
+	button.custom_minimum_size = Vector2(ARRAY_ACTION_BUTTON_MIN_WIDTH, 0)
+	return button
+
+func _can_duplicate_array_item(item_count: int, descriptor: Dictionary) -> bool:
+	var max_items = int(descriptor.get("max_items", -1))
+	if max_items >= 0 and item_count >= max_items:
+		return false
+	return true
+
+func _can_delete_array_item(index: int, descriptor: Dictionary) -> bool:
+	var min_items = int(descriptor.get("min_items", 0))
+	return index >= min_items
 
 func _on_delete_button_mouse_entered(button: Button) -> void:
 	if button.disabled:
@@ -1155,18 +1180,32 @@ func _render_number_node(descriptor: Dictionary, parent: Control, controller, pa
 	_add_title_and_description(descriptor, box, depth)
 	var spin = SpinBox.new()
 	spin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var min_value = -UNBOUNDED_NUMBER_RANGE_SPAN
+	var max_value = UNBOUNDED_NUMBER_RANGE_SPAN
+	var has_minimum = false
+	var has_maximum = false
 	if descriptor.get("kind", "") == "integer":
 		spin.step = 1.0
 	else:
 		spin.step = 0.1
 	if descriptor.get("minimum", null) is int or descriptor.get("minimum", null) is float:
-		spin.min_value = float(descriptor["minimum"])
+		min_value = float(descriptor["minimum"])
+		has_minimum = true
 	elif descriptor.get("exclusive_minimum", null) is int or descriptor.get("exclusive_minimum", null) is float:
-		spin.min_value = float(descriptor["exclusive_minimum"]) + spin.step
+		min_value = float(descriptor["exclusive_minimum"]) + spin.step
+		has_minimum = true
 	if descriptor.get("maximum", null) is int or descriptor.get("maximum", null) is float:
-		spin.max_value = float(descriptor["maximum"])
+		max_value = float(descriptor["maximum"])
+		has_maximum = true
 	elif descriptor.get("exclusive_maximum", null) is int or descriptor.get("exclusive_maximum", null) is float:
-		spin.max_value = float(descriptor["exclusive_maximum"]) - spin.step
+		max_value = float(descriptor["exclusive_maximum"]) - spin.step
+		has_maximum = true
+	if has_minimum and not has_maximum:
+		max_value = max(max_value, min_value + UNBOUNDED_NUMBER_RANGE_SPAN)
+	elif has_maximum and not has_minimum:
+		min_value = min(min_value, max_value - UNBOUNDED_NUMBER_RANGE_SPAN)
+	spin.min_value = min_value
+	spin.max_value = max_value
 	var value = controller.get_value_at_path(path)
 	if value is int or value is float:
 		spin.value = float(value)

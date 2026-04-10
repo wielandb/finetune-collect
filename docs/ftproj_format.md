@@ -120,6 +120,10 @@ Global configuration stored in the `settings` object.
 | `projectCloudKey` | string | Secret key used for cloud save/load requests. |
 | `projectCloudName` | string | Cloud project identifier (maps to one remote JSON file). |
 | `autoSaveMode` | integer | Auto-save behavior (`0` off, `1` every 5 minutes, `2` on conversation switch). |
+| `imageUploadSetting` | integer | Image upload behavior (`0` = never, `1` = auto-upload). |
+| `imageAutoRotateSetting` | integer | Image auto-rotation mode (`0` = no, `1` = display only, `2` = rotate pixels). |
+| `imageUploadServerURL` | string | URL to the image upload endpoint (for auto-upload mode). |
+| `imageUploadServerKey` | string | Secret key for the image upload endpoint. |
 | `tokenCounterPath` | string | Path to an external token counting tool. |
 | `exportConvos` | integer | Determines which conversations are exported. |
 | `countTokensWhen` | integer | Specifies when token counting is performed. |

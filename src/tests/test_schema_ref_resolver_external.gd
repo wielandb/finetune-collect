@@ -54,5 +54,36 @@ func _run() -> void:
 	if urls.size() == 1:
 		assert_true(urls[0] == "https://example.com/schemas/person.json", "external url normalized")
 
+	var local_recursive_schema = {
+		"$id": "https://example.com/schemas/tree.json",
+		"type": "object",
+		"properties": {
+			"root": {"$ref": "#/$defs/node"}
+		},
+		"$defs": {
+			"node": {
+				"type": "object",
+				"properties": {
+					"name": {"type": "string"},
+					"children": {
+						"type": "array",
+						"items": {"$ref": "#/$defs/node"}
+					}
+				}
+			}
+		}
+	}
+	var local_resolved = resolver.resolve_schema(local_recursive_schema)
+	assert_true(not bool(local_resolved.get("has_external_ref", true)), "local ref does not count as unresolved external ref")
+	assert_true(not bool(local_resolved.get("has_ref_cycle", true)), "local ref should not be expanded into cycle marker")
+	var local_schema_after = local_resolved.get("schema", {})
+	var root_ref = local_schema_after.get("properties", {}).get("root", {}).get("$ref", "")
+	assert_true(str(root_ref) == "#/$defs/node", "local root ref stays unchanged")
+	var nested_ref = local_schema_after.get("$defs", {}).get("node", {}).get("properties", {}).get("children", {}).get("items", {}).get("$ref", "")
+	assert_true(str(nested_ref) == "#/$defs/node", "local nested ref stays unchanged")
+
+	var local_urls = resolver.collect_external_document_urls(local_recursive_schema)
+	assert_true(local_urls.is_empty(), "same-document refs must not be treated as external urls")
+
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

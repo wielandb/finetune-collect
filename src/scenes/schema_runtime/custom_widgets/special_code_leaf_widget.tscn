@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scenes/schema_runtime/custom_widgets/special_code_leaf_widget.gd" id="1_ni33v"]
+
+[node name="SpecialCodeLeafWidget" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_ni33v")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Special Code"
+
+[node name="SpecialCodeLineEdit" type="LineEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Code eingeben"
+
+[node name="PreviewLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Vorschau: "
+
+[node name="ErrorLabel" type="Label" parent="."]
+visible = false
+layout_mode = 2
+modulate = Color(0.901961, 0.25098, 0.25098, 1)

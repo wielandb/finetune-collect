@@ -683,6 +683,10 @@ msgstr "Append to existing"
 msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
 msgstr "Chose files to create conversations from"
 
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_BATCH_CREATION_UPLOAD_PROGRESS"
+msgstr "Uploading images (%d/%d)"
+
 #: scenes/conversation_settings.tscn
 msgid "Open File(s)"
 msgstr "Open File(s)"
@@ -1020,6 +1024,26 @@ msgstr "Auto-Upload images to image server"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_HINT"
 msgstr "Automatically upload images to the image upload script specified in the URL. Useful if a lot of image files make the program respond slowly."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_LABEL"
+msgstr "Automatically rotate images"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_HINT"
+msgstr "Controls how EXIF orientation metadata is handled for images.\nNever: leave data unchanged.\nDisplay only: show the image in the correct orientation without changing image data.\nRotate pixels: permanently rotate image data before auto-upload/export."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_NO"
+msgstr "No"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_DISPLAY_ONLY"
+msgstr "Display only"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_PIXEL_ROTATE"
+msgstr "Rotate pixels"
 
 #: scenes/conversation_settings.tscn
 msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_NEVER"
@@ -1619,6 +1643,10 @@ msgstr "Include"
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM"
 msgstr "Add item"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_LIST"
+msgstr "List"
 
 #: scenes/schema_runtime/widgets/schema_array_item_row.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"

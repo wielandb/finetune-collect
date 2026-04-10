@@ -118,8 +118,81 @@ func _run() -> void:
 				var parsed_standard_after_duplicate = JSON.parse_string(standard_controller.get_value_as_json(false))
 				assert_true(parsed_standard_after_duplicate.size() == 3, "standard duplicate button adds item")
 				assert_true(parsed_standard_after_duplicate[0] == "zwei" and parsed_standard_after_duplicate[1] == "zwei" and parsed_standard_after_duplicate[2] == "eins", "standard duplicate inserts copied item below source")
+	var goals_root = VBoxContainer.new()
+	get_root().add_child(goals_root)
+	var goals_controller = load("res://scenes/schema_runtime/schema_form_controller.gd").new()
+	goals_controller.bind_form_root(goals_root)
+	var goals_schema = {
+		"type": "object",
+		"required": ["goals"],
+		"properties": {
+			"goals": {
+				"type": "array",
+				"items": {
+					"type": "string"
+				}
+			}
+		}
+	}
+	goals_controller.load_schema(goals_schema)
+	goals_controller.set_value_from_json("{\"goals\":[\"eins\"]}")
+	await process_frame
+	var goals_rows = _find_standard_rows(goals_root)
+	assert_true(goals_rows.size() == 1, "goals array row rendered")
+	if goals_rows.size() > 0:
+		var goals_label = goals_rows[0].get_node_or_null("Header/ItemLabel")
+		assert_true(goals_label is Label and str(goals_label.text).begins_with("goals-"), "goals item label has list prefix")
+	assert_true(_has_button_with_prefix(goals_root, "goals-"), "goals add button has list prefix")
+
+	var nested_root = VBoxContainer.new()
+	get_root().add_child(nested_root)
+	var nested_controller = load("res://scenes/schema_runtime/schema_form_controller.gd").new()
+	nested_controller.bind_form_root(nested_root)
+	var nested_schema = {
+		"type": "object",
+		"required": ["goals"],
+		"properties": {
+			"goals": {
+				"type": "array",
+				"minItems": 1,
+				"items": {
+					"type": "object",
+					"required": ["routes"],
+					"properties": {
+						"routes": {
+							"type": "array",
+							"minItems": 1,
+							"items": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	nested_controller.load_schema(nested_schema)
+	nested_controller.set_value_from_json("{\"goals\":[{\"routes\":[\"start\"]}]}")
+	await process_frame
+	var nested_labels = nested_root.find_children("ItemLabel", "Label", true, false)
+	var has_goals_label = false
+	var has_routes_label = false
+	for label in nested_labels:
+		if not (label is Label):
+			continue
+		var label_text = str(label.text)
+		if label_text.begins_with("goals-"):
+			has_goals_label = true
+		if label_text.begins_with("routes-"):
+			has_routes_label = true
+	assert_true(has_goals_label, "nested goals item label has list prefix")
+	assert_true(has_routes_label, "nested routes item label has list prefix")
+	assert_true(_has_button_with_prefix(nested_root, "goals-"), "nested goals add button has list prefix")
+	assert_true(_has_button_with_prefix(nested_root, "routes-"), "nested routes add button has list prefix")
 	root.queue_free()
 	standard_root.queue_free()
+	goals_root.queue_free()
+	nested_root.queue_free()
 	await process_frame
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)
@@ -141,3 +214,9 @@ func _find_standard_rows(root: Node) -> Array:
 		if item_label is Label and delete_button is Button:
 			rows.append(node)
 	return rows
+
+func _has_button_with_prefix(root: Node, prefix: String) -> bool:
+	for node in root.find_children("*", "Button", true, false):
+		if node is Button and str(node.text).begins_with(prefix):
+			return true
+	return false

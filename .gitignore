@@ -20,3 +20,4 @@ export/windows/finetune-collector.exe
 export/windows/finetune-collector.console.exe
 export/android/finetune-collector.apk.idsig
 export/android/finetune-collector.apk
+export/android/finetune-collector.apk

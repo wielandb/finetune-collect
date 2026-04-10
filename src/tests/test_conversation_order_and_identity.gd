@@ -220,7 +220,41 @@ func _run() -> void:
 		_check(repaired_meta.has("conversationName"), "repaired meta should include conversationName")
 		_check(repaired_meta.has("notes"), "repaired meta should include notes")
 
+	var delete_scene = await _create_scene()
+	delete_scene.CONVERSATIONS = {}
+	delete_scene.CONVERSATION_ORDER = []
+	delete_scene.CURRENT_EDITED_CONVO_IX = ""
+	delete_scene.refresh_conversations_list()
+	var delete_id_a = delete_scene.create_new_conversation([
+		{"role": "meta", "type": "meta", "metaData": {"ready": false, "conversationName": "Delete A", "notes": ""}}
+	])
+	var delete_id_b = delete_scene.create_new_conversation([
+		{"role": "meta", "type": "meta", "metaData": {"ready": false, "conversationName": "Delete B", "notes": ""}}
+	])
+	var delete_id_c = delete_scene.create_new_conversation([
+		{"role": "meta", "type": "meta", "metaData": {"ready": false, "conversationName": "Delete C", "notes": ""}}
+	])
+	delete_scene.refresh_conversations_list()
+	var delete_list_node = delete_scene.get_node("VBoxContainer/ConversationsList")
+	var middle_index = delete_scene.selectionStringToIndex(delete_list_node, delete_id_b)
+	_check(middle_index == 1, "middle test conversation should be at index 1 before delete")
+	delete_scene._select_conversation_by_id(delete_id_b)
+	delete_scene.delete_conversation(delete_id_b)
+	_check(delete_scene.CURRENT_EDITED_CONVO_IX == delete_id_c, "deleting middle conversation should select next neighbor")
+	var selected_after_middle_delete = delete_scene.get_ItemList_selected_Item_index(delete_list_node)
+	_check(selected_after_middle_delete == 1, "deleting middle conversation should keep same list position")
+	if selected_after_middle_delete >= 0:
+		_check(str(delete_list_node.get_item_tooltip(selected_after_middle_delete)) == delete_id_c, "selected conversation id after middle delete should be lower neighbor")
+	_check(selected_after_middle_delete != 0, "middle delete selection should not jump to first conversation")
+	delete_scene.delete_conversation(delete_id_c)
+	_check(delete_scene.CURRENT_EDITED_CONVO_IX == delete_id_a, "deleting last conversation should select previous neighbor")
+	var selected_after_last_delete = delete_scene.get_ItemList_selected_Item_index(delete_list_node)
+	_check(selected_after_last_delete == 0, "deleting last conversation should select previous index")
+	if selected_after_last_delete >= 0:
+		_check(str(delete_list_node.get_item_tooltip(selected_after_last_delete)) == delete_id_a, "selected conversation id after last delete should be previous neighbor")
+
 	await _destroy_scene(scene)
 	await _destroy_scene(restored_scene)
+	await _destroy_scene(delete_scene)
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

@@ -2,6 +2,9 @@ extends RefCounted
 
 class_name SchemaFormRenderer
 
+const SchemaCustomWidgetContext = preload("res://scenes/schema_runtime/custom/schema_custom_widget_context.gd")
+const SchemaCustomWidgetRegistry = preload("res://scenes/schema_runtime/custom/schema_custom_widget_registry.gd")
+
 const INDENT_PER_LEVEL = 12
 const MAX_INDENT = 200
 const TITLE_FONT_MAX = 22
@@ -82,6 +85,11 @@ var _array_item_row_scene = preload("res://scenes/schema_runtime/widgets/schema_
 var _fallback_scene = preload("res://scenes/schema_runtime/widgets/schema_fallback_editor.tscn")
 var _ui_font = preload("res://assets/RobotoSlab-VariableFont_wght.ttf")
 var _bold_font = null
+var _custom_widget_registry = SchemaCustomWidgetRegistry.new()
+
+func set_custom_widget_registry(registry) -> void:
+	if registry != null:
+		_custom_widget_registry = registry
 
 func render(descriptor: Dictionary, parent: Control, controller, path: Array) -> void:
 	_render_node(descriptor, parent, controller, path, 0)
@@ -129,6 +137,8 @@ func _render_nullable_node(descriptor: Dictionary, parent: Control, controller, 
 		_render_non_nullable_node(desc_no_null, body, controller, path, content_depth)
 
 func _render_non_nullable_node(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> void:
+	if _render_custom_widget_if_available(descriptor, parent, controller, path, depth):
+		return
 	var kind = str(descriptor.get("kind", "fallback"))
 	match kind:
 		"object":
@@ -158,6 +168,33 @@ func _render_non_nullable_node(descriptor: Dictionary, parent: Control, controll
 				"description": descriptor.get("description", ""),
 				"reason": tr("MESSAGES_JSON_SCHEMA_FORM_FALLBACK_REASON_UNKNOWN_KIND").replace("{kind}", kind)
 			}, parent, controller, path, depth)
+
+func _render_custom_widget_if_available(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> bool:
+	var widget_entry = _custom_widget_registry.find_best_widget_for_descriptor(descriptor)
+	if widget_entry.is_empty():
+		return false
+	var packed_scene = widget_entry.get("packed_scene", null)
+	if not (packed_scene is PackedScene):
+		return false
+	var widget_instance = packed_scene.instantiate()
+	if not (widget_instance is Control):
+		if widget_instance != null:
+			widget_instance.free()
+		push_warning("Custom schema widget is not a Control scene root: " + str(widget_entry.get("scene_path", "")))
+		return false
+	if not widget_instance.has_method("bind_context"):
+		widget_instance.free()
+		push_warning("Custom schema widget does not implement bind_context(context): " + str(widget_entry.get("scene_path", "")))
+		return false
+	if controller.has_method("clear_widget_error_at_path"):
+		controller.clear_widget_error_at_path(path)
+	var box = _create_level_box(parent, depth)
+	box.add_child(widget_instance)
+	var context = SchemaCustomWidgetContext.new(controller, descriptor, path.duplicate(true))
+	widget_instance.call("bind_context", context)
+	if widget_instance.has_method("on_context_value_reloaded"):
+		widget_instance.call("on_context_value_reloaded")
+	return true
 
 func _render_object_node(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> void:
 	var box = _create_level_box(parent, depth)
@@ -223,6 +260,7 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 	controller._ensure_array_min_items(path, descriptor)
 	var box = _create_level_box(parent, depth)
 	_add_title_and_description(descriptor, box, depth)
+	var list_name = _resolve_array_list_name(descriptor, path)
 	var array_value = controller.get_value_at_path(path)
 	if not (array_value is Array):
 		array_value = []
@@ -235,7 +273,7 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 		for i in range(array_value.size()):
 			var row = _array_item_row_scene.instantiate()
 			box.add_child(row)
-			row.set_index(i)
+			row.set_index(i, list_name)
 			var row_label = row.get_node_or_null("Header/ItemLabel")
 			if row_label is Label:
 				row_label.add_theme_font_override("font", _get_bold_font())
@@ -254,7 +292,7 @@ func _render_array_node(descriptor: Dictionary, parent: Control, controller, pat
 			var content_container = row.get_content_container()
 			_render_node(items, content_container, controller, path + [i], depth + 1)
 	var add_button = Button.new()
-	add_button.text = tr("MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM")
+	add_button.text = list_name + "-" + tr("MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM")
 	add_button.add_theme_font_override("font", _get_bold_font())
 	add_button.add_theme_font_size_override("font_size", _field_font_size_for_depth(depth + 1))
 	_style_single_line_button(add_button)
@@ -1312,6 +1350,29 @@ func _render_union_node(descriptor: Dictionary, parent: Control, controller, pat
 	box.add_child(branch_holder)
 	_render_node(branches[active_index], branch_holder, controller, path, depth + 1)
 
+func _resolve_array_list_name(descriptor: Dictionary, path: Array) -> String:
+	var from_path = _extract_last_string_segment(path)
+	if from_path != "":
+		return from_path
+	var title = _strip_required_suffix(str(descriptor.get("title", "")))
+	if title != "":
+		return title
+	return tr("MESSAGES_JSON_SCHEMA_FORM_LIST")
+
+func _extract_last_string_segment(path: Array) -> String:
+	for i in range(path.size() - 1, -1, -1):
+		if path[i] is String:
+			var segment = str(path[i]).strip_edges()
+			if segment != "":
+				return segment
+	return ""
+
+func _strip_required_suffix(text: String) -> String:
+	var out = text.strip_edges()
+	if out.ends_with(" *"):
+		out = out.substr(0, out.length() - 2).strip_edges()
+	return out
+
 func _render_fallback_node(descriptor: Dictionary, parent: Control, controller, path: Array, depth: int) -> void:
 	var box = _create_level_box(parent, depth)
 	var editor = _fallback_scene.instantiate()
@@ -1324,7 +1385,7 @@ func _render_fallback_node(descriptor: Dictionary, parent: Control, controller, 
 	_style_fallback_editor(editor, depth)
 	editor.set_json_value(controller.get_value_at_path(path))
 	editor.json_value_changed.connect(controller._on_fallback_json_value_changed.bind(path.duplicate(true), descriptor))
-	editor.validity_changed.connect(controller._on_fallback_validity_changed.bind(path.duplicate(true), descriptor))
+	editor.validity_changed.connect(controller._on_widget_validity_changed.bind(path.duplicate(true), descriptor))
 
 func _add_title_and_description(descriptor: Dictionary, parent: Control, depth: int, include_description: bool = true) -> void:
 	var title = str(descriptor.get("title", ""))

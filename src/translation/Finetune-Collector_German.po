@@ -693,6 +693,10 @@ msgstr "An bestehende anhängen"
 msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
 msgstr "Dateien wählen, um Unterhaltungen zu erzeugen"
 
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_BATCH_CREATION_UPLOAD_PROGRESS"
+msgstr "Bilder werden hochgeladen (%d/%d)"
+
 #: scenes/conversation_settings.tscn
 msgid "Open File(s)"
 msgstr "Datei(en) öffnen"
@@ -1030,6 +1034,26 @@ msgstr "Bilder automatisch hochladen"
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_HINT"
 msgstr "Lokale Bilder automatisch auf den Server in der URL hochladen. Nützlich wenn das Programm aufgrund vieler großer Bilddateien langsam reagiert."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_LABEL"
+msgstr "Bilder automatisch drehen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_HINT"
+msgstr "Steuert, wie EXIF-Ausrichtungsmetadaten für Bilder behandelt werden.\nNein: Daten unverändert lassen.\nNur richtig anzeigen: Bild korrekt ausgerichtet anzeigen, ohne die Bilddaten zu ändern.\nPixel drehen: Bilddaten vor Auto-Upload/Export dauerhaft drehen."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_NO"
+msgstr "Nein"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_DISPLAY_ONLY"
+msgstr "Nur richtig anzeigen"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_PIXEL_ROTATE"
+msgstr "Pixel drehen"
 
 #: scenes/conversation_settings.tscn
 msgid "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_NEVER"
@@ -1629,6 +1653,10 @@ msgstr "Einbeziehen"
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM"
 msgstr "Eintrag hinzufügen"
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_LIST"
+msgstr "Liste"
 
 #: scenes/schema_runtime/widgets/schema_array_item_row.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_DELETE_ITEM"

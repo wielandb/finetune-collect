@@ -14,13 +14,16 @@ var _schema = {}
 var _descriptor = {}
 var _value = {}
 var _errors = []
-var _fallback_errors = {}
+var _widget_errors = {}
 var _has_partial_fallback = false
 var _form_root: Control = null
 var _union_selection = {}
 
 func bind_form_root(root: Control) -> void:
 	_form_root = root
+
+func set_custom_widget_registry(registry) -> void:
+	_renderer.set_custom_widget_registry(registry)
 
 func load_schema(schema: Dictionary, external_schemas: Dictionary = {}) -> void:
 	_schema = schema.duplicate(true)
@@ -246,6 +249,7 @@ func _coerce_value_for_descriptor(value, descriptor: Dictionary):
 func _rebuild_form() -> void:
 	if _form_root == null:
 		return
+	_widget_errors = {}
 	for child in _form_root.get_children():
 		child.queue_free()
 	_renderer.render(_descriptor, _form_root, self, [])
@@ -253,14 +257,31 @@ func _rebuild_form() -> void:
 func _emit_after_value_update() -> void:
 	_validate_current()
 	value_changed.emit(get_value_as_json(true))
-	fallback_error_changed.emit(_fallback_errors.size() > 0)
+	fallback_error_changed.emit(_widget_errors.size() > 0)
 
 func _validate_current() -> void:
 	_errors = []
 	_validate_value_against_descriptor(_value, _descriptor, "", _errors)
-	for fallback_path in _fallback_errors.keys():
-		_errors.append({"path": fallback_path, "message": _fallback_errors[fallback_path]})
+	for error_path in _widget_errors.keys():
+		_errors.append({"path": error_path, "message": _widget_errors[error_path]})
 	validation_updated.emit(_errors.duplicate(true))
+
+func set_widget_error_at_path(path: Array, message: String) -> void:
+	var key = _path_key(path)
+	var normalized_message = str(message).strip_edges()
+	if normalized_message == "":
+		_widget_errors.erase(key)
+	else:
+		_widget_errors[key] = normalized_message
+	_validate_current()
+	fallback_error_changed.emit(_widget_errors.size() > 0)
+
+func clear_widget_error_at_path(path: Array) -> void:
+	var key = _path_key(path)
+	if _widget_errors.has(key):
+		_widget_errors.erase(key)
+	_validate_current()
+	fallback_error_changed.emit(_widget_errors.size() > 0)
 
 func _validate_value_against_descriptor(value, descriptor: Dictionary, path: String, errors: Array) -> void:
 	var kind = str(descriptor.get("kind", "fallback"))
@@ -586,10 +607,10 @@ func _on_fallback_json_value_changed(value, path: Array, _descriptor: Dictionary
 	set_value_at_path(path, value, false)
 
 func _on_fallback_validity_changed(ok: bool, message: String, path: Array, _descriptor: Dictionary) -> void:
-	var key = _path_key(path)
+	_on_widget_validity_changed(ok, message, path, _descriptor)
+
+func _on_widget_validity_changed(ok: bool, message: String, path: Array, _descriptor: Dictionary) -> void:
 	if ok:
-		_fallback_errors.erase(key)
+		clear_widget_error_at_path(path)
 	else:
-		_fallback_errors[key] = message
-	_validate_current()
-	fallback_error_changed.emit(_fallback_errors.size() > 0)
+		set_widget_error_at_path(path, message)

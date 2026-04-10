@@ -24,12 +24,13 @@ const SETTINGS_ROW_NAMES = [
 	"BatchCreatonContainer",
 	"FromClipboardJSONCreationContainer",
 	"TokenCountPathContainer",
-	"TokenCountWhenContainer",
-	"TokenCountModelChoiceContainer",
-	"ImageUplaodSettingContainer",
-	"ImageUploadServerURLContainer",
-	"ImageUploadServerKeyContainer",
-	"ImageUploadServerTestContainer",
+		"TokenCountWhenContainer",
+		"TokenCountModelChoiceContainer",
+		"ImageUplaodSettingContainer",
+		"ImageAutoRotateSettingContainer",
+		"ImageUploadServerURLContainer",
+		"ImageUploadServerKeyContainer",
+		"ImageUploadServerTestContainer",
 	"ProjectStorageModeContainer",
 	"ProjectCloudURLContainer",
 	"ProjectCloudKeyContainer",
@@ -43,6 +44,60 @@ var _compact_layout_enabled = false
 var _effective_compact_layout_enabled = false
 var _layout_refresh_queued = false
 var _compact_control_defaults = {}
+var _batch_creation_button_default_text = ""
+var _batch_creation_upload_progress_active = false
+
+func _get_batch_creation_button():
+	var button = get_node_or_null("VBoxContainer/BatchCreatonContainer/BatchCreationButton")
+	if button is Button:
+		return button
+	return null
+
+func _set_batch_creation_button_idle() -> void:
+	var button = _get_batch_creation_button()
+	if button == null:
+		return
+	if _batch_creation_button_default_text == "":
+		_batch_creation_button_default_text = button.text
+	button.text = _batch_creation_button_default_text
+	if OS.get_name() == "Web":
+		button.disabled = true
+		button.tooltip_text = tr("DISABLED_EXPLANATION_NOT_AVAILABLE_IN_WEB")
+	else:
+		button.disabled = false
+		button.tooltip_text = ""
+	_batch_creation_upload_progress_active = false
+
+func _set_batch_creation_button_progress(done: int, total: int) -> void:
+	var button = _get_batch_creation_button()
+	if button == null:
+		return
+	if _batch_creation_button_default_text == "":
+		_batch_creation_button_default_text = button.text
+	var total_count = maxi(total, 1)
+	var done_count = clampi(done, 0, total_count)
+	button.text = tr("SETTINGS_BATCH_CREATION_UPLOAD_PROGRESS") % [done_count, total_count]
+	button.disabled = true
+	button.tooltip_text = ""
+	_batch_creation_upload_progress_active = true
+
+func _sync_batch_creation_button_with_fine_tune_state() -> void:
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node == null:
+		_set_batch_creation_button_idle()
+		return
+	if ft_node.has_method("get_batch_post_create_upload_status"):
+		var status = ft_node.get_batch_post_create_upload_status()
+		if status is Dictionary and bool(status.get("running", false)):
+			_set_batch_creation_button_progress(int(status.get("done", 0)), int(status.get("total", 0)))
+			return
+	_set_batch_creation_button_idle()
+
+func _on_batch_post_create_upload_progress(done: int, total: int, running: bool) -> void:
+	if running:
+		_set_batch_creation_button_progress(done, total)
+	else:
+		_set_batch_creation_button_idle()
 
 func _remember_control_defaults(control: Control) -> void:
 	if not is_instance_valid(control):
@@ -283,6 +338,7 @@ func to_var():
 	me["projectCloudName"] = $VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit.text
 	me["autoSaveMode"] = $VBoxContainer/AutoSaveModeContainer/AutoSaveModeOptionButton.selected
 	me["imageUploadSetting"] = $VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected
+	me["imageAutoRotateSetting"] = $VBoxContainer/ImageAutoRotateSettingContainer/ImageAutoRotateSettingOptionButton.selected
 	if me["projectStorageMode"] == 1:
 		me["imageUploadSetting"] = 1
 	me["imageUploadServerURL"] = $VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text
@@ -324,6 +380,7 @@ func from_var(me):
 	$VBoxContainer/ProjectCloudNameContainer/ProjectCloudNameEdit.text = me.get("projectCloudName", "")
 	$VBoxContainer/AutoSaveModeContainer/AutoSaveModeOptionButton.selected = me.get("autoSaveMode", 0)
 	$VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.selected = me.get("imageUploadSetting", 0)
+	$VBoxContainer/ImageAutoRotateSettingContainer/ImageAutoRotateSettingOptionButton.selected = me.get("imageAutoRotateSetting", 0)
 	$VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit.text = me.get("imageUploadServerURL", "")
 	$VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit.text = me.get("imageUploadServerKey", "")
 	$VBoxContainer/TokenCountPathContainer/TokenCounterPathLineEdit.text = me.get("tokenCounterPath", "")
@@ -345,6 +402,9 @@ func from_var(me):
 func _ready() -> void:
 	horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	clip_contents = true
+	var batch_creation_button = _get_batch_creation_button()
+	if batch_creation_button != null:
+		_batch_creation_button_default_text = batch_creation_button.text
 	# Explain why some things are disabled
 	$VBoxContainer/FineTuningTypeSettingContainer/FineTuningTypeSettingOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
 	$VBoxContainer/ExportImagesHowContainer/ExportImagesHowOptionButton.set_item_tooltip(2, tr("DISABLED_EXPLANATION_NOT_IMPLEMENTED_YET"))
@@ -372,9 +432,14 @@ func _ready() -> void:
 		set_compact_layout(ft_node.is_compact_layout_enabled())
 	else:
 		set_compact_layout(false)
+	if ft_node != null and ft_node.has_signal("batch_post_create_upload_progress"):
+		var progress_callable = Callable(self, "_on_batch_post_create_upload_progress")
+		if not ft_node.is_connected("batch_post_create_upload_progress", progress_callable):
+			ft_node.connect("batch_post_create_upload_progress", progress_callable)
 	_apply_project_storage_mode_ui()
 	_reset_image_upload_test_status()
 	_reset_project_cloud_test_status()
+	_sync_batch_creation_button_with_fine_tune_state()
 
 func models_received(models: Array[String]):
 	# Make the selectable models the models that are given back here
@@ -500,13 +565,13 @@ func create_text_message_dict_from_path(path):
 
 
 func _on_batch_creation_button_pressed() -> void:
+	if _batch_creation_upload_progress_active:
+		return
 	$VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog.visible = true
 
 func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> void:
 	var first_messages = []
 	var ft = get_node("/root/FineTune")
-	var userSelection = $VBoxContainer/BatchCreatonContainer/BatchCreationRoleChoiceBox.selected
-	var modeSelection = $VBoxContainer/BatchCreatonContainer/BatchCreationModeChoiceBox.selected
 	for file in paths:
 		if file.ends_with(".jpg") or file.ends_with(".jpeg") or file.ends_with(".png"):
 			first_messages.append(create_image_message_dict_from_path(file))
@@ -514,8 +579,13 @@ func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> 
 			first_messages.append(create_text_message_dict_from_path(file))
 		if file.ends_with(".mp3") or file.ends_with(".wav") or file.ends_with(".aac"):
 			pass
+	var created_ids = []
 	for message in first_messages:
-			ft.create_new_conversation([{"type": "meta", "role": "meta"}, message])
+		var created_id = ft.create_new_conversation([{"type": "meta", "role": "meta"}, message])
+		if str(created_id).strip_edges() != "":
+			created_ids.append(str(created_id))
+	if created_ids.size() > 0 and ft.has_method("queue_batch_post_create_uploads"):
+		ft.queue_batch_post_create_uploads(created_ids)
 
 
 func _on_token_counter_file_picker_btn_pressed() -> void:
@@ -542,6 +612,9 @@ func _on_image_uplaod_setting_option_button_item_selected(index: int) -> void:
 	if _get_project_storage_mode() == 1:
 		$VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton.select(1)
 		return
+	update_settings_global()
+
+func _on_image_auto_rotate_setting_option_button_item_selected(index: int) -> void:
 	update_settings_global()
 
 func _on_project_storage_mode_item_selected(index: int) -> void:

@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/fixtures/custom_widgets_valid/schema_test_exact_widget.gd" id="1_x3tow"]
+
+[node name="SchemaTestExactWidget" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_x3tow")
+
+[node name="ExactWidgetLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Exact Widget"
+
+[node name="SpecialCodeLineEdit" type="LineEdit" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://tests/fixtures/custom_widgets_valid/schema_test_conflict_a_widget.gd" id="1_a4j6m"]
+
+[node name="SchemaTestConflictAWidget" type="VBoxContainer"]
+size_flags_horizontal = 3
+script = ExtResource("1_a4j6m")
+
+[node name="ConflictAFlagLabel" type="Label" parent="."]
+layout_mode = 2
+text = "Conflict Widget A"

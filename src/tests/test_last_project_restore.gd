@@ -92,6 +92,7 @@ func _test_cloud_marker_stores_upload_server_settings() -> void:
 	var scene = await _create_scene()
 	scene._apply_cloud_target_settings("https://state.example/project-storage.php", "state_key", "state_project")
 	scene.SETTINGS["imageUploadSetting"] = 1
+	scene.SETTINGS["imageAutoRotateSetting"] = 2
 	scene.SETTINGS["imageUploadServerURL"] = "https://images.example/image-upload.php"
 	scene.SETTINGS["imageUploadServerKey"] = "image_state_key"
 	var snapshot = scene.make_save_json_data()
@@ -99,6 +100,7 @@ func _test_cloud_marker_stores_upload_server_settings() -> void:
 	var saved_state = _read_last_project_state()
 	_assert_eq(str(saved_state.get("source", "")), "cloud", "cloud marker should be stored after remember cloud")
 	_assert_eq(int(saved_state.get("imageUploadSetting", -1)), 1, "cloud marker should persist upload mode")
+	_assert_eq(int(saved_state.get("imageAutoRotateSetting", -1)), 2, "cloud marker should persist image auto-rotate mode")
 	_assert_eq(str(saved_state.get("imageUploadServerURL", "")), "https://images.example/image-upload.php", "cloud marker should persist upload URL")
 	_assert_eq(str(saved_state.get("imageUploadServerKey", "")), "image_state_key", "cloud marker should persist upload key")
 	await _destroy_scene(scene)
@@ -113,6 +115,7 @@ func _test_apply_cloud_state_restores_upload_server_settings() -> void:
 		"cloudKey": "cloud_key_from_state",
 		"cloudName": "cloud_project_from_state",
 		"imageUploadSetting": 1,
+		"imageAutoRotateSetting": 2,
 		"imageUploadServerURL": "https://upload-from-state.example/image-upload.php",
 		"imageUploadServerKey": "upload_key_from_state"
 	}
@@ -122,13 +125,16 @@ func _test_apply_cloud_state_restores_upload_server_settings() -> void:
 	_assert_eq(str(scene.SETTINGS.get("projectCloudKey", "")), "cloud_key_from_state", "cloud state restore should set cloud key")
 	_assert_eq(str(scene.SETTINGS.get("projectCloudName", "")), "cloud_project_from_state", "cloud state restore should set cloud project id")
 	_assert_eq(int(scene.SETTINGS.get("imageUploadSetting", -1)), 1, "cloud state restore should keep upload mode enabled")
+	_assert_eq(int(scene.SETTINGS.get("imageAutoRotateSetting", -1)), 2, "cloud state restore should restore image auto-rotate mode")
 	_assert_eq(str(scene.SETTINGS.get("imageUploadServerURL", "")), "https://upload-from-state.example/image-upload.php", "cloud state restore should set upload URL")
 	_assert_eq(str(scene.SETTINGS.get("imageUploadServerKey", "")), "upload_key_from_state", "cloud state restore should set upload key")
 	var settings_ui = scene.get_node("Conversation/Settings/ConversationSettings")
 	var upload_url_edit = settings_ui.get_node("VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit")
 	var upload_key_edit = settings_ui.get_node("VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit")
+	var auto_rotate_option = settings_ui.get_node("VBoxContainer/ImageAutoRotateSettingContainer/ImageAutoRotateSettingOptionButton")
 	_assert_eq(str(upload_url_edit.text), "https://upload-from-state.example/image-upload.php", "cloud state restore should update upload URL field")
 	_assert_eq(str(upload_key_edit.text), "upload_key_from_state", "cloud state restore should update upload key field")
+	_assert_eq(int(auto_rotate_option.selected), 2, "cloud state restore should update image auto-rotate option")
 	await _destroy_scene(scene)
 
 func _test_cloud_restore_failure_falls_back_to_empty_project_and_keeps_marker() -> void:
@@ -140,6 +146,7 @@ func _test_cloud_restore_failure_falls_back_to_empty_project_and_keeps_marker() 
 		"cloudKey": "invalid_key",
 		"cloudName": "cloud_restore_test",
 		"imageUploadSetting": 1,
+		"imageAutoRotateSetting": 2,
 		"imageUploadServerURL": "https://upload.example/image-upload.php",
 		"imageUploadServerKey": "upload_key_123"
 	}
@@ -153,6 +160,7 @@ func _test_cloud_restore_failure_falls_back_to_empty_project_and_keeps_marker() 
 	_assert_eq(str(state_after_failure.get("source", "")), "cloud", "cloud marker should remain after failed cloud startup load")
 	_assert_eq(str(state_after_failure.get("cloudName", "")), "cloud_restore_test", "cloud marker fields should remain unchanged")
 	_assert_eq(int(state_after_failure.get("imageUploadSetting", -1)), 1, "upload mode marker should remain after failed cloud startup load")
+	_assert_eq(int(state_after_failure.get("imageAutoRotateSetting", -1)), 2, "auto-rotate marker should remain after failed cloud startup load")
 	_assert_eq(str(state_after_failure.get("imageUploadServerURL", "")), "https://upload.example/image-upload.php", "upload URL marker should remain after failed cloud startup load")
 	_assert_eq(str(state_after_failure.get("imageUploadServerKey", "")), "upload_key_123", "upload key marker should remain after failed cloud startup load")
 	await _destroy_scene(scene)

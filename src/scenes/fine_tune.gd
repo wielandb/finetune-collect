@@ -1,7 +1,9 @@
 extends HBoxContainer
 
 signal compact_layout_changed(enabled: bool)
+signal batch_post_create_upload_progress(done: int, total: int, running: bool)
 
+const ImageOrientationUtils = preload("res://image_orientation_utils.gd")
 const COMPACT_LAYOUT_MIN_ASPECT_RATIO = 1.3
 const MOBILE_LAYOUT_REFERENCE_WIDTH = 360.0
 const MOBILE_LAYOUT_COMFORT_MULTIPLIER = 1.3
@@ -18,6 +20,9 @@ const PROJECT_STORAGE_MODE_CLOUD = 1
 const AUTO_SAVE_MODE_OFF = 0
 const AUTO_SAVE_MODE_EVERY_5_MIN = 1
 const AUTO_SAVE_MODE_ON_CONVERSATION_SWITCH = 2
+const IMAGE_AUTO_ROTATE_MODE_NONE = 0
+const IMAGE_AUTO_ROTATE_MODE_DISPLAY_ONLY = 1
+const IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE = 2
 const FINETUNE_TYPE_SUPERVISED = 0
 const FINETUNE_TYPE_DPO = 1
 const FINETUNE_TYPE_REINFORCEMENT = 2
@@ -36,13 +41,14 @@ var SETTINGS = {
 	"globalSystemMessage": "",
 	"modelChoice": "gpt-4o",
 	"availableModels": [],
-	"schemaValidatorURL": "",
-	"projectStorageMode": PROJECT_STORAGE_MODE_LOCAL,
-	"projectCloudURL": "",
-	"projectCloudKey": "",
-	"projectCloudName": "",
-	"autoSaveMode": AUTO_SAVE_MODE_OFF
-}
+		"schemaValidatorURL": "",
+		"projectStorageMode": PROJECT_STORAGE_MODE_LOCAL,
+		"projectCloudURL": "",
+		"projectCloudKey": "",
+		"projectCloudName": "",
+		"autoSaveMode": AUTO_SAVE_MODE_OFF,
+		"imageAutoRotateSetting": IMAGE_AUTO_ROTATE_MODE_NONE
+	}
 
 var RUNTIME = {"filepath": ""}
 
@@ -84,6 +90,16 @@ var _save_dialog_for_unsaved_guard_active = false
 var _test_unsaved_choice_override = -1
 var _test_cloud_dialog_response_queue = []
 var _test_cloud_request_response_queue = []
+var _test_image_upload_response_queue = []
+var _test_image_download_response_map = {}
+var _test_image_upload_delay_seconds = 0.0
+var _test_image_upload_call_count = 0
+var _batch_post_create_upload_pending_ids = []
+var _batch_post_create_upload_pending_map = {}
+var _batch_post_create_upload_running = false
+var _batch_post_create_upload_done = 0
+var _batch_post_create_upload_total = 0
+var _batch_post_create_upload_current_id = ""
 var _save_success_icon_feedback_id = 0
 var _save_success_icon_feedback_duration_seconds = SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS
 var _suppress_message_update_events = false
@@ -316,6 +332,7 @@ func _default_last_project_state() -> Dictionary:
 		"cloudKey": "",
 		"cloudName": "",
 		"imageUploadSetting": 0,
+		"imageAutoRotateSetting": IMAGE_AUTO_ROTATE_MODE_NONE,
 		"imageUploadServerURL": "",
 		"imageUploadServerKey": ""
 	}
@@ -323,6 +340,7 @@ func _default_last_project_state() -> Dictionary:
 func _build_last_project_upload_state_from_settings() -> Dictionary:
 	return {
 		"imageUploadSetting": int(SETTINGS.get("imageUploadSetting", 0)),
+		"imageAutoRotateSetting": int(SETTINGS.get("imageAutoRotateSetting", IMAGE_AUTO_ROTATE_MODE_NONE)),
 		"imageUploadServerURL": str(SETTINGS.get("imageUploadServerURL", "")).strip_edges(),
 		"imageUploadServerKey": str(SETTINGS.get("imageUploadServerKey", "")).strip_edges()
 	}
@@ -486,6 +504,7 @@ func _apply_cloud_state_from_last_project_state(state: Dictionary) -> void:
 	if restored_upload_setting != 1:
 		restored_upload_setting = 1
 	updated_settings["imageUploadSetting"] = restored_upload_setting
+	updated_settings["imageAutoRotateSetting"] = int(state.get("imageAutoRotateSetting", updated_settings.get("imageAutoRotateSetting", IMAGE_AUTO_ROTATE_MODE_NONE)))
 	updated_settings["imageUploadServerURL"] = str(state.get("imageUploadServerURL", updated_settings.get("imageUploadServerURL", ""))).strip_edges()
 	updated_settings["imageUploadServerKey"] = str(state.get("imageUploadServerKey", updated_settings.get("imageUploadServerKey", ""))).strip_edges()
 	SETTINGS = updated_settings
@@ -639,6 +658,40 @@ func _queue_test_cloud_dialog_response(response: Dictionary) -> void:
 
 func _queue_test_cloud_request_response(response: Dictionary) -> void:
 	_test_cloud_request_response_queue.append(response.duplicate(true))
+
+func _queue_test_image_upload_response(response_url: String) -> void:
+	_test_image_upload_response_queue.append(response_url)
+
+func _set_test_image_upload_delay_seconds(delay_seconds: float) -> void:
+	_test_image_upload_delay_seconds = maxf(0.0, delay_seconds)
+
+func _reset_test_image_upload_call_count() -> void:
+	_test_image_upload_call_count = 0
+
+func _get_test_image_upload_call_count() -> int:
+	return _test_image_upload_call_count
+
+func _set_test_image_download_response(url: String, base64_data: String, content_type: String = "image/jpeg", format_hint: String = "jpg") -> void:
+	var normalized_url = str(url).strip_edges()
+	if normalized_url == "":
+		return
+	_test_image_download_response_map[normalized_url] = {
+		"ok": true,
+		"base64": ImageOrientationUtils.base64_payload_from_data_uri(base64_data),
+		"content_type": str(content_type).strip_edges(),
+		"format_hint": str(format_hint).strip_edges()
+	}
+
+func _set_test_image_download_failure(url: String) -> void:
+	var normalized_url = str(url).strip_edges()
+	if normalized_url == "":
+		return
+	_test_image_download_response_map[normalized_url] = {
+		"ok": false
+	}
+
+func _clear_test_image_download_responses() -> void:
+	_test_image_download_response_map.clear()
 
 func _get_default_save_action() -> int:
 	if _is_cloud_storage_enabled():
@@ -1108,6 +1161,7 @@ func _save_project_to_cloud() -> bool:
 	if cloud_key == "" or project_name == "":
 		push_error("Cloud save aborted: Missing cloud key or project name.")
 		return false
+	await wait_for_batch_post_create_uploads()
 	await convert_base64_images_in_all_conversations()
 	var non_url_images = _find_non_url_images()
 	if non_url_images.size() > 0:
@@ -2293,6 +2347,7 @@ func _on_save_file_dialog_canceled() -> void:
 		_pending_destructive_action = {}
 
 func delete_conversation(ixStr: String):
+	var removed_order_index = CONVERSATION_ORDER.find(ixStr)
 	CONVERSATIONS.erase(ixStr)
 	CONVERSATION_ORDER.erase(ixStr)
 	_sync_conversation_order()
@@ -2302,7 +2357,10 @@ func delete_conversation(ixStr: String):
 			if message.is_in_group("message"):
 				message.queue_free()
 		if CONVERSATION_ORDER.size() > 0:
-			CURRENT_EDITED_CONVO_IX = str(CONVERSATION_ORDER[0])
+			var target_index = CONVERSATION_ORDER.size() - 1
+			if removed_order_index >= 0:
+				target_index = mini(removed_order_index, CONVERSATION_ORDER.size() - 1)
+			CURRENT_EDITED_CONVO_IX = str(CONVERSATION_ORDER[target_index])
 			$Conversation/Messages/MessagesList.from_var(CONVERSATIONS[CURRENT_EDITED_CONVO_IX])
 		else:
 			CURRENT_EDITED_CONVO_IX = ""
@@ -2354,13 +2412,14 @@ func _on_expand_burger_btn_pressed() -> void:
 	_apply_desktop_sidebar_state()
 
 func create_jsonl_data_for_file():
+	await wait_for_batch_post_create_uploads()
 	var EFINETUNEDATA = {} # EFINETUNEDATA -> ExportFinetuneData (so that we don't remove anything from the save file on export)
 	EFINETUNEDATA["functions"] = FUNCTIONS.duplicate(true)
 	var allconversations = CONVERSATIONS.duplicate(true)
 	var unproblematicconversations = {}
 	# Check all conversations and only add unproblematic ones
 	# Check what the settings say about what to export
-	var whatToExport = SETTINGS.get("exportConvo", 0)
+	var whatToExport = int(SETTINGS.get("exportConvos", SETTINGS.get("exportConvo", 0)))
 	# 0 -> only unproblematic, 1 -> only ready, 2 -> all
 	_sync_conversation_order()
 	for convokey in CONVERSATION_ORDER:
@@ -2488,21 +2547,148 @@ func get_number_of_images_total():
 		image_count += get_number_of_images_for_conversation(convoIx)
 	return image_count
 
+func _emit_batch_post_create_upload_progress() -> void:
+	emit_signal("batch_post_create_upload_progress", _batch_post_create_upload_done, _batch_post_create_upload_total, _batch_post_create_upload_running)
+
+func get_batch_post_create_upload_status() -> Dictionary:
+	return {
+		"done": _batch_post_create_upload_done,
+		"total": _batch_post_create_upload_total,
+		"running": _batch_post_create_upload_running
+	}
+
+func is_batch_post_create_upload_running() -> bool:
+	return _batch_post_create_upload_running
+
+func queue_batch_post_create_uploads(conversation_ids: Array) -> void:
+	var queued_count = 0
+	for raw_id in conversation_ids:
+		var convo_id = str(raw_id).strip_edges()
+		if convo_id == "":
+			continue
+		if not CONVERSATIONS.has(convo_id):
+			continue
+		if convo_id == _batch_post_create_upload_current_id:
+			continue
+		if _batch_post_create_upload_pending_map.has(convo_id):
+			continue
+		_batch_post_create_upload_pending_ids.append(convo_id)
+		_batch_post_create_upload_pending_map[convo_id] = true
+		queued_count += 1
+	if queued_count == 0:
+		return
+	if _batch_post_create_upload_running:
+		_batch_post_create_upload_total += queued_count
+		_emit_batch_post_create_upload_progress()
+		return
+	_batch_post_create_upload_done = 0
+	_batch_post_create_upload_total = _batch_post_create_upload_pending_ids.size()
+	_batch_post_create_upload_running = true
+	_emit_batch_post_create_upload_progress()
+	call_deferred("_run_batch_post_create_upload_queue")
+
+func _run_batch_post_create_upload_queue() -> void:
+	while _batch_post_create_upload_pending_ids.size() > 0:
+		var convo_id = str(_batch_post_create_upload_pending_ids.pop_front())
+		_batch_post_create_upload_pending_map.erase(convo_id)
+		_batch_post_create_upload_current_id = convo_id
+		await convert_base64_images_in_conversation(convo_id)
+		_batch_post_create_upload_done += 1
+		_emit_batch_post_create_upload_progress()
+	_batch_post_create_upload_current_id = ""
+	_batch_post_create_upload_running = false
+	_batch_post_create_upload_done = _batch_post_create_upload_total
+	_emit_batch_post_create_upload_progress()
+
+func wait_for_batch_post_create_uploads() -> void:
+	while _batch_post_create_upload_running:
+		await get_tree().process_frame
+
 func get_ext_from_base64(b64: String) -> String:
-	var raw = Marshalls.base64_to_raw(b64)
-	if raw.size() >= 3 and raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
-		return "jpg"
-	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
-		return "png"
+	var payload = ImageOrientationUtils.base64_payload_from_data_uri(str(b64))
+	var data_uri_format = ImageOrientationUtils.guess_image_format_from_data_uri(str(b64))
+	if data_uri_format != "":
+		return data_uri_format
+	var raw = Marshalls.base64_to_raw(payload)
+	var detected_format = ImageOrientationUtils.detect_image_format_from_raw(raw)
+	if detected_format != "":
+		return detected_format
 	return "jpg"
+
+func _get_image_content_type_from_headers(headers) -> String:
+	for header in headers:
+		var line = str(header)
+		var lower_line = line.to_lower()
+		if lower_line.begins_with("content-type:"):
+			return lower_line.substr(len("content-type:")).strip_edges()
+	return ""
+
+func _guess_image_format_from_content_type(content_type: String) -> String:
+	var lower_content_type = str(content_type).to_lower().strip_edges()
+	if lower_content_type.find("image/png") != -1:
+		return "png"
+	if lower_content_type.find("image/webp") != -1:
+		return "webp"
+	if lower_content_type.find("image/jpeg") != -1 or lower_content_type.find("image/jpg") != -1:
+		return "jpg"
+	return ""
+
+func _download_image_as_base64(url: String) -> Dictionary:
+	var normalized_url = str(url).strip_edges()
+	if normalized_url == "":
+		return {"ok": false}
+	if _test_image_download_response_map.has(normalized_url):
+		var mocked = _test_image_download_response_map[normalized_url]
+		if mocked is Dictionary:
+			var mocked_result = mocked.duplicate(true)
+			if not mocked_result.has("base64"):
+				mocked_result["base64"] = ""
+			if not mocked_result.has("content_type"):
+				mocked_result["content_type"] = ""
+			if not mocked_result.has("format_hint"):
+				mocked_result["format_hint"] = ""
+			return mocked_result
+	var http = HTTPRequest.new()
+	add_child(http)
+	var err = http.request(normalized_url)
+	if err != OK:
+		http.queue_free()
+		return {"ok": false}
+	var response = await http.request_completed
+	http.queue_free()
+	if int(response[0]) != HTTPRequest.RESULT_SUCCESS:
+		return {"ok": false}
+	var response_code = int(response[1])
+	if response_code < 200 or response_code >= 300:
+		return {"ok": false}
+	var response_headers = response[2]
+	var body = response[3]
+	var content_type = _get_image_content_type_from_headers(response_headers)
+	var format_hint = getImageType(normalized_url)
+	if format_hint == "":
+		format_hint = _guess_image_format_from_content_type(content_type)
+	return {
+		"ok": true,
+		"base64": Marshalls.raw_to_base64(body),
+		"content_type": content_type,
+		"format_hint": format_hint
+	}
 
 func _upload_base64_image_get_url(b64: String, upload_url: String, upload_key: String) -> String:
 	var data_str = b64
 	if data_str.begins_with("http://") or data_str.begins_with("https://"):
 		return data_str
+	_test_image_upload_call_count += 1
+	if _test_image_upload_delay_seconds > 0.0:
+		await get_tree().create_timer(_test_image_upload_delay_seconds).timeout
+	if _test_image_upload_response_queue.size() > 0:
+		var queued_response = str(_test_image_upload_response_queue.pop_front()).strip_edges()
+		if queued_response != "":
+			return queued_response
+		return b64
 	var http = HTTPRequest.new()
 	add_child(http)
-	var headers := PackedStringArray()
+	var headers = PackedStringArray()
 	headers.append("Content-Type: application/json")
 	var ext = get_ext_from_base64(data_str)
 	var payload = {"key": upload_key, "image": data_str, "ext": ext}
@@ -2516,21 +2702,73 @@ func _upload_base64_image_get_url(b64: String, upload_url: String, upload_key: S
 		return resp[3].get_string_from_utf8().strip_edges()
 	return b64
 
-func convert_base64_images_in_all_conversations() -> void:
-	var upload_enabled = SETTINGS.get("imageUploadSetting", 0)
-	var upload_url = SETTINGS.get("imageUploadServerURL", "")
-	var upload_key = SETTINGS.get("imageUploadServerKey", "")
-	if upload_enabled != 1 or upload_url == "" or upload_key == "":
+func convert_base64_images_in_conversation(convo_key: String) -> void:
+	var auto_rotate_mode = int(SETTINGS.get("imageAutoRotateSetting", IMAGE_AUTO_ROTATE_MODE_NONE))
+	var upload_enabled = int(SETTINGS.get("imageUploadSetting", 0))
+	var upload_url = str(SETTINGS.get("imageUploadServerURL", "")).strip_edges()
+	var upload_key = str(SETTINGS.get("imageUploadServerKey", "")).strip_edges()
+	var can_upload = upload_enabled == 1 and upload_url != "" and upload_key != ""
+	var convo_id = str(convo_key).strip_edges()
+	if convo_id == "":
 		return
+	if not CONVERSATIONS.has(convo_id):
+		return
+	var convo = CONVERSATIONS[convo_id]
+	if not (convo is Array):
+		return
+	var converted_from_url_by_index = {}
+	for i in range(convo.size()):
+		var msg = convo[i]
+		if msg.get("type", "") != "Image":
+			continue
+		var img_data = str(msg.get("imageContent", "")).strip_edges()
+		if img_data == "":
+			continue
+		if _is_http_url(img_data):
+			if auto_rotate_mode == IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE and can_upload:
+				var downloaded = await _download_image_as_base64(img_data)
+				if not downloaded.get("ok", false):
+					continue
+				var processed_url = ImageOrientationUtils.process_base64_image(
+					str(downloaded.get("base64", "")),
+					auto_rotate_mode,
+					str(downloaded.get("format_hint", "")),
+					str(downloaded.get("content_type", "")),
+					0.95
+				)
+				if processed_url.get("ok", false) and processed_url.get("orientation_applied", false):
+					var converted_payload = str(processed_url.get("payload", "")).strip_edges()
+					if converted_payload != "":
+						CONVERSATIONS[convo_id][i]["imageContent"] = converted_payload
+						converted_from_url_by_index[i] = img_data
+			continue
+		if auto_rotate_mode == IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE:
+			var processed_base64 = ImageOrientationUtils.process_base64_image(
+				img_data,
+				auto_rotate_mode,
+				get_ext_from_base64(img_data),
+				"",
+				0.95
+			)
+			if processed_base64.get("ok", false) and processed_base64.get("changed", false):
+				CONVERSATIONS[convo_id][i]["imageContent"] = str(processed_base64.get("payload", img_data))
+	if not can_upload:
+		return
+	for i in range(convo.size()):
+		var msg = CONVERSATIONS[convo_id][i]
+		if msg.get("type", "") == "Image":
+			var img_data = str(msg.get("imageContent", "")).strip_edges()
+			if img_data != "" and not _is_http_url(img_data):
+				var original_url_from_conversion = str(converted_from_url_by_index.get(i, "")).strip_edges()
+				var url = await _upload_base64_image_get_url(img_data, upload_url, upload_key)
+				if original_url_from_conversion != "" and not _is_http_url(str(url)):
+					CONVERSATIONS[convo_id][i]["imageContent"] = original_url_from_conversion
+				else:
+					CONVERSATIONS[convo_id][i]["imageContent"] = url
+
+func convert_base64_images_in_all_conversations() -> void:
 	for convo_key in CONVERSATIONS.keys():
-		var convo = CONVERSATIONS[convo_key]
-		for i in range(convo.size()):
-			var msg = convo[i]
-			if msg.get("type", "") == "Image":
-				var img_data = msg.get("imageContent", "")
-				if img_data != "" and not _is_http_url(str(img_data)):
-					var url = await _upload_base64_image_get_url(img_data, upload_url, upload_key)
-					CONVERSATIONS[convo_key][i]["imageContent"] = url
+		await convert_base64_images_in_conversation(str(convo_key))
 
 func _convert_base64_images_after_load() -> void:
 	await convert_base64_images_in_all_conversations()

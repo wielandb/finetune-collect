@@ -386,6 +386,10 @@ msgstr ""
 msgid "SETTINGS_BATCH_CREATION_LOAD_FILES"
 msgstr ""
 
+#: scenes/conversation_settings.gd
+msgid "SETTINGS_BATCH_CREATION_UPLOAD_PROGRESS"
+msgstr ""
+
 #: scenes/conversation_settings.tscn
 msgid "Open File(s)"
 msgstr ""
@@ -481,6 +485,26 @@ msgstr ""
 
 #: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_NO"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_DISPLAY_ONLY"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_PIXEL_ROTATE"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
@@ -1376,6 +1400,10 @@ msgstr ""
 
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_ADD_ITEM"
+msgstr ""
+
+#: scenes/schema_runtime/schema_form_renderer.gd
+msgid "MESSAGES_JSON_SCHEMA_FORM_LIST"
 msgstr ""
 
 #: scenes/schema_runtime/widgets/schema_array_item_row.gd

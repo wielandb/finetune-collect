@@ -24,9 +24,12 @@ func set_action_states(can_move_up: bool, can_move_down: bool, can_duplicate: bo
 	$Header/DuplicateButton.disabled = not can_duplicate
 	$Header/DeleteButton.disabled = not can_delete
 
-func set_index(index: int) -> void:
+func set_index(index: int, list_name: String = "") -> void:
 	item_index = index
-	$Header/ItemLabel.text = tr("MESSAGES_JSON_SCHEMA_FORM_ITEM") + " " + str(index + 1)
+	if list_name == "":
+		$Header/ItemLabel.text = tr("MESSAGES_JSON_SCHEMA_FORM_ITEM") + " " + str(index + 1)
+	else:
+		$Header/ItemLabel.text = list_name + "-" + tr("MESSAGES_JSON_SCHEMA_FORM_ITEM") + " " + str(index + 1)
 
 func get_content_container() -> VBoxContainer:
 	return $ContentContainer

@@ -470,6 +470,31 @@ popup/item_0/id = 0
 popup/item_1/text = "IMAGE_UPLOAD_SETTING_BUTTON_OPTION_ALWAYS"
 popup/item_1/id = 1
 
+[node name="ImageAutoRotateSettingContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ImageAutoRotateSettingLabel" type="Label" parent="VBoxContainer/ImageAutoRotateSettingContainer"]
+layout_mode = 2
+text = "SETTINGS_IMAGE_AUTO_ROTATE_LABEL"
+
+[node name="ImageAutoRotateSettingHint" type="TextureRect" parent="VBoxContainer/ImageAutoRotateSettingContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_IMAGE_AUTO_ROTATE_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ImageAutoRotateSettingOptionButton" type="OptionButton" parent="VBoxContainer/ImageAutoRotateSettingContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 0
+item_count = 3
+popup/item_0/text = "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_NO"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_DISPLAY_ONLY"
+popup/item_1/id = 1
+popup/item_2/text = "SETTINGS_IMAGE_AUTO_ROTATE_OPTION_PIXEL_ROTATE"
+popup/item_2/id = 2
+
 [node name="ImageUploadServerURLContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -700,6 +725,7 @@ size_flags_horizontal = 3
 [connection signal="pressed" from="VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn" to="." method="_on_token_counter_file_picker_btn_pressed"]
 [connection signal="item_selected" from="VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton" to="." method="_on_something_int_needs_update_global"]
 [connection signal="item_selected" from="VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton" to="." method="_on_image_uplaod_setting_option_button_item_selected"]
+[connection signal="item_selected" from="VBoxContainer/ImageAutoRotateSettingContainer/ImageAutoRotateSettingOptionButton" to="." method="_on_image_auto_rotate_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit" to="." method="_on_image_upload_server_url_edit_text_changed"]
 [connection signal="text_changed" from="VBoxContainer/ImageUploadServerKeyContainer/ImageUploadServerKeyEdit" to="." method="_on_image_upload_server_key_edit_text_changed"]
 [connection signal="pressed" from="VBoxContainer/ImageUploadServerTestContainer/ImageUploadServerTestButton" to="." method="_on_image_upload_server_test_button_pressed"]

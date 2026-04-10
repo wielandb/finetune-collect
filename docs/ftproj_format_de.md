@@ -120,6 +120,10 @@ Globale Konfiguration, gespeichert im Objekt `settings`.
 | `projectCloudKey` | string | Geheimer Schluessel fuer Cloud-Speicher-/Ladeanfragen. |
 | `projectCloudName` | string | Cloud-Projektkennung (entspricht einer entfernten JSON-Datei). |
 | `autoSaveMode` | integer | Verhalten fuer automatisches Speichern (`0` aus, `1` alle 5 Minuten, `2` bei Konversationswechsel). |
+| `imageUploadSetting` | integer | Verhalten fuer Bild-Uploads (`0` = nie, `1` = automatisch hochladen). |
+| `imageAutoRotateSetting` | integer | Modus fuer automatische Bilddrehung (`0` = nein, `1` = nur richtig anzeigen, `2` = Pixel drehen). |
+| `imageUploadServerURL` | string | URL des Bild-Upload-Endpunkts (fuer Auto-Upload). |
+| `imageUploadServerKey` | string | Geheimer Schluessel fuer den Bild-Upload-Endpunkt. |
 | `tokenCounterPath` | string | Pfad zu einem externen Tool zur TokenzÃ¤hlung. |
 | `exportConvos` | integer | Welche GesprÃ¤che exportiert werden. |
 | `countTokensWhen` | integer | Wann die TokenzÃ¤hlung erfolgt. |

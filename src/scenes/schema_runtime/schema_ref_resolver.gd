@@ -4,7 +4,8 @@ class_name SchemaRefResolver
 
 static func resolve_schema(schema: Dictionary, external_schemas: Dictionary = {}) -> Dictionary:
 	var root_copy = schema.duplicate(true)
-	var resolved = _resolve_node(root_copy, root_copy, "", external_schemas, [])
+	var root_base_url = _resolve_root_base_url(root_copy, "")
+	var resolved = _resolve_node(root_copy, root_copy, root_base_url, external_schemas, [])
 	return {
 		"schema": resolved,
 		"has_external_ref": _contains_marker(resolved, "x_ftc_external_ref"),
@@ -17,7 +18,8 @@ static func has_external_document_ref(schema, base_url: String = "") -> bool:
 static func collect_external_document_urls(schema, base_url: String = "") -> Array:
 	var urls = []
 	var seen = {}
-	_collect_external_document_urls_recursive(schema, base_url, urls, seen)
+	var root_base_url = _resolve_root_base_url(schema, base_url)
+	_collect_external_document_urls_recursive(schema, root_base_url, urls, seen)
 	return urls
 
 static func _resolve_node(node, root: Dictionary, base_url: String, external_schemas: Dictionary, stack: Array):
@@ -36,34 +38,28 @@ static func _resolve_node(node, root: Dictionary, base_url: String, external_sch
 		var parsed_ref = _parse_ref(ref, base_url)
 		if not bool(parsed_ref.get("ok", false)):
 			return _make_external_ref_marker(ref, node_dict, str(parsed_ref.get("error", "invalid $ref")))
-		var resolved_id = str(parsed_ref.get("resolved_id", ""))
-		if stack.has(resolved_id):
-			return {
-				"x_ftc_ref_cycle": resolved_id,
-				"x_ftc_source": node_dict
-			}
-		var target_root = root
-		var target = null
-		var next_base_url = base_url
-		if bool(parsed_ref.get("is_external", false)):
+		if bool(parsed_ref.get("is_external", false)) and not _is_same_document_ref(parsed_ref, base_url):
+			var resolved_id = str(parsed_ref.get("resolved_id", ""))
+			if stack.has(resolved_id):
+				return {
+					"x_ftc_ref_cycle": resolved_id,
+					"x_ftc_source": node_dict
+				}
 			var document_url = str(parsed_ref.get("document_url", ""))
 			if document_url == "":
 				return _make_external_ref_marker(ref, node_dict, "external $ref has no document URL")
 			if not external_schemas.has(document_url):
 				return _make_external_ref_marker(ref, node_dict, "external schema not loaded")
-			target_root = external_schemas.get(document_url, null)
+			var target_root = external_schemas.get(document_url, null)
 			if not (target_root is Dictionary):
 				return _make_external_ref_marker(ref, node_dict, "external schema is not an object")
-			next_base_url = document_url
-			target = _json_pointer_get(target_root, str(parsed_ref.get("pointer", "#")))
-		else:
-			target = _json_pointer_get(root, str(parsed_ref.get("pointer", "#")))
-		if not (target is Dictionary):
-			return _make_external_ref_marker(ref, node_dict, "unresolvable $ref")
-		var merged = _merge_ref_with_siblings(target, node_dict)
-		var new_stack = stack.duplicate()
-		new_stack.append(resolved_id)
-		return _resolve_node(merged, target_root, next_base_url, external_schemas, new_stack)
+			var target = _json_pointer_get(target_root, str(parsed_ref.get("pointer", "#")))
+			if not (target is Dictionary):
+				return _make_external_ref_marker(ref, node_dict, "unresolvable $ref")
+			var merged = _merge_ref_with_siblings(target, node_dict)
+			var new_stack = stack.duplicate()
+			new_stack.append(resolved_id)
+			return _resolve_node(merged, target_root, document_url, external_schemas, new_stack)
 
 	var out_dict = {}
 	for key in node_dict.keys():
@@ -89,11 +85,38 @@ static func _collect_external_document_urls_recursive(node, base_url: String, ou
 		var parsed_ref = _parse_ref(str(node["$ref"]), base_url)
 		if bool(parsed_ref.get("ok", false)) and bool(parsed_ref.get("is_external", false)):
 			var document_url = str(parsed_ref.get("document_url", ""))
-			if document_url != "" and not seen.has(document_url):
+			if document_url != "" and not _is_same_document_ref(parsed_ref, base_url) and not seen.has(document_url):
 				seen[document_url] = true
 				output.append(document_url)
 	for key in node.keys():
 		_collect_external_document_urls_recursive(node[key], base_url, output, seen)
+
+static func _resolve_root_base_url(schema, base_url: String) -> String:
+	var normalized_base_url = _strip_query_fragment(str(base_url).strip_edges())
+	if normalized_base_url != "":
+		return normalized_base_url
+	if not (schema is Dictionary):
+		return ""
+	if not schema.has("$id"):
+		return ""
+	var schema_id = schema.get("$id", null)
+	if not (schema_id is String):
+		return ""
+	var normalized_schema_id = _strip_query_fragment(str(schema_id).strip_edges())
+	if not _is_http_url(normalized_schema_id):
+		return ""
+	return normalized_schema_id
+
+static func _is_same_document_ref(parsed_ref: Dictionary, base_url: String) -> bool:
+	if not bool(parsed_ref.get("is_external", false)):
+		return true
+	var document_url = str(parsed_ref.get("document_url", "")).strip_edges()
+	if document_url == "":
+		return false
+	var normalized_base_url = _strip_query_fragment(str(base_url).strip_edges())
+	if normalized_base_url == "":
+		return false
+	return document_url == normalized_base_url
 
 static func _make_external_ref_marker(ref: String, source: Dictionary, reason: String) -> Dictionary:
 	return {

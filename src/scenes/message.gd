@@ -1,6 +1,7 @@
 extends BoxContainer
 const RESULT_PARAMETERS_SCENE = preload("res://scenes/function_call_results_parameter.tscn")
 const FUNCTION_USE_PARAMETERS_SCENE = preload("res://scenes/function_use_parameter.tscn")
+const ImageOrientationUtils = preload("res://image_orientation_utils.gd")
 @onready var schema_edit = $SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit
 @onready var schema_tabs = $SchemaMessageContainer/SchemaEditTabs
 @onready var schema_form_root = $SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll/SchemaFormRoot
@@ -10,6 +11,7 @@ var image_access_web = null
 var token = "" # The token for the schema editor for this message
 var edit_message_url = ""
 var last_base64_to_upload = ""
+var _url_source_before_rotate_upload = ""
 var _pending_image_upload_requests = 0
 
 const VALID_ICON_OK := "res://icons/code-json-check-positive.png"
@@ -22,6 +24,9 @@ const DESKTOP_MESSAGE_TITLE_FONT_SIZE = 36
 const COMPACT_MESSAGE_TITLE_FONT_SIZE = 24
 const DESKTOP_META_INFO_GRID_COLUMNS = 3
 const COMPACT_META_INFO_GRID_COLUMNS = 1
+const IMAGE_AUTO_ROTATE_MODE_NONE = 0
+const IMAGE_AUTO_ROTATE_MODE_DISPLAY_ONLY = 1
+const IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE = 2
 var _schema_validate_timer: Timer
 var _schema_form_controller = SchemaFormController.new()
 var _schema_sync_guard = false
@@ -135,6 +140,43 @@ func _get_fine_tune_node():
 	if tree == null:
 		return null
 	return tree.root.get_node_or_null("FineTune")
+
+func _get_image_auto_rotate_mode() -> int:
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		return IMAGE_AUTO_ROTATE_MODE_NONE
+	return int(ft_node.SETTINGS.get("imageAutoRotateSetting", IMAGE_AUTO_ROTATE_MODE_NONE))
+
+func _get_image_upload_settings() -> Dictionary:
+	var settings = {
+		"enabled": 0,
+		"url": "",
+		"key": ""
+	}
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		return settings
+	settings["enabled"] = int(ft_node.SETTINGS.get("imageUploadSetting", 0))
+	settings["url"] = str(ft_node.SETTINGS.get("imageUploadServerURL", "")).strip_edges()
+	settings["key"] = str(ft_node.SETTINGS.get("imageUploadServerKey", "")).strip_edges()
+	return settings
+
+func _process_base64_image_for_mode(base64_data: String, format_hint: String = "", content_type_hint: String = "") -> Dictionary:
+	return ImageOrientationUtils.process_base64_image(
+		base64_data,
+		_get_image_auto_rotate_mode(),
+		format_hint,
+		content_type_hint,
+		0.95
+	)
+
+func _set_texture_from_processed_image(texture_rect_node: TextureRect, processed: Dictionary) -> void:
+	if processed.get("ok", false):
+		var processed_image = processed.get("image")
+		if processed_image is Image:
+			texture_rect_node.texture = ImageTexture.create_from_image(processed_image)
+			return
+	texture_rect_node.texture = load("res://icons/image-remove-custom.png")
 
 func _set_box_vertical(node_path: String, enabled: bool) -> void:
 	var box = get_node_or_null(node_path)
@@ -790,9 +832,13 @@ func _end_image_upload_status() -> void:
 
 
 func _on_file_loaded(file_name: String, type: String, base64_data: String) -> void:
-	# var raw_data: PackedByteArray = Marshalls.base64_to_raw(base64_data)
-	base64_to_image($ImageMessageContainer/TextureRect, base64_data)
-	$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = base64_data
+	var processed = _process_base64_image_for_mode(base64_data)
+	_set_texture_from_processed_image($ImageMessageContainer/TextureRect, processed)
+	var normalized_payload = base64_data
+	if _get_image_auto_rotate_mode() == IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE and processed.get("ok", false):
+		normalized_payload = str(processed.get("payload", base64_data))
+	$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = normalized_payload
+	maybe_upload_base64_image()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -840,23 +886,18 @@ func _on_file_dialog_file_selected(path: String) -> void:
 		image_type_hint = "jpg"
 	elif lower_path.ends_with(".webp"):
 		image_type_hint = "webp"
-	var decoded_image = _decode_image_from_buffer(bin, image_type_hint, "")
-	if decoded_image == null:
-		var fallback_image = Image.new()
-		if fallback_image.load(image_path) == OK:
-			decoded_image = fallback_image
-	if decoded_image != null:
-		$ImageMessageContainer/TextureRect.texture = ImageTexture.create_from_image(decoded_image)
-	else:
-		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
 	var base_64_data = Marshalls.raw_to_base64(bin)
-	var ft_node = _get_fine_tune_node()
-	var settings = {}
-	if ft_node != null:
-		settings = ft_node.SETTINGS
-	var upload_url = settings.get("imageUploadServerURL", "")
-	var upload_key = settings.get("imageUploadServerKey", "")
-	var upload_enabled = settings.get("imageUploadSetting", 0)
+	var processed = _process_base64_image_for_mode(base_64_data, image_type_hint, "")
+	_set_texture_from_processed_image($ImageMessageContainer/TextureRect, processed)
+	if _get_image_auto_rotate_mode() == IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE and processed.get("ok", false):
+		base_64_data = str(processed.get("payload", base_64_data))
+		var normalized_format = str(processed.get("format", "")).strip_edges()
+		if normalized_format != "":
+			image_type_hint = normalized_format
+	var upload_settings = _get_image_upload_settings()
+	var upload_url = str(upload_settings.get("url", "")).strip_edges()
+	var upload_key = str(upload_settings.get("key", "")).strip_edges()
+	var upload_enabled = int(upload_settings.get("enabled", 0))
 	last_base64_to_upload = base_64_data
 	$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = base_64_data
 	if upload_enabled == 1 and upload_url != "" and upload_key != "":
@@ -884,57 +925,59 @@ func _on_image_upload_request_completed(result, response_code, headers, body, re
 	_end_image_upload_status()
 	if int(result) == HTTPRequest.RESULT_SUCCESS and int(response_code) == 200:
 		var url = body.get_string_from_utf8().strip_edges()
+		_url_source_before_rotate_upload = ""
 		$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = url
 		load_image_container_from_url(url)
 	else:
+		if _url_source_before_rotate_upload != "":
+			var fallback_url = _url_source_before_rotate_upload
+			_url_source_before_rotate_upload = ""
+			$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = fallback_url
+			load_image_container_from_url(fallback_url)
+			return
+		_url_source_before_rotate_upload = ""
 		$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = last_base64_to_upload
 		base64_to_image($ImageMessageContainer/TextureRect, last_base64_to_upload)
 
 func _base64_payload_from_data_uri(b64Data: String) -> String:
-	var trimmed = b64Data.strip_edges()
-	var marker = "base64,"
-	var marker_ix = trimmed.find(marker)
-	if marker_ix != -1:
-		return trimmed.substr(marker_ix + marker.length())
-	return trimmed
+	return ImageOrientationUtils.base64_payload_from_data_uri(b64Data)
 
 func base64_to_image(textureRectNode, b64Data):
 	var payload = _base64_payload_from_data_uri(str(b64Data))
 	if payload == "":
 		textureRectNode.texture = load("res://icons/image-remove-custom.png")
 		return
-	var raw = Marshalls.base64_to_raw(payload)
-	if raw.size() == 0:
-		textureRectNode.texture = load("res://icons/image-remove-custom.png")
-		return
-	var image_type_hint = get_ext_from_base64(payload)
-	var image = _decode_image_from_buffer(raw, image_type_hint, "")
-	if image == null:
-		textureRectNode.texture = load("res://icons/image-remove-custom.png")
-		return
-	textureRectNode.texture = ImageTexture.create_from_image(image)
+	var format_hint = ImageOrientationUtils.guess_image_format_from_data_uri(str(b64Data))
+	if format_hint == "":
+		format_hint = get_ext_from_base64(payload)
+	var processed = _process_base64_image_for_mode(payload, format_hint, "")
+	_set_texture_from_processed_image(textureRectNode, processed)
 
 func get_ext_from_base64(b64:String) -> String:
-	var raw = Marshalls.base64_to_raw(b64)
-	if raw.size() >= 3 and raw[0] == 0xFF and raw[1] == 0xD8 and raw[2] == 0xFF:
-		return "jpg"
-	if raw.size() >= 8 and raw[0] == 0x89 and raw[1] == 0x50 and raw[2] == 0x4E and raw[3] == 0x47:
-		return "png"
-	if raw.size() >= 12 and raw[0] == 0x52 and raw[1] == 0x49 and raw[2] == 0x46 and raw[3] == 0x46 and raw[8] == 0x57 and raw[9] == 0x45 and raw[10] == 0x42 and raw[11] == 0x50:
-		return "webp"
+	var payload = ImageOrientationUtils.base64_payload_from_data_uri(str(b64))
+	var data_uri_format = ImageOrientationUtils.guess_image_format_from_data_uri(str(b64))
+	if data_uri_format != "":
+		return data_uri_format
+	var raw = Marshalls.base64_to_raw(payload)
+	var detected_format = ImageOrientationUtils.detect_image_format_from_raw(raw)
+	if detected_format != "":
+		return detected_format
 	return "jpg"
 
 func maybe_upload_base64_image():
 	var img_data = $ImageMessageContainer/ImageInputRow/Base64ImageEdit.text
 	if img_data == "" or isImageURL(img_data) or img_data.begins_with("http://") or img_data.begins_with("https://"):
 		return
-	var ft_node = _get_fine_tune_node()
-	var settings = {}
-	if ft_node != null:
-		settings = ft_node.SETTINGS
-	var upload_url = settings.get("imageUploadServerURL", "")
-	var upload_key = settings.get("imageUploadServerKey", "")
-	var upload_enabled = settings.get("imageUploadSetting", 0)
+	if _get_image_auto_rotate_mode() == IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE:
+		var normalized = _process_base64_image_for_mode(img_data, get_ext_from_base64(img_data), "")
+		if normalized.get("ok", false) and normalized.get("changed", false):
+			img_data = str(normalized.get("payload", img_data))
+			$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = img_data
+			_set_texture_from_processed_image($ImageMessageContainer/TextureRect, normalized)
+	var upload_settings = _get_image_upload_settings()
+	var upload_url = str(upload_settings.get("url", "")).strip_edges()
+	var upload_key = str(upload_settings.get("key", "")).strip_edges()
+	var upload_enabled = int(upload_settings.get("enabled", 0))
 	if upload_enabled == 1 and upload_url != "" and upload_key != "":
 		last_base64_to_upload = img_data
 		_begin_image_upload_status()
@@ -1688,15 +1731,24 @@ func _image_http_request_completed(result, response_code, headers, body, request
 		return
 
 	var content_type = _get_image_content_type_from_headers(headers)
-	var imageType = getImageType($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text)
-	var image = _decode_image_from_buffer(body, imageType, content_type)
-	if image == null:
+	var image_type = getImageType($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text)
+	var downloaded_payload = Marshalls.raw_to_base64(body)
+	var processed = _process_base64_image_for_mode(downloaded_payload, image_type, content_type)
+	if not processed.get("ok", false):
 		push_error("Couldn't load the image.")
 		$ImageMessageContainer/TextureRect.texture = load("res://icons/image-remove-custom.png")
 		return
-
-	var texture = ImageTexture.create_from_image(image)
-	$ImageMessageContainer/TextureRect.texture = texture
+	_set_texture_from_processed_image($ImageMessageContainer/TextureRect, processed)
+	var upload_settings = _get_image_upload_settings()
+	var upload_enabled = int(upload_settings.get("enabled", 0))
+	var upload_url = str(upload_settings.get("url", "")).strip_edges()
+	var upload_key = str(upload_settings.get("key", "")).strip_edges()
+	if _get_image_auto_rotate_mode() == IMAGE_AUTO_ROTATE_MODE_PIXEL_ROTATE and upload_enabled == 1 and upload_url != "" and upload_key != "" and processed.get("orientation_applied", false):
+		var rotated_payload = str(processed.get("payload", "")).strip_edges()
+		if rotated_payload != "":
+			_url_source_before_rotate_upload = str($ImageMessageContainer/ImageInputRow/Base64ImageEdit.text).strip_edges()
+			$ImageMessageContainer/ImageInputRow/Base64ImageEdit.text = rotated_payload
+			maybe_upload_base64_image()
 	
 func _get_image_content_type_from_headers(headers) -> String:
 	for h in headers:
@@ -1707,31 +1759,7 @@ func _get_image_content_type_from_headers(headers) -> String:
 	return ""
 
 func _decode_image_from_buffer(raw: PackedByteArray, image_type_hint: String, content_type_hint: String) -> Image:
-	var image = Image.new()
-	var decode_err = ERR_PARSE_ERROR
-
-	if content_type_hint.find("image/png") != -1:
-		decode_err = image.load_png_from_buffer(raw)
-	elif content_type_hint.find("image/jpeg") != -1 or content_type_hint.find("image/jpg") != -1:
-		decode_err = image.load_jpg_from_buffer(raw)
-	elif content_type_hint.find("image/webp") != -1 and image.has_method("load_webp_from_buffer"):
-		decode_err = int(image.call("load_webp_from_buffer", raw))
-	elif image_type_hint == "png":
-		decode_err = image.load_png_from_buffer(raw)
-	elif image_type_hint == "jpg":
-		decode_err = image.load_jpg_from_buffer(raw)
-	elif image_type_hint == "webp" and image.has_method("load_webp_from_buffer"):
-		decode_err = int(image.call("load_webp_from_buffer", raw))
-	else:
-		decode_err = image.load_png_from_buffer(raw)
-		if decode_err != OK:
-			decode_err = image.load_jpg_from_buffer(raw)
-		if decode_err != OK and image.has_method("load_webp_from_buffer"):
-			decode_err = int(image.call("load_webp_from_buffer", raw))
-
-	if decode_err != OK:
-		return null
-	return image
+	return ImageOrientationUtils.decode_image_from_buffer(raw, image_type_hint, content_type_hint)
 
 
 func isImageURL(url: String) -> bool:

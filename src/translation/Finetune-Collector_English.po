@@ -905,6 +905,22 @@ msgstr "Model to use for cost estimation:"
 msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE_HINT"
 msgstr "The selection determines what costs per million tokens are considered when using the token cost estimation."
 
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_LABEL"
+msgstr "Token values in meta messages"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_HINT"
+msgstr "Controls whether token and cost values are shown in meta messages."
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_OPTION_SHOW"
+msgstr "Show"
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_OPTION_HIDE"
+msgstr "Hide"
+
 #: scenes/message.gd
 msgid "MESSAGE_META_HIDE_META_MESSAGE"
 msgstr "Hide meta info"
@@ -2155,6 +2171,36 @@ msgstr "Details:"
 #: scenes/fine_tune.gd
 msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
 msgstr "- ... (%d more)"
+
+#: scenes/fine_tune.gd
+#: scenes/messages_list.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_DIALOG_TITLE"
+msgstr "Conversation import failed"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_SOURCE"
+msgstr "Source: %s"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_READ"
+msgstr "The file could not be read."
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_CODE"
+msgstr "Error code: %d"
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_INVALID_JSON"
+msgstr "Invalid JSON."
+
+#: scenes/fine_tune.gd
+#: scenes/messages_list.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_UNSUPPORTED"
+msgstr "No supported conversation structure was found."
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_EMPTY"
+msgstr "The file does not contain any importable messages."
 
 #: scenes/schema_runtime/schema_form_renderer.gd
 msgid "MESSAGES_JSON_SCHEMA_FORM_CONST_PREFIX"

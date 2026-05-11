@@ -39,6 +39,7 @@ var _schema_runtime_cache = {}
 var _compact_layout_enabled = false
 var _compact_meta_control_defaults = {}
 var _compact_image_control_defaults = {}
+var _meta_details_visible = false
 var _schema_form_height_refresh_queued = false
 const SCHEMA_FORM_SCROLL_MIN_HEIGHT = 220.0
 
@@ -377,6 +378,27 @@ func _configure_meta_layout(enabled: bool) -> void:
 		$MetaMessageContainer/InfoLabelsGridContainer.clip_contents = false
 	_apply_compact_to_meta_controls_recursive($MetaMessageContainer, enabled)
 
+func _should_show_meta_token_values() -> bool:
+	var ft_node = _get_fine_tune_node()
+	if ft_node == null:
+		return true
+	return bool(ft_node.SETTINGS.get("showMetaTokenValues", true))
+
+func _set_meta_details_visible(visible: bool) -> void:
+	_meta_details_visible = visible
+	$MetaMessageContainer/ConversationReadyContainer.visible = visible
+	$MetaMessageContainer/ConversationNotesEdit.visible = visible
+	$MetaMessageContainer/ConversationNameContainer.visible = visible
+	$MetaMessageContainer/InfoLabelsGridContainer.visible = visible and _should_show_meta_token_values()
+	var toggle_text_key = "MESSAGE_META_SHOW_META_MESSAGE"
+	if visible:
+		toggle_text_key = "MESSAGE_META_HIDE_META_MESSAGE"
+	$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr(toggle_text_key)
+	$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr(toggle_text_key)
+
+func refresh_meta_visibility_from_settings() -> void:
+	_set_meta_details_visible(_meta_details_visible)
+
 func _configure_schema_layout() -> void:
 	$SchemaMessageContainer.clip_contents = true
 	$SchemaMessageContainer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -433,6 +455,7 @@ func set_compact_layout(enabled: bool) -> void:
 	else:
 		_set_title_font_sizes(DESKTOP_MESSAGE_TITLE_FONT_SIZE)
 	_apply_compact_layout_to_nested_rows()
+	refresh_meta_visibility_from_settings()
 
 func to_var():
 	var me = {}
@@ -517,6 +540,7 @@ func from_var(data):
 		# Update the saved token counts if available
 		if savedTokenCounts:
 			update_token_costs(savedTokenCounts)
+		refresh_meta_visibility_from_settings()
 		return
 	$MessageSettingsContainer/Role.select(selectionStringToIndex($MessageSettingsContainer/Role, data.get("role", "user")))
 	_on_role_item_selected($MessageSettingsContainer/Role.selected)
@@ -782,6 +806,7 @@ func _ready() -> void:
 	else:
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.tooltip_text = ""
 		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.disabled = false
+	refresh_meta_visibility_from_settings()
 	var schema_edit_node = _schema_edit_node()
 	if schema_edit_node != null:
 		schema_edit_node.text_changed.connect(_on_schema_edit_text_changed)
@@ -2104,24 +2129,10 @@ func _do_token_calculation_update() -> void:
 
 
 func _on_meta_message_toggle_cost_estimation_button_pressed() -> void:
-	$MetaMessageContainer/ConversationReadyContainer.visible = not $MetaMessageContainer/ConversationReadyContainer.visible
-	$MetaMessageContainer/ConversationNotesEdit.visible = not $MetaMessageContainer/ConversationNotesEdit.visible
-	$MetaMessageContainer/ConversationNameContainer.visible = not $MetaMessageContainer/ConversationNameContainer.visible
-	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
-	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
-		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
-	else:
-		$MetaMessageContainer/MetaMessageToggleCostEstimationButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")
+	_set_meta_details_visible(not _meta_details_visible)
 
 func _on_show_meta_message_toggle_button_pressed() -> void:
-	$MetaMessageContainer/ConversationReadyContainer.visible = not $MetaMessageContainer/ConversationReadyContainer.visible
-	$MetaMessageContainer/ConversationNotesEdit.visible = not $MetaMessageContainer/ConversationNotesEdit.visible
-	$MetaMessageContainer/ConversationNameContainer.visible = not $MetaMessageContainer/ConversationNameContainer.visible
-	$MetaMessageContainer/InfoLabelsGridContainer.visible = not $MetaMessageContainer/InfoLabelsGridContainer.visible
-	if $MetaMessageContainer/InfoLabelsGridContainer.visible:
-		$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr("MESSAGE_META_HIDE_META_MESSAGE")
-	else:
-		$MetaMessageContainer/ShowMetaMessageToggleButton.text = tr("MESSAGE_META_SHOW_META_MESSAGE")
+	_set_meta_details_visible(not _meta_details_visible)
 
 
 func _on_audio_message_load_file_button_pressed() -> void:

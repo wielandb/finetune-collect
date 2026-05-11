@@ -720,14 +720,26 @@ func on_dropped_files(files):
 			if file.to_lower().ends_with(".ftproj"):
 				await ft_node.request_load_project_from_path_with_unsaved_guard(file)
 			else:
-				var json_text = FileAccess.get_file_as_string(file)
-				var parsed = JSON.parse_string(json_text)
-				if parsed is Dictionary and parsed.has("functions") and parsed.has("conversations") and parsed.has("settings"):
+				var import_result = ft_node.classify_conversation_json_import_file(file)
+				if not bool(import_result.get("ok", false)):
+					ft_node.show_conversation_json_import_error(file.get_file(), str(import_result.get("error", "")))
+					continue
+				var import_action = str(import_result.get("action", ""))
+				var imported_messages = import_result.get("messages", [])
+				if import_action == "load_project":
 					await ft_node.request_load_project_from_path_with_unsaved_guard(file)
-				else:
-					var ftcmsglist = ft_node.conversation_from_openai_message_json(json_text)
-					for ftmsg in ftcmsglist:
+				elif import_action == "append":
+					for ftmsg in imported_messages:
 						add_message(ftmsg)
+					_on_something_happened_to_check_enabled_status()
+					ft_node.save_current_conversation()
+				elif import_action == "create_conversation":
+					ft_node.save_current_conversation()
+					var created_id = ft_node.create_new_conversation(imported_messages)
+					if str(created_id) != "":
+						ft_node._select_conversation_by_id(str(created_id))
+				else:
+					ft_node.show_conversation_json_import_error(file.get_file(), tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_UNSUPPORTED"))
 		elif file.to_lower().ends_with(".jsonl"):
 			var ft_node = get_tree().get_root().get_node("FineTune")
 			if ft_node != null and ft_node.has_method("import_finetune_jsonl_file"):

@@ -16,6 +16,8 @@ You can also provide the program with your OpenAI API key and it can generate re
 - Import OpenAI message JSON from the clipboard or drag & drop `.json`/`.ftproj` files
 - Execute local functions with optional pre‑text and store the results
 - Automatically upload images to a configurable server
+- Configure EXIF image auto-rotation (`No`, `Display only`, or `Rotate pixels` before upload/export)
+- Batch-create conversations from multiple files and auto-upload created images with progress feedback
 - Save/load projects either locally or via a configurable cloud PHP endpoint
 - "New fine-tune" project reset action with save/discard/cancel guard for unsaved changes
 - Auto-save projects every 5 minutes or on conversation switches
@@ -25,6 +27,11 @@ You can also provide the program with your OpenAI API key and it can generate re
 - Conversation auto-splitting for Reinforcement Fine-Tuning
 - Optional global system message and user names per message
 - Show or hide meta information and token calculations per conversation
+- Optional schema-constrained assistant autocompletion for generated responses
+- OpenAI-compatible API base URL mode with selectable/custom model behavior
+- JSON schema array items can be moved and duplicated directly in the form UI
+- Improved small-screen dialog and schema form usability
+- More reliable JSON schema rendering/value restoration after reload
 
 ## Keyboard Shortcuts
 - `Ctrl` + `S` – Save the project without re-opening the dialog

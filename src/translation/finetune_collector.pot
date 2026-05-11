@@ -480,6 +480,22 @@ msgid "SETTINGS_TOKEN_COUNT_MODEL_CHOICE_HINT"
 msgstr ""
 
 #: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_LABEL"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_HINT"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_OPTION_SHOW"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
+msgid "SETTINGS_META_TOKEN_VALUES_VISIBILITY_OPTION_HIDE"
+msgstr ""
+
+#: scenes/conversation_settings.tscn
 msgid "SETTINGS_IMAGE_UPLOAD_LABEL"
 msgstr ""
 
@@ -1912,6 +1928,36 @@ msgstr ""
 
 #: scenes/fine_tune.gd
 msgid "FINETUNE_JSONL_IMPORT_REPORT_MORE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+#: scenes/messages_list.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_DIALOG_TITLE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_SOURCE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_READ"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_CODE"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_INVALID_JSON"
+msgstr ""
+
+#: scenes/fine_tune.gd
+#: scenes/messages_list.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_UNSUPPORTED"
+msgstr ""
+
+#: scenes/fine_tune.gd
+msgid "FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_EMPTY"
 msgstr ""
 
 #: scenes/schema_runtime/schema_form_renderer.gd

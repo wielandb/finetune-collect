@@ -68,7 +68,8 @@ func _run() -> void:
 		"apikey": "test-key",
 		"apiBaseURL": "https://api.openai.com/v1",
 		"modelChoice": "gpt-4o-mini",
-		"availableModels": ["gpt-4o-mini", "gpt-4.1-mini"]
+		"availableModels": ["gpt-4o-mini", "gpt-4.1-mini"],
+		"showMetaTokenValues": false
 	})
 	await process_frame
 
@@ -76,10 +77,14 @@ func _run() -> void:
 	var model_line_edit = conversation_settings.get_node("VBoxContainer/ModelChoiceContainer/ModelChoiceLineEdit")
 	var model_refresh = conversation_settings.get_node("VBoxContainer/ModelChoiceContainer/ModelChoiceRefreshButton")
 	var api_url_edit = conversation_settings.get_node("VBoxContainer/APIBaseURLSettingContainer/APIBaseURLEdit")
+	var meta_token_visibility_option = conversation_settings.get_node("VBoxContainer/ShowMetaTokenValuesContainer/ShowMetaTokenValuesOptionButton")
 
 	_check(model_option.visible, "OpenAI URL should show model dropdown")
 	_check(not model_line_edit.visible, "OpenAI URL should hide custom model input")
 	_check(model_refresh.visible, "OpenAI URL should show model refresh button")
+	_assert_eq(int(meta_token_visibility_option.selected), 1, "Explicit false should select hide option for meta token values")
+	var initial_settings = conversation_settings.to_var()
+	_assert_eq(bool(initial_settings.get("showMetaTokenValues", true)), false, "Explicit false should serialize as hidden")
 
 	api_url_edit.text = "https://openrouter.ai/api/v1"
 	api_url_edit.emit_signal("text_changed", api_url_edit.text)
@@ -95,6 +100,7 @@ func _run() -> void:
 	var custom_settings = conversation_settings.to_var()
 	_assert_eq(custom_settings.get("apiBaseURL", ""), "https://openrouter.ai/api/v1", "Custom API URL should be saved")
 	_assert_eq(custom_settings.get("modelChoice", ""), "openai/gpt-4o-mini", "Custom model name should be saved from text input")
+	_assert_eq(bool(custom_settings.get("showMetaTokenValues", true)), false, "Meta token visibility should stay hidden")
 
 	api_url_edit.text = "https://api.openai.com/v1/"
 	api_url_edit.emit_signal("text_changed", api_url_edit.text)
@@ -107,6 +113,21 @@ func _run() -> void:
 	var openai_settings = conversation_settings.to_var()
 	_assert_eq(openai_settings.get("apiBaseURL", ""), "https://api.openai.com/v1", "OpenAI URL should be normalized")
 	_assert_eq(openai_settings.get("modelChoice", ""), "gpt-4o-mini", "OpenAI mode should store model from dropdown")
+	_assert_eq(bool(openai_settings.get("showMetaTokenValues", true)), false, "Meta token visibility should remain unchanged when switching API mode")
+
+	conversation_settings.from_var({
+		"useGlobalSystemMessage": false,
+		"globalSystemMessage": "",
+		"apikey": "test-key",
+		"apiBaseURL": "https://api.openai.com/v1",
+		"modelChoice": "gpt-4o-mini",
+		"availableModels": ["gpt-4o-mini", "gpt-4.1-mini"]
+	})
+	await process_frame
+	await process_frame
+	_assert_eq(int(meta_token_visibility_option.selected), 0, "Missing setting key should fallback to visible for legacy projects")
+	var fallback_settings = conversation_settings.to_var()
+	_assert_eq(bool(fallback_settings.get("showMetaTokenValues", false)), true, "Legacy fallback should serialize as visible")
 
 	fine_tune.queue_free()
 	await process_frame

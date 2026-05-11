@@ -38,13 +38,13 @@ static func _resolve_node(node, root: Dictionary, base_url: String, external_sch
 		var parsed_ref = _parse_ref(ref, base_url)
 		if not bool(parsed_ref.get("ok", false)):
 			return _make_external_ref_marker(ref, node_dict, str(parsed_ref.get("error", "invalid $ref")))
+		var resolved_id = _ref_stack_id(parsed_ref, base_url)
+		if stack.has(resolved_id):
+			return {
+				"x_ftc_ref_cycle": resolved_id,
+				"x_ftc_source": node_dict
+			}
 		if bool(parsed_ref.get("is_external", false)) and not _is_same_document_ref(parsed_ref, base_url):
-			var resolved_id = str(parsed_ref.get("resolved_id", ""))
-			if stack.has(resolved_id):
-				return {
-					"x_ftc_ref_cycle": resolved_id,
-					"x_ftc_source": node_dict
-				}
 			var document_url = str(parsed_ref.get("document_url", ""))
 			if document_url == "":
 				return _make_external_ref_marker(ref, node_dict, "external $ref has no document URL")
@@ -60,9 +60,19 @@ static func _resolve_node(node, root: Dictionary, base_url: String, external_sch
 			var new_stack = stack.duplicate()
 			new_stack.append(resolved_id)
 			return _resolve_node(merged, target_root, document_url, external_schemas, new_stack)
+		var target = _json_pointer_get(root, str(parsed_ref.get("pointer", "#")))
+		if not (target is Dictionary):
+			return _make_external_ref_marker(ref, node_dict, "unresolvable $ref")
+		var local_merged = _merge_ref_with_siblings(target, node_dict)
+		var local_stack = stack.duplicate()
+		local_stack.append(resolved_id)
+		return _resolve_node(local_merged, root, base_url, external_schemas, local_stack)
 
 	var out_dict = {}
 	for key in node_dict.keys():
+		if key == "$defs" or key == "definitions":
+			out_dict[key] = node_dict[key].duplicate(true)
+			continue
 		out_dict[key] = _resolve_node(node_dict[key], root, base_url, external_schemas, stack)
 	return out_dict
 
@@ -124,6 +134,12 @@ static func _make_external_ref_marker(ref: String, source: Dictionary, reason: S
 		"x_ftc_external_ref_reason": reason,
 		"x_ftc_source": source
 	}
+
+static func _ref_stack_id(parsed_ref: Dictionary, base_url: String) -> String:
+	var pointer = str(parsed_ref.get("pointer", "#"))
+	if bool(parsed_ref.get("is_external", false)):
+		return "ref:" + str(parsed_ref.get("document_url", "")) + pointer
+	return "ref:" + _strip_query_fragment(str(base_url).strip_edges()) + pointer
 
 static func _parse_ref(ref: String, base_url: String) -> Dictionary:
 	var normalized_ref = ref.strip_edges()

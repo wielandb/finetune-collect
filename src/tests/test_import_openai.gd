@@ -152,6 +152,108 @@ func test_openai_import_filters_non_dictionary_items():
 	assert_eq(convo[1]["role"], "user", "imported user role")
 	assert_eq(convo[1]["textContent"], "Hello there", "imported user text")
 
+func test_chat_completion_log_imports_request_and_output_messages():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var log_entry = {
+		"request": {
+			"messages": [
+				{"role":"system","content":"System instruction"},
+				{"role":"user","content":"Bitte antworte als JSON"}
+			]
+		},
+		"response": {
+			"output_messages": [
+				{"role":"assistant","content":"{\"ok\":true}"}
+			]
+		}
+	}
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entry), "llm_call.json")
+	assert_eq(result.get("ok", false), true, "chat log import ok")
+	assert_eq(result.get("action", ""), "create_conversation", "chat log creates conversation")
+	var convo = result.get("messages", [])
+	assert_eq(convo.size(), 3, "chat log message count")
+	assert_eq(convo[0]["role"], "system", "chat log system role")
+	assert_eq(convo[1]["role"], "user", "chat log user role")
+	assert_eq(convo[2]["role"], "assistant", "chat log assistant role")
+	assert_eq(convo[2]["type"], "JSON", "chat log assistant JSON")
+	assert_eq(convo[2]["jsonSchemaValue"], "{\"ok\":true}", "chat log assistant JSON value")
+
+func test_responses_log_array_imports_tool_chain_and_final_message():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var log_entries = [
+		{
+			"request": {
+				"model": "gpt-5.1",
+				"input": [
+					{"role":"developer","content":[{"type":"input_text","text":"Developer instruction"}]},
+					{"role":"user","content":[{"type":"input_text","text":"Bitte suche die Bewerbungsseite"}]}
+				]
+			},
+			"response": {
+				"output": [
+					{"type":"function_call","call_id":"call_search","name":"search_page","arguments":"{\"query\":\"Bewerbungen 2025\"}"}
+				]
+			}
+		},
+		{
+			"request": {
+				"input": [
+					{"type":"function_call_output","call_id":"call_search","output":"{\"results\":[{\"id\":\"referenz:bewerbungen_2025\"}]}"}
+				]
+			},
+			"response": {
+				"output": [
+					{"type":"apply_patch_call","call_id":"call_patch","operation":{"path":"referenz:bewerbungen_2025","diff":"@@"}}
+				]
+			}
+		},
+		{
+			"request": {
+				"input": [
+					{"type":"apply_patch_call_output","call_id":"call_patch","output":"Seite referenz:bewerbungen_2025 aktualisiert"}
+				]
+			},
+			"response": {
+				"output": [
+					{"type":"message","role":"assistant","content":[{"type":"output_text","text":"Fertig"}]}
+				]
+			}
+		}
+	]
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entries), "responses_log.json")
+	assert_eq(result.get("ok", false), true, "responses log import ok")
+	assert_eq(result.get("action", ""), "create_conversation", "responses log creates conversation")
+	var convo = result.get("messages", [])
+	assert_eq(convo.size(), 5, "responses log message count")
+	assert_eq(convo[0]["role"], "system", "responses log developer imports as system")
+	assert_eq(convo[1]["role"], "user", "responses log user imports")
+	assert_eq(convo[2]["type"], "Function Call", "responses log first function call")
+	assert_eq(convo[2]["functionName"], "search_page", "responses log function name")
+	assert_eq(convo[2]["functionResults"], "{\"results\":[{\"id\":\"referenz:bewerbungen_2025\"}]}", "responses log function output")
+	assert_eq(convo[3]["type"], "Function Call", "responses log apply patch function call")
+	assert_eq(convo[3]["functionName"], "apply_patch", "responses log apply patch name")
+	assert_eq(convo[3]["functionResults"], "Seite referenz:bewerbungen_2025 aktualisiert", "responses log apply patch output")
+	assert_eq(convo[4]["textContent"], "Fertig", "responses log final assistant text")
+
+func test_conversation_json_import_classifies_direct_messages_as_append():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var json_text = JSON.stringify({"messages":[{"role":"user","content":"hi"}]})
+	var result = ft.classify_conversation_json_import(json_text, "messages.json")
+	assert_eq(result.get("ok", false), true, "direct messages import ok")
+	assert_eq(result.get("action", ""), "append", "direct messages append")
+	assert_eq(result.get("messages", []).size(), 1, "direct messages count")
+
+func test_conversation_json_import_reports_invalid_json():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var result = ft.classify_conversation_json_import("{", "broken.json")
+	assert_eq(result.get("ok", true), false, "invalid JSON import fails")
+	assert_eq(result.get("error_key", ""), "invalid_json", "invalid JSON error key")
+	assert_eq(str(result.get("error", "")).strip_edges() != "", true, "invalid JSON error text")
+
 func _init():
 	test_save_and_load_var()
 	test_convert_functions()
@@ -165,5 +267,9 @@ func _init():
 	test_message_ui_text_roundtrip()
 	test_message_ui_image_roundtrip()
 	test_openai_import_filters_non_dictionary_items()
+	test_chat_completion_log_imports_request_and_output_messages()
+	test_responses_log_array_imports_tool_chain_and_final_message()
+	test_conversation_json_import_classifies_direct_messages_as_append()
+	test_conversation_json_import_reports_invalid_json()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

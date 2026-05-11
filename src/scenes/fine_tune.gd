@@ -27,6 +27,13 @@ const FINETUNE_TYPE_SUPERVISED = 0
 const FINETUNE_TYPE_DPO = 1
 const FINETUNE_TYPE_REINFORCEMENT = 2
 const JSONL_ENTRY_TYPE_UNKNOWN = -1
+const CONVERSATION_JSON_IMPORT_ACTION_PROJECT = "load_project"
+const CONVERSATION_JSON_IMPORT_ACTION_APPEND = "append"
+const CONVERSATION_JSON_IMPORT_ACTION_CREATE_CONVERSATION = "create_conversation"
+const CONVERSATION_JSON_IMPORT_ERROR_READ = "read_error"
+const CONVERSATION_JSON_IMPORT_ERROR_INVALID_JSON = "invalid_json"
+const CONVERSATION_JSON_IMPORT_ERROR_UNSUPPORTED = "unsupported"
+const CONVERSATION_JSON_IMPORT_ERROR_EMPTY = "empty"
 
 var FINETUNEDATA = {}
 var FUNCTIONS = []
@@ -41,13 +48,14 @@ var SETTINGS = {
 	"globalSystemMessage": "",
 	"modelChoice": "gpt-4o",
 	"availableModels": [],
-		"schemaValidatorURL": "",
-		"projectStorageMode": PROJECT_STORAGE_MODE_LOCAL,
-		"projectCloudURL": "",
-		"projectCloudKey": "",
-		"projectCloudName": "",
-		"autoSaveMode": AUTO_SAVE_MODE_OFF,
-		"imageAutoRotateSetting": IMAGE_AUTO_ROTATE_MODE_NONE
+	"schemaValidatorURL": "",
+	"projectStorageMode": PROJECT_STORAGE_MODE_LOCAL,
+	"projectCloudURL": "",
+	"projectCloudKey": "",
+	"projectCloudName": "",
+	"autoSaveMode": AUTO_SAVE_MODE_OFF,
+	"imageAutoRotateSetting": IMAGE_AUTO_ROTATE_MODE_NONE,
+	"showMetaTokenValues": false
 	}
 
 var RUNTIME = {"filepath": ""}
@@ -759,6 +767,237 @@ func _popup_dialog_fit_to_viewport(dialog: Window, preferred_size: Vector2i) -> 
 	)
 	dialog.popup_centered(target_size)
 
+func _make_conversation_json_import_error(source_label: String, error_key: String, details: String = "") -> Dictionary:
+	return {
+		"ok": false,
+		"action": "",
+		"messages": [],
+		"source_label": source_label,
+		"error_key": error_key,
+		"error_details": details,
+		"error": _conversation_json_import_error_text(error_key, details)
+	}
+
+func _conversation_json_import_error_text(error_key: String, details: String = "") -> String:
+	var base_text = ""
+	match error_key:
+		CONVERSATION_JSON_IMPORT_ERROR_READ:
+			base_text = tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_READ")
+		CONVERSATION_JSON_IMPORT_ERROR_INVALID_JSON:
+			base_text = tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_INVALID_JSON")
+		CONVERSATION_JSON_IMPORT_ERROR_EMPTY:
+			base_text = tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_EMPTY")
+		_:
+			base_text = tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_UNSUPPORTED")
+	if details.strip_edges() == "":
+		return base_text
+	return "%s\n%s" % [base_text, details]
+
+func show_conversation_json_import_error(source_label: String, error_text: String) -> void:
+	var lines = []
+	lines.append(tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_SOURCE") % source_label)
+	lines.append(error_text)
+	var dialog_text = "\n".join(lines)
+	print(dialog_text)
+	if not is_inside_tree():
+		return
+	if DisplayServer.get_name().to_lower() == "headless":
+		return
+	var dialog = AcceptDialog.new()
+	dialog.title = tr("FINETUNE_CONVERSATION_JSON_IMPORT_DIALOG_TITLE")
+	dialog.dialog_text = dialog_text
+	add_child(dialog)
+	dialog.confirmed.connect(Callable(dialog, "queue_free"))
+	dialog.close_requested.connect(Callable(dialog, "queue_free"))
+	_popup_dialog_fit_to_viewport(dialog, Vector2i(720, 300))
+
+func classify_conversation_json_import_file(path: String) -> Dictionary:
+	var source_label = path.get_file()
+	if not FileAccess.file_exists(path):
+		return _make_conversation_json_import_error(source_label, CONVERSATION_JSON_IMPORT_ERROR_READ, path)
+	var file = FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		return _make_conversation_json_import_error(source_label, CONVERSATION_JSON_IMPORT_ERROR_READ, tr("FINETUNE_CONVERSATION_JSON_IMPORT_ERROR_CODE") % FileAccess.get_open_error())
+	var json_text = file.get_as_text()
+	file.close()
+	return classify_conversation_json_import(json_text, source_label)
+
+func classify_conversation_json_import(json_text: String, source_label: String = "json") -> Dictionary:
+	var json = JSON.new()
+	var parse_err = json.parse(json_text)
+	if parse_err != OK:
+		return _make_conversation_json_import_error(source_label, CONVERSATION_JSON_IMPORT_ERROR_INVALID_JSON, json.get_error_message())
+	return classify_conversation_json_import_data(json.data, source_label)
+
+func classify_conversation_json_import_data(data, source_label: String = "json") -> Dictionary:
+	if data is Dictionary and data.has("functions") and data.has("conversations") and data.has("settings"):
+		return {
+			"ok": true,
+			"action": CONVERSATION_JSON_IMPORT_ACTION_PROJECT,
+			"messages": [],
+			"source_label": source_label,
+			"error_key": "",
+			"error_details": "",
+			"error": ""
+		}
+	var extracted = _extract_conversation_json_import_messages(data)
+	if not bool(extracted.get("recognized", false)):
+		return _make_conversation_json_import_error(source_label, CONVERSATION_JSON_IMPORT_ERROR_UNSUPPORTED)
+	var messages = extracted.get("messages", [])
+	if not (messages is Array) or messages.size() == 0:
+		return _make_conversation_json_import_error(source_label, CONVERSATION_JSON_IMPORT_ERROR_EMPTY)
+	return {
+		"ok": true,
+		"action": str(extracted.get("action", "")),
+		"messages": messages,
+		"source_label": source_label,
+		"error_key": "",
+		"error_details": "",
+		"error": ""
+	}
+
+func _extract_conversation_json_import_messages(data) -> Dictionary:
+	if _is_llm_call_log_entry(data):
+		var raw_log_items = _raw_openai_items_from_llm_call_log_entry(data)
+		return {
+			"recognized": true,
+			"action": CONVERSATION_JSON_IMPORT_ACTION_CREATE_CONVERSATION,
+			"messages": conversation_from_openai_message_json(raw_log_items)
+		}
+	if data is Array and _array_contains_llm_call_log_entry(data):
+		var raw_log_array_items = _raw_openai_items_from_llm_call_log_array(data)
+		return {
+			"recognized": true,
+			"action": CONVERSATION_JSON_IMPORT_ACTION_CREATE_CONVERSATION,
+			"messages": conversation_from_openai_message_json(raw_log_array_items)
+		}
+	if data is Dictionary and data.get("messages", null) is Array:
+		return {
+			"recognized": true,
+			"action": CONVERSATION_JSON_IMPORT_ACTION_APPEND,
+			"messages": conversation_from_openai_message_json(data.get("messages", []))
+		}
+	if data is Array:
+		return {
+			"recognized": true,
+			"action": CONVERSATION_JSON_IMPORT_ACTION_APPEND,
+			"messages": conversation_from_openai_message_json(data)
+		}
+	return {
+		"recognized": false,
+		"action": "",
+		"messages": []
+	}
+
+func _is_llm_call_log_entry(value) -> bool:
+	return value is Dictionary and value.has("request") and value.has("response")
+
+func _array_contains_llm_call_log_entry(values: Array) -> bool:
+	for value in values:
+		if _is_llm_call_log_entry(value):
+			return true
+	return false
+
+func _raw_openai_items_from_llm_call_log_array(entries: Array) -> Array:
+	var items = []
+	for entry in entries:
+		if _is_llm_call_log_entry(entry):
+			items.append_array(_raw_openai_items_from_llm_call_log_entry(entry))
+	return items
+
+func _raw_openai_items_from_llm_call_log_entry(entry: Dictionary) -> Array:
+	var items = []
+	var request = entry.get("request", {})
+	if request is Dictionary:
+		if request.get("messages", null) is Array:
+			_append_normalized_openai_import_items(items, request.get("messages", []))
+		elif request.get("input", null) is Array:
+			_append_normalized_openai_import_items(items, request.get("input", []))
+	var response = entry.get("response", {})
+	if response is Dictionary:
+		if response.get("output_messages", null) is Array:
+			_append_normalized_openai_import_items(items, response.get("output_messages", []))
+		if response.get("output", null) is Array:
+			_append_normalized_openai_import_items(items, response.get("output", []))
+		var parsed_body = response.get("parsed_body", {})
+		if parsed_body is Dictionary:
+			if parsed_body.get("output", null) is Array:
+				_append_normalized_openai_import_items(items, parsed_body.get("output", []))
+			_append_chat_completion_choices_for_import(items, parsed_body)
+	return items
+
+func _append_chat_completion_choices_for_import(target: Array, parsed_body: Dictionary) -> void:
+	var choices = parsed_body.get("choices", [])
+	if not (choices is Array):
+		return
+	for choice in choices:
+		if not (choice is Dictionary):
+			continue
+		var message = choice.get("message", {})
+		if message is Dictionary:
+			target.append(_normalize_openai_import_item(message))
+
+func _append_normalized_openai_import_items(target: Array, raw_items: Array) -> void:
+	for raw_item in raw_items:
+		if raw_item is Dictionary:
+			target.append(_normalize_openai_import_item(raw_item))
+
+func _normalize_openai_import_item(item: Dictionary) -> Dictionary:
+	var item_type = str(item.get("type", ""))
+	if item_type == "function_call":
+		var normalized_function_call = item.duplicate(true)
+		normalized_function_call["arguments"] = _stringify_import_value(normalized_function_call.get("arguments", "{}"))
+		return normalized_function_call
+	if item_type == "function_call_output":
+		return {
+			"type": "function_call_output",
+			"call_id": str(item.get("call_id", item.get("id", ""))),
+			"output": _stringify_import_value(item.get("output", ""))
+		}
+	if item_type.ends_with("_call_output"):
+		return {
+			"type": "function_call_output",
+			"call_id": str(item.get("call_id", item.get("id", ""))),
+			"output": _stringify_import_value(item.get("output", ""))
+		}
+	if item_type.ends_with("_call"):
+		return _normalize_tool_call_item(item, _function_name_from_call_type(item_type))
+	return item.duplicate(true)
+
+func _normalize_tool_call_item(item: Dictionary, function_name: String) -> Dictionary:
+	var arguments_text = "{}"
+	if item.has("arguments"):
+		arguments_text = _stringify_import_value(item.get("arguments", {}))
+	elif item.has("operation"):
+		arguments_text = JSON.stringify(item.get("operation", {}))
+	else:
+		var arguments_payload = {}
+		for key in item.keys():
+			if not (key in ["id", "type", "status", "call_id"]):
+				arguments_payload[key] = item[key]
+		arguments_text = JSON.stringify(arguments_payload)
+	if function_name.strip_edges() == "":
+		function_name = "tool_call"
+	return {
+		"type": "function_call",
+		"call_id": str(item.get("call_id", item.get("id", ""))),
+		"name": function_name,
+		"arguments": arguments_text
+	}
+
+func _function_name_from_call_type(item_type: String) -> String:
+	var suffix = "_call"
+	if item_type.ends_with(suffix):
+		return item_type.substr(0, item_type.length() - suffix.length())
+	return item_type
+
+func _stringify_import_value(value) -> String:
+	if value == null:
+		return ""
+	if value is String:
+		return value
+	return JSON.stringify(value)
+
 func _prepare_cloud_target_for_save(force_prompt: bool) -> bool:
 	var prefill = _build_cloud_target_prefill()
 	var should_prompt = force_prompt or str(prefill.get("project_id", "")) == ""
@@ -1376,6 +1615,14 @@ func _on_new_fine_tune_btn_pressed() -> void:
 func update_functions_internal():
 	FUNCTIONS = $Conversation/Functions/FunctionsList.to_var()
 
+func _refresh_open_message_meta_visibility() -> void:
+	var messages_list_container = $Conversation/Messages/MessagesList/MessagesListContainer
+	for message in messages_list_container.get_children():
+		if not message.is_in_group("message"):
+			continue
+		if message.has_method("refresh_meta_visibility_from_settings"):
+			message.refresh_meta_visibility_from_settings()
+
 func update_settings_internal():
 	SETTINGS = $Conversation/Settings/ConversationSettings.to_var()
 	print("Settings: ")
@@ -1383,6 +1630,7 @@ func update_settings_internal():
 	print(SETTINGS)
 	_sync_save_load_ui_for_storage_mode()
 	_configure_autosave()
+	_refresh_open_message_meta_visibility()
 func update_graders_internal():
 	GRADERS = $Conversation/Graders/GradersList.to_var()
 
@@ -2776,98 +3024,103 @@ func _convert_base64_images_after_load() -> void:
 # Helper to create a Finetune-Collect function call message and ensure the
 # function definition exists in the global FUNCTIONS array.
 func _create_ft_function_call_msg(function_name: String, arguments_dict: Dictionary, function_result: String, pretext: String) -> Dictionary:
-	update_functions_internal()
-	var param_list := []
+	if is_inside_tree() and has_node("Conversation/Functions/FunctionsList"):
+		update_functions_internal()
+	var param_list = []
 	for arg_name in arguments_dict.keys():
-					var val = arguments_dict[arg_name]
-					var entry = {
-									"name": str(arg_name),
-									"isUsed": true,
-									"parameterValueText": "",
-									"parameterValueChoice": "",
-									"parameterValueNumber": 0
-					}
-					match typeof(val):
-									TYPE_INT, TYPE_FLOAT:
-													entry["parameterValueNumber"] = val
-									_:
-													entry["parameterValueText"] = str(val)
-					param_list.append(entry)
+		var val = arguments_dict[arg_name]
+		var entry = {
+			"name": str(arg_name),
+			"isUsed": true,
+			"parameterValueText": "",
+			"parameterValueChoice": "",
+			"parameterValueNumber": 0
+		}
+		match typeof(val):
+			TYPE_INT, TYPE_FLOAT:
+				entry["parameterValueNumber"] = val
+			_:
+				entry["parameterValueText"] = str(val)
+		param_list.append(entry)
 
 	var fn_exists = false
 	for f in FUNCTIONS:
-					if f.get("name", "") == function_name:
-									fn_exists = true
-									break
-	if !fn_exists:
-					var param_defs := []
-					for arg_name in arguments_dict.keys():
-									var v = arguments_dict[arg_name]
-									var p_type = "Number" if (typeof(v) in [TYPE_INT, TYPE_FLOAT]) else "String"
-									param_defs.append({
-													"type": p_type,
-													"name": str(arg_name),
-													"description": "",
-													"minimum": 0,
-													"maximum": 0,
-													"isEnum": false,
-													"hasLimits": false,
-													"enumOptions": "",
-													"isRequired": true
-									})
-					var new_func_def = {
-									"name": function_name,
-									"description": "",
-									"parameters": param_defs,
-									"functionExecutionEnabled": false,
-									"functionExecutionExecutable": "",
-									"functionExecutionArgumentsString": ""
-					}
-					var func_scene = load("res://scenes/available_function.tscn")
-					var func_instance = func_scene.instantiate()
-					if func_instance.has_method("set_compact_layout"):
-						func_instance.set_compact_layout(_compact_layout_enabled)
-					func_instance.from_var(new_func_def)
-					var list_container = $Conversation/Functions/FunctionsList/FunctionsListContainer
-					list_container.add_child(func_instance)
-					var add_btn = list_container.get_node("AddFunctionButton")
-					list_container.move_child(add_btn, -1)
-					update_functions_internal()
-					update_available_functions_in_UI_global()
+		if f.get("name", "") == function_name:
+			fn_exists = true
+			break
+	if not fn_exists:
+		var param_defs = []
+		for arg_name in arguments_dict.keys():
+			var v = arguments_dict[arg_name]
+			var p_type = "Number" if (typeof(v) in [TYPE_INT, TYPE_FLOAT]) else "String"
+			param_defs.append({
+				"type": p_type,
+				"name": str(arg_name),
+				"description": "",
+				"minimum": 0,
+				"maximum": 0,
+				"isEnum": false,
+				"hasLimits": false,
+				"enumOptions": "",
+				"isRequired": true
+			})
+		var new_func_def = {
+			"name": function_name,
+			"description": "",
+			"parameters": param_defs,
+			"functionExecutionEnabled": false,
+			"functionExecutionExecutable": "",
+			"functionExecutionArgumentsString": ""
+		}
+		if is_inside_tree() and has_node("Conversation/Functions/FunctionsList/FunctionsListContainer"):
+			var func_scene = load("res://scenes/available_function.tscn")
+			var func_instance = func_scene.instantiate()
+			if func_instance.has_method("set_compact_layout"):
+				func_instance.set_compact_layout(_compact_layout_enabled)
+			func_instance.from_var(new_func_def)
+			var list_container = $Conversation/Functions/FunctionsList/FunctionsListContainer
+			list_container.add_child(func_instance)
+			var add_btn = list_container.get_node("AddFunctionButton")
+			list_container.move_child(add_btn, -1)
+			update_functions_internal()
+			update_available_functions_in_UI_global()
+		else:
+			FUNCTIONS.append(new_func_def)
 	return {
-			"role": "assistant",
-			"type": "Function Call",
-			"textContent": "",
-			"unpreferredTextContent": "",
-			"preferredTextContent": "",
-			"imageContent": "",
-			"imageDetail": 0,
-			"functionName": function_name,
-			"functionParameters": param_list,
-			"functionResults": function_result,
-			"functionUsePreText": pretext
+		"role": "assistant",
+		"type": "Function Call",
+		"textContent": "",
+		"unpreferredTextContent": "",
+		"preferredTextContent": "",
+		"imageContent": "",
+		"imageDetail": 0,
+		"functionName": function_name,
+		"functionParameters": param_list,
+		"functionResults": function_result,
+		"functionUsePreText": pretext
 	}
 
 # Extract text content from an OpenAI message which may contain either a string
 # or an array with text parts.
 func _extract_text_from_msg(msg: Dictionary) -> String:
-		var text := ""
-		if msg.has("content"):
-						var content = msg["content"]
-						if content is String:
-										text = content
-						elif content is Array:
-										for p in content:
-														if p is String:
-																		text += p
-														elif typeof(p) == TYPE_DICTIONARY:
-																		if p.get("type", "") == "text":
-																						text += p.get("text", "")
-																		elif p.has("text"):
-																						text += p["text"]
-						elif content is Dictionary:
-										text = content.get("text", "")
-		return text
+	var text = ""
+	if msg.has("content"):
+		var content = msg["content"]
+		if content is String:
+			text = content
+		elif content is Array:
+			for p in content:
+				if p is String:
+					text += p
+				elif typeof(p) == TYPE_DICTIONARY:
+					var content_type = str(p.get("type", ""))
+					if content_type in ["text", "input_text", "output_text"]:
+						text += str(p.get("text", ""))
+					elif p.has("text"):
+						text += str(p["text"])
+		elif content is Dictionary:
+			text = str(content.get("text", ""))
+	return text
 
 # Simple JSON validity check used when importing OpenAI messages
 func _validate_is_json(testtext) -> bool:
@@ -2883,10 +3136,13 @@ func conversation_from_openai_message_json(oaimsgjson):
 	# Accept both a JSON string or an already parsed array
 	if typeof(oaimsgjson) == TYPE_STRING:
 		var parsed = JSON.parse_string(oaimsgjson)
-		if parsed is Dictionary and parsed.has("messages"):
-			oaimsgjson = parsed["messages"]
-		else:
-			oaimsgjson = parsed
+		oaimsgjson = parsed
+	if _is_llm_call_log_entry(oaimsgjson):
+		oaimsgjson = _raw_openai_items_from_llm_call_log_entry(oaimsgjson)
+	elif oaimsgjson is Array and _array_contains_llm_call_log_entry(oaimsgjson):
+		oaimsgjson = _raw_openai_items_from_llm_call_log_array(oaimsgjson)
+	elif oaimsgjson is Dictionary and oaimsgjson.has("messages"):
+		oaimsgjson = oaimsgjson["messages"]
 	if typeof(oaimsgjson) != TYPE_ARRAY:
 		return []
 	# Filter to dictionary entries only. This avoids mutating while iterating.

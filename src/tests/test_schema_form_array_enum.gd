@@ -189,10 +189,53 @@ func _run() -> void:
 	assert_true(has_routes_label, "nested routes item label has list prefix")
 	assert_true(_has_button_with_prefix(nested_root, "goals-"), "nested goals add button has list prefix")
 	assert_true(_has_button_with_prefix(nested_root, "routes-"), "nested routes add button has list prefix")
+
+	var ref_root = VBoxContainer.new()
+	get_root().add_child(ref_root)
+	var ref_controller = load("res://scenes/schema_runtime/schema_form_controller.gd").new()
+	ref_controller.bind_form_root(ref_root)
+	var ref_schema = {
+		"type": "object",
+		"required": ["goals"],
+		"properties": {
+			"goals": {
+				"type": "array",
+				"items": {"$ref": "#/$defs/goal"}
+			}
+		},
+		"$defs": {
+			"distance": {
+				"type": "object",
+				"required": ["amount"],
+				"properties": {
+					"amount": {"type": "number"}
+				}
+			},
+			"goal": {
+				"type": "object",
+				"required": ["name", "distance"],
+				"properties": {
+					"name": {"type": "string"},
+					"distance": {"$ref": "#/$defs/distance"}
+				}
+			}
+		}
+	}
+	ref_controller.load_schema(ref_schema)
+	ref_controller.set_value_from_json("{\"goals\":[{\"name\":\"Start\",\"distance\":{\"amount\":4.0}}]}")
+	await process_frame
+	assert_true(not ref_controller.has_partial_fallback(), "local $defs array item renders without raw JSON fallback")
+	var ref_rows = _find_standard_rows(ref_root)
+	assert_true(ref_rows.size() == 1, "local $defs array item row rendered")
+	var ref_text_fields = ref_root.find_children("*", "LineEdit", true, false)
+	var ref_number_fields = ref_root.find_children("*", "SpinBox", true, false)
+	assert_true(ref_text_fields.size() >= 1, "local $defs string field rendered")
+	assert_true(ref_number_fields.size() >= 1, "nested local $defs number field rendered")
 	root.queue_free()
 	standard_root.queue_free()
 	goals_root.queue_free()
 	nested_root.queue_free()
+	ref_root.queue_free()
 	await process_frame
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

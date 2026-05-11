@@ -24,13 +24,14 @@ const SETTINGS_ROW_NAMES = [
 	"BatchCreatonContainer",
 	"FromClipboardJSONCreationContainer",
 	"TokenCountPathContainer",
-		"TokenCountWhenContainer",
-		"TokenCountModelChoiceContainer",
-		"ImageUplaodSettingContainer",
-		"ImageAutoRotateSettingContainer",
-		"ImageUploadServerURLContainer",
-		"ImageUploadServerKeyContainer",
-		"ImageUploadServerTestContainer",
+	"TokenCountWhenContainer",
+	"TokenCountModelChoiceContainer",
+	"ShowMetaTokenValuesContainer",
+	"ImageUplaodSettingContainer",
+	"ImageAutoRotateSettingContainer",
+	"ImageUploadServerURLContainer",
+	"ImageUploadServerKeyContainer",
+	"ImageUploadServerTestContainer",
 	"ProjectStorageModeContainer",
 	"ProjectCloudURLContainer",
 	"ProjectCloudKeyContainer",
@@ -348,6 +349,7 @@ func to_var():
 	me["countTokensWhen"] = $VBoxContainer/TokenCountWhenContainer/TokenCounterWhenOptionButton.selected
 	me["tokenCounts"] = $VBoxContainer/TokenCountPathContainer/TokenCountValueHolder.text
 	me["countTokensModel"] = $VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected
+	me["showMetaTokenValues"] = $VBoxContainer/ShowMetaTokenValuesContainer/ShowMetaTokenValuesOptionButton.selected == 0
 	me["doRFTExportConversationSplits"] = $VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton.selected
 	return me
 	
@@ -393,6 +395,13 @@ func from_var(me):
 	for item in load_available_fine_tuning_models_from_file():
 		$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.add_item(item)
 	$VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton.selected = me.get("countTokensModel", 0)
+	var show_meta_token_values = true
+	if me.has("showMetaTokenValues"):
+		show_meta_token_values = bool(me.get("showMetaTokenValues", true))
+	if show_meta_token_values:
+		$VBoxContainer/ShowMetaTokenValuesContainer/ShowMetaTokenValuesOptionButton.selected = 0
+	else:
+		$VBoxContainer/ShowMetaTokenValuesContainer/ShowMetaTokenValuesOptionButton.selected = 1
 	$VBoxContainer/RFTSplitConversationsSettingContainer/RFTSplitOptionButton.selected = me.get("doRFTExportConversationSplits", 0)
 	_apply_project_storage_mode_ui()
 	_reset_image_upload_test_status()

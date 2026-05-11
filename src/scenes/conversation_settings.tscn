@@ -444,6 +444,29 @@ expand_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="ShowMetaTokenValuesContainer" type="BoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ShowMetaTokenValuesLabel" type="Label" parent="VBoxContainer/ShowMetaTokenValuesContainer"]
+layout_mode = 2
+text = "SETTINGS_META_TOKEN_VALUES_VISIBILITY_LABEL"
+
+[node name="ShowMetaTokenValuesHint" type="TextureRect" parent="VBoxContainer/ShowMetaTokenValuesContainer"]
+layout_mode = 2
+tooltip_text = "SETTINGS_META_TOKEN_VALUES_VISIBILITY_HINT"
+texture = ExtResource("3_kcvkw")
+expand_mode = 2
+
+[node name="ShowMetaTokenValuesOptionButton" type="OptionButton" parent="VBoxContainer/ShowMetaTokenValuesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+selected = 1
+item_count = 2
+popup/item_0/text = "SETTINGS_META_TOKEN_VALUES_VISIBILITY_OPTION_SHOW"
+popup/item_0/id = 0
+popup/item_1/text = "SETTINGS_META_TOKEN_VALUES_VISIBILITY_OPTION_HIDE"
+popup/item_1/id = 1
+
 [node name="ImageUploadServerSeparator" type="HSeparator" parent="VBoxContainer"]
 layout_mode = 2
 
@@ -724,6 +747,7 @@ size_flags_horizontal = 3
 [connection signal="file_selected" from="VBoxContainer/TokenCountPathContainer/TokenCounterLocalizerFileDialog" to="." method="_on_token_counter_localizer_file_dialog_file_selected"]
 [connection signal="pressed" from="VBoxContainer/TokenCountPathContainer/TokenCounterFilePickerBtn" to="." method="_on_token_counter_file_picker_btn_pressed"]
 [connection signal="item_selected" from="VBoxContainer/TokenCountModelChoiceContainer/TokenCountModelChoiceOptionButton" to="." method="_on_something_int_needs_update_global"]
+[connection signal="item_selected" from="VBoxContainer/ShowMetaTokenValuesContainer/ShowMetaTokenValuesOptionButton" to="." method="_on_something_int_needs_update_global"]
 [connection signal="item_selected" from="VBoxContainer/ImageUplaodSettingContainer/ImageUplaodSettingOptionButton" to="." method="_on_image_uplaod_setting_option_button_item_selected"]
 [connection signal="item_selected" from="VBoxContainer/ImageAutoRotateSettingContainer/ImageAutoRotateSettingOptionButton" to="." method="_on_image_auto_rotate_setting_option_button_item_selected"]
 [connection signal="text_changed" from="VBoxContainer/ImageUploadServerURLContainer/ImageUploadServerURLEdit" to="." method="_on_image_upload_server_url_edit_text_changed"]

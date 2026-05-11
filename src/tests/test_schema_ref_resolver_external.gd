@@ -54,6 +54,41 @@ func _run() -> void:
 	if urls.size() == 1:
 		assert_true(urls[0] == "https://example.com/schemas/person.json", "external url normalized")
 
+	var local_defs_schema = {
+		"type": "object",
+		"required": ["goals"],
+		"properties": {
+			"goals": {
+				"type": "array",
+				"items": {"$ref": "#/$defs/goal"}
+			}
+		},
+		"$defs": {
+			"distance": {
+				"type": "object",
+				"properties": {
+					"amount": {"type": "number"}
+				}
+			},
+			"goal": {
+				"type": "object",
+				"properties": {
+					"name": {"type": "string"},
+					"distance": {"$ref": "#/$defs/distance"}
+				}
+			}
+		}
+	}
+	var local_defs_resolved = resolver.resolve_schema(local_defs_schema)
+	assert_true(not bool(local_defs_resolved.get("has_external_ref", true)), "local defs ref does not count as unresolved external ref")
+	assert_true(not bool(local_defs_resolved.get("has_ref_cycle", true)), "nonrecursive local refs do not create cycle marker")
+	var local_goals_items = local_defs_resolved.get("schema", {}).get("properties", {}).get("goals", {}).get("items", {})
+	assert_true(local_goals_items is Dictionary, "local array item schema is dictionary")
+	assert_true(str(local_goals_items.get("$ref", "")) == "", "local array item ref is expanded")
+	assert_true(local_goals_items.get("properties", {}).has("name"), "local array item contains referenced property")
+	var local_distance = local_goals_items.get("properties", {}).get("distance", {})
+	assert_true(local_distance.get("properties", {}).has("amount"), "nested local ref is expanded")
+
 	var local_recursive_schema = {
 		"$id": "https://example.com/schemas/tree.json",
 		"type": "object",
@@ -75,12 +110,14 @@ func _run() -> void:
 	}
 	var local_resolved = resolver.resolve_schema(local_recursive_schema)
 	assert_true(not bool(local_resolved.get("has_external_ref", true)), "local ref does not count as unresolved external ref")
-	assert_true(not bool(local_resolved.get("has_ref_cycle", true)), "local ref should not be expanded into cycle marker")
+	assert_true(bool(local_resolved.get("has_ref_cycle", false)), "recursive local ref becomes a cycle marker")
 	var local_schema_after = local_resolved.get("schema", {})
-	var root_ref = local_schema_after.get("properties", {}).get("root", {}).get("$ref", "")
-	assert_true(str(root_ref) == "#/$defs/node", "local root ref stays unchanged")
+	var root_schema = local_schema_after.get("properties", {}).get("root", {})
+	assert_true(root_schema.get("properties", {}).has("name"), "local root ref is expanded")
+	var nested_item = root_schema.get("properties", {}).get("children", {}).get("items", {})
+	assert_true(nested_item.has("x_ftc_ref_cycle"), "recursive nested ref becomes cycle marker")
 	var nested_ref = local_schema_after.get("$defs", {}).get("node", {}).get("properties", {}).get("children", {}).get("items", {}).get("$ref", "")
-	assert_true(str(nested_ref) == "#/$defs/node", "local nested ref stays unchanged")
+	assert_true(str(nested_ref) == "#/$defs/node", "$defs are copied without eager expansion")
 
 	var local_urls = resolver.collect_external_document_urls(local_recursive_schema)
 	assert_true(local_urls.is_empty(), "same-document refs must not be treated as external urls")

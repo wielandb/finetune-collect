@@ -12,7 +12,7 @@ class OpenAiStub:
 		var models: Array[String] = ["gpt-4o-mini"]
 		emit_signal("models_received", models)
 
-	func prompt_gpt(messages, model: String, url: String, tools: Array = [], response_format: Dictionary = {}) -> void:
+	func prompt_gpt(messages: Array[Message], model: String, url: String, tools: Array = [], response_format: Dictionary = {}) -> void:
 		last_request = {
 			"messages": messages,
 			"model": model,
@@ -187,8 +187,14 @@ func _run() -> void:
 			var goals_items = goals_node.get("items", {})
 			_check(str(goals_items.get("$ref", "")) == "#/$defs/goal", "response_format should keep local $ref target")
 
+	var request_messages = openai.last_request.get("messages", [])
+	for request_message in request_messages:
+		if request_message is Node and is_instance_valid(request_message):
+			request_message.free()
+	openai.last_request = {}
 	messages_list.queue_free()
 	fine_tune.queue_free()
+	await process_frame
 	await process_frame
 
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])

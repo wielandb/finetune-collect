@@ -3,6 +3,7 @@ class_name Models
 
 var http_request: HTTPRequest
 @onready var parent = get_parent()
+var _request_in_flight = false
 
 signal models_received(models: Array[String])
 
@@ -15,16 +16,21 @@ func get_available_models(url: String = "https://api.openai.com/v1/models"):
 	var openai_api_key = parent.get_api()
 	if !openai_api_key:
 		return
+	if _request_in_flight:
+		return
 		
 	var headers = [
 		"Authorization: Bearer " + openai_api_key
 	]
 	
+	_request_in_flight = true
 	var error = http_request.request(url, headers)
 	if error != OK:
+		_request_in_flight = false
 		push_error("An error occurred in the HTTP request.")
 
 func _http_request_completed(result, response_code, headers, body):
+	_request_in_flight = false
 	if result != HTTPRequest.RESULT_SUCCESS:
 		push_error("Error with the request.")
 		return

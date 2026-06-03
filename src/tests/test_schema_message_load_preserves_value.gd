@@ -109,7 +109,7 @@ func _run() -> void:
 	await process_frame
 	await process_frame
 
-	var schema_edit = message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit")
+	var schema_edit = message.get_node("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaEdit")
 	assert_true(schema_edit is CodeEdit, "schema raw editor exists")
 	if schema_edit is CodeEdit:
 		assert_true(schema_edit.text.strip_edges() != "", "raw editor text stays non-empty after rebuild")

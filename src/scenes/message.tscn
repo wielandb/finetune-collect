@@ -687,12 +687,50 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox"]
+[node name="SchemaRawEditorRow" type="BoxContainer" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="SchemaEdit" type="CodeEdit" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow"]
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("12_rwbsk")
 wrap_mode = 1
+
+[node name="SchemaTransformArea" type="Control" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow"]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="SchemaTransformOptionButton" type="OptionButton" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaTransformArea"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+fit_to_longest_item = false
+clip_text = true
+focus_mode = 0
+
+[node name="SchemaTransformSpinner" parent="SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaTransformArea" instance=ExtResource("19_g66g3")]
+visible = false
+custom_minimum_size = Vector2(34, 34)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -17.0
+offset_top = -17.0
+offset_right = 17.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="InitEditingRequestToken" type="HTTPRequest" parent="SchemaMessageContainer"]
 

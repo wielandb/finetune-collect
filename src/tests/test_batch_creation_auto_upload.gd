@@ -50,6 +50,15 @@ func _create_temp_png(file_name: String, fill_color: Color) -> String:
 	_assert_eq(save_result, OK, "Saving temporary PNG should succeed")
 	return path
 
+func _create_temp_text_file(file_name: String, content: String) -> String:
+	var path = "user://%s" % file_name
+	var file = FileAccess.open(path, FileAccess.WRITE)
+	_assert_true(file != null, "Opening temporary text file should succeed")
+	if file != null:
+		file.store_string(content)
+		file.close()
+	return path
+
 func _delete_temp_file(path: String) -> void:
 	if path == "":
 		return
@@ -73,6 +82,55 @@ func _get_first_image_content(scene, convo_id: String) -> String:
 		if msg is Dictionary and str(msg.get("type", "")) == "Image":
 			return str(msg.get("imageContent", ""))
 	return ""
+
+func _get_conversation(scene, convo_id: String) -> Array:
+	if not scene.CONVERSATIONS.has(convo_id):
+		return []
+	var convo = scene.CONVERSATIONS[convo_id]
+	if not (convo is Array):
+		return []
+	return convo
+
+func _make_object_schema(title: String, property_name: String, property_type: String) -> Dictionary:
+	return {
+		"title": title,
+		"type": "object",
+		"properties": {
+			property_name: {
+				"type": property_type
+			}
+		},
+		"required": [property_name],
+		"additionalProperties": false
+	}
+
+func _make_schema_log_entry(schema_name: String, schema: Dictionary, response_content: String = "{\"ok\":true}") -> Dictionary:
+	return {
+		"request": {
+			"messages": [
+				{"role": "user", "content": "Bitte antworte als JSON"}
+			],
+			"response_format": {
+				"type": "json_schema",
+				"json_schema": {
+					"name": schema_name,
+					"strict": true,
+					"schema": schema
+				}
+			}
+		},
+		"response": {
+			"output_messages": [
+				{"role": "assistant", "content": response_content}
+			]
+		}
+	}
+
+func _find_schema_by_name(scene, schema_name: String) -> Dictionary:
+	for schema_entry in scene.SCHEMAS:
+		if schema_entry is Dictionary and str(schema_entry.get("name", "")) == schema_name:
+			return schema_entry
+	return {}
 
 func _configure_upload_settings(scene) -> void:
 	scene.SETTINGS["imageUploadSetting"] = 1
@@ -156,6 +214,71 @@ func _test_cloud_save_waits_and_avoids_duplicate_uploads() -> void:
 	_delete_temp_file(temp_cloud)
 	await _destroy_scene(scene)
 
+func _test_batch_creation_imports_supported_json_and_falls_back_to_text() -> void:
+	var scene = await _create_scene()
+	var settings_ui = scene.get_node("Conversation/Settings/ConversationSettings")
+	var order_before = scene.CONVERSATION_ORDER.duplicate()
+	var import_json = JSON.stringify({"messages": [{"role": "user", "content": "Batch JSON import"}]})
+	var fallback_json = JSON.stringify({"foo": "bar"})
+	var invalid_json = "{invalid json"
+	var temp_import = _create_temp_text_file("tmp_batch_import_messages.json", import_json)
+	var temp_fallback = _create_temp_text_file("tmp_batch_fallback_object.json", fallback_json)
+	var temp_invalid = _create_temp_text_file("tmp_batch_fallback_invalid.json", invalid_json)
+	settings_ui._on_batch_creation_file_dialog_files_selected(PackedStringArray([temp_import, temp_fallback, temp_invalid]))
+	await scene.wait_for_batch_post_create_uploads()
+	await process_frame
+	var new_ids = _get_new_conversation_ids(scene, order_before)
+	_assert_eq(new_ids.size(), 3, "Batch JSON import should create one conversation per JSON file")
+	if new_ids.size() >= 3:
+		var imported_convo = _get_conversation(scene, new_ids[0])
+		_assert_eq(imported_convo.size(), 2, "Supported JSON import conversation should contain meta plus imported message")
+		if imported_convo.size() >= 2:
+			_assert_eq(imported_convo[1].get("role", ""), "user", "Supported JSON import keeps user role")
+			_assert_eq(imported_convo[1].get("type", ""), "Text", "Supported JSON import creates a text message")
+			_assert_eq(imported_convo[1].get("textContent", ""), "Batch JSON import", "Supported JSON import uses message content")
+			_assert_true(str(imported_convo[1].get("textContent", "")) != import_json, "Supported JSON import should not keep raw JSON as message text")
+		var fallback_convo = _get_conversation(scene, new_ids[1])
+		_assert_eq(fallback_convo.size(), 2, "Unsupported JSON fallback should contain meta plus text message")
+		if fallback_convo.size() >= 2:
+			_assert_eq(fallback_convo[1].get("type", ""), "Text", "Unsupported JSON fallback creates text message")
+			_assert_eq(fallback_convo[1].get("textContent", ""), fallback_json, "Unsupported JSON fallback keeps raw JSON text")
+		var invalid_convo = _get_conversation(scene, new_ids[2])
+		_assert_eq(invalid_convo.size(), 2, "Invalid JSON fallback should contain meta plus text message")
+		if invalid_convo.size() >= 2:
+			_assert_eq(invalid_convo[1].get("type", ""), "Text", "Invalid JSON fallback creates text message")
+			_assert_eq(invalid_convo[1].get("textContent", ""), invalid_json, "Invalid JSON fallback keeps raw file text")
+	_delete_temp_file(temp_import)
+	_delete_temp_file(temp_fallback)
+	_delete_temp_file(temp_invalid)
+	await _destroy_scene(scene)
+
+func _test_batch_creation_imports_supported_json_schema_log() -> void:
+	var scene = await _create_scene()
+	scene.SCHEMAS = []
+	var schemas_list = scene.get_node_or_null("Conversation/Schemas/SchemasList")
+	if schemas_list != null and schemas_list.has_method("from_var"):
+		schemas_list.from_var(scene.SCHEMAS)
+	var settings_ui = scene.get_node("Conversation/Settings/ConversationSettings")
+	var order_before = scene.CONVERSATION_ORDER.duplicate()
+	var schema_name = "BatchSchemaImport"
+	var log_json = JSON.stringify(_make_schema_log_entry(schema_name, _make_object_schema(schema_name, "ok", "boolean")))
+	var temp_log = _create_temp_text_file("tmp_batch_schema_log.json", log_json)
+	settings_ui._on_batch_creation_file_dialog_files_selected(PackedStringArray([temp_log]))
+	await scene.wait_for_batch_post_create_uploads()
+	await process_frame
+	var new_ids = _get_new_conversation_ids(scene, order_before)
+	_assert_eq(new_ids.size(), 1, "Batch schema log import should create one conversation")
+	_assert_true(not _find_schema_by_name(scene, schema_name).is_empty(), "Batch schema log import should add imported schema")
+	if new_ids.size() > 0:
+		var imported_convo = _get_conversation(scene, new_ids[0])
+		_assert_eq(imported_convo.size(), 3, "Batch schema log conversation should contain meta, request and response")
+		if imported_convo.size() >= 3:
+			_assert_eq(imported_convo[1].get("textContent", ""), "Bitte antworte als JSON", "Batch schema log imports request message")
+			_assert_eq(imported_convo[2].get("type", ""), "JSON", "Batch schema log imports assistant response as JSON")
+			_assert_eq(imported_convo[2].get("jsonSchemaName", ""), schema_name, "Batch schema log response selects imported schema")
+	_delete_temp_file(temp_log)
+	await _destroy_scene(scene)
+
 func _init() -> void:
 	call_deferred("_run")
 
@@ -163,5 +286,7 @@ func _run() -> void:
 	await _test_batch_creation_triggers_background_upload_and_button_state()
 	await _test_export_waits_for_running_batch_uploads()
 	await _test_cloud_save_waits_and_avoids_duplicate_uploads()
+	await _test_batch_creation_imports_supported_json_and_falls_back_to_text()
+	await _test_batch_creation_imports_supported_json_schema_log()
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])
 	quit(tests_failed)

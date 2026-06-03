@@ -9,9 +9,10 @@ class OpenAiStub:
 	var last_request = {}
 
 	func get_models() -> void:
-		emit_signal("models_received", ["gpt-4o-mini"])
+		var models: Array[String] = ["gpt-4o-mini"]
+		emit_signal("models_received", models)
 
-	func prompt_gpt(messages, model: String, url: String, tools: Array = [], response_format: Dictionary = {}) -> void:
+	func prompt_gpt(messages: Array[Message], model: String, url: String, tools: Array = [], response_format: Dictionary = {}) -> void:
 		last_request = {
 			"messages": messages,
 			"model": model,
@@ -191,8 +192,16 @@ func _run() -> void:
 		if selected_schema_option.selected >= 0:
 			_check(selected_schema_option.get_item_text(selected_schema_option.selected) == "OrderSchema", "UI should select the schema used for completion")
 
+	var request_messages = openai.last_request.get("messages", [])
+	for request_message in request_messages:
+		if request_message is Node and is_instance_valid(request_message):
+			request_message.free()
+	if is_instance_valid(message):
+		message.free()
+	openai.last_request = {}
 	messages_list.queue_free()
 	fine_tune.queue_free()
+	await process_frame
 	await process_frame
 
 	print("Tests run: %d, Failures: %d" % [tests_run, tests_failed])

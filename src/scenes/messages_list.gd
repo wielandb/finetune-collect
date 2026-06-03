@@ -5,6 +5,7 @@ extends ScrollContainer
 @onready var openai = get_tree().get_root().get_node("FineTune/OpenAi")
 const JsonSchemaValidator = preload("res://json_schema_validator.gd")
 const SchemaAlignOpenAI = preload("res://scenes/schemas/schema_align_openai.gd")
+const SCHEMA_TRANSFORM_SYSTEM_PROMPT = "Überführe die folgenden Daten in das Schema."
 var _compact_layout_enabled = false
 var _schema_completion_options = []
 var _pending_completion_contexts = []
@@ -37,6 +38,16 @@ func _apply_compact_layout_to_message(message_instance) -> void:
 	if message_instance != null and message_instance.has_method("set_compact_layout"):
 		message_instance.set_compact_layout(_compact_layout_enabled)
 
+func _connect_message_signals(message_instance) -> void:
+	if message_instance == null:
+		return
+	if message_instance.has_signal("schema_transform_requested"):
+		var callable = Callable(self, "_on_message_schema_transform_requested")
+		if not message_instance.is_connected("schema_transform_requested", callable):
+			message_instance.connect("schema_transform_requested", callable)
+	if message_instance.has_method("set_schema_transform_options"):
+		message_instance.set_schema_transform_options(_get_openai_valid_schema_options())
+
 func to_var():
 	var me = []
 	for message in $MessagesListContainer.get_children():
@@ -53,6 +64,7 @@ func from_var(data):
 		var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 		$MessagesListContainer.add_child(MessageInstance)
 		_apply_compact_layout_to_message(MessageInstance)
+		_connect_message_signals(MessageInstance)
 		MessageInstance.from_var(m)
 		#$MessagesListContainer.move_child(addButton, -1)
 		$MessagesListContainer.move_child(buttonsContainer, -1)	
@@ -121,6 +133,7 @@ func _on_add_message_button_pressed() -> void:
 	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
 	_apply_compact_layout_to_message(MessageInstance)
+	_connect_message_signals(MessageInstance)
 	#$MessagesListContainer.move_child(addAIButton, -1)
 	#$MessagesListContainer.move_child(addButton, -1)
 	$MessagesListContainer.move_child(buttonsContainer, -1)
@@ -195,6 +208,15 @@ func _message_content_to_text(content) -> String:
 				parts.append(part)
 		return "".join(parts)
 	return str(content)
+
+func _to_typed_message_array(source) -> Array[Message]:
+	var messages: Array[Message] = []
+	if not (source is Array):
+		return messages
+	for item in source:
+		if item is Message:
+			messages.append(item)
+	return messages
 
 func _completion_schema_name_to_api_name(schema_name: String) -> String:
 	var cleaned = ""
@@ -337,6 +359,22 @@ func _make_received_json_message(schema_name: String, json_text: String) -> Dict
 
 func gpt_response_completed(message: Message, response:Dictionary):
 	printt(message.get_as_dict())
+	var completion_context = _pop_pending_completion_context()
+	var completion_kind = str(completion_context.get("kind", "completion"))
+	var forced_schema_name = str(completion_context.get("schema_name", "")).strip_edges()
+	if completion_kind == "schema_transform":
+		var target_message = completion_context.get("target", null)
+		var transformed_json_content = _message_content_to_text(message["content"])
+		var json = JSON.new()
+		if json.parse(transformed_json_content) != OK:
+			push_error("Schema-Überführung fehlgeschlagen: Die OpenAI-Antwort ist kein gültiges JSON.")
+			_end_schema_transform_for_target(target_message)
+			_on_something_happened_to_check_enabled_status()
+			return
+		if target_message != null and is_instance_valid(target_message) and target_message.has_method("apply_schema_transform_result"):
+			target_message.apply_schema_transform_result(forced_schema_name, transformed_json_content)
+		_on_something_happened_to_check_enabled_status()
+		return
 	# Add a new message to the MessagesListContainer
 	var MessageInstance = MESSAGE_SCENE.instantiate()
 	#var addButton = $MessagesListContainer/AddMessageButton
@@ -344,12 +382,11 @@ func gpt_response_completed(message: Message, response:Dictionary):
 	var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 	$MessagesListContainer.add_child(MessageInstance)
 	_apply_compact_layout_to_message(MessageInstance)
+	_connect_message_signals(MessageInstance)
 	$MessagesListContainer.move_child(buttonsContainer, -1)
 	# Populate the message with the received data
 	## We need to check if its a text response or a tool call response
 	var RecvMsgVar
-	var completion_context = _pop_pending_completion_context()
-	var forced_schema_name = str(completion_context.get("schema_name", "")).strip_edges()
 	if forced_schema_name != "":
 		var forced_json_content = _message_content_to_text(message["content"])
 		RecvMsgVar = _make_received_json_message(forced_schema_name, forced_json_content)
@@ -418,9 +455,16 @@ func _extract_openai_error_message(response: Dictionary) -> String:
 		return "OpenAI completion failed (HTTP " + str(response_code) + ")."
 	return "OpenAI completion failed."
 
+func _end_schema_transform_for_target(target_message) -> void:
+	if target_message != null and is_instance_valid(target_message) and target_message.has_method("end_schema_transform"):
+		target_message.end_schema_transform()
+
 func _on_gpt_response_failed(response: Dictionary) -> void:
+	var completion_context = {}
 	if _pending_completion_contexts.size() > 0:
-		_pending_completion_contexts.remove_at(0)
+		completion_context = _pop_pending_completion_context()
+	if str(completion_context.get("kind", "")) == "schema_transform":
+		_end_schema_transform_for_target(completion_context.get("target", null))
 	push_error(_extract_openai_error_message(response))
 	_on_something_happened_to_check_enabled_status()
 
@@ -440,8 +484,16 @@ func _build_completion_message_payload() -> Dictionary:
 		1: "low",
 		2: "auto"
 	}
-	var settings = get_tree().get_root().get_node("FineTune").SETTINGS
-	var my_conversation_id = get_tree().get_root().get_node("FineTune").CURRENT_EDITED_CONVO_IX
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	var settings = {}
+	var my_conversation_id = ""
+	if ft_node != null:
+		var node_settings = ft_node.get("SETTINGS")
+		if node_settings is Dictionary:
+			settings = node_settings
+		var edited_conversation_id = ft_node.get("CURRENT_EDITED_CONVO_IX")
+		if edited_conversation_id != null:
+			my_conversation_id = str(edited_conversation_id)
 	var ftc_messages = self.to_var()
 	# Remove the meta message if anywhere
 	var new_ftc_messages = []
@@ -531,7 +583,7 @@ func _build_completion_message_payload() -> Dictionary:
 
 func _request_completion(schema_name: String = "", response_format_override: Dictionary = {}) -> void:
 	var completion_payload = _build_completion_message_payload()
-	var openai_messages = completion_payload.get("messages", [])
+	var openai_messages: Array[Message] = _to_typed_message_array(completion_payload.get("messages", []))
 	var model = str(completion_payload.get("model", "gpt-4o-mini"))
 	var toolsforopenAI = completion_payload.get("tools", [])
 	var response_format = response_format_override
@@ -546,11 +598,85 @@ func _request_completion(schema_name: String = "", response_format_override: Dic
 	if schema_name != "" and response_format.size() == 0:
 		push_error("Schema-basierte Vervollständigung nicht möglich, da das Schema nicht OpenAI-valide ist: " + schema_name)
 		return
-	_pending_completion_contexts.append({"schema_name": schema_name})
+	_pending_completion_contexts.append({"kind": "completion", "schema_name": schema_name})
 	print(model)
 	for m in openai_messages:
 		print(m.content)
 	openai.prompt_gpt(openai_messages, model, "", toolsforopenAI, response_format)
+
+func _has_openai_api_key() -> bool:
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	if ft_node == null:
+		return false
+	var settings = ft_node.get("SETTINGS")
+	if not (settings is Dictionary):
+		return false
+	return str(settings.get("apikey", "")).strip_edges() != ""
+
+func refresh_schema_transform_options_for_message(message_instance) -> void:
+	if message_instance != null and message_instance.has_method("set_schema_transform_options"):
+		message_instance.set_schema_transform_options(_get_openai_valid_schema_options())
+
+func _build_schema_transform_message_payload(raw_json: String) -> Dictionary:
+	var ft_node = get_tree().get_root().get_node_or_null("FineTune")
+	var settings = {}
+	if ft_node != null:
+		settings = ft_node.get("SETTINGS")
+	if not (settings is Dictionary):
+		settings = {}
+	var system_message = Message.new()
+	system_message.set_role("system")
+	system_message.set_content(SCHEMA_TRANSFORM_SYSTEM_PROMPT)
+	var user_message = Message.new()
+	user_message.set_role("user")
+	user_message.set_content(raw_json)
+	return {
+		"messages": [system_message, user_message],
+		"model": settings.get("modelChoice", "gpt-4o-mini")
+	}
+
+func _request_schema_transform(message_node, schema_name: String, raw_json: String) -> void:
+	if not _has_openai_api_key():
+		push_error(tr("DISABLED_EXPLANATION_NEEDS_OPENAI_API_KEY"))
+		_end_schema_transform_for_target(message_node)
+		_on_something_happened_to_check_enabled_status()
+		return
+	var raw_json_text = raw_json.strip_edges()
+	if raw_json_text == "":
+		push_error("Schema-Überführung nicht möglich: Roh-JSON ist leer.")
+		_end_schema_transform_for_target(message_node)
+		return
+	var json = JSON.new()
+	if json.parse(raw_json_text) != OK:
+		push_error("Schema-Überführung nicht möglich: Roh-JSON ist ungültig.")
+		_end_schema_transform_for_target(message_node)
+		return
+	_refresh_schema_completion_mode_options()
+	var response_format = {}
+	for option in _schema_completion_options:
+		if str(option.get("schema_name", "")) == schema_name:
+			var option_response_format = option.get("response_format", {})
+			if option_response_format is Dictionary:
+				response_format = option_response_format
+			break
+	if response_format.size() == 0:
+		push_error("Schema-Überführung nicht möglich, da das Schema nicht OpenAI-valide ist: " + schema_name)
+		_end_schema_transform_for_target(message_node)
+		return
+	var transform_payload = _build_schema_transform_message_payload(raw_json_text)
+	var openai_messages: Array[Message] = _to_typed_message_array(transform_payload.get("messages", []))
+	var model = str(transform_payload.get("model", "gpt-4o-mini"))
+	if message_node != null and is_instance_valid(message_node) and message_node.has_method("begin_schema_transform"):
+		message_node.begin_schema_transform(schema_name)
+	_pending_completion_contexts.append({
+		"kind": "schema_transform",
+		"schema_name": schema_name,
+		"target": message_node
+	})
+	openai.prompt_gpt(openai_messages, model, "", [], response_format)
+
+func _on_message_schema_transform_requested(message_node, schema_name: String, raw_json: String) -> void:
+	_request_schema_transform(message_node, schema_name, raw_json)
 
 func _on_add_message_completion_button_pressed() -> void:
 	if check_autocomplete_disabled_status():
@@ -694,7 +820,14 @@ func getImageType(url: String) -> String:
 		return "jpeg"
 	else:
 		return ""
-		
+
+func _apply_imported_conversation_json_schemas(ft_node, import_result: Dictionary) -> void:
+	if ft_node == null or not ft_node.has_method("apply_imported_conversation_json_schemas"):
+		return
+	var imported_schemas = import_result.get("schemas", [])
+	if imported_schemas is Array and not imported_schemas.is_empty():
+		ft_node.apply_imported_conversation_json_schemas(imported_schemas)
+
 func on_dropped_files(files):
 	for file in files:
 		if file.to_lower().ends_with(".jpg") or file.to_lower().ends_with(".jpeg") or file.to_lower().ends_with(".png"):
@@ -705,6 +838,7 @@ func on_dropped_files(files):
 			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 			$MessagesListContainer.add_child(MessageInstance)
 			_apply_compact_layout_to_message(MessageInstance)
+			_connect_message_signals(MessageInstance)
 			#$MessagesListContainer.move_child(addAIButton, -1)
 			#$MessagesListContainer.move_child(addButton, -1)
 			$MessagesListContainer.move_child(buttonsContainer, -1)	
@@ -726,6 +860,7 @@ func on_dropped_files(files):
 					continue
 				var import_action = str(import_result.get("action", ""))
 				var imported_messages = import_result.get("messages", [])
+				_apply_imported_conversation_json_schemas(ft_node, import_result)
 				if import_action == "load_project":
 					await ft_node.request_load_project_from_path_with_unsaved_guard(file)
 				elif import_action == "append":
@@ -753,6 +888,7 @@ func add_message(message_obj):
 			var buttonsContainer = $MessagesListContainer/AddButtonsContainer
 			$MessagesListContainer.add_child(MessageInstance)
 			_apply_compact_layout_to_message(MessageInstance)
+			_connect_message_signals(MessageInstance)
 			#$MessagesListContainer.move_child(addAIButton, -1)
 			#$MessagesListContainer.move_child(addButton, -1)
 			$MessagesListContainer.move_child(buttonsContainer, -1)	

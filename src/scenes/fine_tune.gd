@@ -4,6 +4,7 @@ signal compact_layout_changed(enabled: bool)
 signal batch_post_create_upload_progress(done: int, total: int, running: bool)
 
 const ImageOrientationUtils = preload("res://image_orientation_utils.gd")
+const SchemaAlignOpenAI = preload("res://scenes/schemas/schema_align_openai.gd")
 const COMPACT_LAYOUT_MIN_ASPECT_RATIO = 1.3
 const MOBILE_LAYOUT_REFERENCE_WIDTH = 360.0
 const MOBILE_LAYOUT_COMFORT_MULTIPLIER = 1.3
@@ -112,7 +113,7 @@ var _save_success_icon_feedback_id = 0
 var _save_success_icon_feedback_duration_seconds = SAVE_BUTTON_SUCCESS_ICON_DURATION_SECONDS
 var _suppress_message_update_events = false
 
-var file_access_web = FileAccessWeb.new()
+var file_access_web = null
 var EXPORT_BTN_ORIG_TEXT = ""
 # FINETUNEDATA = 
 # { functions: [],
@@ -772,6 +773,7 @@ func _make_conversation_json_import_error(source_label: String, error_key: Strin
 		"ok": false,
 		"action": "",
 		"messages": [],
+		"schemas": [],
 		"source_label": source_label,
 		"error_key": error_key,
 		"error_details": details,
@@ -835,6 +837,7 @@ func classify_conversation_json_import_data(data, source_label: String = "json")
 			"ok": true,
 			"action": CONVERSATION_JSON_IMPORT_ACTION_PROJECT,
 			"messages": [],
+			"schemas": [],
 			"source_label": source_label,
 			"error_key": "",
 			"error_details": "",
@@ -846,10 +849,14 @@ func classify_conversation_json_import_data(data, source_label: String = "json")
 	var messages = extracted.get("messages", [])
 	if not (messages is Array) or messages.size() == 0:
 		return _make_conversation_json_import_error(source_label, CONVERSATION_JSON_IMPORT_ERROR_EMPTY)
+	var schemas = extracted.get("schemas", [])
+	if not (schemas is Array):
+		schemas = []
 	return {
 		"ok": true,
 		"action": str(extracted.get("action", "")),
 		"messages": messages,
+		"schemas": schemas,
 		"source_label": source_label,
 		"error_key": "",
 		"error_details": "",
@@ -858,35 +865,42 @@ func classify_conversation_json_import_data(data, source_label: String = "json")
 
 func _extract_conversation_json_import_messages(data) -> Dictionary:
 	if _is_llm_call_log_entry(data):
-		var raw_log_items = _raw_openai_items_from_llm_call_log_entry(data)
+		var log_payload = _llm_call_log_import_payload_from_entry(data, [])
+		var raw_log_items = log_payload.get("items", [])
 		return {
 			"recognized": true,
 			"action": CONVERSATION_JSON_IMPORT_ACTION_CREATE_CONVERSATION,
-			"messages": conversation_from_openai_message_json(raw_log_items)
+			"messages": conversation_from_openai_message_json(raw_log_items),
+			"schemas": log_payload.get("schemas", [])
 		}
 	if data is Array and _array_contains_llm_call_log_entry(data):
-		var raw_log_array_items = _raw_openai_items_from_llm_call_log_array(data)
+		var log_array_payload = _llm_call_log_import_payload_from_array(data)
+		var raw_log_array_items = log_array_payload.get("items", [])
 		return {
 			"recognized": true,
 			"action": CONVERSATION_JSON_IMPORT_ACTION_CREATE_CONVERSATION,
-			"messages": conversation_from_openai_message_json(raw_log_array_items)
+			"messages": conversation_from_openai_message_json(raw_log_array_items),
+			"schemas": log_array_payload.get("schemas", [])
 		}
 	if data is Dictionary and data.get("messages", null) is Array:
 		return {
 			"recognized": true,
 			"action": CONVERSATION_JSON_IMPORT_ACTION_APPEND,
-			"messages": conversation_from_openai_message_json(data.get("messages", []))
+			"messages": conversation_from_openai_message_json(data.get("messages", [])),
+			"schemas": []
 		}
 	if data is Array:
 		return {
 			"recognized": true,
 			"action": CONVERSATION_JSON_IMPORT_ACTION_APPEND,
-			"messages": conversation_from_openai_message_json(data)
+			"messages": conversation_from_openai_message_json(data),
+			"schemas": []
 		}
 	return {
 		"recognized": false,
 		"action": "",
-		"messages": []
+		"messages": [],
+		"schemas": []
 	}
 
 func _is_llm_call_log_entry(value) -> bool:
@@ -905,7 +919,31 @@ func _raw_openai_items_from_llm_call_log_array(entries: Array) -> Array:
 			items.append_array(_raw_openai_items_from_llm_call_log_entry(entry))
 	return items
 
-func _raw_openai_items_from_llm_call_log_entry(entry: Dictionary) -> Array:
+func _llm_call_log_import_payload_from_array(entries: Array) -> Dictionary:
+	var items = []
+	var schemas = []
+	for entry in entries:
+		if _is_llm_call_log_entry(entry):
+			var entry_payload = _llm_call_log_import_payload_from_entry(entry, schemas)
+			items.append_array(entry_payload.get("items", []))
+			schemas = entry_payload.get("schemas", schemas)
+	return {
+		"items": items,
+		"schemas": schemas
+	}
+
+func _llm_call_log_import_payload_from_entry(entry: Dictionary, pending_schemas: Array) -> Dictionary:
+	var schemas = pending_schemas.duplicate(true)
+	var schema_info = _response_schema_import_info_from_llm_call_log_entry(entry, schemas)
+	var schema_entry = schema_info.get("schema_entry", null)
+	if schema_entry is Dictionary:
+		schemas.append(schema_entry)
+	return {
+		"items": _raw_openai_items_from_llm_call_log_entry(entry, str(schema_info.get("schema_name", ""))),
+		"schemas": schemas
+	}
+
+func _raw_openai_items_from_llm_call_log_entry(entry: Dictionary, response_schema_name: String = "") -> Array:
 	var items = []
 	var request = entry.get("request", {})
 	if request is Dictionary:
@@ -915,18 +953,138 @@ func _raw_openai_items_from_llm_call_log_entry(entry: Dictionary) -> Array:
 			_append_normalized_openai_import_items(items, request.get("input", []))
 	var response = entry.get("response", {})
 	if response is Dictionary:
+		var seen_response_signatures = {}
 		if response.get("output_messages", null) is Array:
-			_append_normalized_openai_import_items(items, response.get("output_messages", []))
+			_append_unique_normalized_openai_import_items(items, response.get("output_messages", []), seen_response_signatures, response_schema_name)
 		if response.get("output", null) is Array:
-			_append_normalized_openai_import_items(items, response.get("output", []))
+			_append_unique_normalized_openai_import_items(items, response.get("output", []), seen_response_signatures, response_schema_name)
 		var parsed_body = response.get("parsed_body", {})
 		if parsed_body is Dictionary:
 			if parsed_body.get("output", null) is Array:
-				_append_normalized_openai_import_items(items, parsed_body.get("output", []))
-			_append_chat_completion_choices_for_import(items, parsed_body)
+				_append_unique_normalized_openai_import_items(items, parsed_body.get("output", []), seen_response_signatures, response_schema_name)
+			_append_chat_completion_choices_for_import(items, parsed_body, seen_response_signatures, response_schema_name)
 	return items
 
-func _append_chat_completion_choices_for_import(target: Array, parsed_body: Dictionary) -> void:
+func _response_schema_import_info_from_llm_call_log_entry(entry: Dictionary, pending_schemas: Array) -> Dictionary:
+	var request = entry.get("request", {})
+	if not (request is Dictionary):
+		return {"schema_name": "", "schema_entry": null}
+	var response_format = request.get("response_format", {})
+	if not (response_format is Dictionary):
+		return {"schema_name": "", "schema_entry": null}
+	return _resolve_imported_response_format_schema(response_format, pending_schemas)
+
+func _resolve_imported_response_format_schema(response_format: Dictionary, pending_schemas: Array = []) -> Dictionary:
+	var json_schema = response_format.get("json_schema", {})
+	if not (json_schema is Dictionary):
+		return {"schema_name": "", "schema_entry": null}
+	var schema = json_schema.get("schema", null)
+	if not (schema is Dictionary):
+		return {"schema_name": "", "schema_entry": null}
+	var sanitized_schema = _sanitize_import_schema(schema)
+	if not (sanitized_schema is Dictionary):
+		return {"schema_name": "", "schema_entry": null}
+	var schema_signature = _canonical_json_signature(sanitized_schema)
+	var candidates = _combined_schema_candidates(pending_schemas)
+	for candidate in candidates:
+		if not (candidate is Dictionary):
+			continue
+		var candidate_schema = _schema_signature_source_from_entry(candidate)
+		if not (candidate_schema is Dictionary):
+			continue
+		if _canonical_json_signature(candidate_schema) == schema_signature:
+			var candidate_name = str(candidate.get("name", "")).strip_edges()
+			if candidate_name != "":
+				return {"schema_name": candidate_name, "schema_entry": null}
+	var base_name = str(json_schema.get("name", "")).strip_edges()
+	if base_name == "" and schema.get("title", null) is String:
+		base_name = str(schema.get("title", "")).strip_edges()
+	if base_name == "":
+		base_name = "Schema"
+	var unique_name = _make_unique_schema_import_name(base_name, candidates)
+	var schema_for_entry = schema.duplicate(true)
+	schema_for_entry["title"] = unique_name
+	var entry = {
+		"name": unique_name,
+		"schema": schema_for_entry,
+		"resolvedSchema": schema_for_entry.duplicate(true),
+		"sanitizedSchema": sanitized_schema.duplicate(true),
+		"externalSchemaErrors": []
+	}
+	return {"schema_name": unique_name, "schema_entry": entry}
+
+func _combined_schema_candidates(pending_schemas: Array = []) -> Array:
+	var candidates = []
+	if SCHEMAS is Array:
+		for schema_entry in SCHEMAS:
+			candidates.append(schema_entry)
+	if pending_schemas is Array:
+		for pending_entry in pending_schemas:
+			candidates.append(pending_entry)
+	return candidates
+
+func _schema_signature_source_from_entry(schema_entry: Dictionary):
+	var schema_source = null
+	if schema_entry.get("sanitizedSchema", null) is Dictionary:
+		schema_source = schema_entry.get("sanitizedSchema", null)
+	elif schema_entry.get("resolvedSchema", null) is Dictionary:
+		schema_source = schema_entry.get("resolvedSchema", null)
+	elif schema_entry.get("schema", null) is Dictionary:
+		schema_source = schema_entry.get("schema", null)
+	if not (schema_source is Dictionary):
+		return null
+	return _sanitize_import_schema(schema_source)
+
+func _sanitize_import_schema(schema: Dictionary):
+	var report = SchemaAlignOpenAI.sanitize_envelope_or_schema_with_report(schema)
+	var result = report.get("result", {})
+	if not (result is Dictionary):
+		return null
+	var sanitized_schema = result.get("schema", null)
+	if sanitized_schema is Dictionary:
+		return sanitized_schema
+	if result.get("parameters", null) is Dictionary:
+		return result.get("parameters", null)
+	if result is Dictionary:
+		return result
+	return null
+
+func _make_unique_schema_import_name(base_name: String, candidates: Array) -> String:
+	var used_names = {}
+	for candidate in candidates:
+		if candidate is Dictionary:
+			var name = str(candidate.get("name", "")).strip_edges()
+			if name != "":
+				used_names[name] = true
+	if not used_names.has(base_name):
+		return base_name
+	var suffix = 1
+	while true:
+		var candidate_name = "%s (%d)" % [base_name, suffix]
+		if not used_names.has(candidate_name):
+			return candidate_name
+		suffix += 1
+	return base_name
+
+func _canonical_json_signature(value) -> String:
+	return JSON.stringify(_canonicalize_json_value(value))
+
+func _canonicalize_json_value(value):
+	if value is Dictionary:
+		var out = {}
+		var keys = value.keys()
+		keys.sort()
+		for key in keys:
+			out[key] = _canonicalize_json_value(value[key])
+		return out
+	if value is Array:
+		var out_array = []
+		for item in value:
+			out_array.append(_canonicalize_json_value(item))
+		return out_array
+	return value
+
+func _append_chat_completion_choices_for_import(target: Array, parsed_body: Dictionary, seen_response_signatures = null, response_schema_name: String = "") -> void:
 	var choices = parsed_body.get("choices", [])
 	if not (choices is Array):
 		return
@@ -935,12 +1093,31 @@ func _append_chat_completion_choices_for_import(target: Array, parsed_body: Dict
 			continue
 		var message = choice.get("message", {})
 		if message is Dictionary:
-			target.append(_normalize_openai_import_item(message))
+			_append_normalized_openai_import_item(target, message, seen_response_signatures, response_schema_name)
 
 func _append_normalized_openai_import_items(target: Array, raw_items: Array) -> void:
 	for raw_item in raw_items:
 		if raw_item is Dictionary:
-			target.append(_normalize_openai_import_item(raw_item))
+			_append_normalized_openai_import_item(target, raw_item)
+
+func _append_unique_normalized_openai_import_items(target: Array, raw_items: Array, seen_response_signatures: Dictionary, response_schema_name: String = "") -> void:
+	for raw_item in raw_items:
+		if raw_item is Dictionary:
+			_append_normalized_openai_import_item(target, raw_item, seen_response_signatures, response_schema_name)
+
+func _append_normalized_openai_import_item(target: Array, raw_item: Dictionary, seen_response_signatures = null, response_schema_name: String = "") -> void:
+	var normalized = _normalize_openai_import_item(raw_item)
+	if seen_response_signatures is Dictionary:
+		var signature = _canonical_json_signature(normalized)
+		if seen_response_signatures.has(signature):
+			return
+		seen_response_signatures[signature] = true
+	if response_schema_name != "" and _is_assistant_import_message(normalized):
+		normalized["_import_json_schema_name"] = response_schema_name
+	target.append(normalized)
+
+func _is_assistant_import_message(item: Dictionary) -> bool:
+	return str(item.get("role", "")) == "assistant"
 
 func _normalize_openai_import_item(item: Dictionary) -> Dictionary:
 	var item_type = str(item.get("type", ""))
@@ -1536,9 +1713,19 @@ func _run_selected_load_action(selected_action: int) -> bool:
 				"Windows", "Linux", "FreeBSD", "NetBSD", "OpenBSD", "BSD", "Android","macOS":
 					$VBoxContainer/LoadControls/LoadBtn/FileDialog.visible = true
 				"Web":
-					file_access_web.open(".json")
+					_ensure_file_access_web()
+					if file_access_web != null:
+						file_access_web.open(".json")
 			return true
 	return false
+
+func _ensure_file_access_web() -> void:
+	if OS.get_name() != "Web" or file_access_web != null:
+		return
+	file_access_web = FileAccessWeb.new()
+	if file_access_web != null:
+		file_access_web.loaded.connect(_on_file_loaded)
+		file_access_web.progress.connect(_on_upload_progress)
 
 func _save_to_current_path() -> bool:
 	if RUNTIME["filepath"] == "":
@@ -1559,8 +1746,7 @@ func _ready() -> void:
 	delete_conversation("FtC1") # A janky workaround for the startup sequence
 	refresh_conversations_list()
 	_on_item_list_item_selected(0)
-	file_access_web.loaded.connect(_on_file_loaded)
-	file_access_web.progress.connect(_on_upload_progress)
+	_ensure_file_access_web()
 	var save_file_dialog = $VBoxContainer/SaveControls/SaveBtn/SaveFileDialog
 	if not save_file_dialog.is_connected("canceled", Callable(self, "_on_save_file_dialog_canceled")):
 		save_file_dialog.canceled.connect(_on_save_file_dialog_canceled)
@@ -1625,9 +1811,6 @@ func _refresh_open_message_meta_visibility() -> void:
 
 func update_settings_internal():
 	SETTINGS = $Conversation/Settings/ConversationSettings.to_var()
-	print("Settings: ")
-
-	print(SETTINGS)
 	_sync_save_load_ui_for_storage_mode()
 	_configure_autosave()
 	_refresh_open_message_meta_visibility()
@@ -1637,6 +1820,22 @@ func update_graders_internal():
 func update_schemas_internal():
 	SCHEMAS = $Conversation/Schemas/SchemasList.to_var()
 	update_available_schemas_in_UI_global()
+
+func apply_imported_conversation_json_schemas(imported_schemas: Array) -> void:
+	if not (imported_schemas is Array) or imported_schemas.is_empty():
+		return
+	var changed = false
+	for schema_entry in imported_schemas:
+		if schema_entry is Dictionary:
+			SCHEMAS.append(schema_entry)
+			changed = true
+	if not changed:
+		return
+	if is_inside_tree() and has_node("Conversation/Schemas/SchemasList"):
+		$Conversation/Schemas/SchemasList.from_var(SCHEMAS)
+	elif is_inside_tree():
+		update_available_schemas_in_UI_global()
+
 func get_available_schema_names():
 	var tmpNames = []
 	for s in SCHEMAS:
@@ -2067,7 +2266,6 @@ func load_from_binary(filename):
 
 func load_from_json_data(jsondata: String):
 	var json_as_dict = JSON.parse_string(jsondata)
-	print(json_as_dict)
 	if not (json_as_dict is Dictionary):
 		push_error("Could not load JSON project: Invalid project data.")
 		return
@@ -3341,7 +3539,7 @@ func conversation_from_openai_message_json(oaimsgjson):
 			else:
 				var a_text = _extract_text_from_msg(msg)
 				if _validate_is_json(a_text):
-					NEWCONVO.append({
+					var json_message = {
 						"role": "assistant",
 						"type": "JSON",
 						"textContent": "",
@@ -3354,7 +3552,11 @@ func conversation_from_openai_message_json(oaimsgjson):
 						"functionResults": "",
 						"functionUsePreText": "",
 						"jsonSchemaValue": a_text
-					})
+					}
+					var imported_schema_name = str(msg.get("_import_json_schema_name", "")).strip_edges()
+					if imported_schema_name != "":
+						json_message["jsonSchemaName"] = imported_schema_name
+					NEWCONVO.append(json_message)
 				else:
 					NEWCONVO.append({
 						"role": "assistant",

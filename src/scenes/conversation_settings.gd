@@ -572,6 +572,23 @@ func create_text_message_dict_from_path(path):
 		"textContent": txtcontent
 	}
 
+func _create_batch_conversation_from_json_path(ft, path: String) -> String:
+	if ft == null or not ft.has_method("classify_conversation_json_import_file"):
+		return ""
+	var import_result = ft.classify_conversation_json_import_file(path)
+	if not bool(import_result.get("ok", false)):
+		return ""
+	var import_action = str(import_result.get("action", ""))
+	if import_action != "append" and import_action != "create_conversation":
+		return ""
+	var imported_messages = import_result.get("messages", [])
+	if not (imported_messages is Array) or imported_messages.is_empty():
+		return ""
+	var imported_schemas = import_result.get("schemas", [])
+	if imported_schemas is Array and not imported_schemas.is_empty() and ft.has_method("apply_imported_conversation_json_schemas"):
+		ft.apply_imported_conversation_json_schemas(imported_schemas)
+	return str(ft.create_new_conversation(imported_messages))
+
 
 func _on_batch_creation_button_pressed() -> void:
 	if _batch_creation_upload_progress_active:
@@ -579,18 +596,21 @@ func _on_batch_creation_button_pressed() -> void:
 	$VBoxContainer/BatchCreatonContainer/BatchCreationFileDialog.visible = true
 
 func _on_batch_creation_file_dialog_files_selected(paths: PackedStringArray) -> void:
-	var first_messages = []
 	var ft = get_node("/root/FineTune")
-	for file in paths:
-		if file.ends_with(".jpg") or file.ends_with(".jpeg") or file.ends_with(".png"):
-			first_messages.append(create_image_message_dict_from_path(file))
-		if file.ends_with(".txt") or file.ends_with(".json"):
-			first_messages.append(create_text_message_dict_from_path(file))
-		if file.ends_with(".mp3") or file.ends_with(".wav") or file.ends_with(".aac"):
-			pass
 	var created_ids = []
-	for message in first_messages:
-		var created_id = ft.create_new_conversation([{"type": "meta", "role": "meta"}, message])
+	for file in paths:
+		var file_lower = file.to_lower()
+		var created_id = ""
+		if file_lower.ends_with(".jpg") or file_lower.ends_with(".jpeg") or file_lower.ends_with(".png"):
+			created_id = ft.create_new_conversation([{"type": "meta", "role": "meta"}, create_image_message_dict_from_path(file)])
+		elif file_lower.ends_with(".json"):
+			created_id = _create_batch_conversation_from_json_path(ft, file)
+			if str(created_id).strip_edges() == "":
+				created_id = ft.create_new_conversation([{"type": "meta", "role": "meta"}, create_text_message_dict_from_path(file)])
+		elif file_lower.ends_with(".txt"):
+			created_id = ft.create_new_conversation([{"type": "meta", "role": "meta"}, create_text_message_dict_from_path(file)])
+		elif file_lower.ends_with(".mp3") or file_lower.ends_with(".wav") or file_lower.ends_with(".aac"):
+			pass
 		if str(created_id).strip_edges() != "":
 			created_ids.append(str(created_id))
 	if created_ids.size() > 0 and ft.has_method("queue_batch_post_create_uploads"):

@@ -1,11 +1,13 @@
 extends BoxContainer
+signal schema_transform_requested(message_node, schema_name: String, raw_json: String)
 const RESULT_PARAMETERS_SCENE = preload("res://scenes/function_call_results_parameter.tscn")
 const FUNCTION_USE_PARAMETERS_SCENE = preload("res://scenes/function_use_parameter.tscn")
 const ImageOrientationUtils = preload("res://image_orientation_utils.gd")
-@onready var schema_edit = $SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit
+@onready var schema_edit = $SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaEdit
 @onready var schema_tabs = $SchemaMessageContainer/SchemaEditTabs
 @onready var schema_form_root = $SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll/SchemaFormRoot
 @onready var schema_form_hint_label = $SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormHintLabel
+@onready var schema_transform_option = $SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaTransformArea/SchemaTransformOptionButton
 
 var image_access_web = null
 var token = "" # The token for the schema editor for this message
@@ -41,6 +43,8 @@ var _compact_meta_control_defaults = {}
 var _compact_image_control_defaults = {}
 var _meta_details_visible = false
 var _schema_form_height_refresh_queued = false
+var _schema_transform_options = []
+var _schema_transform_running = false
 const SCHEMA_FORM_SCROLL_MIN_HEIGHT = 220.0
 
 func selectionStringToIndex(node, string):
@@ -54,7 +58,7 @@ func selectionStringToIndex(node, string):
 func _schema_edit_node():
 	if schema_edit != null:
 		return schema_edit
-	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaEdit")
+	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaEdit")
 
 func _schema_tabs_node():
 	if schema_tabs != null:
@@ -80,6 +84,14 @@ func _schema_form_scroll_node():
 
 func _schema_form_vbox_node():
 	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox")
+
+func _schema_transform_option_node():
+	if schema_transform_option != null:
+		return schema_transform_option
+	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaTransformArea/SchemaTransformOptionButton")
+
+func _schema_transform_spinner_node():
+	return get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaRawTab/SchemaRawVBox/SchemaRawEditorRow/SchemaTransformArea/SchemaTransformSpinner")
 
 func _ensure_schema_form_bound() -> void:
 	var form_root_node = _schema_form_root_node()
@@ -412,6 +424,13 @@ func _configure_schema_layout() -> void:
 	schema_option.fit_to_longest_item = false
 	schema_option.clip_text = true
 	schema_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var transform_option = _schema_transform_option_node()
+	if transform_option is OptionButton:
+		transform_option.fit_to_longest_item = false
+		transform_option.clip_text = true
+		transform_option.size_flags_horizontal = Control.SIZE_SHRINK_END
+		transform_option.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		transform_option.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	var schema_form_scroll = get_node_or_null("SchemaMessageContainer/SchemaEditTabs/SchemaFormTab/SchemaFormVBox/SchemaFormScroll")
 	if schema_form_scroll is ScrollContainer:
 		schema_form_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -489,7 +508,7 @@ func to_var():
 	me["jsonSchemaValue"] = "{}"
 	if schema_edit_node != null:
 		me["jsonSchemaValue"] = schema_edit_node.text
-	var schema_name := ""
+	var schema_name = ""
 	if $SchemaMessageContainer/HBoxContainer/OptionButton.selected > 0:
 		schema_name = $SchemaMessageContainer/HBoxContainer/OptionButton.get_item_text($SchemaMessageContainer/HBoxContainer/OptionButton.selected)
 	me["jsonSchemaName"] = schema_name
@@ -811,6 +830,11 @@ func _ready() -> void:
 	if schema_edit_node != null:
 		schema_edit_node.text_changed.connect(_on_schema_edit_text_changed)
 	$SchemaMessageContainer/HBoxContainer/OptionButton.item_selected.connect(_on_schema_option_selected)
+	var transform_option = _schema_transform_option_node()
+	if transform_option is OptionButton:
+		transform_option.pressed.connect(_on_schema_transform_option_pressed)
+		transform_option.item_selected.connect(_on_schema_transform_option_selected)
+		_refresh_schema_transform_options_from_parent()
 	var schema_tabs_node = _schema_tabs_node()
 	if schema_tabs_node != null:
 		var schema_tab_bar = schema_tabs_node.get_tab_bar()
@@ -1492,6 +1516,107 @@ func _update_external_schema_editor_button_state() -> void:
 		schema_button.disabled = false
 		schema_button.tooltip_text = tr("MESSAGES_JSON_SCHEMA_EXTERNAL_EDITOR_ENABLED")
 
+func set_schema_transform_options(options: Array) -> void:
+	_schema_transform_options = []
+	var transform_option = _schema_transform_option_node()
+	if not (transform_option is OptionButton):
+		return
+	transform_option.set_block_signals(true)
+	transform_option.clear()
+	for option in options:
+		if not (option is Dictionary):
+			continue
+		var schema_name = str(option.get("schema_name", "")).strip_edges()
+		if schema_name == "":
+			continue
+		_schema_transform_options.append({"schema_name": schema_name})
+		transform_option.add_item("In Schema " + schema_name + " überführen", _schema_transform_options.size() - 1)
+	transform_option.select(-1)
+	transform_option.set_block_signals(false)
+	_apply_schema_transform_running_state()
+
+func _apply_schema_transform_running_state() -> void:
+	var transform_option = _schema_transform_option_node()
+	if transform_option is OptionButton:
+		if _schema_transform_running:
+			transform_option.disabled = true
+			transform_option.text = "Überführung läuft..."
+			transform_option.tooltip_text = "Schema-Überführung läuft"
+		else:
+			transform_option.disabled = _schema_transform_options.is_empty()
+			transform_option.text = "In Schema überführen"
+			if transform_option.disabled:
+				transform_option.tooltip_text = "Keine OpenAI-validen Schemas verfügbar"
+			else:
+				transform_option.tooltip_text = "Roh-JSON mit OpenAI in ein Schema überführen"
+	var transform_spinner = _schema_transform_spinner_node()
+	if transform_spinner != null:
+		transform_spinner.visible = _schema_transform_running
+
+func begin_schema_transform(schema_name: String) -> void:
+	_schema_transform_running = true
+	_apply_schema_transform_running_state()
+
+func end_schema_transform() -> void:
+	_schema_transform_running = false
+	_apply_schema_transform_running_state()
+
+func _refresh_schema_transform_options_from_parent() -> void:
+	var parent_node = get_parent()
+	if parent_node != null:
+		parent_node = parent_node.get_parent()
+	if parent_node != null and parent_node.has_method("refresh_schema_transform_options_for_message"):
+		parent_node.refresh_schema_transform_options_for_message(self)
+
+func _on_schema_transform_option_pressed() -> void:
+	if _schema_transform_running:
+		return
+	_refresh_schema_transform_options_from_parent()
+
+func _on_schema_transform_option_selected(index: int) -> void:
+	if _schema_transform_running:
+		return
+	var transform_option = _schema_transform_option_node()
+	if transform_option is OptionButton:
+		transform_option.select(-1)
+		transform_option.text = "In Schema überführen"
+	if index < 0 or index >= _schema_transform_options.size():
+		return
+	var selected_option = _schema_transform_options[index]
+	if not (selected_option is Dictionary):
+		return
+	var schema_name = str(selected_option.get("schema_name", "")).strip_edges()
+	if schema_name == "":
+		return
+	var schema_edit_node = _schema_edit_node()
+	var raw_json = "{}"
+	if schema_edit_node != null:
+		raw_json = schema_edit_node.text
+	schema_transform_requested.emit(self, schema_name, raw_json)
+
+func apply_schema_transform_result(schema_name: String, json_text: String) -> void:
+	var schema_edit_node = _schema_edit_node()
+	if schema_edit_node != null:
+		_schema_sync_guard = true
+		schema_edit_node.text = json_text
+		_schema_sync_guard = false
+	var ft_node = _get_fine_tune_node()
+	if ft_node != null and ft_node.has_method("update_available_schemas_in_UI_global"):
+		ft_node.update_available_schemas_in_UI_global()
+	var schema_option = $SchemaMessageContainer/HBoxContainer/OptionButton
+	var schema_index = selectionStringToIndex(schema_option, schema_name)
+	if schema_index >= 0:
+		schema_option.set_block_signals(true)
+		schema_option.select(schema_index)
+		schema_option.set_block_signals(false)
+	var schema_tabs_node = _schema_tabs_node()
+	if schema_tabs_node is TabContainer:
+		schema_tabs_node.current_tab = 0
+	_rebuild_schema_form_from_selection(false)
+	update_messages_global()
+	_schedule_schema_validate()
+	end_schema_transform()
+
 func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> void:
 	_schema_resolve_serial += 1
 	var serial = _schema_resolve_serial
@@ -1532,17 +1657,19 @@ func _rebuild_schema_form_from_selection(sync_raw_from_form: bool = true) -> voi
 			schema_hint.text = tr("MESSAGES_JSON_SCHEMA_FORM_PARTIAL_FALLBACK")
 		else:
 			schema_hint.text = ""
+	var previous_schema_sync_guard = _schema_sync_guard
+	if not sync_raw_from_form:
+		_schema_sync_guard = true
 	_schema_form_controller.load_schema(selected_schema)
 	var schema_changed = selected_schema_name != _schema_last_selected_name
 	_schema_last_selected_name = selected_schema_name
 	var apply_result = {}
-	if sync_raw_from_form and schema_changed:
-		apply_result = _schema_form_controller.set_value_from_json("")
-	else:
-		var source_json = preserved_raw_json
-		if sync_raw_from_form and schema_edit_node != null:
-			source_json = schema_edit_node.text
-		apply_result = _schema_form_controller.set_value_from_json(source_json)
+	var source_json = preserved_raw_json
+	if sync_raw_from_form and schema_edit_node != null:
+		source_json = schema_edit_node.text
+	apply_result = _schema_form_controller.set_value_from_json(source_json)
+	if not sync_raw_from_form:
+		_schema_sync_guard = previous_schema_sync_guard
 	if sync_raw_from_form and (schema_changed or not bool(apply_result.get("ok", false))):
 		if schema_edit_node != null:
 			_schema_sync_guard = true

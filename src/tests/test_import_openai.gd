@@ -11,6 +11,42 @@ func assert_eq(a, b, name := ""):
 		push_error("Assertion failed %s: expected %s got %s" % [name, str(b), str(a)])
 
 
+func _make_object_schema(title: String, property_name: String, property_type: String) -> Dictionary:
+	return {
+		"title": title,
+		"type": "object",
+		"properties": {
+			property_name: {
+				"type": property_type
+			}
+		},
+		"required": [property_name],
+		"additionalProperties": false
+	}
+
+func _make_schema_log_entry(schema_name: String, schema: Dictionary, response_content: String = "{\"ok\":true}") -> Dictionary:
+	return {
+		"request": {
+			"messages": [
+				{"role":"user","content":"Bitte antworte als JSON"}
+			],
+			"response_format": {
+				"type": "json_schema",
+				"json_schema": {
+					"name": schema_name,
+					"strict": true,
+					"schema": schema
+				}
+			}
+		},
+		"response": {
+			"output_messages": [
+				{"role":"assistant","content":response_content}
+			]
+		}
+	}
+
+
 # Basic save and load using FileAccess to ensure the engine can store data
 func test_save_and_load_var():
 	var path = "user://tmp_save.bin"
@@ -179,6 +215,103 @@ func test_chat_completion_log_imports_request_and_output_messages():
 	assert_eq(convo[2]["type"], "JSON", "chat log assistant JSON")
 	assert_eq(convo[2]["jsonSchemaValue"], "{\"ok\":true}", "chat log assistant JSON value")
 
+func test_chat_completion_log_dedupes_duplicate_response_sources():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var log_entry = {
+		"request": {
+			"messages": [
+				{"role":"user","content":"Bitte antworte als JSON"}
+			]
+		},
+		"response": {
+			"output_messages": [
+				{"role":"assistant","content":"{\"ok\":true}"}
+			],
+			"parsed_body": {
+				"choices": [
+					{"message":{"role":"assistant","content":"{\"ok\":true}"}}
+				]
+			}
+		}
+	}
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entry), "llm_call.json")
+	var convo = result.get("messages", [])
+	assert_eq(result.get("ok", false), true, "dedupe log import ok")
+	assert_eq(convo.size(), 2, "dedupe keeps one response assistant message")
+	assert_eq(convo[1]["role"], "assistant", "dedupe assistant role")
+	assert_eq(convo[1]["jsonSchemaValue"], "{\"ok\":true}", "dedupe assistant JSON value")
+
+func test_chat_completion_log_keeps_different_direct_assistant_responses():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var log_entry = {
+		"request": {
+			"messages": [
+				{"role":"user","content":"Sag etwas"}
+			]
+		},
+		"response": {
+			"output_messages": [
+				{"role":"assistant","content":"Erste Antwort"}
+			],
+			"parsed_body": {
+				"choices": [
+					{"message":{"role":"assistant","content":"Zweite Antwort"}}
+				]
+			}
+		}
+	}
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entry), "llm_call.json")
+	var convo = result.get("messages", [])
+	assert_eq(result.get("ok", false), true, "different assistant log import ok")
+	assert_eq(convo.size(), 3, "different assistant messages are retained")
+	assert_eq(convo[1]["textContent"], "Erste Antwort", "first assistant response retained")
+	assert_eq(convo[2]["textContent"], "Zweite Antwort", "second assistant response retained")
+
+func test_chat_completion_log_imports_response_schema_and_sets_message_schema():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var schema = _make_object_schema("Wanderwegweiser", "ok", "boolean")
+	var log_entry = _make_schema_log_entry("Wanderwegweiserv4", schema)
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entry), "llm_call.json")
+	var schemas = result.get("schemas", [])
+	var convo = result.get("messages", [])
+	assert_eq(result.get("ok", false), true, "schema log import ok")
+	assert_eq(schemas.size(), 1, "schema log returns one schema")
+	assert_eq(schemas[0].get("name", ""), "Wanderwegweiserv4", "schema import keeps response format name")
+	assert_eq(schemas[0].get("schema", {}).get("title", ""), "Wanderwegweiserv4", "schema title follows imported name")
+	assert_eq(convo[1].get("jsonSchemaName", ""), "Wanderwegweiserv4", "assistant JSON selects imported schema")
+
+func test_chat_completion_log_reuses_structurally_equal_existing_schema():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	var existing_schema = _make_object_schema("Existing Title", "ok", "boolean")
+	ft.SCHEMAS = [
+		{"name":"ExistingSchema","schema":existing_schema}
+	]
+	var imported_schema = _make_object_schema("Different Title", "ok", "boolean")
+	var log_entry = _make_schema_log_entry("Wanderwegweiserv4", imported_schema)
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entry), "llm_call.json")
+	var convo = result.get("messages", [])
+	assert_eq(result.get("schemas", []).size(), 0, "structural schema match does not import duplicate")
+	assert_eq(convo[1].get("jsonSchemaName", ""), "ExistingSchema", "structural schema match uses existing name")
+
+func test_chat_completion_log_suffixes_same_name_different_schema():
+	var FineTune = load("res://scenes/fine_tune.gd")
+	var ft = FineTune.new()
+	ft.SCHEMAS = [
+		{"name":"Wanderwegweiserv4","schema":_make_object_schema("Old", "old", "string")},
+		{"name":"Wanderwegweiserv4 (1)","schema":_make_object_schema("Older", "older", "number")}
+	]
+	var log_entry = _make_schema_log_entry("Wanderwegweiserv4", _make_object_schema("New", "ok", "boolean"))
+	var result = ft.classify_conversation_json_import(JSON.stringify(log_entry), "llm_call.json")
+	var schemas = result.get("schemas", [])
+	var convo = result.get("messages", [])
+	assert_eq(schemas.size(), 1, "conflicting schema name imports one schema")
+	assert_eq(schemas[0].get("name", ""), "Wanderwegweiserv4 (2)", "conflicting schema name gets next suffix")
+	assert_eq(convo[1].get("jsonSchemaName", ""), "Wanderwegweiserv4 (2)", "assistant JSON selects suffixed schema")
+
 func test_responses_log_array_imports_tool_chain_and_final_message():
 	var FineTune = load("res://scenes/fine_tune.gd")
 	var ft = FineTune.new()
@@ -268,6 +401,11 @@ func _init():
 	test_message_ui_image_roundtrip()
 	test_openai_import_filters_non_dictionary_items()
 	test_chat_completion_log_imports_request_and_output_messages()
+	test_chat_completion_log_dedupes_duplicate_response_sources()
+	test_chat_completion_log_keeps_different_direct_assistant_responses()
+	test_chat_completion_log_imports_response_schema_and_sets_message_schema()
+	test_chat_completion_log_reuses_structurally_equal_existing_schema()
+	test_chat_completion_log_suffixes_same_name_different_schema()
 	test_responses_log_array_imports_tool_chain_and_final_message()
 	test_conversation_json_import_classifies_direct_messages_as_append()
 	test_conversation_json_import_reports_invalid_json()

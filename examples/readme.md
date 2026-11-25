@@ -15,6 +15,7 @@ Dieses Verzeichnis enthält verschiedene kleine Fine-Tuning Projekte, die die un
 | `openai-json-schema-sample.json` | Antwortet mit JSON entsprechend einem Schema. |
 | `openai-image-function-call-sample.json` | Kombiniert ein Bild mit einem Funktionsaufruf. |
 | `openai-image-json-schema-sample.json` | Kombiniert ein Bild mit einer JSON-Antwort. |
+| `lfm3-vl-traffic-signs.json` | Offline-Beispiel mit eingebetteten Verkehrszeichenbildern, JSON-Eingabeschema, globaler Systemnachricht und fertiger/unfertiger Annotation für den [LFM3-VL-Export](../docs/lfm3_vl_export_de.md). |
 | `openai-image-function-call-json-schema-sample.json` | Vereint Bild, Funktionsaufruf und JSON-Schema-Ausgabe. |
 | `openai-user-names-sample.json` | Mehrere Nutzer listen etwas auf; der Assistent nennt, wer was gesagt hat. |
 | `temperature_example.json` | Wetter-Beispielprojekt mit mehreren Konversationen, Funktionsaufrufen und Antworten. |

@@ -1,0 +1,287 @@
+{
+  "functions": [],
+  "conversations": {
+    "stop-demo": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "metaData": {
+          "ready": true,
+          "conversationName": "STOP (synthetisches Beispiel)",
+          "notes": "Synthetisches Formularbeispiel, kein reales Trainingsfoto. Für das Training durch eigene Fotos ersetzen."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Lies die Verkehrszeichen im Bild und gib die Annotation als JSON aus."
+      },
+      {
+        "role": "user",
+        "type": "Image",
+        "imageContent": "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",
+        "imageDetail": 0
+      },
+      {
+        "role": "assistant",
+        "type": "JSON",
+        "jsonSchemaName": "Verkehrszeichen-Annotation",
+        "jsonSchemaValue": "{\n  \"zeichen\": [\n    {\n      \"referenz\": \"DE:206\",\n      \"bezeichnung\": \"Halt. Vorfahrt gewähren.\",\n      \"text\": \"STOP\",\n      \"form\": \"achteck\",\n      \"hintergrundfarbe\": \"rot\",\n      \"randfarbe\": \"weiß\",\n      \"zusatzzeichen\": [],\n      \"unsicher\": false\n    }\n  ]\n}"
+      }
+    ],
+    "tempo30-entwurf": [
+      {
+        "role": "meta",
+        "type": "meta",
+        "metaData": {
+          "ready": false,
+          "conversationName": "Tempo 30 (noch nicht fertig)",
+          "notes": "Synthetisches Formularbeispiel, kein reales Trainingsfoto. Für das Training durch eigene Fotos ersetzen."
+        }
+      },
+      {
+        "role": "user",
+        "type": "Text",
+        "textContent": "Lies die Verkehrszeichen im Bild und gib die Annotation als JSON aus."
+      },
+      {
+        "role": "user",
+        "type": "Image",
+        "imageContent": "iVBORw0KGgoAAAANSUhEUgAAAUAAAAFACAIAAABC8jL9AAAXCklEQVR4nO3df0xV9ePH8TdcBPGaiBqiqYjgTyRsUmsuJD86dbpYZSaJmo6IapqmYeVq03JtmWZqrpTZhCxRGv6RKSoDLbVNLbEIrwgS4i90OhAu8pvvH/cbHz4Cl/f73PPj/eP1+LPOOffIeT/P+9xf53pdu3WHAICYvK3eAQDQDgEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIDAEDCAwBAwgMAQMIzMfqHQCP3JsU6/lG+p0+4flGwBJe127dsXofoHu6hMoKYfMPAXPKkmLdQ88cQsC84LBY99AzDxCwlYSLtiuI2SoI2ALSdNsRSjYZAjaPxN12hJLNgYANp1S3HaFkQyFgoyjebUco2QgIWH9I1w1krC8ErBt0ywQl6wIB6wDpaoaMPYSAPYJ0dYGMNUPAGiFd3SFjDRAwM6RrKGTMBAEzQLqmQcaUEDAVpGsJZNwt3JGje6jXKvjLdwszsDsYQJzAVNwVBNw5pMshZNwRLqE7gXr5hOPSEWbg/4EhIgRMxW0wA/8X6hUFjlQbBPz/MCbEguPlgktoDAWxKX45rfoMjHpFp/gRVDpgxY+9NFQ+jopeQkt2yCNL/ta24l9hEfruibUUvJxWMWBx69UcKitxw1atYeUCFq5e06LtinAxK9WwWgGLUq/l0XZFlJjVaVihgDmvl9tou8J5zIo0rETAPKcrXLcd8Vyy9BnLHzCf9UrQbUd8lix3w5IHzGG9UqbbHocZS9ywzAHzVq/06bbHW8ayNixtwPzUq1S3HfFTspQNyxkwJ/Uqnm57nGQsX8MSBsxDvUi3UzxkLFnDsn2ZAfXyjIe/DA8jREdSzcCWHxseBqgQLJ+KpZmH5QnY2nqRrgbWZixHw7JdQlsC9WqDv5vnJJmBrZp+MQR1YdVULMEkLMMMjHpFZ9Vf0vIXTTwn/AxsyTFAugaxZCoWeh4WewZGvZKx5G8r9DwscMCoV0pomImP1TsgDKRrGtef2vL3ioUg6gxs8ikT9ZrP5L+5oJOwkAGjXkWg4W6JFzDqVQoadk+8gM2EenmAo+CGYO8Dm3aCxKDhkGkvawn0zrBIMzDqVZxpx0WgC2lhAka9QNBwB8IEbA7Uyz8co/bECNic0yFGhijMOVJCTMICBIx6oSM07CJAwADQFd4DxvQLXcEkTPgP2ASoV1w4dlwHbMLJDyNAdCYcQZ4nYX4DRr1ASeWG+Q3YaKhXJsoeTU4D5vaEB8ric0xyGrDRlD1hS0zNY8pjwEaf6tQ80iow+shyOAnzGLChUK/cVDu+3AXM4UkOoA1v45O7gA2l2ulZTUodZb4CNvT0ptRxVZyhx5qrSZivgAGACUcBY/oFHSkyCXMUsHFQr5pUOO68BMzPKQ2ABicjlpeAjaPCaRi6Iv3Rlz9gAIlxEbBxVyPSn4ChW8aNAR6uorkI2CCoF1wkHgnWB8zDaQxAG8tHr/UBG0Tiky5oIOt4kDZgABVYHLBBVyCynm7BEwaNCmuvojEDAwgMAQMIzMqAcf0MJpPvKhozMIDAZAsY0y+4J9kI8bHqgS1/B9wEFRUVV65cKSkpKS0traiouPOvqqqq+vr6+vr6urq6hoYGHx8fX19fPz+/vn37BgYGBgUFhYSEhISEREREREVFDRs2zMJ/QmNj49mzZ0+ePOlwOIqLi8vLy6urq51OZ2Njo91ut9vtAwYMCA8PDwsLi46Ojo2NDQ4OtnBvLXRvUmy/0yfMf1yva7fumP+oxJiArT25VldXX7hwIf9fDofD6XR6vtnBgwdPmTJl1qxZcXFxvXv39nyDNBobGw8dOpSenp6dnV1bW0u/YkREREJCwsKFC4cMGWLc7nnur7AI3beJgD1lbcDPPvvsiRMGHkJ/f/+5c+euXLkyKirKuEdpaGjYuXPnp59+evPmTc0b8fb2njdv3tq1a0eNGqXjvulImoCteQ6swvWz7h48eJCenj5hwoT58+dfu3bNiIfIyckZPXr0smXLPKmXENLS0rJ3795x48a98847Dx480Gv3OGfJqJbnRSzJXpxwY+/evZGRkQcOHNBxmw0NDUuXLp0+ffo///yj1zabm5u//PLLJ554Ij8/X69t6kWa0SJPwEqprKycM2fOtm3bdNlaVVXVzJkzt2/f3traqssG27t06VJMTMzhw4d13zIQBCyu1tbWt99+e8+ePR5up7KycvLkyXl5ebrsVadqamri4uIyMzONewhlWRCwfC9fWej1118vKirSvHpdXV1cXNyff/6p4y51qqmpaeHChcePHzf6gegZMWbMfxqMGVhsDx48WL58uebVk5OTf/31Vx33x436+vrnn39ex+fYQBCwBLKzsy9cuKBhxb1796anp+u+P25UVVUtWLCgubnZzAeVGwKWwbfffsu6SkVFxZtvvmnEzrh36tSpTZs2mf+4spIhYJ6fAA8ZMiQuLm7VqlU7duw4fvx4YWFheXl5ZWVlU1OT0+msqKgoKCjIzMz84IMPxo8fr/lRDh06xLrKRx99VFVVxbRKZGTktm3b/vrrr5qamoaGhps3bx4+fDgxMdHX15dpO+vXr799+zbTKgbheeRQMvuTWBK/gtX2SaxBgwbNnj07JiYmJiYmNDSUfgvnzp378MMPjxw5ouHRKysrAwICKBf++++/o6Ki6C9lbTbbxo0bly9f7uXl1fH/FhcXz507l+nN3uTk5G+++YZ+eeOI/pEsGWZgTgQHB7/11lvHjx+/du1aamrqokWLmOolhERHR2dnZ2/YsKHTTtxjei16w4YNTE9E09LSVqxY0dVehYeH5+XlRUZG0m9w9+7dFRUV9MtDVxCwbjIyMrZv3x4bG+vt7dFfNSUlZdWqVaxr3bt3j3LJioqKjIwM+i0nJSUlJCS4X6Zv37779u2jv5aur6/nZAYWnfABc3L9rK+PP/64T58+TKvU1dVRLrlr166GhgbKhXv16rV+/XqaJceOHZuUlES5WULIjh07Wlpa6Jc3iOjjR/iApeTv7z979mymVeiD379/P/1m4+Pjg4KCKBdetmwZ/ZZv3rx58uRJ+uWhU6YGjC8h0WN9/tyvXz+axUpKSpjeNI6Pj6dfePTo0Uxfdfzxxx/pFxaImeMcMzCnmpqa6Be22WxhYWE0Sx48eJB+s/7+/rGxbGNx5syZ9Asz7Qx0SuyARX8C40ZpaSn9wlFRUZQ362D64GR0dDTre7yTJk2iX7i0tPT69etM2zeC0KNI7IBl5XQ6mb5/N2PGDMolmZ52TpgwgX5hbavgabCHEDCP1q1bV1NTQ7mwzWaj/FDk1atXmd59HTduHP3CLsOGDWO6cdfZs2dZHwLaQ8Dc2bx588aNG+mXf/XVV4cOHUqz5MWLF5n2ZMSIEUzLuwwfPpx+YdZdgocgYI6cOnVq5syZK1eupL8zxpAhQ7744gvKhR0OB9P+UJ4XPFkLAXvIsvtCK66+vr62trampqasrKy4uPjMmTPHjh0rLi5m2khAQEBWVhb9R6AvX77MtP2BAwcyLa9hrbKyssbGxh49emh4ICBmBqzsm8DDhw8vKyvTfbOPPvrooUOHoqOj6Vdhutekt7d3YGAg+36R/v370y/c0tJy+/btxx57TMMD8cy0+7zjElpIL7zwQkFBAVO9hBCmL/EFBARo+E4FIaRv375My+NbDZ4QOGCh377TbOrUqTk5OVlZWfSfcGzDlEqvXr1Yt69tRR6+GyzuWMJzYDFERUXNnTv3xRdfHDt2rOaNVFdX0y+sOWC73c60PNNewUMEnoGVUlpaWlhYePHixfr6es0bYVpX8wtLrCt68i8CBCyG+/fv//DDD3PmzBkxYsSWLVu0/V4JUyo2m03DQ2hYkf6LkNARAhbMjRs3VqxYMXLkyJycHNZ1Gxsb6RfWfFsC1hXpv5wMHSFgIV2/fn369OmrV69m+jEUpotbzd+2Z71rLOv3JaA9BCyq1tbWzz//PDk5mb5hPz8/+u1rvnsz64pMewUPQcBiS01NXb16NeXCTKlovrJlXbFnz57aHggIApbApk2bKH9z6JFHHqHfrNPp1LY/rCsyfXsJHoL3gQ3X8deAWltba2trnU5nTU1NaWlpSUlJQUHBsWPHWL9s0La1xMREh8PR7VPcoKAg+o9Daw64traWaXltn7gGFwRsAS8vL7vdbrfbg4KCRowYMXXqVNd/Ly0t3bp1a2pqKms8V65cyczMnD9/vvvFmFKprq5ubm7W8GYS/Q1uXTR8pAza4BKaI6GhoZs3by4qKpo8eTLrul999VW3ywQHB9NvsLW1lTVFl7t379Iv7OXlhYA9gYC5M3jw4NzcXNbbyv7222/dftR55MiRTNu8desW0/Ia1goJCcHbSJ5AwDyy2Wzfffcd04RJCDl9+rT7BcaMGcO0wfLycqblNazlyUe7gSBgbgUGBiYmJjKtcubMGfcLsNZSUlLCtDwhpKWlhenLzwjYQwiYX3FxcUzLd/t9/ZCQEKYnnBrud3PlyhWmzzY/+eSTrA8B7SFgfg0bNoxpeZrXnJ555hn6Df7xxx9MO6BhlZiYGNaHgPYQML9YvxVw//79bpdhen37/PnzrF976vZ5eHuhoaHy3UzHZAiYX1evXmVanuYr+Ewvbjc0NOTm5jLtA9P96FlfaYeOBA7YiN9W58rPP//MtDzNDxSGh4c//vjj9Nvct28f/cL5+flMvzP+0ksv0S9sKHHHksABy+3+/fupqalMq1Deh/3ll1+m32ZmZib9vSy3bt1Kv+Xg4GA8AfaceQGbc5dN82VkZLzyyit5eXlMX811r6WlZcmSJaw//EX5lkxiYiL9Zyfq6urWrFlDs2R+fn56ejrlZgkhycnJmu8ZwD/TRru0f0HT1NXVZWRk/Oc//xk1atRnn33m+S2g7927N2vWrKysLNYVKX8KNDg4eN68efSb3b179+7du90vc/fu3fj4ePpvAvv6+r7xxhv0+wBdQcC6KS4ufv/994cPHx4REfHuu+/m5uYy3cKGEHLnzp21a9eGh4cfOXKE9dEjIiLo33ZKSUlhmv1ee+21jRs3dnWPDofDERsbe+nSJfoNLl68mPVzZtApfBtJf4WFhYWFhZs2berZs+eYMWPG/2vgwIEB/7LZbE6n0+l03rhxo6ioqLCwMCcn5+zZs5pvZJOUlES/cGRk5JIlS3bt2kW5fHNzc0pKSlpaWnJy8pQpU0JDQ319fe/evXv+/Pn9+/fv2bOH6VTVu3fvdevW0S8PbiBgA9XV1eXn5+fn5xv9QIGBgYsXL2Za5ZNPPsnMzKR567hNQUHBsmXL2PasM2vWrMH0qxdcQstg/fr19D9x5jJo0KDt27cbtD9uPP300ykpKeY/rqzEDljct+90NHXq1OTkZA0rLliwICEhQff9caNPnz7ff/+9jw9f131CjyKxA4bQ0NCMjAzNN2FPTU2dNGmSvrvUFV9f36ysLG0/Gg5dMTVgWd8KtkpYWNiJEycGDBigeQv+/v4//fTT+PHjddyrTtlstrS0tLabB8nNzHGOGVhU06ZNO3369NChQz3cTr9+/X755RcNN/GhZ7fbDxw4EB8fb9xDKEv4gIV+AqNN7969N2zYcOTIEb3uJhUYGHj06FGDPlkxcuTIEydOPPfcc0Zs3HOijx/hA1aKn59fUlKSw+Fg/SQGzZa//vrr7Oxsz6f0NjabbenSpfn5+RMnTtRrm/AQBOyphISEvLy89957LyoqSttP2tMIDw9fu3ZtaWnpzp07jfsO7YwZMy5fvrxlyxYP36f19vaeN29eQUHBtm3bNP/OMNDwunbrjskPeW8S1Ud26fHz8+q3bt3Kzc09d+7c77//fv78eQ9/utputz/11FPTpk2bMWOGyZNYY2PjwYMH09LSjh49yvSd/jFjxiQkJCxatIj1diJW0f0S2uRXamUImPDUcJvW1taioiKHw1FWVnb16tWysrLy8vLKykrXbzLU1tbW19f7+Pj06NHDz88vICCgf//+/fv3Hzp0aGhoaFhYWFRU1OjRoy3/vk5DQ8OZM2dOnjzpcDiKi4vLy8tramqcTmdTU1OvXr3sdvuAAQPCwsLCw8MnTpwYGxs7ePBga3eYiRFPgBGwFhwGDPyTIGA8BwYQGAIGEJgFARtxjSH6u3lgPgmunwlmYAChIWAAgckTMK6igZ40o8WagPG1JJCPJaNanhkYQEFSBSzNdREYSqZxYlnAuIoGmVg1nqWagYlcJ1cwgmQjRLaAAZRiZcAGXXVIdooFHRk0Nix8PogZGEBgCBhAYBYHjKtoMI1818/E8oABwBPSBoxJGNqTdTxYHzA+0QHisnz0Wh+wcWQ96QIriUcCFwEbdxqT+MgBJePGgOXTL+EkYADQRv6AMQmrTPqjz0vAPFyNANDjZMTyErChpD8NQ6dUOO4cBWzoKU2FYwntGXrEOZl+CVcBAwArvgLGJAy6UGT6JbwFbDQ0rAKljjJ3AXN1egN4CG/jk7uAjabU6VlBqh1fHgM2+iSn2jFWh9FHlrfpl/AZsAnQsHzUPKacBszhqQ4Ux+eY5DRgE6h5wpaVskeT34BNOOEpe9QlY8Jx5HP6JTwHTNAwUFC5XsJ5wOZAw+LCseM9YHNOfhgHIjLnqPE8/RL+AwYANwQIGJMwdITp10WAgAkahv+FetuIEbBp0DD/cIzaEyZg006HGB88M+3oCDH9EoECJmhYeai3I69rt+5YvQ9s7k2KNe2xIkv+Nu2xwA0zT6kC1UvEmoHNh6mYBzgKbogXsMknSIwea5n89xdr+iUiBkzQsDJQb7eEDJigYQWgXho+Vu+AMFzjCS9rmQCnS3qizsDEolMmxpbRLPkLCzr9EqEDJmhYOqiXlXjvA3dk5jvD7eFyWkdWnRaFrpeIPgO7WHUMMBXrBfVqJsMM7GLVPEwwFXvAwpOgBPUSOWZgy2Eq1gZ/N8/JMwMTSydhF0zFlCxPV47pl0gWMOGgYYKM3bI8XSJRvUS+S2gejg0PY5RPPPxleBghOpJtBnbhYR4mmIrb4SFdIl29RNaACTcNE+Uz5iRdImO9ROKACU8NuyhVMj/dukhZL5E7YMJfw0SBjHlLl8hbL5E+YMJlw0TSjDlMl0hdL1EhYMJrwy4SlMxnty5y10sUCdiF54yJgCXz3C1RIF0XhQIm3DfchtuYOY+2jSL1EtUCJuI03MbymEWJto069RIFAyYCNtzGtJiFi7aNUvUSNQMmIjfcKc1hixtqp1SrlygbsItkGatMwXRdZPsyAxNlj7pkVD6OSgdM1D72clD8CCp9Cd0eLqeFo3i6LqrPwG0wGsSC4+WCgP8LY0IUOFJtcAndCVxOcwvpPgQzcCcwSviE49IRZmB3MBVzAul2BQF3DxlbCOm6h0vo7mEMWQV/+W5hBmaAqdg0SJcSAmaGjA2FdJkgYI2Qse6QrgYI2CPIWBdIVzMErANkrBnS9RAC1g0yZoJ0dYGA9YeS3UC3+kLARkHGD0G6RkDAhlO8ZHRrKARsHqVKRrfmQMAWkLhkdGsyBGwlaUpGt1ZBwLwQLmZEywMEzCkOe0axHELAYrCkZxTLPwQsNl3CRqjiQsAAAsMdOQAEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQSGgAEEhoABBIaAAQT2f+k53u6auj2iAAAAAElFTkSuQmCC",
+        "imageDetail": 0
+      },
+      {
+        "role": "assistant",
+        "type": "JSON",
+        "jsonSchemaName": "Verkehrszeichen-Annotation",
+        "jsonSchemaValue": "{\n  \"zeichen\": [\n    {\n      \"referenz\": \"DE:274-30\",\n      \"bezeichnung\": \"Zulässige Höchstgeschwindigkeit 30 km/h\",\n      \"text\": \"30\",\n      \"form\": \"kreis\",\n      \"hintergrundfarbe\": \"weiß\",\n      \"randfarbe\": \"rot\",\n      \"zusatzzeichen\": [],\n      \"unsicher\": false\n    }\n  ]\n}"
+      }
+    ]
+  },
+  "conversationOrder": [
+    "stop-demo",
+    "tempo30-entwurf"
+  ],
+  "settings": {
+    "useGlobalSystemMessage": true,
+    "globalSystemMessage": "Erfasse die sichtbaren Verkehrszeichen in Deutschland. Antworte ausschließlich mit einem JSON-Objekt mit dem Schlüssel zeichen. Jeder Eintrag enthält referenz, bezeichnung, text, form, hintergrundfarbe, randfarbe, zusatzzeichen und unsicher. Lies nur Sichtbares ab. Setze unsicher bei Zweifeln auf true und lasse unbekannte Referenzen leer. Gib bei fehlenden Zeichen eine leere Liste aus.",
+    "finetuneType": 0,
+    "imageUploadSetting": 0,
+    "imageAutoRotateSetting": 0,
+    "projectStorageMode": 0,
+    "useUserNames": false,
+    "schemaEditorURL": "",
+    "schemaValidatorURL": "",
+    "exportConvos": 1
+  },
+  "graders": [],
+  "schemas": [
+    {
+      "name": "Verkehrszeichen-Annotation",
+      "schema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Verkehrszeichen-Annotation",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "zeichen": {
+            "type": "array",
+            "title": "Erkannte Verkehrszeichen",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "referenz": {
+                  "type": "string",
+                  "title": "Zeichen-Referenz",
+                  "description": "Nur bekannte, visuell bestimmbare Referenzen, sonst leer.",
+                  "default": ""
+                },
+                "bezeichnung": {
+                  "type": "string",
+                  "title": "Bezeichnung",
+                  "default": ""
+                },
+                "text": {
+                  "type": "string",
+                  "title": "Sichtbare Beschriftung",
+                  "description": "Wörtlich ablesen; leer bei unleserlichem oder fehlendem Text.",
+                  "default": ""
+                },
+                "form": {
+                  "type": "string",
+                  "title": "Form",
+                  "enum": [
+                    "kreis",
+                    "dreieck",
+                    "achteck",
+                    "rechteck",
+                    "raute",
+                    "sonstige"
+                  ],
+                  "default": "sonstige"
+                },
+                "hintergrundfarbe": {
+                  "type": "string",
+                  "title": "Hintergrundfarbe",
+                  "enum": [
+                    "weiß",
+                    "rot",
+                    "blau",
+                    "gelb",
+                    "grün",
+                    "braun",
+                    "sonstige"
+                  ],
+                  "default": "weiß"
+                },
+                "randfarbe": {
+                  "type": "string",
+                  "title": "Randfarbe",
+                  "enum": [
+                    "weiß",
+                    "rot",
+                    "blau",
+                    "schwarz",
+                    "keine",
+                    "sonstige"
+                  ],
+                  "default": "keine"
+                },
+                "zusatzzeichen": {
+                  "type": "array",
+                  "title": "Zugeordnete Zusatzzeichen",
+                  "items": {
+                    "type": "string"
+                  },
+                  "default": []
+                },
+                "unsicher": {
+                  "type": "boolean",
+                  "title": "Erkennung unsicher",
+                  "default": false
+                }
+              },
+              "required": [
+                "referenz",
+                "bezeichnung",
+                "text",
+                "form",
+                "hintergrundfarbe",
+                "randfarbe",
+                "zusatzzeichen",
+                "unsicher"
+              ]
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "zeichen"
+        ]
+      },
+      "sanitizedSchema": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "Verkehrszeichen-Annotation",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "zeichen": {
+            "type": "array",
+            "title": "Erkannte Verkehrszeichen",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "referenz": {
+                  "type": "string",
+                  "title": "Zeichen-Referenz",
+                  "description": "Nur bekannte, visuell bestimmbare Referenzen, sonst leer.",
+                  "default": ""
+                },
+                "bezeichnung": {
+                  "type": "string",
+                  "title": "Bezeichnung",
+                  "default": ""
+                },
+                "text": {
+                  "type": "string",
+                  "title": "Sichtbare Beschriftung",
+                  "description": "Wörtlich ablesen; leer bei unleserlichem oder fehlendem Text.",
+                  "default": ""
+                },
+                "form": {
+                  "type": "string",
+                  "title": "Form",
+                  "enum": [
+                    "kreis",
+                    "dreieck",
+                    "achteck",
+                    "rechteck",
+                    "raute",
+                    "sonstige"
+                  ],
+                  "default": "sonstige"
+                },
+                "hintergrundfarbe": {
+                  "type": "string",
+                  "title": "Hintergrundfarbe",
+                  "enum": [
+                    "weiß",
+                    "rot",
+                    "blau",
+                    "gelb",
+                    "grün",
+                    "braun",
+                    "sonstige"
+                  ],
+                  "default": "weiß"
+                },
+                "randfarbe": {
+                  "type": "string",
+                  "title": "Randfarbe",
+                  "enum": [
+                    "weiß",
+                    "rot",
+                    "blau",
+                    "schwarz",
+                    "keine",
+                    "sonstige"
+                  ],
+                  "default": "keine"
+                },
+                "zusatzzeichen": {
+                  "type": "array",
+                  "title": "Zugeordnete Zusatzzeichen",
+                  "items": {
+                    "type": "string"
+                  },
+                  "default": []
+                },
+                "unsicher": {
+                  "type": "boolean",
+                  "title": "Erkennung unsicher",
+                  "default": false
+                }
+              },
+              "required": [
+                "referenz",
+                "bezeichnung",
+                "text",
+                "form",
+                "hintergrundfarbe",
+                "randfarbe",
+                "zusatzzeichen",
+                "unsicher"
+              ]
+            },
+            "default": []
+          }
+        },
+        "required": [
+          "zeichen"
+        ]
+      }
+    }
+  ]
+}

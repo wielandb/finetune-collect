@@ -27,6 +27,7 @@ jobs:
           godot --headless --path src -s res://tests/test_image_auto_rotate_pipeline.gd && \
           godot --headless --path src -s res://tests/test_batch_creation_auto_upload.gd && \
           godot --headless --path src -s res://tests/test_load_examples.gd && \
+          godot --headless --path src -s res://tests/test_lfm3_vl_example.gd && \
           godot --headless --path src -s res://tests/test_schema_title_sync.gd && \
           godot --headless --path src -s res://tests/test_schema_validator_request.gd && \
           godot --headless --path src -s res://tests/test_schema_align_openai.gd && \

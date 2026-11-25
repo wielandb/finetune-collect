@@ -32,6 +32,21 @@ You can also provide the program with your OpenAI API key and it can generate re
 - JSON schema array items can be moved and duplicated directly in the form UI
 - Improved small-screen dialog and schema form usability
 - More reliable JSON schema rendering/value restoration after reload
+- Python export of annotated image/JSON projects to portable LFM3-VL / TRL vision SFT datasets ([guide](docs/lfm3_vl_export_de.md))
+
+## LFM3-VL export
+
+Save your project as JSON, then run the separate converter (Python 3.10+):
+
+```bash
+python -m pip install -r scripts/requirements_lfm3_vl.txt
+python scripts/export_lfm3_vl.py my-project.json lfm3-export
+```
+
+Exports completed conversations by default, resolves Base64 and URL images into
+local RGB files, and preserves JSON answers and global system instructions.
+See the [format, loading instructions and options](docs/lfm3_vl_export_de.md), or
+import [the traffic-sign annotation example](examples/lfm3-vl-traffic-signs.json).
 
 ## Keyboard Shortcuts
 - `Ctrl` + `S` – Save the project without re-opening the dialog
